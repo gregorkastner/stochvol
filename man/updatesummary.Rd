@@ -1,0 +1,79 @@
+\name{updatesummary}
+\alias{updatesummary}
+\title{
+Updating the Summary of MCMC Draws
+}
+\description{
+ Creates or updates a summary of an \code{svdraws} object.
+}
+\usage{
+updatesummary(x, quantiles = c(0.05, 0.5, 0.95), esspara = TRUE,
+              esslatent = FALSE)
+}
+\arguments{
+  \item{x}{
+   \code{svdraws} object.
+}
+  \item{quantiles}{
+   numeric vector of posterior quantiles to be computed. The default is \code{c(0.05, 0.5, 0.95)}.
+}
+  \item{esspara}{
+   logical value which indicates whether the effective sample size (ESS) should be calculated for the \emph{parameter draws}. This is achieved by calling \code{\link[coda]{effectiveSize}} from the \code{coda} package. The default is \code{TRUE}.
+}
+  \item{esslatent}{
+   logical value which indicates whether the effective sample size (ESS) should be calculated for the \emph{latent log-volatility} draws. This is achieved by calling \code{\link[coda]{effectiveSize}} from the \code{coda} package. The default is \code{FALSE}, because this can be quite time-consuming when many latent variables are present.
+}
+}
+\details{
+\code{updatesummary} will always calculate the posterior mean and the posterior standard deviation of the raw draws and some common transformations thereof. Moroever, the posterior quantiles, specified by the argument \code{quantiles}, are computed. If \code{esspara} and/or \code{esslatent} are \code{TRUE}, the corresponding effective sample size (ESS) will also be included.
+}
+
+\value{
+ The value returned is an updated list object of class \code{svdraws} holding
+\item{para}{\code{mcmc} object containing the \emph{parameter} draws from the posterior distribution.}
+\item{latent}{\code{mcmc} object containing the \emph{latent instantaneous log-volatility} draws from the posterior distribution.}
+\item{latent0}{\code{mcmc} object containing the \emph{latent initial log-volatility} draws from the posterior distribution.}
+\item{y}{argument \code{y}.}
+\item{runtime}{\code{"proc_time"} object containing the run time of the sampler.}
+\item{priors}{\code{list} containing the parameter values of the prior distribution, i.e. the arguments \code{priormu}, \code{priorphi}, \code{priorsigma} (and potentially \code{nu}).}
+\item{thinning}{\code{list} containing the thinning parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and \code{thintime}.}
+\item{summary}{\code{list} containing a collection of summary statistics of the posterior draws for \code{para}, \code{latent}, and \code{latent0}.}
+
+To display the output, use \code{print}, \code{summary} and \code{plot}. The \code{print} method simply prints the posterior draws (which is very likely a lot of output); the \code{summary} method displays the summary statistics currently stored in the object; the \code{plot} method gives a graphical overview of the posterior distribution by calling \code{\link{volplot}}, \code{\link{traceplot}} and \code{\link{densplot}} and displaying the results on a single page. 
+}
+
+\author{
+Gregor Kastner \email{gregor.kastner@wu.ac.at}
+}
+\note{
+\code{updatesummary} does not actually overwrite the object's current summary, but in fact creates a new object with an updated summary. Thus, don't forget to overwrite the old object if this is want you intend to do. See the examples below for more details.
+}
+
+\seealso{
+\code{\link{svsample}}
+}
+
+\examples{
+## Here is a baby-example to illustrate the idea.
+## Simulate an SV time series of length 51 with default parameters:
+sim <- svsim(51)
+
+## Draw from the posterior (but save only every fifth point in time):
+res <- svsample(sim$y, draws = 7000, thintime = 5, priorphi = c(10, 1.5))
+
+## Check out the results:
+summary(res)
+plot(res)
+
+## Look at other quantiles and calculate ESS of latents:
+newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
+res <- updatesummary(res, quantiles = newquants, esslatent = TRUE)
+
+## See the difference?
+summary(res)
+plot(res)
+}
+
+% Add one or more standard keywords, see file 'KEYWORDS' in the
+% R documentation directory.
+\keyword{utilities}

@@ -1,0 +1,80 @@
+\name{volplot}
+\alias{volplot}
+\title{
+Plotting Quantiles of the Latent Volatilities
+}
+\description{
+Displays quantiles of the posterior distribution of the volatilities over time as well as predictive distributions of future volatilities.
+}
+\usage{
+volplot(x, forecast = 0, dates = NULL, show0 = FALSE, col = NULL,
+       	forecastlty = NULL, tcl = -0.4, mar = c(1.9, 1.9, 1.9, 0.5),
+       	mgp = c(2, 0.6, 0), simobj = NULL, ...)
+}
+\arguments{
+  \item{x}{
+ \code{svdraws} object.
+}
+  \item{forecast}{
+   nonnegative integer or object of class \code{svpredict}, as returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is provided, \code{\link{predict.svdraws}} is invoked to obtain the \code{forecast}-step-ahead prediction. The default value is \code{0}.
+  }
+  
+  \item{dates}{
+   vector of length \code{ncol(x$latent)}, providing optional dates for labeling the x-axis. The default value is \code{NULL}; in this case, the axis will be labeled with numbers.
+}
+  \item{show0}{
+   logical value, indicating whether the initial volatility \code{exp(h_0/2)} should be displayed. The default value is \code{FALSE}.
+}
+  \item{col}{vector of color values (see \code{\link[graphics]{par}}) used for plotting the quantiles. The default value \code{NULL} results in gray lines for all quantiles expect the median, which is displayed in black.
+}
+  \item{forecastlty}{vector of line type values (see \code{\link[graphics]{par}}) used for plotting quantiles of predictive distributions. The default value \code{NULL} results in dashed lines.
+}
+  \item{tcl}{The length of tick marks as a fraction of the height of a line of text. See \code{\link[graphics]{par}} for details. The default value is \code{-0.4}, which results in slightly shorter tick marks than usual.
+}
+  \item{mar}{numerical vector of length 4, indicating the plot margins. See \code{\link[graphics]{par}} for details. The default value is \code{c(1.9, 1.9, 1.9, 0.5)}, which is slightly smaller than the R-defaults.
+}
+  \item{mgp}{numerical vector of length 3, indicating the axis and label positions. See \code{\link[graphics]{par}} for details. The default value is \code{c(2, 0.6, 0)}, which is slightly smaller than the R-defaults.
+}
+  \item{simobj}{object of class \code{svsim} as returned by the SV simulation function \code{\link{svsim}}. If provided, ``true'' data generating values will be added to the plot(s).
+}
+  \item{\dots}{
+  further arguments are passed on to the invoked \code{ts.plot} function.
+}
+}
+\value{
+Called for its side effects. Returns argument \code{x} invisibly.
+}
+
+\author{
+Gregor Kastner \email{gregor.kastner@wu.ac.at}
+}
+\note{
+ In case you want different quantiles to be plotted, use \code{\link{updatesummary}} on the \code{svdraws} object first. An example of doing so is given below.
+}
+
+\seealso{
+\code{\link{updatesummary}}, \code{\link{paratraceplot}}, \code{\link{paradensplot}}, \code{\link{plot.svdraws}}.
+}
+\examples{
+## Simulate a short and highly persistent SV process 
+sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
+
+## Obtain 5000 draws from the sampler (that's not a lot)
+draws <- svsample(sim$y, draws = 5000, burnin = 100,
+		  priormu = c(-10, 1), priorphi = c(20, 1.5),
+		  priorsigma = 0.2)
+
+## Plot the latent volatilities and some forecasts
+volplot(draws, forecast = 10)
+
+## Re-plot with different quantiles
+newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
+draws <- updatesummary(draws, quantiles=newquants)
+
+volplot(draws, forecast = 10)
+}
+
+% Add one or more standard keywords, see file 'KEYWORDS' in the
+% R documentation directory.
+\keyword{hplot}
+\keyword{ts}

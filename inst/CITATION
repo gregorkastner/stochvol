@@ -1,0 +1,67 @@
+## citHeader("To cite package stochvol in publications use:")
+
+## R >= 2.8.0 passes package metadata to citation().
+if(!exists("meta") || is.null(meta)) meta <- packageDescription("stochvol")
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Article",
+  title        = "Dealing with Stochastic Volatility in Time Series Using the {R} Package {stochvol}",
+  author       = person(given = "Gregor",
+                        family = "Kastner",
+                        email = "gregor.kastner@wu.ac.at"),
+  journal      = "Journal of Statistical Software",
+  year         = "2016",
+  volume       = "69",
+  number       = "5",
+  pages        = "1--30",
+  doi          = "10.18637/jss.v069.i05",
+
+  header       = "To cite stochvol in publications use:",
+  textVersion  =
+  paste("Gregor Kastner (2016).",
+        "Dealing with Stochastic Volatility in Time Series Using the R Package stochvol.",
+        "Journal of Statistical Software, 69(5), 1-30.",
+        "doi:10.18637/jss.v069.i05")
+)
+
+citEntry(header = "To refer to the current version of the package you could use:",
+         entry = "manual",
+         title = "{stochvol}: Efficient Bayesian Inference for Stochastic Volatility ({SV}) Models",
+         author = personList(as.person("Gregor Kastner")),                              
+         year = year,
+         note = note,
+         url = "https://CRAN.R-project.org/package=stochvol",
+         textVersion =
+         paste("Gregor Kastner",
+   	       sprintf("(%s).", year),	 
+               "stochvol: Efficient Bayesian inference for stochastic volatility (SV) models.",
+	       paste(note, ".", sep = ""),
+               "URL: https://CRAN.R-project.org/package=stochvol")
+)
+
+citEntry(header = "To refer to the sampling methodology used in stochvol please cite:",
+         entry = "article",
+         title = "Ancillarity-Sufficiency Interweaving Strategy ({ASIS}) for Boosting {MCMC} Estimation of Stochastic Volatility Models",
+         author = personList(as.person("Gregor Kastner"),
+                             as.person("Sylvia Fr\\\"{u}hwirth-Schnatter")),
+         journal = "Computational Statistics \\& Data Analysis",
+         year = "2014",
+         volume = "76", 
+         pages = "408--423",
+         doi = "10.1016/j.csda.2013.01.002",
+         textVersion = "Gregor Kastner, Sylvia Frühwirth-Schnatter (2014). Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC estimation of stochastic volatility models. Computational Statistics & Data Analysis 76, 408-423. doi:10.1016/j.csda.2013.01.002"
+)
+
+citEntry(header = "If you want to specifically refer to the conditional Student's t sampler, use:",
+         entry = "techreport",
+         title = "Heavy-Tailed Innovations in the {R} Package stochvol",
+         author = personList(as.person("Gregor Kastner")),
+         type = "R Package Vignette",
+         institution = "CRAN",
+         year = "2015",
+         url = "https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf",
+         textVersion = "Gregor Kastner (2015). Heavy-Tailed Innovations in the R Package stochvol. R Package Vignette. URL: https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf"
+)
+
+citFooter("BibTeX entries of the above can be obtained by", sQuote('toBibtex(citation("stochvol"))'))
