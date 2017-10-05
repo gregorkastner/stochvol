@@ -1,2 +1,2 @@
-# stoch-vol-with-leverage
-An implementation of Omori et. al, 2007, Stochastic volatility with leverage: Fast and efficient likelihood inference.
+# stochvol
+Partial re-write of the R package stochvol to allow for asymmetry (leverage).
