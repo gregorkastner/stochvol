@@ -1,3 +1,51 @@
+#' Simulating a Stochastic Volatility Process
+#' 
+#' \code{svsim} is used to produce realizations of a stochastic volatility (SV)
+#' process.
+#' 
+#' This function draws an initial log-volatility \code{h_0} from the stationary
+#' distribution of the AR(1) process and iteratively generates
+#' \code{h_1,...,h_n}. Finally, the ``log-returns'' are simulated from a normal
+#' distribution with mean 0 and standard deviation \code{exp(h/2)}.
+#' 
+#' @param len length of the simulated time series.
+#' @param mu level of the latent log-volatility AR(1) process. The defaults
+#' value is \code{-10}.
+#' @param phi persistence of the latent log-volatility AR(1) process. The
+#' default value is \code{0.98}.
+#' @param sigma volatility of the latent log-volatility AR(1) process. The
+#' default value is \code{0.2}.
+#' @param nu degrees-of-freedom for the conditional innovations distribution.
+#' The default value is \code{Inf}, corresponding to standard normal
+#' conditional innovations.
+#' @return The output is a list object of class \code{svsim} containing
+#' \item{y}{a vector of length \code{len} containing the simulated data,
+#' usually interpreted as ``log-returns''.} \item{vol}{a vector of length
+#' \code{len} containing the simulated instantaneous volatilities
+#' \code{exp(h_t/2)}.} \item{vol0}{the initial volatility \code{exp(h_0/2)},
+#' drawn from the stationary distribution of the latent AR(1) process.}
+#' \item{para}{a named list with three elements \code{mu}, \code{phi},
+#' \code{sigma} (and potentially \code{nu}), containing the corresponding
+#' arguments.}
+#' 
+#' To display the output use \code{print}, \code{summary} and \code{plot}. The
+#' \code{print} method simply prints the content of the object in a moderately
+#' formatted manner. The \code{summary} method provides some summary statistics
+#' (in \%), and the \code{plot} method plots the the simulated 'log-returns'
+#' \code{y} along with the corresponding volatilities \code{vol}.
+#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
+#' @seealso \code{\link{svsample}}
+#' @keywords datagen ts
+#' @examples
+#' 
+#' ## Simulate a highly persistent SV process of length 500
+#' sim <- svsim(500, phi = 0.99, sigma = 0.1)
+#' 
+#' print(sim)
+#' summary(sim)
+#' plot(sim)
+#' 
+#' @export svsim
 svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf) {
  
  # Some error checking
@@ -45,6 +93,8 @@ if (!is.numeric(nu) || length(nu) != 1 || nu <= 2) {
  ret
 }
 
+#' @method print svsim
+#' @export
 print.svsim <- function(x, ...) {
  cat("\nSimulated time series consisting of", length(x$y), "observations.\n
 Parameters: level of latent variable                  mu =", x$para$mu, "
@@ -60,6 +110,8 @@ Parameters: level of latent variable                  mu =", x$para$mu, "
  print(x$y, ...)
 }
 
+#' @method plot svsim
+#' @export
 plot.svsim <- function(x, mar = c(3, 2, 2, 1), mgp = c(1.8, .6, 0), ...) {
  op <- par(mfrow = c(2, 1), mar = mar, mgp = mgp)
  plot.ts(100*x$y, ylab = "", ...)
@@ -69,6 +121,8 @@ plot.svsim <- function(x, mar = c(3, 2, 2, 1), mgp = c(1.8, .6, 0), ...) {
  par(op)
 }
 
+#' @method summary svsim
+#' @export
 summary.svsim <- function(object, ...) {
  ret <- vector("list")
  class(ret) <- "summary.svsim"
@@ -80,6 +134,8 @@ summary.svsim <- function(object, ...) {
  ret
 }
 
+#' @method print summary.svsim
+#' @export
 print.summary.svsim  <- function(x, ...) {
  cat("\nSimulated time series consisting of ", x$len, " observations.\n",
      "\nParameters: level of latent variable                  mu = ",

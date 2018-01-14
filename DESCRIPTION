@@ -12,3 +12,4 @@ Depends: R (>= 3.0.2), coda
 Imports: Rcpp (>= 0.11), methods, stats, graphics, utils
 Suggests: mvtnorm
 LinkingTo: Rcpp, RcppArmadillo (>= 0.4)
+RoxygenNote: 6.0.1

@@ -1,3 +1,42 @@
+#' Probability Density Function Plot for the Parameter Posteriors
+#' 
+#' Displays a plot of the density estimate for the posterior distribution of
+#' the parameters \code{mu}, \code{phi}, \code{sigma} (and potentially
+#' \code{nu}), computed by the \code{\link[stats]{density}} function.
+#' 
+#' \code{paradensplot} is modeled after \code{\link[coda]{densplot}} in the
+#' \code{coda} package, with some modifications for parameters that have
+#' (half-)bounded support.
+#' 
+#' @param x \code{svdraws} object.
+#' @param showobs logical value, indicating whether the observations should be
+#' displayed along the x-axis. If many draws have been obtained, the default
+#' (\code{TRUE}) can render the plotting to be quite slow, and you might want
+#' to try setting \code{showobs} to \code{FALSE}.
+#' @param showprior logical value, indicating whether the prior distribution
+#' should be displayed. The default value is \code{TRUE}.
+#' @param showxlab logical value, indicating whether the x-axis should be
+#' labelled with the number of iterations and the bandwith obtained from
+#' \code{\link[stats]{density}}. The default value is \code{TRUE}.
+#' @param mar numerical vector of length 4, indicating the plot margins. See
+#' \code{\link[graphics]{par}} for details. The default value is \code{c(1.9,
+#' 1.9, 1.9, 0.5)}, which is slightly smaller than the R-defaults.
+#' @param mgp numerical vector of length 3, indicating the axis and label
+#' positions. See \code{\link[graphics]{par}} for details. The default value is
+#' \code{c(2, 0.6, 0)}, which is slightly smaller than the R-defaults.
+#' @param simobj object of class \code{svsim} as returned by the SV simulation
+#' function \code{\link{svsim}}. If provided, ``true'' data generating values
+#' will be added to the plots.
+#' @param \dots further arguments are passed on to the invoked \code{plot}
+#' function.
+#' @return Called for its side effects. Returns argument \code{x} invisibly.
+#' @note You can call this function directly, but it is more commonly called by
+#' the \code{\link{plot.svdraws}} method.
+#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
+#' @seealso \code{\link{paratraceplot}}, \code{\link{volplot}},
+#' \code{\link{plot.svdraws}}
+#' @keywords hplot
+#' @export paradensplot
 paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
 		       	 mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
  if (!is(x, "svdraws")) stop("This function expects an 'svdraws' object.")
@@ -28,6 +67,37 @@ paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
  invisible(x)
 }
 
+
+
+#' Trace Plot of MCMC Draws from the Parameter Posteriors
+#' 
+#' Displays a plot of iterations vs. sampled values the parameters \code{mu},
+#' \code{phi}, \code{sigma} (and potentially \code{nu}), with a separate plot
+#' per variable.
+#' 
+#' \code{paratraceplot} is modeled after \code{\link[coda]{traceplot}} in the
+#' \code{coda} package, with very minor modifications.
+#' 
+#' @param x \code{svdraws} object.
+#' @param mar numerical vector of length 4, indicating the plot margins. See
+#' \code{\link[graphics]{par}} for details. The default value is \code{c(1.9,
+#' 1.9, 1.9, 0.5)}, which is slightly smaller than the R-defaults.
+#' @param mgp numerical vector of length 3, indicating the axis and label
+#' positions. See \code{\link[graphics]{par}} for details. The default value is
+#' \code{c(2, 0.6, 0)}, which is slightly smaller than the R-defaults.
+#' @param simobj object of class \code{svsim} as returned by the SV simulation
+#' function \code{\link{svsim}}. If provided, ``true'' data generating values
+#' will be added to the plots.
+#' @param \dots further arguments are passed on to the invoked \code{matplot}
+#' function.
+#' @return Called for its side effects. Returns argument \code{x} invisibly.
+#' @note You can call this function directly, but it is more commonly called by
+#' the \code{\link{plot.svdraws}} method.
+#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
+#' @seealso \code{\link{paradensplot}}, \code{\link{volplot}},
+#' \code{\link{plot.svdraws}}
+#' @keywords hplot
+#' @export paratraceplot
 paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
  if (!is(x, "svdraws")) stop("This function expects an 'svdraws' object.")
  if (!is.null(simobj)) {
@@ -47,6 +117,72 @@ paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simo
  invisible(x)
 }
 
+
+
+#' Plotting Quantiles of the Latent Volatilities
+#' 
+#' Displays quantiles of the posterior distribution of the volatilities over
+#' time as well as predictive distributions of future volatilities.
+#' 
+#' 
+#' @param x \code{svdraws} object.
+#' @param forecast nonnegative integer or object of class \code{svpredict}, as
+#' returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
+#' provided, \code{\link{predict.svdraws}} is invoked to obtain the
+#' \code{forecast}-step-ahead prediction. The default value is \code{0}.
+#' @param dates vector of length \code{ncol(x$latent)}, providing optional
+#' dates for labeling the x-axis. The default value is \code{NULL}; in this
+#' case, the axis will be labeled with numbers.
+#' @param show0 logical value, indicating whether the initial volatility
+#' \code{exp(h_0/2)} should be displayed. The default value is \code{FALSE}.
+#' @param col vector of color values (see \code{\link[graphics]{par}}) used for
+#' plotting the quantiles. The default value \code{NULL} results in gray lines
+#' for all quantiles expect the median, which is displayed in black.
+#' @param forecastlty vector of line type values (see
+#' \code{\link[graphics]{par}}) used for plotting quantiles of predictive
+#' distributions. The default value \code{NULL} results in dashed lines.
+#' @param tcl The length of tick marks as a fraction of the height of a line of
+#' text. See \code{\link[graphics]{par}} for details. The default value is
+#' \code{-0.4}, which results in slightly shorter tick marks than usual.
+#' @param mar numerical vector of length 4, indicating the plot margins. See
+#' \code{\link[graphics]{par}} for details. The default value is \code{c(1.9,
+#' 1.9, 1.9, 0.5)}, which is slightly smaller than the R-defaults.
+#' @param mgp numerical vector of length 3, indicating the axis and label
+#' positions. See \code{\link[graphics]{par}} for details. The default value is
+#' \code{c(2, 0.6, 0)}, which is slightly smaller than the R-defaults.
+#' @param simobj object of class \code{svsim} as returned by the SV simulation
+#' function \code{\link{svsim}}. If provided, ``true'' data generating values
+#' will be added to the plot(s).
+#' @param \dots further arguments are passed on to the invoked \code{ts.plot}
+#' function.
+#' @return Called for its side effects. Returns argument \code{x} invisibly.
+#' @note In case you want different quantiles to be plotted, use
+#' \code{\link{updatesummary}} on the \code{svdraws} object first. An example
+#' of doing so is given below.
+#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
+#' @seealso \code{\link{updatesummary}}, \code{\link{paratraceplot}},
+#' \code{\link{paradensplot}}, \code{\link{plot.svdraws}}.
+#' @keywords hplot ts
+#' @examples
+#' 
+#' ## Simulate a short and highly persistent SV process 
+#' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
+#' 
+#' ## Obtain 5000 draws from the sampler (that's not a lot)
+#' draws <- svsample(sim$y, draws = 5000, burnin = 100,
+#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5),
+#' 		  priorsigma = 0.2)
+#' 
+#' ## Plot the latent volatilities and some forecasts
+#' volplot(draws, forecast = 10)
+#' 
+#' ## Re-plot with different quantiles
+#' newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
+#' draws <- updatesummary(draws, quantiles=newquants)
+#' 
+#' volplot(draws, forecast = 10)
+#' 
+#' @export volplot
 volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 		    col = NULL, forecastlty = NULL, tcl = -.4,
 		    mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
@@ -169,6 +305,82 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
  invisible(x)
 }
 
+
+
+#' Graphical Summary of the Posterior Distribution
+#' 
+#' \code{plot.svdraws} generates some plots visualizing the posterior
+#' distribution and can also be used to display predictive distributions of
+#' future volatilities.
+#' 
+#' This function sets up the page layout and calls \code{\link{volplot}},
+#' \code{\link{paratraceplot}} and \code{\link{paradensplot}}.
+#' 
+#' @param x \code{svdraws} object.
+#' @param forecast nonnegative integer or object of class \code{svpredict}, as
+#' returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
+#' provided, \code{\link{predict.svdraws}} is invoked to obtain the
+#' \code{forecast}-step-ahead prediction. The default value is \code{0}.
+#' @param dates vector of length \code{ncol(x$latent)}, providing optional
+#' dates for labelling the x-axis. The default value is \code{NULL}; in this
+#' case, the axis will be labelled with numbers.
+#' @param show0 logical value, indicating whether the initial volatility
+#' \code{exp(h_0/2)} should be displayed. The default value is \code{FALSE}.
+#' @param showobs logical value, indicating whether the observations should be
+#' displayed along the x-axis. If many draws have been obtained, the default
+#' (\code{TRUE}) can render the plotting to be quite slow, and you might want
+#' to try setting \code{showobs} to \code{FALSE}.
+#' @param showprior logical value, indicating whether the prior distribution
+#' should be displayed. The default value is \code{TRUE}.
+#' @param col vector of color values (see \code{\link[graphics]{par}}) used for
+#' plotting the quantiles. The default value \code{NULL} results in gray lines
+#' for all quantiles expect the median, which is displayed in black.
+#' @param forecastlty vector of line type values (see
+#' \code{\link[graphics]{par}}) used for plotting quantiles of predictive
+#' distributions. The default value \code{NULL} results in dashed lines.
+#' @param tcl The length of tick marks as a fraction of the height of a line of
+#' text. See \code{\link[graphics]{par}} for details. The default value is
+#' \code{-0.4}, which results in slightly shorter tick marks than usual.
+#' @param mar numerical vector of length 4, indicating the plot margins. See
+#' \code{\link[graphics]{par}} for details. The default value is \code{c(1.9,
+#' 1.9, 1.9, 0.5)}, which is slightly smaller than the R-defaults.
+#' @param mgp numerical vector of length 3, indicating the axis and label
+#' positions. See \code{\link[graphics]{par}} for details. The default value is
+#' \code{c(2, 0.6, 0)}, which is slightly smaller than the R-defaults.
+#' @param simobj object of class \code{svsim} as returned by the SV simulation
+#' function \code{\link{svsim}}. If provided, the ``true'' data generating
+#' values will be added to the plots.
+#' @param \dots further arguments are passed on to the invoked plotting
+#' functions.
+#' @return Called for its side effects. Returns argument \code{x} invisibly.
+#' @note In case you want different quantiles to be plotted, use
+#' \code{\link{updatesummary}} on the \code{svdraws} object first. An example
+#' of doing so is given in the Examples section.
+#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
+#' @seealso \code{\link{updatesummary}}, \code{\link{volplot}},
+#' \code{\link{paratraceplot}}, \code{\link{paradensplot}}.
+#' @keywords hplot
+#' @examples
+#' 
+#' ## Simulate a short and highly persistent SV process 
+#' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
+#' 
+#' ## Obtain 5000 draws from the sampler (that's not a lot)
+#' draws <- svsample(sim$y, draws = 5000, burnin = 1000,
+#'   priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+#' 
+#' ## Plot the latent volatilities and some forecasts
+#' plot(draws, forecast = 10)
+#' 
+#' ## Re-plot with different quantiles
+#' newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
+#' draws <- updatesummary(draws, quantiles = newquants)
+#' 
+#' plot(draws, forecast = 20, showobs = FALSE, col = seq(along = newquants),
+#'      forecastlty = 3, showprior = FALSE)
+#' 
+#' @method plot svdraws
+#' @export
 plot.svdraws <- function(x, forecast = NULL, dates = NULL,
 			 show0 = FALSE, showobs = TRUE, showprior = TRUE, col = NULL,
 			 forecastlty = NULL, tcl = -0.4,
@@ -300,6 +512,8 @@ mytraceplot <- function (x, smooth = FALSE, col = 1:6, type = "l", ylab = "", xl
     }
 }
 
+#' @method plot svresid
+#' @export
 plot.svresid <- function(x, origdata = NA,
 			 mains = c("Residual plot", "Q-Q plot"),
 			 mar = c(2.9, 2.7, 2.2, .5),

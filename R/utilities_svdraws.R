@@ -1,3 +1,18 @@
+#' Computes (de-meaned) log returns.
+#' 
+#' Small utlity function returning either \code{diff(log(x))} in case the
+#' argument \code{demean} is set to \code{FALSE}, or \code{diff(log(x)) -
+#' mean(diff(log(x)))} in case that \code{demean} is \code{TRUE}.
+#' 
+#' 
+#' @param x Real-valued vector.
+#' @param demean A single logical value indicating whether the returns should
+#' be de-meaned. Defaults to \code{FALSE}.
+#' @return A vector of length \code{length(x) - 1}, containing (de-meaned)
+#' returns.
+#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
+#' @keywords utilities
+#' @export logret
 logret <- function(x, demean = FALSE) {
  tmp <- diff(log(x))
  if (is(tmp, "xts")) tmp <- tmp[-1]
@@ -29,6 +44,83 @@ runtime <- function(x) {
  x$runtime
 }
 
+
+
+#' Updating the Summary of MCMC Draws
+#' 
+#' Creates or updates a summary of an \code{svdraws} object.
+#' 
+#' \code{updatesummary} will always calculate the posterior mean and the
+#' posterior standard deviation of the raw draws and some common
+#' transformations thereof. Moroever, the posterior quantiles, specified by the
+#' argument \code{quantiles}, are computed. If \code{esspara} and/or
+#' \code{esslatent} are \code{TRUE}, the corresponding effective sample size
+#' (ESS) will also be included.
+#' 
+#' @param x \code{svdraws} object.
+#' @param quantiles numeric vector of posterior quantiles to be computed. The
+#' default is \code{c(0.05, 0.5, 0.95)}.
+#' @param esspara logical value which indicates whether the effective sample
+#' size (ESS) should be calculated for the \emph{parameter draws}. This is
+#' achieved by calling \code{\link[coda]{effectiveSize}} from the \code{coda}
+#' package. The default is \code{TRUE}.
+#' @param esslatent logical value which indicates whether the effective sample
+#' size (ESS) should be calculated for the \emph{latent log-volatility} draws.
+#' This is achieved by calling \code{\link[coda]{effectiveSize}} from the
+#' \code{coda} package. The default is \code{FALSE}, because this can be quite
+#' time-consuming when many latent variables are present.
+#' @return The value returned is an updated list object of class \code{svdraws}
+#' holding \item{para}{\code{mcmc} object containing the \emph{parameter} draws
+#' from the posterior distribution.} \item{latent}{\code{mcmc} object
+#' containing the \emph{latent instantaneous log-volatility} draws from the
+#' posterior distribution.} \item{latent0}{\code{mcmc} object containing the
+#' \emph{latent initial log-volatility} draws from the posterior distribution.}
+#' \item{y}{argument \code{y}.} \item{runtime}{\code{"proc_time"} object
+#' containing the run time of the sampler.} \item{priors}{\code{list}
+#' containing the parameter values of the prior distribution, i.e. the
+#' arguments \code{priormu}, \code{priorphi}, \code{priorsigma} (and
+#' potentially \code{nu}).} \item{thinning}{\code{list} containing the thinning
+#' parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
+#' \code{thintime}.} \item{summary}{\code{list} containing a collection of
+#' summary statistics of the posterior draws for \code{para}, \code{latent},
+#' and \code{latent0}.}
+#' 
+#' To display the output, use \code{print}, \code{summary} and \code{plot}. The
+#' \code{print} method simply prints the posterior draws (which is very likely
+#' a lot of output); the \code{summary} method displays the summary statistics
+#' currently stored in the object; the \code{plot} method gives a graphical
+#' overview of the posterior distribution by calling \code{\link{volplot}},
+#' \code{\link{traceplot}} and \code{\link{densplot}} and displaying the
+#' results on a single page.
+#' @note \code{updatesummary} does not actually overwrite the object's current
+#' summary, but in fact creates a new object with an updated summary. Thus,
+#' don't forget to overwrite the old object if this is want you intend to do.
+#' See the examples below for more details.
+#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
+#' @seealso \code{\link{svsample}}
+#' @keywords utilities
+#' @examples
+#' 
+#' ## Here is a baby-example to illustrate the idea.
+#' ## Simulate an SV time series of length 51 with default parameters:
+#' sim <- svsim(51)
+#' 
+#' ## Draw from the posterior (but save only every fifth point in time):
+#' res <- svsample(sim$y, draws = 7000, thintime = 5, priorphi = c(10, 1.5))
+#' 
+#' ## Check out the results:
+#' summary(res)
+#' plot(res)
+#' 
+#' ## Look at other quantiles and calculate ESS of latents:
+#' newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
+#' res <- updatesummary(res, quantiles = newquants, esslatent = TRUE)
+#' 
+#' ## See the difference?
+#' summary(res)
+#' plot(res)
+#' 
+#' @export updatesummary
 updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslatent = FALSE) {
  
  # NEW: Check if conditional t errors are used
@@ -69,6 +161,8 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
  x
 }
 
+#' @method summary svdraws
+#' @export
 summary.svdraws <- function(object, showpara = TRUE, showlatent = TRUE, ...) {
  ret <- vector("list")
  class(ret) <- "summary.svdraws"
@@ -80,6 +174,8 @@ summary.svdraws <- function(object, showpara = TRUE, showlatent = TRUE, ...) {
  ret
 }
 
+#' @method print summary.svdraws
+#' @export
 print.summary.svdraws <- function(x, ...) { 
  cat("\nSummary of ", x$mcp[2]-x$mcp[1]+x$mcp[3], " MCMC draws after a burn-in of ", x$mcp[1]-x$mcp[3], ".\n
 Prior distributions:
@@ -101,6 +197,8 @@ sigma^2   ~ ", x$priors$sigma, " * Chisq(df = 1)\n", sep="")
  invisible(x)
 }
 
+#' @method print svdraws
+#' @export
 print.svdraws <- function(x, showpara = TRUE, showlatent = TRUE, ...) {
  if (all(isTRUE(showpara))) {
   cat("\n*** Posterior draws of parameters ***\n")
@@ -116,7 +214,8 @@ print.svdraws <- function(x, showpara = TRUE, showlatent = TRUE, ...) {
  invisible(x)
 }
 
-# residuals
+#' @method residuals svdraws
+#' @export
 residuals.svdraws <- function(object, type = "mean", ...) {
  if (!is(object, "svdraws")) stop("This function expects an 'svdraws' object.")
  if (!any(type == "mean", type == "median")) stop("Argument 'type' must currently be either 'mean' or 'median'.")
@@ -141,6 +240,43 @@ residuals.svdraws <- function(object, type = "mean", ...) {
  res
 }
 
+
+
+#' Prediction of Future Log-Volatilities
+#' 
+#' Simulates draws from the predictive density of the latent log-volatility
+#' process.
+#' 
+#' 
+#' @param object \code{svdraws} object.
+#' @param steps single number, coercible to integer. Denotes the number of
+#' steps to forecast.
+#' @param ...  currently ignored.
+#' @return Returns an object of class \code{c("svpredict", "mcmc")} containing
+#' simulations from the predictive density of \code{h_(n+1),...,h_(n+steps)}.
+#' @note You can use the usual \code{coda} methods for \code{mcmc} objects to
+#' print, plot, or summarize the predictions, or use them within
+#' \code{\link{volplot}} or \code{\link{plot.svdraws}}.
+#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
+#' @seealso \code{\link{plot.svdraws}}, \code{\link{volplot}}.
+#' @keywords ts
+#' @examples
+#' 
+#' ## Simulate a short and highly persistent SV process 
+#' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
+#' 
+#' ## Obtain 5000 draws from the sampler (that's not a lot)
+#' draws <- svsample(sim$y, draws = 5000, burnin = 100,
+#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+#' 
+#' ## Predict 10 days ahead
+#' fore <- predict(draws, 10)
+#' 
+#' ## Check out the results
+#' summary(fore)
+#' plot(draws, forecast = fore)
+#' @method predict svdraws
+#' @export
 predict.svdraws <- function(object, steps = 1L, ...) {
  if (!is(object, "svdraws")) stop("Argument 'object' must be of class 'svdraws'.")
  steps <- as.integer(steps)
@@ -182,6 +318,52 @@ predict.svdraws <- function(object, steps = 1L, ...) {
 }
 
 # used to forecast AR-SV models (needs more testing!)
+
+
+#' Dynamic prediction for the AR-SV model
+#' 
+#' Simulates draws from the posterior predictive density of a fitted AR-SV
+#' model.
+#' 
+#' 
+#' @param object \code{svdraws} object as returned from \code{\link{svsample}}.
+#' @param volpred \code{svpredict} object as returned from
+#' \code{\link{predict.svdraws}}.
+#' @return Returns an object of class \code{c("distpredict", "mcmc")}
+#' containing simulations from the posterior predictive density of
+#' \code{y_(n+1),...,y_(n+steps)}.
+#' @note You can use the usual \code{coda} methods for \code{mcmc} objects to
+#' print, plot, or summarize the predictions.
+#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
+#' @seealso \code{\link{predict.svdraws}}.
+#' @keywords ts
+#' @examples
+#' \dontrun{
+#' data(exrates)
+#' y <- exrates$USD
+#' 
+#' ## Fit AR(1)-SV model to EUR-USD exchange rates
+#' res <- svsample(y, designmatrix = "ar1")
+#' 
+#' ## Use predict.svdraws to obtain predictive volatilities
+#' ahead <- 100
+#' predvol <- predict(res, steps = ahead)
+#' 
+#' ## Use arpredict to obtain draws from the posterior predictive
+#' preddraws <- arpredict(res, predvol)
+#' 
+#' ## Calculate predictive quantiles
+#' predquants <- apply(preddraws, 2, quantile, c(.1, .5, .9))
+#' 
+#' ## Visualize
+#' ts.plot(y, xlim = c(length(y) - ahead, length(y) + ahead),
+#' 	ylim = range(predquants))
+#' for (i in 1:3) {
+#'  lines((length(y) + 1):(length(y) + ahead), predquants[i,],
+#'        col = 3, lty = c(2, 1, 2)[i])
+#' }
+#' }
+#' @export arpredict
 arpredict <- function(object, volpred) {
  if (!is(object, "svdraws")) stop("Argument 'object' must be of class 'svdraws'.")
  if (!is(volpred, "svpredict")) stop("Argument 'volpred' must be of class 'svpredict'.")
