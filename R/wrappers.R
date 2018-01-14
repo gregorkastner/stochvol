@@ -485,11 +485,11 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA, priormu
  #myquiet <- quiet
 
   runtime <- system.time(res <-
-  .Call("sampler", y, draws, burnin, designmatrix,
-       	priormu[1], priormu[2]^2, priorphi[1], priorphi[2], priorsigma, 
-       	thinlatent, thintime, startpara, startlatent, keeptau, myquiet, para,
-	mhsteps, B011, B022, mhcontrol, gammaprior, truncnormal,
-	myoffset, FALSE, priornu, priorbeta, priorlatent0, PACKAGE = "stochvol"))
+  sampler(y, draws, burnin, designmatrix,
+          priormu[1], priormu[2]^2, priorphi[1], priorphi[2], priorsigma, 
+          thinlatent, thintime, startpara, startlatent, keeptau, myquiet, para,
+          mhsteps, B011, B022, mhcontrol, gammaprior, truncnormal,
+          myoffset, FALSE, priornu, priorbeta, priorlatent0))
 
  if (any(is.na(res))) stop("Sampler returned NA. This is most likely due to bad input checks and shouldn't happen. Please report to package maintainer.")
   
@@ -649,11 +649,10 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 
  if (priorlatent0 == "stationary") priorlatent0 <- -1L
 
- res <- .Call("sampler", y, draws, burnin, matrix(NA), priormu[1], priormu[2]^2,
-	      priorphi[1], priorphi[2], priorsigma, thinlatent,
-	      thintime, startpara, startlatent, keeptau, quiet, 3L, 2L, 10^8,
-	      10^12, -1, TRUE, FALSE, 0, FALSE, priornu, c(NA, NA), priorlatent0,
-	      PACKAGE = "stochvol")
+ res <- sampler(y, draws, burnin, matrix(NA), priormu[1], priormu[2]^2,
+                priorphi[1], priorphi[2], priorsigma, thinlatent,
+                thintime, startpara, startlatent, keeptau, quiet, 3L, 2L, 10^8,
+                10^12, -1, TRUE, FALSE, 0, FALSE, priornu, c(NA, NA), priorlatent0)
 
  res$para <- t(res$para[-1,,drop=FALSE])
  if (nrow(res$para) == 3) {
