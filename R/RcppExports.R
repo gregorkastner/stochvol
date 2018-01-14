@@ -5,6 +5,10 @@ sampler <- function(y_in, draws_in, burnin_in, X_in, bmu_in, Bmu_in, a0_in, b0_i
     .Call(`_stochvol_sampler`, y_in, draws_in, burnin_in, X_in, bmu_in, Bmu_in, a0_in, b0_in, Bsigma_in, thin_in, timethin_in, startpara_in, startvol_in, keeptau_in, quiet_in, para_in, MHsteps_in, B011_in, B022_in, mhcontrol_in, gammaprior_in, truncnormal_in, offset_in, dontupdatemu_in, priordf_in, priorbeta_in, priorlatent0_in)
 }
 
+update <- function(data, *curpara_in, *h_in, h0, *mixprob, *r, centered_baseline, C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv, B022inv, Gammaprior, truncnormal, MHcontrol, MHsteps, parameterization, dontupdatemu, priorlatent0) {
+    invisible(.Call(`_stochvol_update`, data, *curpara_in, *h_in, h0, *mixprob, *r, centered_baseline, C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv, B022inv, Gammaprior, truncnormal, MHcontrol, MHsteps, parameterization, dontupdatemu, priorlatent0))
+}
+
 # Register entry points for exported C++ functions
 methods::setLoadAction(function(ns) {
     .Call('_stochvol_RcppExport_registerCCallable', PACKAGE = 'stochvol')

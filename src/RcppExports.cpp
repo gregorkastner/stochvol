@@ -11,9 +11,10 @@ using namespace Rcpp;
 
 // sampler
 SEXP sampler(const SEXP y_in, const SEXP draws_in, const SEXP burnin_in, const SEXP X_in, const SEXP bmu_in, const SEXP Bmu_in, const SEXP a0_in, const SEXP b0_in, const SEXP Bsigma_in, const SEXP thin_in, const SEXP timethin_in, const SEXP startpara_in, const SEXP startvol_in, const SEXP keeptau_in, const SEXP quiet_in, const SEXP para_in, const SEXP MHsteps_in, const SEXP B011_in, const SEXP B022_in, const SEXP mhcontrol_in, const SEXP gammaprior_in, const SEXP truncnormal_in, const SEXP offset_in, const SEXP dontupdatemu_in, const SEXP priordf_in, const SEXP priorbeta_in, const SEXP priorlatent0_in);
-static SEXP _stochvol_sampler_try(SEXP y_inSEXP, SEXP draws_inSEXP, SEXP burnin_inSEXP, SEXP X_inSEXP, SEXP bmu_inSEXP, SEXP Bmu_inSEXP, SEXP a0_inSEXP, SEXP b0_inSEXP, SEXP Bsigma_inSEXP, SEXP thin_inSEXP, SEXP timethin_inSEXP, SEXP startpara_inSEXP, SEXP startvol_inSEXP, SEXP keeptau_inSEXP, SEXP quiet_inSEXP, SEXP para_inSEXP, SEXP MHsteps_inSEXP, SEXP B011_inSEXP, SEXP B022_inSEXP, SEXP mhcontrol_inSEXP, SEXP gammaprior_inSEXP, SEXP truncnormal_inSEXP, SEXP offset_inSEXP, SEXP dontupdatemu_inSEXP, SEXP priordf_inSEXP, SEXP priorbeta_inSEXP, SEXP priorlatent0_inSEXP) {
+RcppExport SEXP _stochvol_sampler(SEXP y_inSEXP, SEXP draws_inSEXP, SEXP burnin_inSEXP, SEXP X_inSEXP, SEXP bmu_inSEXP, SEXP Bmu_inSEXP, SEXP a0_inSEXP, SEXP b0_inSEXP, SEXP Bsigma_inSEXP, SEXP thin_inSEXP, SEXP timethin_inSEXP, SEXP startpara_inSEXP, SEXP startvol_inSEXP, SEXP keeptau_inSEXP, SEXP quiet_inSEXP, SEXP para_inSEXP, SEXP MHsteps_inSEXP, SEXP B011_inSEXP, SEXP B022_inSEXP, SEXP mhcontrol_inSEXP, SEXP gammaprior_inSEXP, SEXP truncnormal_inSEXP, SEXP offset_inSEXP, SEXP dontupdatemu_inSEXP, SEXP priordf_inSEXP, SEXP priorbeta_inSEXP, SEXP priorlatent0_inSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const SEXP >::type y_in(y_inSEXP);
     Rcpp::traits::input_parameter< const SEXP >::type draws_in(draws_inSEXP);
     Rcpp::traits::input_parameter< const SEXP >::type burnin_in(burnin_inSEXP);
@@ -43,13 +44,44 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const SEXP >::type priorlatent0_in(priorlatent0_inSEXP);
     rcpp_result_gen = Rcpp::wrap(sampler(y_in, draws_in, burnin_in, X_in, bmu_in, Bmu_in, a0_in, b0_in, Bsigma_in, thin_in, timethin_in, startpara_in, startvol_in, keeptau_in, quiet_in, para_in, MHsteps_in, B011_in, B022_in, mhcontrol_in, gammaprior_in, truncnormal_in, offset_in, dontupdatemu_in, priordf_in, priorbeta_in, priorlatent0_in));
     return rcpp_result_gen;
+END_RCPP
+}
+// update
+void update(const NumericVector& data, double *curpara_in, double *h_in, double& h0, double *mixprob, int *r, const bool centered_baseline, const double C0, const double cT, const double Bsigma, const double a0, const double b0, const double bmu, const double Bmu, const double B011inv, const double B022inv, const bool Gammaprior, const bool truncnormal, const double MHcontrol, const int MHsteps, const int parameterization, const bool dontupdatemu, const double priorlatent0);
+static SEXP _stochvol_update_try(SEXP dataSEXP, SEXP *curpara_inSEXP, SEXP *h_inSEXP, SEXP h0SEXP, SEXP *mixprobSEXP, SEXP *rSEXP, SEXP centered_baselineSEXP, SEXP C0SEXP, SEXP cTSEXP, SEXP BsigmaSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP bmuSEXP, SEXP BmuSEXP, SEXP B011invSEXP, SEXP B022invSEXP, SEXP GammapriorSEXP, SEXP truncnormalSEXP, SEXP MHcontrolSEXP, SEXP MHstepsSEXP, SEXP parameterizationSEXP, SEXP dontupdatemuSEXP, SEXP priorlatent0SEXP) {
+BEGIN_RCPP
+    Rcpp::traits::input_parameter< const NumericVector& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< double >::type *curpara_in(*curpara_inSEXP);
+    Rcpp::traits::input_parameter< double >::type *h_in(*h_inSEXP);
+    Rcpp::traits::input_parameter< double& >::type h0(h0SEXP);
+    Rcpp::traits::input_parameter< double >::type *mixprob(*mixprobSEXP);
+    Rcpp::traits::input_parameter< int >::type *r(*rSEXP);
+    Rcpp::traits::input_parameter< const bool >::type centered_baseline(centered_baselineSEXP);
+    Rcpp::traits::input_parameter< const double >::type C0(C0SEXP);
+    Rcpp::traits::input_parameter< const double >::type cT(cTSEXP);
+    Rcpp::traits::input_parameter< const double >::type Bsigma(BsigmaSEXP);
+    Rcpp::traits::input_parameter< const double >::type a0(a0SEXP);
+    Rcpp::traits::input_parameter< const double >::type b0(b0SEXP);
+    Rcpp::traits::input_parameter< const double >::type bmu(bmuSEXP);
+    Rcpp::traits::input_parameter< const double >::type Bmu(BmuSEXP);
+    Rcpp::traits::input_parameter< const double >::type B011inv(B011invSEXP);
+    Rcpp::traits::input_parameter< const double >::type B022inv(B022invSEXP);
+    Rcpp::traits::input_parameter< const bool >::type Gammaprior(GammapriorSEXP);
+    Rcpp::traits::input_parameter< const bool >::type truncnormal(truncnormalSEXP);
+    Rcpp::traits::input_parameter< const double >::type MHcontrol(MHcontrolSEXP);
+    Rcpp::traits::input_parameter< const int >::type MHsteps(MHstepsSEXP);
+    Rcpp::traits::input_parameter< const int >::type parameterization(parameterizationSEXP);
+    Rcpp::traits::input_parameter< const bool >::type dontupdatemu(dontupdatemuSEXP);
+    Rcpp::traits::input_parameter< const double >::type priorlatent0(priorlatent0SEXP);
+    update(data, *curpara_in, *h_in, h0, *mixprob, *r, centered_baseline, C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv, B022inv, Gammaprior, truncnormal, MHcontrol, MHsteps, parameterization, dontupdatemu, priorlatent0);
+    return R_NilValue;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _stochvol_sampler(SEXP y_inSEXP, SEXP draws_inSEXP, SEXP burnin_inSEXP, SEXP X_inSEXP, SEXP bmu_inSEXP, SEXP Bmu_inSEXP, SEXP a0_inSEXP, SEXP b0_inSEXP, SEXP Bsigma_inSEXP, SEXP thin_inSEXP, SEXP timethin_inSEXP, SEXP startpara_inSEXP, SEXP startvol_inSEXP, SEXP keeptau_inSEXP, SEXP quiet_inSEXP, SEXP para_inSEXP, SEXP MHsteps_inSEXP, SEXP B011_inSEXP, SEXP B022_inSEXP, SEXP mhcontrol_inSEXP, SEXP gammaprior_inSEXP, SEXP truncnormal_inSEXP, SEXP offset_inSEXP, SEXP dontupdatemu_inSEXP, SEXP priordf_inSEXP, SEXP priorbeta_inSEXP, SEXP priorlatent0_inSEXP) {
+RcppExport SEXP _stochvol_update(SEXP dataSEXP, SEXP *curpara_inSEXP, SEXP *h_inSEXP, SEXP h0SEXP, SEXP *mixprobSEXP, SEXP *rSEXP, SEXP centered_baselineSEXP, SEXP C0SEXP, SEXP cTSEXP, SEXP BsigmaSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP bmuSEXP, SEXP BmuSEXP, SEXP B011invSEXP, SEXP B022invSEXP, SEXP GammapriorSEXP, SEXP truncnormalSEXP, SEXP MHcontrolSEXP, SEXP MHstepsSEXP, SEXP parameterizationSEXP, SEXP dontupdatemuSEXP, SEXP priorlatent0SEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_stochvol_sampler_try(y_inSEXP, draws_inSEXP, burnin_inSEXP, X_inSEXP, bmu_inSEXP, Bmu_inSEXP, a0_inSEXP, b0_inSEXP, Bsigma_inSEXP, thin_inSEXP, timethin_inSEXP, startpara_inSEXP, startvol_inSEXP, keeptau_inSEXP, quiet_inSEXP, para_inSEXP, MHsteps_inSEXP, B011_inSEXP, B022_inSEXP, mhcontrol_inSEXP, gammaprior_inSEXP, truncnormal_inSEXP, offset_inSEXP, dontupdatemu_inSEXP, priordf_inSEXP, priorbeta_inSEXP, priorlatent0_inSEXP));
+        rcpp_result_gen = PROTECT(_stochvol_update_try(dataSEXP, *curpara_inSEXP, *h_inSEXP, h0SEXP, *mixprobSEXP, *rSEXP, centered_baselineSEXP, C0SEXP, cTSEXP, BsigmaSEXP, a0SEXP, b0SEXP, bmuSEXP, BmuSEXP, B011invSEXP, B022invSEXP, GammapriorSEXP, truncnormalSEXP, MHcontrolSEXP, MHstepsSEXP, parameterizationSEXP, dontupdatemuSEXP, priorlatent0SEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -70,20 +102,21 @@ RcppExport SEXP _stochvol_sampler(SEXP y_inSEXP, SEXP draws_inSEXP, SEXP burnin_
 static int _stochvol_RcppExport_validate(const char* sig) { 
     static std::set<std::string> signatures;
     if (signatures.empty()) {
-        signatures.insert("SEXP(*sampler)(const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP,const SEXP)");
+        signatures.insert("void(*update)(const NumericVector&,double,double,double&,double,int,const bool,const double,const double,const double,const double,const double,const double,const double,const double,const double,const bool,const bool,const double,const int,const int,const bool,const double)");
     }
     return signatures.find(sig) != signatures.end();
 }
 
 // registerCCallable (register entry points for exported C++ functions)
 RcppExport SEXP _stochvol_RcppExport_registerCCallable() { 
-    R_RegisterCCallable("stochvol", "_stochvol_sampler", (DL_FUNC)_stochvol_sampler_try);
+    R_RegisterCCallable("stochvol", "_stochvol_update", (DL_FUNC)_stochvol_update_try);
     R_RegisterCCallable("stochvol", "_stochvol_RcppExport_validate", (DL_FUNC)_stochvol_RcppExport_validate);
     return R_NilValue;
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_stochvol_sampler", (DL_FUNC) &_stochvol_sampler, 27},
+    {"_stochvol_update", (DL_FUNC) &_stochvol_update, 23},
     {"_stochvol_RcppExport_registerCCallable", (DL_FUNC) &_stochvol_RcppExport_registerCCallable, 0},
     {NULL, NULL, 0}
 };
