@@ -15,6 +15,12 @@ man/.Rhistory
 # Output files from R CMD check
 /*.Rcheck/
 
+# C++
+## Compiled Object files
+*.o
+## Compiled Dynamic libraries
+*.so
+
 # RStudio files
 .Rproj.user/
 .Rproj.user
