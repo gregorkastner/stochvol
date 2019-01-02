@@ -7,6 +7,7 @@ if (generate) {
   mydevlib <- "~/R/under_development"
   devtools::install(".", args = paste0("--library=", mydevlib), repos = NULL, dependencies = FALSE)
   library(RcppArmadillo)
+  library("methods")
   library(stochvol, lib.loc = mydevlib)
 }
 
@@ -19,9 +20,10 @@ if (generate) {
 } else {
   foo.old <- readRDS(filename)
   foo$runtime <- foo.old$runtime <- NULL
-  if (!identical(foo, foo.old)) {
-    stop("Test failed!")
-  } else {
+  if (all.equal(foo$para, foo.old$para) &&
+      all.equal(foo$latent, foo.old$latent)) {
     message("Test passed!")
+  } else {
+    stop("Test failed!")
   }
 }
