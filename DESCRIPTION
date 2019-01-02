@@ -10,6 +10,7 @@ Description: Efficient algorithms for fully Bayesian estimation of stochastic vo
 License: GPL (>= 2) 
 Depends: R (>= 3.0.2), coda
 Imports: Rcpp (>= 0.11), methods, stats, graphics, utils
-Suggests: mvtnorm
+Suggests: mvtnorm,
+    testthat
 LinkingTo: Rcpp, RcppArmadillo (>= 0.4)
 RoxygenNote: 6.0.1
