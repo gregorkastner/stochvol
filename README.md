@@ -26,7 +26,7 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * volplot
 
 ### Features
-* regression
+* regression, betas
 * 'update' function
 
 ### Code cleanup
