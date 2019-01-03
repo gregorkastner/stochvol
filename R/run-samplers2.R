@@ -1,7 +1,7 @@
 #' Main function
 #' 
 #' @export
-svlsample <- function (n=10000, y, thin=1, burnin=1000, init=NULL, prior=NULL,
+svlsample <- function (draws=10000, y, thin=1, burnin=1000, init=NULL, prior=NULL,
                         stdev=NA,
                         seed=NULL, strategy=c("centered", "non-centered")) {
   
@@ -34,13 +34,34 @@ svlsample <- function (n=10000, y, thin=1, burnin=1000, init=NULL, prior=NULL,
   vH <- vH0
   vHt <- (vH0-dMu0)/sqrt(dSigma20)
   oRuntime <- system.time({
-    post_sample <- svlsample_cpp(n, vY, vYStar, vD, thin, burnin, dPhi0, dRho0, dSigma20, dMu0,
+    post_sample <- svlsample_cpp(draws, vY, vYStar, vD, thin, burnin, dPhi0, dRho0, dSigma20, dMu0,
                                  vH0, cPriorPhi[1], cPriorPhi[2], cPriorRho[1], cPriorRho[2],
                                  cPriorSigma2[1], cPriorSigma2[2], cPriorMu[1], cPriorMu[2],
                                  stdev, cStrategy, dfModelConstants)
   }, gcFirst = FALSE)
-  params <- post_sample[, 1:4]
-  colnames(params) <- c("phi", "rho", "sigma2", "mu")
-  invisible(list(param = params, vol = post_sample[, -4:-1], runtime = oRuntime))
+  
+  # mimic Gregor's logic
+  thinpara <- thin
+  thinlatent <- thin
+  thintime <- 1
+  # 
+  params <- post_sample[, c(4,1,3,2)]
+  params[, 3] <- sqrt(params[, 3])
+  colnames(params) <- c("mu", "phi", "sigma", "rho")
+  latent <- post_sample[, -4:-1]
+  colnames(latent) <- paste0('h_', seq(1, length(y), by=thintime))
+  # create svldraws class
+  res <- list(para = params,
+              latent = latent,
+              runtime = oRuntime)
+  res$y <- y
+  res$para <- coda::mcmc(res$para, burnin+thin, burnin+draws, thinpara)
+  res$latent <- coda::mcmc(res$latent, burnin+thin, burnin+draws, thinlatent)
+  res$thinning <- list(para = thinpara, latent = thinlatent, time = thintime)
+  res$priors <- list(mu = cPriorMu, phi = cPriorPhi, sigma = cPriorSigma2, rho = cPriorRho)
+  class(res) <- "svldraws"
+  res <- updatesummary(res, ...)
+
+  res
 }
 
