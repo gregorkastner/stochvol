@@ -504,12 +504,12 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA, priormu
  # store results:
  # remark: +1, because C-sampler also returns the first value
  res$y <- y
- res$para <- mcmc(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
+ res$para <- mcmc(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)  # TODO
  res$latent <- mcmc(t(res$latent), burnin+thinlatent, burnin+draws, thinlatent)
  attr(res$latent, "dimnames") <- list(NULL, paste('h_', seq(1, length(y), by=thintime), sep=''))
  res$latent0 <- mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
  if (!any(is.na(designmatrix))) {
-  res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
+  res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)  # TODO
   attr(res$beta, "dimnames") <- list(NULL, paste("b", 0:(ncol(designmatrix)-1), sep = "_"))
  } else res$beta <- NULL
  
