@@ -4,11 +4,13 @@
 \alias{paratraceplot}
 \title{Trace Plot of MCMC Draws from the Parameter Posteriors}
 \usage{
-paratraceplot(x, mar = c(1.9, 1.9, 1.9, 0.5), mgp = c(2, 0.6, 0),
-  simobj = NULL, ...)
+paratraceplot(x, ...)
 }
 \arguments{
 \item{x}{\code{svdraws} object.}
+
+\item{\dots}{further arguments are passed on to the invoked \code{matplot}
+function.}
 
 \item{mar}{numerical vector of length 4, indicating the plot margins. See
 \code{\link[graphics]{par}} for details. The default value is \code{c(1.9,
@@ -21,9 +23,6 @@ positions. See \code{\link[graphics]{par}} for details. The default value is
 \item{simobj}{object of class \code{svsim} as returned by the SV simulation
 function \code{\link{svsim}}. If provided, ``true'' data generating values
 will be added to the plots.}
-
-\item{\dots}{further arguments are passed on to the invoked \code{matplot}
-function.}
 }
 \value{
 Called for its side effects. Returns argument \code{x} invisibly.

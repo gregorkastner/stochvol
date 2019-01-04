@@ -4,26 +4,28 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 ## TODOs
 
 ### API
-* plot,svldraws
-* plot,svlresid
-* plot,svlsim
-* predict,svldraws
-* print,summary.svldraws
-* print,summary.svlsim
-* print,svldraws
-* print,svlsim
-* residuals,svldraws
-* summary,svldraws
-* summary,svlsim
+* -plot,svldraws
+* -plot,svlresid
+* -plot,svlsim
+* -predict,svldraws
+* -print,summary.svldraws
+* -print,summary.svlsim
+* -print,svldraws
+* -print,svlsim
+* -residuals,svldraws
+* -summary,svldraws
+* -summary,svlsim
 * arpredict
-* logret
-* paradensplot
-* paratraceplot
+* -logret
+* -paradensplot
+* -paratraceplot
 * svlsample
 * svlsample2
-* svlsim
-* updatesummary
-* volplot
+* -svlsim
+* -updatesummary
+* -volplot
+* -mytraceplot
+* -mydensplot
 
 ### Features
 * regression, betas
@@ -42,4 +44,6 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 ### Other
 * Depends: methods ("Rscript --vanilla" doesn't load it)
 * ggplot2
+* maybe c('svldraws', 'svdraws', 'mcmc') should be the new class structure
+* change svpredict's format to include prediction about 'y' as well. or simply discard the y's predicted by svlpredict?
 

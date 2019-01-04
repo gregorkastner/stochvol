@@ -45,113 +45,131 @@
 #' summary(sim)
 #' plot(sim)
 #' 
-#' @export svsim
-svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf) {
- 
- # Some error checking
- if (any(is.na(len)) | !is.numeric(len) | length(len) != 1 | any(len < 1)) {
-  stop("Argument 'len' (length of simulated series) must be a single number >= 2.")
- } else {
-  len <- as.integer(len)
- }
+#' @export
+svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
 
- if (!is.numeric(mu) | length(mu) != 1) {
-  stop("Argument 'mu' (level of latent variable) must be a single number.")
- }
+  # Some error checking
+  if (any(is.na(len)) || !is.numeric(len) || length(len) != 1 || any(len < 1)) {
+    stop("Argument 'len' (length of simulated series) must be a single number >= 2.")
+  } else {
+    len <- as.integer(len)
+  }
 
-if (!is.numeric(phi) | length(phi) != 1) {
-  stop("Argument 'phi' (persistence of latent variable) must be a single number.")
- }
+  if (!is.numeric(mu) || length(mu) != 1) {
+    stop("Argument 'mu' (level of latent variable) must be a single number.")
+  }
 
-if (!is.numeric(sigma) | length(sigma) != 1 | sigma <= 0) {
-  stop("Argument 'sigma' (volatility of latent variable) must be a single number > 0.")
- }
+  if (!is.numeric(phi) || length(phi) != 1) {
+    stop("Argument 'phi' (persistence of latent variable) must be a single number.")
+  }
 
-if (!is.numeric(nu) || length(nu) != 1 || nu <= 2) {
- stop("Argument 'nu' (degrees of freedom for the conditional error) must be a single number > 2.")
+  if (!is.numeric(sigma) || length(sigma) != 1 || sigma <= 0) {
+    stop("Argument 'sigma' (volatility of latent variable) must be a single number > 0.")
+  }
+
+  if (!is.numeric(nu) || length(nu) != 1 || nu <= 2) {
+    stop("Argument 'nu' (degrees of freedom for the conditional error) must be a single number > 2.")
+  }
+
+  if (!is.numeric(rho) || length(rho) != 1 || abs(rho) >= 1) {
+    stop("Argument 'rho' (correlation between the observations and the volatility increments) must be a single number between -1 and 1 exclusive.")
+  }
+
+  if (is.finite(nu) && isTRUE(!all.equal(rho, 0))) {  # to make life simpler
+    stop("The case of both t-distributed errors and asymmetry is not yet implemented. Either argument 'rho' has to be 0 or argument 'nu' has to be infinite.")
+  }
+
+  if (isTRUE(all.equal(rho, 0))) rho <- 0
+
+  h <- rep(as.numeric(NA), len)
+  h0 <- rnorm(1, mean=mu, sd=sigma/sqrt(1-phi^2))
+  eps <- rt(len, df = nu)
+  eta <- rho * eps + sqrt(1-rho^2) * rnorm(len)
+
+  # simulate w/ simple loop
+  h[1] <- mu + phi*(h0-mu) + sigma*rnorm(1)  # same marginal distribution as h0
+  for (i in seq_len(len-1)) {
+    h[i+1] <- mu + phi*(h[i]-mu) + sigma*eta[i]
+  }
+  y <- exp(h / 2) * eps  # "log-returns"
+
+  ret <- list(y = y,
+              vol = exp(h/2),
+              para = list(mu = mu,
+                          phi = phi,
+                          sigma = sigma))
+  if (is.finite(nu)) ret$para$nu <- nu
+  if (isTRUE(!all.equal(rho, 0))) {
+    ret$para$rho <- rho
+    class(ret) <- c("svlsim", "svsim")
+  } else {
+    ret$vol0 <- exp(h0/2)
+    class(ret) <- "svsim"
+  }
+  ret
 }
 
- h <- rep(as.numeric(NA), len)
- h0 <- rnorm(1, mean=mu, sd=sigma/sqrt(1-phi^2))
- innov <- rnorm(len)
-
- # simulate w/ simple loop
- h[1] <- mu + phi*(h0-mu) + sigma*innov[1]
- for (i in seq(2, len = len-1)) h[i] <- mu + phi*(h[i-1]-mu) + sigma*innov[i]
-
- if (is.infinite(nu)) {
-  y <- exp(h / 2) * rnorm(len)  # "log-returns"
- } else {
-  y <- exp(h / 2) * rt(len, df = nu)  # "log-returns"
- }
- ret <- list(y = y, vol = exp(h/2), vol0 = exp(h0/2),
-	     para = list(mu = mu,
-			 phi = phi,
-			 sigma = sigma))
- if (is.finite(nu)) ret$para$nu <- nu
- class(ret) <- "svsim"
- ret
-}
-
-#' @method print svsim
 #' @export
 print.svsim <- function(x, ...) {
- cat("\nSimulated time series consisting of", length(x$y), "observations.\n
-Parameters: level of latent variable                  mu =", x$para$mu, "
-            persistence of latent variable           phi =", x$para$phi, "
-            standard deviation of latent variable  sigma =", x$para$sigma, "
-            ")
- if (length(x$para) == 4) cat("degrees of freedom parameter              nu =", x$para$nu, "
-	    ")
- cat("\nSimulated initial conditional volatility:", x$vol0, "\n")
- cat("\nSimulated conditional volatilities:\n")
- print(x$vol, ...)
- cat("\nSimulated data (usually interpreted as 'log-returns'):\n")
- print(x$y, ...)
+  cat("\nSimulated time series consisting of ", length(x$y), " observations.\n\n",
+      "Parameters: level of latent variable                  mu = ", x$para$mu, "\n",
+      "            persistence of latent variable           phi = ", x$para$phi, "\n",
+      "            standard deviation of latent variable  sigma = ", x$para$sigma, "\n", sep="")
+  if ("nu" %in% names(x$para)) cat("            degrees of freedom parameter              nu =", x$para$nu, "\n")
+  if ("rho" %in% names(x$para)) cat("            leverage effect parameter                rho =", x$para$rho, "\n")
+  cat("\nSimulated initial conditional volatility:", x$vol0, "\n")
+  cat("\nSimulated conditional volatilities:\n")
+  print(x$vol, ...)
+  cat("\nSimulated data (usually interpreted as 'log-returns'):\n")
+  print(x$y, ...)
 }
 
-#' @method plot svsim
 #' @export
 plot.svsim <- function(x, mar = c(3, 2, 2, 1), mgp = c(1.8, .6, 0), ...) {
- op <- par(mfrow = c(2, 1), mar = mar, mgp = mgp)
- plot.ts(100*x$y, ylab = "", ...)
- mtext("Simulated data: 'log-returns' (in %)", cex = 1.2, line = .4, font = 2)
- plot.ts(100*x$vol, ylab = "", ...)
- mtext("Simulated conditional volatilities (in %)", cex = 1.2, line = .4, font = 2)
- par(op)
+  op <- par(mfrow = c(2, 1), mar = mar, mgp = mgp)
+  plot.ts(100*x$y, ylab = "", ...)
+  mtext("Simulated data: 'log-returns' (in %)", cex = 1.2, line = .4, font = 2)
+  plot.ts(100*x$vol, ylab = "", ...)
+  mtext("Simulated conditional volatilities (in %)", cex = 1.2, line = .4, font = 2)
+  par(op)
 }
 
-#' @method summary svsim
 #' @export
 summary.svsim <- function(object, ...) {
- ret <- vector("list")
- class(ret) <- "summary.svsim"
- ret$len <- length(object$y)
- ret$para <- object$para
- ret$vol0 <- 100*object$vol0
- ret$vol <- summary(100*object$vol)
- ret$y <- summary(100*object$y)
- ret
+  ret <- vector("list")
+  class(ret) <- "summary.svsim"
+  ret$len <- length(object$y)
+  ret$para <- object$para
+  ret$vol <- summary(100*object$vol)
+  ret$y <- summary(100*object$y)
+  if (exists("vol0", ret)) ret$vol0 <- 100*object$vol0
+  ret
+}
+
+#' @export
+summary.svlsim <- function (object, ...) {
+  ret <- summary.svsim(object = object, ...)
+  class(ret) <- c("summary.svlsim", "summary.svsim")
 }
 
 #' @method print summary.svsim
 #' @export
 print.summary.svsim  <- function(x, ...) {
- cat("\nSimulated time series consisting of ", x$len, " observations.\n",
-     "\nParameters: level of latent variable                  mu = ",
-     x$para$mu, 
-     "\n            persistence of latent variable           phi = ",
-     x$para$phi,
-     "\n            standard deviation of latent variable  sigma = ",
-     x$para$sigma, "\n", sep="")
- if (length(x$para) == 4) cat("            degrees of freedom parameter              nu =", x$para$nu, "
-	    ")
+  cat("\nSimulated time series consisting of ", x$len, " observations.\n",
+      "\nParameters: level of latent variable                  mu = ", x$para$mu, 
+      "\n            persistence of latent variable           phi = ", x$para$phi,
+      "\n            standard deviation of latent variable  sigma = ", x$para$sigma, "\n", sep="")
+  if ("nu" %in% names(x$para)) cat("            degrees of freedom parameter              nu =", x$para$nu, "\n")
+  if ("rho" %in% names(x$para)) cat("            leverage effect parameter                 rho =", x$para$rho, "\n")
 
- cat("\nSimulated initial conditional volatility (in %): ")
- cat(x$vol0, "\n")
- cat("\nSummary of simulated conditional volatilities (in %):\n")
- print(x$vol)
- cat("\nSummary of simulated data (in %):\n")
- print(x$y)
- invisible(x)
+  if (exists("vol0", x)) {
+    cat("\nSimulated initial conditional volatility (in %): ")
+    cat(x$vol0, "\n")
+  }
+  cat("\nSummary of simulated conditional volatilities (in %):\n")
+  print(x$vol)
+  cat("\nSummary of simulated data (in %):\n")
+  print(x$y)
+  invisible(x)
 }
+

@@ -4,7 +4,7 @@
 \alias{svsim}
 \title{Simulating a Stochastic Volatility Process}
 \usage{
-svsim(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf)
+svsim(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0)
 }
 \arguments{
 \item{len}{length of the simulated time series.}

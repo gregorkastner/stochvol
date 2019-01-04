@@ -4,11 +4,13 @@
 \alias{paradensplot}
 \title{Probability Density Function Plot for the Parameter Posteriors}
 \usage{
-paradensplot(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
-  mar = c(1.9, 1.9, 1.9, 0.5), mgp = c(2, 0.6, 0), simobj = NULL, ...)
+paradensplot(x, ...)
 }
 \arguments{
 \item{x}{\code{svdraws} object.}
+
+\item{\dots}{further arguments are passed on to the invoked \code{plot}
+function.}
 
 \item{showobs}{logical value, indicating whether the observations should be
 displayed along the x-axis. If many draws have been obtained, the default
@@ -33,9 +35,6 @@ positions. See \code{\link[graphics]{par}} for details. The default value is
 \item{simobj}{object of class \code{svsim} as returned by the SV simulation
 function \code{\link{svsim}}. If provided, ``true'' data generating values
 will be added to the plots.}
-
-\item{\dots}{further arguments are passed on to the invoked \code{plot}
-function.}
 }
 \value{
 Called for its side effects. Returns argument \code{x} invisibly.
