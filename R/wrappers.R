@@ -216,7 +216,7 @@
 #' }
 #' }
 #' 
-#' @export svsample
+#' @export
 svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                      priornu = NA, priorbeta = c(0, 10000), priorlatent0 = "stationary",
@@ -224,7 +224,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...) {
 
   # Some error checking for y
-  if (is(y, "svsim")) {
+  if (inherits(y, "svsim")) {
     y <- y[["y"]]
     warning("Extracted data vector from 'svsim'-object.")
   }
