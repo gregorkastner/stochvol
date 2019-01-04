@@ -9,12 +9,6 @@ double theta_log_likelihood(const double phi, const double rho,
                             const Rcpp::NumericVector y, const Rcpp::NumericVector h,
                             const Rcpp::CharacterVector centering);
 
-double auxtheta_log_prior(const double phi, const double rho,
-                          const double sigma2,
-                          const Rcpp::NumericVector prior_phi,
-                          const Rcpp::NumericVector prior_rho,
-                          const Rcpp::NumericVector prior_sigma2);
-
 // [[Rcpp::export]]
 double theta_log_prior(const double phi, const double rho,
                        const double sigma2, const double mu,
@@ -58,18 +52,5 @@ double theta_log_likelihood_c(const double phi, const double rho,
 double theta_log_likelihood_nc(const double phi, const double rho,
                                const double sigma2, const double mu,
                                const Rcpp::NumericVector y, const Rcpp::NumericVector h);
-
-// [[Rcpp::export]]
-double auxtheta_log_posterior(const Rcpp::NumericVector auxtheta,
-                              const Rcpp::NumericVector a,
-                              const Rcpp::NumericVector b,
-                              const Rcpp::NumericVector mm,
-                              const Rcpp::NumericVector v,
-                              const Rcpp::NumericVector d,
-                              const Rcpp::NumericVector y_star,
-                              const Rcpp::NumericVector prior_phi,
-                              const Rcpp::NumericVector prior_rho,
-                              const Rcpp::NumericVector prior_sigma2,
-                              const Rcpp::NumericVector prior_mu);
 
 #endif  // THETA_UTILS_H
