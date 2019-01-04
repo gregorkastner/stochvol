@@ -232,7 +232,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   if (length(y) < 2) stop("Argument 'y' (data vector) must contain at least two elements.")
 
-  if (any(y == 0)) {
+  if (any(y^2 == 0)) {
     myoffset <- sd(y)/10000
     warning(paste("Argument 'y' (data vector) contains zeros. I am adding an offset constant of size ", myoffset, " to do the auxiliary mixture sampling. If you want to avoid this, you might consider de-meaning the returns before calling this function.", sep=""))
   } else myoffset <- 0
