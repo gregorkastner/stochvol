@@ -245,7 +245,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
 
   # Some error checking for burnin
-  if (!is.numeric(burnin) || length(draws) != 1 || burnin < 0) {
+  if (!is.numeric(burnin) || length(burnin) != 1 || burnin < 0) {
     stop("Argument 'burnin' (burn-in period) must be a single number >= 0.")
   } else {
     burnin <- as.integer(burnin)
