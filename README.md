@@ -30,7 +30,9 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 
 ### Features
 * regression, betas
-* 'update' function
+* 'update' function for svlsample
+* 'update' in Rcpp
+* factorstochvol and update in Rcpp
 
 ### Code cleanup
 * remove unnecessary svlsamplr code
