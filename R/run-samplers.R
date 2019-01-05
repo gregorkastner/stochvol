@@ -2,7 +2,7 @@
 #' 
 #' @export
 svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
-                       priormu = c(0, 10000), priorphi = c(5, 1.5), priorsigma = 1,  # TODO make mu prior with stdev
+                       priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                        priorrho = c(3, 5), priorbeta = c(0, 10000),
                        thinpara = 1, thinlatent = 1, thintime = 1,
                        quiet = FALSE, startpara, startlatent, expert, ...) {
