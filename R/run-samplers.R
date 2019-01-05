@@ -214,11 +214,6 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   d <- 2*(y > 0) - 1
   h <- startlatent
   
-  cPriorPhi <- if (is.null(prior$phi)) c(20, 1.5) else prior$phi
-  cPriorRho <- if (is.null(prior$rho)) c(3, 5) else prior$rho
-  cPriorSigma2 <- if (is.null(prior$sigma2)) c(0.5, 0.5) else prior$sigma2
-  cPriorMu <- if (is.null(prior$mu)) c(-10, 10) else prior$mu
-  
   phi <- startpara$phi; rho <- startpara$rho; sigma2 <- startpara$sigma^2; mu <- startpara$mu
 
   runtime <- system.time({
