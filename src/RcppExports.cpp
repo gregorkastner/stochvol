@@ -104,17 +104,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // svlsample_cpp
-Rcpp::NumericMatrix svlsample_cpp(const int n, const Rcpp::NumericVector& y, const Rcpp::NumericVector& y_star, const Rcpp::NumericVector d, const int thin, const int burnin, const double phi_init, const double rho_init, const double sigma2_init, const double mu_init, const Rcpp::NumericVector& h_init, const double prior_phi_a, const double prior_phi_b, const double prior_rho_a, const double prior_rho_b, const double prior_sigma2_shape, const double prior_sigma2_rate, const double prior_mu_mu, const double prior_mu_sigma2, const double stdev, const Rcpp::CharacterVector& strategy, const Rcpp::DataFrame& mixing_constants);
-RcppExport SEXP _stochvol_svlsample_cpp(SEXP nSEXP, SEXP ySEXP, SEXP y_starSEXP, SEXP dSEXP, SEXP thinSEXP, SEXP burninSEXP, SEXP phi_initSEXP, SEXP rho_initSEXP, SEXP sigma2_initSEXP, SEXP mu_initSEXP, SEXP h_initSEXP, SEXP prior_phi_aSEXP, SEXP prior_phi_bSEXP, SEXP prior_rho_aSEXP, SEXP prior_rho_bSEXP, SEXP prior_sigma2_shapeSEXP, SEXP prior_sigma2_rateSEXP, SEXP prior_mu_muSEXP, SEXP prior_mu_sigma2SEXP, SEXP stdevSEXP, SEXP strategySEXP, SEXP mixing_constantsSEXP) {
+Rcpp::List svlsample_cpp(const int draws, const Rcpp::NumericVector& y, const Rcpp::NumericVector& y_star, const Rcpp::NumericVector d, const int burnin, const int thinpara, const int thinlatent, const int thintime, const double phi_init, const double rho_init, const double sigma2_init, const double mu_init, const Rcpp::NumericVector& h_init, const double prior_phi_a, const double prior_phi_b, const double prior_rho_a, const double prior_rho_b, const double prior_sigma2_shape, const double prior_sigma2_rate, const double prior_mu_mu, const double prior_mu_sigma, const double stdev, const bool gammaprior, const Rcpp::CharacterVector& strategy, const Rcpp::DataFrame& mixing_constants);
+RcppExport SEXP _stochvol_svlsample_cpp(SEXP drawsSEXP, SEXP ySEXP, SEXP y_starSEXP, SEXP dSEXP, SEXP burninSEXP, SEXP thinparaSEXP, SEXP thinlatentSEXP, SEXP thintimeSEXP, SEXP phi_initSEXP, SEXP rho_initSEXP, SEXP sigma2_initSEXP, SEXP mu_initSEXP, SEXP h_initSEXP, SEXP prior_phi_aSEXP, SEXP prior_phi_bSEXP, SEXP prior_rho_aSEXP, SEXP prior_rho_bSEXP, SEXP prior_sigma2_shapeSEXP, SEXP prior_sigma2_rateSEXP, SEXP prior_mu_muSEXP, SEXP prior_mu_sigmaSEXP, SEXP stdevSEXP, SEXP gammapriorSEXP, SEXP strategySEXP, SEXP mixing_constantsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const int >::type draws(drawsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type y_star(y_starSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type d(dSEXP);
-    Rcpp::traits::input_parameter< const int >::type thin(thinSEXP);
     Rcpp::traits::input_parameter< const int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< const int >::type thinpara(thinparaSEXP);
+    Rcpp::traits::input_parameter< const int >::type thinlatent(thinlatentSEXP);
+    Rcpp::traits::input_parameter< const int >::type thintime(thintimeSEXP);
     Rcpp::traits::input_parameter< const double >::type phi_init(phi_initSEXP);
     Rcpp::traits::input_parameter< const double >::type rho_init(rho_initSEXP);
     Rcpp::traits::input_parameter< const double >::type sigma2_init(sigma2_initSEXP);
@@ -127,11 +129,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type prior_sigma2_shape(prior_sigma2_shapeSEXP);
     Rcpp::traits::input_parameter< const double >::type prior_sigma2_rate(prior_sigma2_rateSEXP);
     Rcpp::traits::input_parameter< const double >::type prior_mu_mu(prior_mu_muSEXP);
-    Rcpp::traits::input_parameter< const double >::type prior_mu_sigma2(prior_mu_sigma2SEXP);
+    Rcpp::traits::input_parameter< const double >::type prior_mu_sigma(prior_mu_sigmaSEXP);
     Rcpp::traits::input_parameter< const double >::type stdev(stdevSEXP);
+    Rcpp::traits::input_parameter< const bool >::type gammaprior(gammapriorSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type strategy(strategySEXP);
     Rcpp::traits::input_parameter< const Rcpp::DataFrame& >::type mixing_constants(mixing_constantsSEXP);
-    rcpp_result_gen = Rcpp::wrap(svlsample_cpp(n, y, y_star, d, thin, burnin, phi_init, rho_init, sigma2_init, mu_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma2, stdev, strategy, mixing_constants));
+    rcpp_result_gen = Rcpp::wrap(svlsample_cpp(draws, y, y_star, d, burnin, thinpara, thinlatent, thintime, phi_init, rho_init, sigma2_init, mu_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, stdev, gammaprior, strategy, mixing_constants));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -167,28 +170,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector >::type centering(centeringSEXP);
     Rcpp::traits::input_parameter< const double >::type stdev(stdevSEXP);
     rcpp_result_gen = Rcpp::wrap(draw_theta_rwMH(phi, rho, sigma2, mu, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu, centering, stdev));
-    return rcpp_result_gen;
-END_RCPP
-}
-// draw_theta_auxiliary
-Rcpp::NumericVector draw_theta_auxiliary(const double phi, const double rho, const double sigma2, const double mu, const Rcpp::NumericVector y_star, const Rcpp::NumericVector d, const Rcpp::NumericVector s, const Rcpp::NumericVector prior_phi, const Rcpp::NumericVector prior_rho, const Rcpp::NumericVector prior_sigma2, const Rcpp::NumericVector prior_mu, const Rcpp::DataFrame mixing_constants);
-RcppExport SEXP _stochvol_draw_theta_auxiliary(SEXP phiSEXP, SEXP rhoSEXP, SEXP sigma2SEXP, SEXP muSEXP, SEXP y_starSEXP, SEXP dSEXP, SEXP sSEXP, SEXP prior_phiSEXP, SEXP prior_rhoSEXP, SEXP prior_sigma2SEXP, SEXP prior_muSEXP, SEXP mixing_constantsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const double >::type phi(phiSEXP);
-    Rcpp::traits::input_parameter< const double >::type rho(rhoSEXP);
-    Rcpp::traits::input_parameter< const double >::type sigma2(sigma2SEXP);
-    Rcpp::traits::input_parameter< const double >::type mu(muSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type y_star(y_starSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type d(dSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type s(sSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type prior_phi(prior_phiSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type prior_rho(prior_rhoSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type prior_sigma2(prior_sigma2SEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type prior_mu(prior_muSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::DataFrame >::type mixing_constants(mixing_constantsSEXP);
-    rcpp_result_gen = Rcpp::wrap(draw_theta_auxiliary(phi, rho, sigma2, mu, y_star, d, s, prior_phi, prior_rho, prior_sigma2, prior_mu, mixing_constants));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -314,27 +295,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type h(hSEXP);
     Rcpp::traits::input_parameter< const double >::type stdev(stdevSEXP);
     rcpp_result_gen = Rcpp::wrap(theta_propose(phi, rho, sigma2, mu, y, h, stdev));
-    return rcpp_result_gen;
-END_RCPP
-}
-// auxtheta_log_posterior
-double auxtheta_log_posterior(const Rcpp::NumericVector auxtheta, const Rcpp::NumericVector a, const Rcpp::NumericVector b, const Rcpp::NumericVector mm, const Rcpp::NumericVector v, const Rcpp::NumericVector d, const Rcpp::NumericVector y_star, const Rcpp::NumericVector prior_phi, const Rcpp::NumericVector prior_rho, const Rcpp::NumericVector prior_sigma2, const Rcpp::NumericVector prior_mu);
-RcppExport SEXP _stochvol_auxtheta_log_posterior(SEXP auxthetaSEXP, SEXP aSEXP, SEXP bSEXP, SEXP mmSEXP, SEXP vSEXP, SEXP dSEXP, SEXP y_starSEXP, SEXP prior_phiSEXP, SEXP prior_rhoSEXP, SEXP prior_sigma2SEXP, SEXP prior_muSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type auxtheta(auxthetaSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type a(aSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type b(bSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type mm(mmSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type v(vSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type d(dSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type y_star(y_starSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type prior_phi(prior_phiSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type prior_rho(prior_rhoSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type prior_sigma2(prior_sigma2SEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type prior_mu(prior_muSEXP);
-    rcpp_result_gen = Rcpp::wrap(auxtheta_log_posterior(auxtheta, a, b, mm, v, d, y_star, prior_phi, prior_rho, prior_sigma2, prior_mu));
     return rcpp_result_gen;
 END_RCPP
 }

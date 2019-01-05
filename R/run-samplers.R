@@ -6,7 +6,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priorrho = c(3, 5), priorbeta = c(0, 10000),
                        thinpara = 1, thinlatent = 1, thintime = 1,
                        quiet = FALSE, startpara, startlatent, expert, ...) {
-  # TODO quiet expert starpara startlatent designmatrix priorbeta gammaprior(expert) thinlatent thinpara thintime
+  # TODO quiet designmatrix priorbeta gammaprior(expert)
   # Some error checking for y
   if (inherits(y, "svsim")) {
     y <- y[["y"]]
@@ -217,27 +217,24 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   phi <- startpara$phi; rho <- startpara$rho; sigma2 <- startpara$sigma^2; mu <- startpara$mu
 
   runtime <- system.time({
-    post_sample <- svlsample_cpp(draws, y, ystar, d, burnin, thinpara, thinlatent, thintime,
+    res <- svlsample_cpp(draws, y, ystar, d, burnin, thinpara, thinlatent, thintime,
                                  phi, rho, sigma2, mu, h,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                  priorsigma[1], priorsigma[2], priormu[1], priormu[2],
                                  mhcontrol, parameterization, gammaprior, dfModelConstants)
   })
   
-  params <- post_sample[, c(4,1,3,2)]
-  params[, 3] <- sqrt(params[, 3])
-  colnames(params) <- c("mu", "phi", "sigma", "rho")
-  latent <- post_sample[, -4:-1]
-  colnames(latent) <- paste0('h_', seq(1, length(y), by=thintime))
+  res$para <- res$para[, c(4,1,3,2)]
+  res$para[, 3] <- sqrt(res$para[, 3])
+  colnames(res$para) <- c("mu", "phi", "sigma", "rho")
+  colnames(res$latent) <- paste0('h_', seq(1, length(y), by=thintime))
   # create svldraws class
-  res <- list(para = params,
-              latent = latent,
-              runtime = runtime)
+  res$runtime <- runtime
   res$y <- y
   res$para <- coda::mcmc(res$para, burnin+thin, burnin+draws, thinpara)
   res$latent <- coda::mcmc(res$latent, burnin+thin, burnin+draws, thinlatent)
   res$thinning <- list(para = thinpara, latent = thinlatent, time = thintime)
-  res$priors <- list(mu = cPriorMu, phi = cPriorPhi, sigma = cPriorSigma2, rho = cPriorRho)
+  res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, rho = priorrho)
   if (!any(is.na(designmatrix))) {
     res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)  # TODO
     colnames(res$beta) <- paste("b", 0:(NCOL(designmatrix)-1), sep = "_")

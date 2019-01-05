@@ -50,8 +50,8 @@ mixture_state_post_dist <- function(eps_star, eta, d, mu, sigma2, rho, centering
     .Call(`_stochvol_mixture_state_post_dist`, eps_star, eta, d, mu, sigma2, rho, centering, mixing_constants)
 }
 
-svlsample_cpp <- function(n, y, y_star, d, thin, burnin, phi_init, rho_init, sigma2_init, mu_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma2, stdev, strategy, mixing_constants) {
-    .Call(`_stochvol_svlsample_cpp`, n, y, y_star, d, thin, burnin, phi_init, rho_init, sigma2_init, mu_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma2, stdev, strategy, mixing_constants)
+svlsample_cpp <- function(draws, y, y_star, d, burnin, thinpara, thinlatent, thintime, phi_init, rho_init, sigma2_init, mu_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, stdev, gammaprior, strategy, mixing_constants) {
+    .Call(`_stochvol_svlsample_cpp`, draws, y, y_star, d, burnin, thinpara, thinlatent, thintime, phi_init, rho_init, sigma2_init, mu_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, stdev, gammaprior, strategy, mixing_constants)
 }
 
 simulation_smoother <- function(mu, filter_results, centering) {
@@ -60,10 +60,6 @@ simulation_smoother <- function(mu, filter_results, centering) {
 
 draw_theta_rwMH <- function(phi, rho, sigma2, mu, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu, centering, stdev = .1) {
     .Call(`_stochvol_draw_theta_rwMH`, phi, rho, sigma2, mu, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu, centering, stdev)
-}
-
-draw_theta_auxiliary <- function(phi, rho, sigma2, mu, y_star, d, s, prior_phi, prior_rho, prior_sigma2, prior_mu, mixing_constants) {
-    .Call(`_stochvol_draw_theta_auxiliary`, phi, rho, sigma2, mu, y_star, d, s, prior_phi, prior_rho, prior_sigma2, prior_mu, mixing_constants)
 }
 
 theta_log_likelihood <- function(phi, rho, sigma2, mu, y, h, centering) {
@@ -96,9 +92,5 @@ theta_proposal_stdev <- function(phi, rho, sigma2, mu, y, h, stdev = .1) {
 
 theta_propose <- function(phi, rho, sigma2, mu, y, h, stdev = .1) {
     .Call(`_stochvol_theta_propose`, phi, rho, sigma2, mu, y, h, stdev)
-}
-
-auxtheta_log_posterior <- function(auxtheta, a, b, mm, v, d, y_star, prior_phi, prior_rho, prior_sigma2, prior_mu) {
-    .Call(`_stochvol_auxtheta_log_posterior`, auxtheta, a, b, mm, v, d, y_star, prior_phi, prior_rho, prior_sigma2, prior_mu)
 }
 

@@ -26,7 +26,7 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * -volplot
 * -mytraceplot
 * -mydensplot
-* svlsample_cpp
+* -svlsample_cpp
 
 ### Features
 * regression, betas

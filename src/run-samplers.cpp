@@ -3,13 +3,15 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-Rcpp::NumericMatrix svlsample_cpp (
-    const int n,
+Rcpp::List svlsample_cpp (
+    const int draws,
     const Rcpp::NumericVector& y,
     const Rcpp::NumericVector& y_star,
     const Rcpp::NumericVector d,
-    const int thin,
     const int burnin,
+    const int thinpara,
+    const int thinlatent,
+    const int thintime,
     const double phi_init,
     const double rho_init,
     const double sigma2_init,
@@ -22,22 +24,24 @@ Rcpp::NumericMatrix svlsample_cpp (
     const double prior_sigma2_shape,
     const double prior_sigma2_rate,
     const double prior_mu_mu,
-    const double prior_mu_sigma2,
+    const double prior_mu_sigma,
     const double stdev,
-    const Rcpp::CharacterVector& strategy,
-    const Rcpp::DataFrame& mixing_constants) {
+    const bool gammaprior,  // TODO
+    const Rcpp::CharacterVector& strategy,  // TODO
+    const Rcpp::DataFrame& mixing_constants) {  // TODO
 
   NumericVector h = h_init, ht = (h_init-mu_init)/sqrt(sigma2_init);
   double phi = phi_init, rho = rho_init, sigma2 = sigma2_init, mu = mu_init;
   NumericVector theta = {phi, rho, sigma2, mu};
 
-  NumericMatrix params(n/thin, 4);
-  NumericMatrix vols(n/thin, y.length());
+  NumericMatrix params(draws/thinpara, 4);
+  NumericMatrix latent(draws/thinlatent, y.length()/thintime);
 
-  for (int i = -burnin+1; i < n+1; i++) {
-    const bool thinning_round = (thin > 1) && (i % thin != 0);  // is this a thinning round?
+  for (int i = -burnin+1; i < draws+1; i++) {
+    const bool thinpara_round = (thinpara > 1) && (i % thinpara != 0);  // is this a parameter thinning round?
+    const bool thinlatent_round = (thinlatent > 1) && (i % thinlatent != 0);  // is this a latent thinning round?
     const int i_plus_burnin = i+burnin;
-    const int n_plus_burnin = n+burnin;
+    const int n_plus_burnin = draws+burnin;
     if (i_plus_burnin % (n_plus_burnin/10) == 0) {
       if (i_plus_burnin <= burnin) {
         Rcout << "Burnin:   ";
@@ -57,7 +61,7 @@ Rcpp::NumericMatrix svlsample_cpp (
             NumericVector::create(prior_phi_a, prior_phi_b),
             NumericVector::create(prior_rho_a, prior_rho_b),
             NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
-            NumericVector::create(prior_mu_mu, prior_mu_sigma2),
+            NumericVector::create(prior_mu_mu, prior_mu_sigma),
             wrap("centered"),
             stdev);
       } else if (as<std::string>(strategy(ind_strategy)) == "non-centered") {
@@ -65,7 +69,7 @@ Rcpp::NumericMatrix svlsample_cpp (
             NumericVector::create(prior_phi_a, prior_phi_b),
             NumericVector::create(prior_rho_a, prior_rho_b),
             NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
-            NumericVector::create(prior_mu_mu, prior_mu_sigma2),
+            NumericVector::create(prior_mu_mu, prior_mu_sigma),
             wrap("non-centered"),
             stdev);
       } else {
@@ -86,12 +90,18 @@ Rcpp::NumericMatrix svlsample_cpp (
       }
     }
 
-    if ((i >= 1) && !thinning_round) {
-      params.row(i/thin-1) = theta;
-      vols.row(i/thin-1) = Rcpp::exp(h/2);
+    if ((i >= 1) && !thinpara_round) {
+      params.row(i/thinpara-1) = theta;
+    }
+    if ((i >= 1) && !thinlatent_round) {
+      for (int volind = 0, thincol = thintime-1; thincol < h.length(); volind++, thincol += thintime) {
+        latent(i/thinlatent-1, volind) = h(thincol);
+      }
     }
   }
 
-  return cbind(params, vols);
+  return Rcpp::List::create(
+      Rcpp::_["para"] = params,
+      Rcpp::_["latent"] = latent);
 }
 
