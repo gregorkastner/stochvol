@@ -3,7 +3,6 @@
 
 #include <Rcpp.h>
 
-// [[Rcpp::export]]
 Rcpp::NumericVector draw_h_auxiliary(const Rcpp::NumericVector y_star,
                                      const Rcpp::NumericVector d,
                                      const Rcpp::NumericVector s,
@@ -14,7 +13,6 @@ Rcpp::NumericVector draw_h_auxiliary(const Rcpp::NumericVector y_star,
                                      const Rcpp::CharacterVector centering,
                                      const Rcpp::DataFrame mixing_constants);
 
-// [[Rcpp::export]]
 Rcpp::NumericVector draw_latent_auxiliaryMH(const Rcpp::NumericVector y,
                                             const Rcpp::NumericVector y_star,
                                             const Rcpp::NumericVector d,

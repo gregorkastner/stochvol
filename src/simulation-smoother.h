@@ -3,7 +3,6 @@
 
 #include <Rcpp.h>
 
-// [[Rcpp::export]]
 Rcpp::List simulation_smoother(const double mu,
                                const Rcpp::List filter_results,
                                const Rcpp::CharacterVector centering);

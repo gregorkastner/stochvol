@@ -3,7 +3,6 @@
 
 #include <Rcpp.h>
 
-// [[Rcpp::export]]
 Rcpp::NumericVector draw_s_auxiliary(const Rcpp::NumericVector y_star,
                                      const Rcpp::NumericVector d,
                                      const Rcpp::NumericVector h,
@@ -14,7 +13,6 @@ Rcpp::NumericVector draw_s_auxiliary(const Rcpp::NumericVector y_star,
                                      const Rcpp::CharacterVector centering,
                                      const Rcpp::DataFrame mixing_constants);
 
-// [[Rcpp::export]]
 Rcpp::NumericMatrix mixture_state_post_dist(const Rcpp::NumericVector eps_star,
                                             const Rcpp::NumericVector eta,
                                             const Rcpp::NumericVector d,

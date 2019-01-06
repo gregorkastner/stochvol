@@ -3,7 +3,6 @@
 
 #include <Rcpp.h>
 
-// [[Rcpp::export]]
 Rcpp::NumericVector draw_theta_rwMH(const double phi, const double rho,
                                     const double sigma2, const double mu,
                                     const Rcpp::NumericVector y,

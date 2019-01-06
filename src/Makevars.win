@@ -1,5 +1,2 @@
 ## Use the R_HOME indirection to support installations of multiple R version
-PKG_LIBS = $(shell $(R_HOME)/bin/Rscript.exe -e "Rcpp:::LdFlags()") $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
-
-## Where to look for header files (might be needed to make header files available to other packages)
-PKG_CPPFLAGS = -I../inst/include
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)

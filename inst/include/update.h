@@ -1,21 +1,8 @@
 #include <R_ext/Rdynload.h>
+#include <Rcpp.h>
 
-#if defined(COMPILING_STOCHVOL)
-
-// just declare, will be defined in sampler.cpp
-// a single MCMC update (normal errors):
-void update(const Rcpp::NumericVector &, double *, double *, double &,
-            double *, int *, const bool, const double,
-	    const double, const double, const double, const double,
-	    const double, const double, const double, const double,
-	    const bool, const bool, const double, const int, const int,
-	    const bool, const double);
-
-// a single MCMC update (t errors):
-void update_terr(const Rcpp::NumericVector &,
-                 double *, double &, const double, const double);
-
-#else
+#ifndef _STOCHVOL_UPDATE_H_
+#define _STOCHVOL_UPDATE_H_
 
 inline void update(const Rcpp::NumericVector &data, double *curpara, double *h_in,
             double &h0, double *mixprob, int *r, const bool centered_baseline, const double C0,
@@ -40,4 +27,5 @@ inline void update(const Rcpp::NumericVector &data, double *curpara, double *h_i
 	     priorlatent0);
 }
 
-#endif
+#endif  // _STOCHVOL_UPDATE_H_
+

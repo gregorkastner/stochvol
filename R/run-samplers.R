@@ -221,7 +221,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  phi, rho, sigma2, mu, h,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                  priorsigma[1], priorsigma[2], priormu[1], priormu[2], !myquiet,
-                                 mhcontrol, parameterization, gammaprior, dfModelConstants)
+                                 mhcontrol, gammaprior, parameterization, dfModelConstants)
   })
   
   res$para <- res$para[, c(4,1,3,2)]
@@ -231,8 +231,8 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   # create svldraws class
   res$runtime <- runtime
   res$y <- y
-  res$para <- coda::mcmc(res$para, burnin+thin, burnin+draws, thinpara)
-  res$latent <- coda::mcmc(res$latent, burnin+thin, burnin+draws, thinlatent)
+  res$para <- coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)
+  res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
   res$thinning <- list(para = thinpara, latent = thinlatent, time = thintime)
   res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, rho = priorrho)
   if (!any(is.na(designmatrix))) {

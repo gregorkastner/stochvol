@@ -2,23 +2,10 @@
 
 #include "sampler.h"
 
-static const R_CallMethodDef CallEntries[] = {
-    {"sampler", (DL_FUNC) &sampler, 27},
-    {NULL, NULL, 0}
-};
-
-RcppExport void R_init_stochvol(DllInfo *dll) {
- R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
- R_useDynamicSymbols(dll, FALSE);
-
- // registering "update" to be available for other packages
- R_RegisterCCallable("stochvol", "update", (DL_FUNC) &update);
-}
-
 using namespace Rcpp; // avoid to type Rcpp:: every time
 
 // RcppExport is an alias for 'extern "C"'
-RcppExport SEXP sampler(const SEXP y_in, const SEXP draws_in,
+SEXP sampler(const SEXP y_in, const SEXP draws_in,
   const SEXP burnin_in, const SEXP X_in,
   const SEXP bmu_in, const SEXP Bmu_in,
   const SEXP a0_in, const SEXP b0_in, const SEXP Bsigma_in,
@@ -32,7 +19,7 @@ RcppExport SEXP sampler(const SEXP y_in, const SEXP draws_in,
   const SEXP priorbeta_in, const SEXP priorlatent0_in) {
 
  //RNGScope scope;       // just in case no seed has been set at R level
- GetRNGstate(); // "by hand" because RNGScope isn't safe if return
+ //GetRNGstate(); // "by hand" because RNGScope isn't safe if return
                 // variables are declared afterwards
 
  // convert SEXP into Rcpp-structures (no copy at this point)
@@ -240,7 +227,7 @@ RcppExport SEXP sampler(const SEXP y_in, const SEXP draws_in,
  if (verbose) progressbar_finish(N);  // finalize progress bar
 
  // Prepare return value and return
- PutRNGstate();
+ //PutRNGstate();
  return cleanUp(mu, phi, sqrt(1/sigma2inv), hstore, h0store, nustore, taustore, betastore);
 }
 
@@ -749,3 +736,4 @@ Rcpp::NumericVector regressionNoncentered(
  Rcpp::NumericVector ret = Rcpp::NumericVector::create(mu, phi, fabs(sigma));
  return ret;
 }
+
