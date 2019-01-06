@@ -141,13 +141,6 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
       stop("Argument 'startlatent' must be numeric and of the same length as the data 'y'.")
   }
 
-  if (!quiet) {  # TODO
-    cat(paste("\nCalling ", parameterization, " MCMC sampler with ", draws+burnin, " iter. Series length is ", length(y), ".\n",sep=""), file=stderr())
-    flush.console()
-  }
-
-  if (.Platform$OS.type != "unix") myquiet <- TRUE else myquiet <- quiet  # Hack to prevent console flushing problems with Windows
-
   # Some error checking for expert
   strategies <- c("centered", "non-centered")
   expertdefault <- list(parameterization = rep(strategies, 5),  # default: ASISx5
@@ -215,6 +208,13 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   h <- startlatent
   
   phi <- startpara$phi; rho <- startpara$rho; sigma2 <- startpara$sigma^2; mu <- startpara$mu
+
+  if (!quiet) {  # TODO
+    cat(paste("\nCalling (", paste(parameterization, collapse=", "), ") MCMC sampler with ", draws+burnin, " iter. Series length is ", length(y), ".\n",sep=""), file=stderr())
+    flush.console()
+  }
+
+  if (.Platform$OS.type != "unix") myquiet <- TRUE else myquiet <- quiet  # Hack to prevent console flushing problems with Windows
 
   runtime <- system.time({
     res <- svlsample_cpp(draws, y, ystar, d, burnin, thinpara, thinlatent, thintime,
