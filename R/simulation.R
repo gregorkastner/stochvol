@@ -75,7 +75,7 @@ svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
     stop("Argument 'rho' (correlation between the observations and the volatility increments) must be a single number between -1 and 1 exclusive.")
   }
 
-  if (is.finite(nu) && isTRUE(!all.equal(rho, 0))) {  # to make life simpler
+  if (is.finite(nu) && !isTRUE(all.equal(rho, 0))) {  # to make life simpler
     stop("The case of both t-distributed errors and asymmetry is not yet implemented. Either argument 'rho' has to be 0 or argument 'nu' has to be infinite.")
   }
 
@@ -99,7 +99,7 @@ svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
                           phi = phi,
                           sigma = sigma))
   if (is.finite(nu)) ret$para$nu <- nu
-  if (isTRUE(!all.equal(rho, 0))) {
+  if (!isTRUE(all.equal(rho, 0))) {
     ret$para$rho <- rho
     class(ret) <- c("svlsim", "svsim")
   } else {
