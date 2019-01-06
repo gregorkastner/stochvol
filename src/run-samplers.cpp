@@ -1,8 +1,10 @@
+#include "progutils.h"
+#include "run-samplers.h"
 #include "theta-sampler.h"
 #include "h-sampler.h"
+
 using namespace Rcpp;
 
-// [[Rcpp::export]]
 Rcpp::List svlsample_cpp (
     const int draws,
     const Rcpp::NumericVector& y,
@@ -25,10 +27,13 @@ Rcpp::List svlsample_cpp (
     const double prior_sigma2_rate,
     const double prior_mu_mu,
     const double prior_mu_sigma,
+    const bool verbose,
     const double stdev,
     const bool gammaprior,  // TODO
     const Rcpp::CharacterVector& strategy,  // TODO
     const Rcpp::DataFrame& mixing_constants) {  // TODO
+
+  const int N = burnin + draws;
 
   NumericVector h = h_init, ht = (h_init-mu_init)/sqrt(sigma2_init);
   double phi = phi_init, rho = rho_init, sigma2 = sigma2_init, mu = mu_init;
@@ -37,19 +42,16 @@ Rcpp::List svlsample_cpp (
   NumericMatrix params(draws/thinpara, 4);
   NumericMatrix latent(draws/thinlatent, y.length()/thintime);
 
+  // initializes the progress bar
+  // "show" holds the number of iterations per progress sign
+  const int show = verbose ? progressbar_init(N) : 0;
+
   for (int i = -burnin+1; i < draws+1; i++) {
     const bool thinpara_round = (thinpara > 1) && (i % thinpara != 0);  // is this a parameter thinning round?
     const bool thinlatent_round = (thinlatent > 1) && (i % thinlatent != 0);  // is this a latent thinning round?
-    const int i_plus_burnin = i+burnin;
-    const int n_plus_burnin = draws+burnin;
-    if (i_plus_burnin % (n_plus_burnin/10) == 0) {
-      if (i_plus_burnin <= burnin) {
-        Rcout << "Burnin:   ";
-      } else {
-        Rcout << "Sampling: ";
-      }
-      Rcout << i_plus_burnin/n_plus_burnin * 100 << "%" << std::endl;
-    }
+
+    // print a progress sign every "show" iterations
+    if (verbose && (i % show == 0)) progressbar_print();
 
     // only centered
     h = draw_latent_auxiliaryMH(y, y_star, d, h, phi, rho, sigma2, mu, mixing_constants);
@@ -99,6 +101,8 @@ Rcpp::List svlsample_cpp (
       }
     }
   }
+
+  if (verbose) progressbar_finish(N);  // finalize progress bar
 
   return Rcpp::List::create(
       Rcpp::_["para"] = params,
