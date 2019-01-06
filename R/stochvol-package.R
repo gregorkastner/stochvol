@@ -79,6 +79,7 @@ NULL
 #' @aliases stochvol-package stochvol
 #' @docType package
 #' @useDynLib stochvol, .registration = TRUE
+#' @importFrom Rcpp sourceCpp
 #' @note This package is currently in active development. Your comments,
 #' suggestions and requests are warmly welcome!
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
