@@ -208,7 +208,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   
   myoffset <- if (any(y^2 == 0)) sd(y)/10000 else 0
   ystar <- log(y^2+myoffset)
-  if (dOffest > 0) {
+  if (myoffset > 0) {
     warning(paste("Argument 'y' (data vector) contains zeros. I am adding an offset constant of size ", myoffset, " to do the auxiliary mixture sampling. If you want to avoid this, you might consider de-meaning the returns before calling this function.", sep=""))
   }
   d <- 2*(y > 0) - 1
