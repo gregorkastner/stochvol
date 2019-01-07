@@ -222,8 +222,9 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   
   phi <- startpara$phi; rho <- startpara$rho; sigma2 <- startpara$sigma^2; mu <- startpara$mu
 
+  renameparam <- c("centered" = "C", "non-centered" = "NC")
   if (!quiet) {  # TODO
-    cat(paste("\nCalling (", paste(parameterization, collapse=", "), ") MCMC sampler with ", draws+burnin, " iter. Series length is ", length(y), ".\n",sep=""), file=stderr())
+    cat(paste("\nCalling (", paste(renameparam[parameterization], collapse=", "), ") MCMC sampler with ", draws+burnin, " iter. Series length is ", length(y), ".\n",sep=""), file=stderr())
     flush.console()
   }
 
@@ -236,6 +237,16 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  0.5, 0.5/priorsigma, priormu[1], priormu[2], !myquiet,
                                  mhcontrol, gammaprior, parameterization, dfModelConstants)
   })
+
+  if (any(is.na(res))) stop("Sampler returned NA. This is most likely due to bad input checks and shouldn't happen. Please report to package maintainer.")
+
+  if (!quiet) {
+    cat("Timing (elapsed): ", file=stderr())
+    cat(runtime["elapsed"], file=stderr())
+    cat(" seconds.\n", file=stderr())
+    cat(round((draws+burnin)/runtime[3]), "iterations per second.\n\n", file=stderr())
+    cat("Converting results to coda objects... ", file=stderr())
+  }
   
   res$para <- res$para[, c(4,1,3,2)]
   res$para[, 3] <- sqrt(res$para[, 3])
