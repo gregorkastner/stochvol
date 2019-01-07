@@ -472,11 +472,16 @@ plot.svldraws <- function (x, forecast = NULL, dates = NULL,
 			 forecastlty = NULL, tcl = -0.4,
 			 mar = c(1.9, 1.9, 1.7, .5), mgp = c(2, .6, 0),
 			 simobj = NULL, ...) {
-  plot.svdraws(x = x, forecast = forecast, dates = dates,
-			 show0 = show0, showobs = showobs, showprior = showprior, col = col,
-			 forecastlty = forecastlty, tcl = tcl,
-			 mar = mar, mgp = mgp,
-			 simobj = simobj, ...)
+  oldpar <- par(mfrow=c(1,1))
+  layout(matrix(c(1, 1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9), ncol=4, byrow = TRUE))
+  volplot(x, dates = dates, show0 = show0, forecast = forecast,
+          forecastlty = forecastlty, col = col, tcl = tcl, mar = mar,
+          mgp = mgp, simobj = simobj, ...)
+  paratraceplot(x, mar = mar, mgp = mgp, simobj = simobj, ...)
+  paradensplot(x, showobs = showobs, showprior = showprior,
+               showxlab = FALSE, mar = mar, mgp = mgp, simobj = simobj, ...)
+  par(oldpar)
+  invisible(x)
 }
 
 # modified density plot (from coda package)
