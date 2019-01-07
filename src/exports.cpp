@@ -69,13 +69,6 @@ BEGIN_RCPP
 END_RCPP
 }
 
-void update(const Rcpp::NumericVector &, double *, double *, double &,
-            double *, int *, const bool, const double,
-	    const double, const double, const double, const double,
-	    const double, const double, const double, const double,
-	    const bool, const bool, const double, const int, const int,
-	    const bool, const double);
-
 static const R_CallMethodDef CallEntries[] = {
     {"_stochvol_sampler", (DL_FUNC) &sampler, 27},
     {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 25},
@@ -88,5 +81,6 @@ RcppExport void R_init_stochvol(DllInfo *dll) {
 
  // registering "update" to be available for other packages
  R_RegisterCCallable("stochvol", "update", (DL_FUNC) &update);
+ R_RegisterCCallable("stochvol", "update_leverage", (DL_FUNC) &update_leverage);
 }
 

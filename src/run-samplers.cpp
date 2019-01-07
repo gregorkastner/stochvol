@@ -37,18 +37,17 @@ Rcpp::List svlsample_cpp (
   const int N = burnin + draws;
 
   NumericVector h = h_init, ht = (h_init-mu_init)/sqrt(sigma2_init);
-  double phi = phi_init, rho = rho_init, sigma2 = sigma2_init, mu = mu_init;
-  NumericVector theta = {phi, rho, sigma2, mu};
+  NumericVector theta = {phi_init, rho_init, sigma2_init, mu_init};
 
   NumericMatrix params(draws/thinpara, 4);
   NumericMatrix latent(draws/thinlatent, y.length()/thintime);
 
   // don't use strings or RcppCharacterVector
-  std::vector<Parameterization> strategy(strategy_rcpp.length());
+  Rcpp::IntegerVector strategy(strategy_rcpp.length());
   std::transform(strategy_rcpp.cbegin(), strategy_rcpp.cend(), strategy.begin(),
-      [](const SEXP& par) -> Parameterization {
-        if (as<std::string>(par) == "centered") return Parameterization::CENTERED;
-        else if (as<std::string>(par) == "non-centered") return Parameterization::NONCENTERED;
+      [](const SEXP& par) -> int {
+        if (as<std::string>(par) == "centered") return int(Parameterization::CENTERED);
+        else if (as<std::string>(par) == "non-centered") return int(Parameterization::NONCENTERED);
         else Rf_error("Illegal parameterization");
   });
 
@@ -63,48 +62,10 @@ Rcpp::List svlsample_cpp (
     // print a progress sign every "show" iterations
     if (verbose && (i % show == 0)) progressbar_print();
 
-    // only centered
-    h = draw_latent_auxiliaryMH(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu_mu, prior_mu_sigma);
-    ht = (h-mu)/sqrt(sigma2);
-
-    for (auto par : strategy) {
-      switch (par) {
-        case Parameterization::CENTERED:
-        theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, h,
-            NumericVector::create(prior_phi_a, prior_phi_b),
-            NumericVector::create(prior_rho_a, prior_rho_b),
-            NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
-            NumericVector::create(prior_mu_mu, prior_mu_sigma),
-            par,
-            stdev,
-            gammaprior);
-        break;
-        case Parameterization::NONCENTERED:
-        theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, ht,
-            NumericVector::create(prior_phi_a, prior_phi_b),
-            NumericVector::create(prior_rho_a, prior_rho_b),
-            NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
-            NumericVector::create(prior_mu_mu, prior_mu_sigma),
-            par,
-            stdev,
-            gammaprior);
-        break;
-      }
-
-      phi = theta(0);
-      rho = theta(1);
-      sigma2 = theta(2);
-      mu = theta(3);
-
-      switch (par) {
-        case Parameterization::CENTERED:
-        ht = (h-mu)/sqrt(sigma2);
-        break;
-        case Parameterization::NONCENTERED:
-        h = sqrt(sigma2)*ht+mu;
-        break;
-      }
-    }
+    update_leverage (y, y_star, d, theta, h, ht,
+      prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b,
+      prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma,
+      stdev, gammaprior, strategy);
 
     if ((i >= 1) && !thinpara_round) {
       params.row(i/thinpara-1) = theta;
@@ -121,5 +82,70 @@ Rcpp::List svlsample_cpp (
   return Rcpp::List::create(
       Rcpp::_["para"] = params,
       Rcpp::_["latent"] = latent);
+}
+
+void update_leverage (
+    const Rcpp::NumericVector& y,
+    const Rcpp::NumericVector& y_star,
+    const Rcpp::NumericVector& d,
+    Rcpp::NumericVector& theta,
+    Rcpp::NumericVector& h,
+    Rcpp::NumericVector& ht,
+    const double prior_phi_a,
+    const double prior_phi_b,
+    const double prior_rho_a,
+    const double prior_rho_b,
+    const double prior_sigma2_shape,
+    const double prior_sigma2_rate,
+    const double prior_mu_mu,
+    const double prior_mu_sigma,
+    const double stdev,
+    const bool gammaprior,
+    const Rcpp::IntegerVector& strategy) {
+  double phi = theta(0), rho = theta(1), sigma2 = theta(2), mu = theta(3);
+
+  // only centered
+  h = draw_latent_auxiliaryMH(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu_mu, prior_mu_sigma);
+  ht = (h-mu)/sqrt(sigma2);
+
+  for (int ipar : strategy) {
+    Parameterization par = Parameterization(ipar);
+    switch (par) {
+      case Parameterization::CENTERED:
+        theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, h,
+            NumericVector::create(prior_phi_a, prior_phi_b),
+            NumericVector::create(prior_rho_a, prior_rho_b),
+            NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
+            NumericVector::create(prior_mu_mu, prior_mu_sigma),
+            par,
+            stdev,
+            gammaprior);
+        break;
+      case Parameterization::NONCENTERED:
+        theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, ht,
+            NumericVector::create(prior_phi_a, prior_phi_b),
+            NumericVector::create(prior_rho_a, prior_rho_b),
+            NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
+            NumericVector::create(prior_mu_mu, prior_mu_sigma),
+            par,
+            stdev,
+            gammaprior);
+        break;
+    }
+
+    phi = theta(0);
+    rho = theta(1);
+    sigma2 = theta(2);
+    mu = theta(3);
+
+    switch (par) {
+      case Parameterization::CENTERED:
+        ht = (h-mu)/sqrt(sigma2);
+        break;
+      case Parameterization::NONCENTERED:
+        h = sqrt(sigma2)*ht+mu;
+        break;
+    }
+  }
 }
 
