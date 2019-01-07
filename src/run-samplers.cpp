@@ -10,16 +10,11 @@ using namespace Rcpp;
 Rcpp::List svlsample_cpp (
     const int draws,
     const Rcpp::NumericVector& y,
-    const Rcpp::NumericVector& y_star,
-    const Rcpp::NumericVector& d,
     const int burnin,
     const int thinpara,
     const int thinlatent,
     const int thintime,
-    const double phi_init,
-    const double rho_init,
-    const double sigma2_init,
-    const double mu_init,
+    const Rcpp::List& theta_init,
     const Rcpp::NumericVector& h_init,
     const double prior_phi_a,
     const double prior_phi_b,
@@ -30,14 +25,18 @@ Rcpp::List svlsample_cpp (
     const double prior_mu_mu,
     const double prior_mu_sigma,
     const bool verbose,
+    const double offset,
     const double stdev,
     const bool gammaprior,
     const Rcpp::CharacterVector& strategy_rcpp) {
 
   const int N = burnin + draws;
 
-  NumericVector h = h_init, ht = (h_init-mu_init)/sqrt(sigma2_init);
-  NumericVector theta = {phi_init, rho_init, sigma2_init, mu_init};
+  NumericVector theta = {theta_init["phi"], theta_init["rho"], pow(theta_init["sigma"], 2), theta_init["mu"]};
+  NumericVector h = h_init, ht = (h_init-theta(3))/sqrt(theta(2));
+
+  const NumericVector y_star = Rcpp::log(y*y + offset);
+  const NumericVector d = wrap(ifelse(y > 0, rep(1, y.length()), rep(-1, y.length())));
 
   NumericMatrix params(draws/thinpara, 4);
   NumericMatrix latent(draws/thinlatent, y.length()/thintime);

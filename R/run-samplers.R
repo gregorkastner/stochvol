@@ -213,12 +213,9 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
   
   myoffset <- if (any(y^2 == 0)) sd(y)/10000 else 0
-  ystar <- log(y^2+myoffset)
   if (myoffset > 0) {
     warning(paste("Argument 'y' (data vector) contains zeros. I am adding an offset constant of size ", myoffset, " to do the auxiliary mixture sampling. If you want to avoid this, you might consider de-meaning the returns before calling this function.", sep=""))
   }
-  d <- 2*(y > 0) - 1
-  h <- startlatent
   
   phi <- startpara$phi; rho <- startpara$rho; sigma2 <- startpara$sigma^2; mu <- startpara$mu
 
@@ -231,11 +228,11 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   if (.Platform$OS.type != "unix") myquiet <- TRUE else myquiet <- quiet  # Hack to prevent console flushing problems with Windows
 
   runtime <- system.time({
-    res <- svlsample_cpp(draws, y, ystar, d, burnin, thinpara, thinlatent, thintime,
-                                 phi, rho, sigma2, mu, h,
+    res <- svlsample_cpp(draws, y, burnin, thinpara, thinlatent, thintime,
+                                 startpara, startlatent,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                  0.5, 0.5/priorsigma, priormu[1], priormu[2], !myquiet,
-                                 mhcontrol, gammaprior, parameterization)
+                                 myoffset, mhcontrol, gammaprior, parameterization)
   })
 
   if (any(is.na(res))) stop("Sampler returned NA. This is most likely due to bad input checks and shouldn't happen. Please report to package maintainer.")
@@ -290,11 +287,11 @@ svlsample2 <- function (y, draws = 1, burnin = 0,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(3, 5),
                        thinpara = 1, thinlatent = 1, thintime = 1,
                        quiet = FALSE, startpara, startlatent) {
-  res <- svlsample_cpp(draws, y, ystar, d, burnin, thinpara, thinlatent, thintime,
-                               phi, rho, sigma2, mu, h,
+  res <- svlsample_cpp(draws, y, burnin, thinpara, thinlatent, thintime,
+                               startpara, startlatent,
                                priorphi[1], priorphi[2], priorrho[1], priorrho[2],
-                               0.5, 0.5/priorsigma, priormu[1], priormu[2], !myquiet,
-                               mhcontrol, gammaprior, parameterization)
+                               0.5, 0.5/priorsigma, priormu[1], priormu[2], !quiet,
+                               0, 0.1, TRUE, rep(c("centered", "non-centered"), 5))
 
   res$para <- res$para[, c(4,1,3,2)]
   res$para[, 3] <- sqrt(res$para[, 3])
