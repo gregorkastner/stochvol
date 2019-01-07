@@ -53,7 +53,7 @@ Rcpp::List svlsample_cpp (
     if (verbose && (i % show == 0)) progressbar_print();
 
     // only centered
-    h = draw_latent_auxiliaryMH(y, y_star, d, h, phi, rho, sigma2, mu);
+    h = draw_latent_auxiliaryMH(y, y_star, d, h, phi, rho, sigma2, mu, prior_mu_mu, prior_mu_sigma);
     ht = (h-mu)/sqrt(sigma2);
 
     for (int ind_strategy = 0; ind_strategy < strategy.length(); ind_strategy++) {

@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <string>
-#include "aug-kalman-filter.h"  // includes RcppArmadillo
+#include "aug-kalman-filter.h"
 #include "h-sampler.h"
 #include "h-utils.h"
 #include "mixture-state-sampler.h"
@@ -18,18 +18,15 @@ NumericVector draw_h_auxiliary(const NumericVector y_star,
                                const double rho,
                                const double sigma2,
                                const double mu,
+                               const double priormu_mu,
+                               const double priormu_sigma,
                                const CharacterVector centering) {
-  //const double mu_mu = prior_mu(0);  // TODO
-  //const double mu_sigma2 = pow(prior_mu(1), 2);
-  const double mu_mu = -10;
-  const double mu_sigma2 = 100;
-  
   NumericVector mixing_a(s.length()); std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
   NumericVector mixing_b(s.length()); std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
   NumericVector mixing_m(s.length()); std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
   NumericVector mixing_v(s.length()); std::transform(s.cbegin(), s.cend(), mixing_v.begin(), [](const int selem) -> double {return mix_var[selem];});
   
-  const List filter_result = aug_kalman_filter(phi, rho, sigma2, mixing_a, mixing_b, mixing_m, mixing_v, d, y_star, mu_mu, mu_sigma2, centering);
+  const List filter_result = aug_kalman_filter(phi, rho, sigma2, mixing_a, mixing_b, mixing_m, mixing_v, d, y_star, priormu_mu, pow(priormu_sigma, 2), centering);
   
   const List smoothing_result = simulation_smoother(mu, filter_result, centering);
   const NumericVector eta = smoothing_result["eta"];
@@ -61,12 +58,14 @@ NumericVector draw_latent_auxiliaryMH(const NumericVector y,
                                   const double phi,
                                   const double rho,
                                   const double sigma2,
-                                  const double mu) {
+                                  const double mu,
+                                  const double priormu_mu,
+                                  const double priormu_sigma) {
                                   //const CharacterVector centering,
   
   // Draw h from AUX
   const NumericVector s = draw_s_auxiliary(y_star, d, h, phi, rho, sigma2, mu, "centered");
-  const NumericVector proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, "centered");
+  const NumericVector proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, "centered");
 
   // Calculate MH acceptance ratio
   const double log_acceptance = h_log_posterior(proposed, y, phi, rho, sigma2, mu) - h_log_posterior(h, y, phi, rho, sigma2, mu) -
