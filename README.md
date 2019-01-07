@@ -30,7 +30,7 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 
 ### Features
 * regression, betas
-* 'update' function for svlsample
+* -'update' function for svlsample
 * 'update' in Rcpp
 * factorstochvol and update in Rcpp
 
@@ -53,4 +53,5 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * create joint file structure
 * G: inverse gamma prior parameters!
 * G: plot inverse gamma prior
+* check TODOs in the code
 
