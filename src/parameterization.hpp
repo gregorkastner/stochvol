@@ -1,0 +1,7 @@
+#ifndef PARAMETERIZATION_H
+#define PARAMETERIZATION_H
+
+enum class Parameterization {CENTERED, NONCENTERED};
+
+#endif  // PARAMETERIZATION_H
+
