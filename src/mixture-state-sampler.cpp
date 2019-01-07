@@ -82,20 +82,20 @@ NumericVector draw_s_auxiliary(const NumericVector y_star,
   }
   
   return new_states;
-  /*/
-  const int mix_count = post_dist.row(0).size();
-  for (int r = 0; r < n; r++) {
-    double s = 0;
-    for (int c = 0; c < mix_count; c++) {
-      s += post_dist(r, c);
-      post_dist(r, c) = s;
-    }
-  }
-  
-  unif_vec = runif(n);
-  for (int r = 0; r < n; r++) {
-    new_states(r) = sum(post_dist.row(r) < unif_vec(r));  // C++ indexing
-  }
-  
-  return new_states; /* */
+
+  //const int mix_count = post_dist.row(0).size();
+  //for (int r = 0; r < n; r++) {
+  //  double s = 0;
+  //  for (int c = 0; c < mix_count; c++) {
+  //    s += post_dist(r, c);
+  //    post_dist(r, c) = s;
+  //  }
+  //}
+  //
+  //unif_vec = runif(n);
+  //for (int r = 0; r < n; r++) {
+  //  new_states(r) = sum(post_dist.row(r) < unif_vec(r));  // C++ indexing
+  //}
+  //
+  //return new_states;
 }
