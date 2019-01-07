@@ -76,7 +76,7 @@ paradensplot.svldraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab 
   if (!is(x, "svldraws")) stop("This function expects an 'svldraws' object.")
   if (!is.logical(showobs)) stop("If provided, argument 'showobs' must be TRUE or FALSE.")
   if (!is.null(simobj)) {
-    if (!is(simobj, "svlsim")) stop("If provided, simobj must be an 'svlsim' object.")
+    if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
     sim <- TRUE
   } else sim <- FALSE
   oldpar <- par(mar=mar)
