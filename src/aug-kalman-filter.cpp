@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <string>
 #include "aug-kalman-filter.h"
+
 using namespace Rcpp;
 
 List aug_kalman_filter(const double phi, const double rho, const double sigma2,
