@@ -6,8 +6,8 @@
 #' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2, rho = -0.4)
 #'
 #' ## Obtain 5000 draws from the sampler (that's not a lot)
-#' draws <- svlsample(sim$y, draws = 5000, burnin = 100,
-#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+#' draws <- svlsample(sim$y, draws = 2000, burnin = 500,
+#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2, priorrho = c(3, 6))
 #'
 #' ## Check out the results
 #' summary(draws)
