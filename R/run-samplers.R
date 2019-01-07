@@ -233,7 +233,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     res <- svlsample_cpp(draws, y, ystar, d, burnin, thinpara, thinlatent, thintime,
                                  phi, rho, sigma2, mu, h,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
-                                 priorsigma[1], priorsigma[2], priormu[1], priormu[2], !myquiet,
+                                 0.5, 0.5/priorsigma, priormu[1], priormu[2], !myquiet,
                                  mhcontrol, gammaprior, parameterization, dfModelConstants)
   })
   
