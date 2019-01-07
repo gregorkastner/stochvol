@@ -57,12 +57,15 @@ NumericVector draw_s_auxiliary(const NumericVector y_star,
   NumericVector unif_vec;
   NumericVector new_states(n);
   
-  if (centering == Parameterization::CENTERED) {
+  switch (centering) {
+    case Parameterization::CENTERED:
     eps_star = y_star - h;
     eta = (tail(h, -1) - mu) - phi*(head(h, -1) - mu);
-  } else if (centering == Parameterization::NONCENTERED) {
-    eps_star = y_star - mu - sqrt(sigma2)*h;
-    eta = tail(h, -1) - phi*head(h, -1);
+    break;
+    case Parameterization::NONCENTERED:
+    eps_star = y_star - mu - sqrt(sigma2)*ht;
+    eta = tail(ht, -1) - phi*head(ht, -1);
+    break;
   }
   post_dist = mixture_state_post_dist(eps_star, eta, d, mu, sigma2, rho, centering);
   /*  Exact translation  TODO comment out! */

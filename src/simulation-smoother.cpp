@@ -7,10 +7,13 @@ using namespace Rcpp;
 List simulation_smoother(const double mu, const List filter_results,
                          const Parameterization centering) {
   List result;
-  if (centering == Parameterization::CENTERED) {
+  switch (centering) {
+    case Parameterization::CENTERED:
     result = simulation_smoother_c(mu, filter_results);
-  } else if (centering == Parameterization::NONCENTERED) {
+    break;
+    case Parameterization::NONCENTERED:
     result = simulation_smoother_nc(mu, filter_results);
+    break;
   }
   return result;
 }

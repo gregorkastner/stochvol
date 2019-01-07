@@ -32,7 +32,7 @@ Rcpp::List svlsample_cpp (
     const bool verbose,
     const double stdev,
     const bool gammaprior,
-    const Rcpp::CharacterVector& strategy_rcpp) {  // TODO
+    const Rcpp::CharacterVector& strategy_rcpp) {
 
   const int N = burnin + draws;
 
@@ -68,7 +68,8 @@ Rcpp::List svlsample_cpp (
     ht = (h-mu)/sqrt(sigma2);
 
     for (auto par : strategy) {
-      if (par == Parameterization::CENTERED) {
+      switch (par) {
+        case Parameterization::CENTERED:
         theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, h,
             NumericVector::create(prior_phi_a, prior_phi_b),
             NumericVector::create(prior_rho_a, prior_rho_b),
@@ -77,7 +78,8 @@ Rcpp::List svlsample_cpp (
             par,
             stdev,
             gammaprior);
-      } else if (par == Parameterization::NONCENTERED) {
+        break;
+        case Parameterization::NONCENTERED:
         theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, ht,
             NumericVector::create(prior_phi_a, prior_phi_b),
             NumericVector::create(prior_rho_a, prior_rho_b),
@@ -86,6 +88,7 @@ Rcpp::List svlsample_cpp (
             par,
             stdev,
             gammaprior);
+        break;
       }
 
       phi = theta(0);
@@ -93,10 +96,13 @@ Rcpp::List svlsample_cpp (
       sigma2 = theta(2);
       mu = theta(3);
 
-      if (par == Parameterization::CENTERED) {
+      switch (par) {
+        case Parameterization::CENTERED:
         ht = (h-mu)/sqrt(sigma2);
-      } else if (par == Parameterization::NONCENTERED) {
+        break;
+        case Parameterization::NONCENTERED:
         h = sqrt(sigma2)*ht+mu;
+        break;
       }
     }
 

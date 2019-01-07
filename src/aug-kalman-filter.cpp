@@ -9,10 +9,13 @@ List aug_kalman_filter(const double phi, const double rho, const double sigma2,
                        const NumericVector d, const NumericVector y_star,
                        const double mu_mu, const double sigma2_mu, const Parameterization centering) {
   List result;
-  if (centering == Parameterization::CENTERED) {
+  switch (centering) {
+    case Parameterization::CENTERED:
     result = aug_kalman_filter_c(phi, rho, sigma2, a, b, m, v, d, y_star, mu_mu, sigma2_mu);
-  } else if (centering == Parameterization::NONCENTERED) {
+    break;
+    case Parameterization::NONCENTERED:
     result = aug_kalman_filter_nc(phi, rho, sigma2, a, b, m, v, d, y_star, mu_mu, sigma2_mu);
+    break;
   }
   return result;
 }
