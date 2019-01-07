@@ -7,6 +7,7 @@
 Rcpp::NumericVector draw_s_auxiliary(const Rcpp::NumericVector y_star,
                                      const Rcpp::NumericVector d,
                                      const Rcpp::NumericVector h,
+                                     const Rcpp::NumericVector ht,
                                      const double phi,
                                      const double rho,
                                      const double sigma2,

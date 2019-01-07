@@ -46,6 +46,7 @@ NumericMatrix mixture_state_post_dist(const NumericVector eps_star, const Numeri
 NumericVector draw_s_auxiliary(const NumericVector y_star,
                                const NumericVector d,
                                const NumericVector h,
+                               const NumericVector ht,
                                const double phi, const double rho,
                                const double sigma2, const double mu,
                                const Parameterization centering) {

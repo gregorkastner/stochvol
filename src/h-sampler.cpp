@@ -55,6 +55,7 @@ NumericVector draw_latent_auxiliaryMH(const NumericVector y,
                                   const NumericVector y_star,
                                   const NumericVector d,
                                   const NumericVector h,
+                                  const NumericVector ht,
                                   const double phi,
                                   const double rho,
                                   const double sigma2,
@@ -64,7 +65,7 @@ NumericVector draw_latent_auxiliaryMH(const NumericVector y,
                                   //const CharacterVector centering,
   
   // Draw h from AUX
-  const NumericVector s = draw_s_auxiliary(y_star, d, h, phi, rho, sigma2, mu, Parameterization::CENTERED);
+  const NumericVector s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
   const NumericVector proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
 
   // Calculate MH acceptance ratio
