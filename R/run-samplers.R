@@ -1,5 +1,18 @@
 #' Main function
 #' 
+#' @examples
+#'
+#' ## Simulate a short and highly persistent SV process
+#' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2, rho = -0.4)
+#'
+#' ## Obtain 5000 draws from the sampler (that's not a lot)
+#' draws <- svlsample(sim$y, draws = 5000, burnin = 100,
+#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+#'
+#' ## Check out the results
+#' summary(draws)
+#' plot(draws)
+#'
 #' @export
 svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
