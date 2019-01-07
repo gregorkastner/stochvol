@@ -13,7 +13,8 @@ double theta_log_prior(const double phi, const double rho,
                        const Rcpp::NumericVector prior_phi,
                        const Rcpp::NumericVector prior_rho,
                        const Rcpp::NumericVector prior_sigma2,
-                       const Rcpp::NumericVector prior_mu);
+                       const Rcpp::NumericVector prior_mu,
+                       const bool gammaprior);
 
 Rcpp::NumericVector theta_transform(const double f, const double r,
                                     const double s, const double m);

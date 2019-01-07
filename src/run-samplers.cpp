@@ -29,7 +29,7 @@ Rcpp::List svlsample_cpp (
     const double prior_mu_sigma,
     const bool verbose,
     const double stdev,
-    const bool gammaprior,  // TODO
+    const bool gammaprior,
     const Rcpp::CharacterVector& strategy,  // TODO
     const Rcpp::DataFrame& mixing_constants) {  // TODO
 
@@ -65,7 +65,8 @@ Rcpp::List svlsample_cpp (
             NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
             NumericVector::create(prior_mu_mu, prior_mu_sigma),
             wrap("centered"),
-            stdev);
+            stdev,
+            gammaprior);
       } else if (as<std::string>(strategy(ind_strategy)) == "non-centered") {
         theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, ht,
             NumericVector::create(prior_phi_a, prior_phi_b),
@@ -73,7 +74,8 @@ Rcpp::List svlsample_cpp (
             NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
             NumericVector::create(prior_mu_mu, prior_mu_sigma),
             wrap("non-centered"),
-            stdev);
+            stdev,
+            gammaprior);
       } else {
         Rf_error("problem1");
       }

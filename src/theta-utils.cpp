@@ -76,11 +76,19 @@ double theta_log_prior(const double phi, const double rho,
                        const NumericVector prior_phi,
                        const NumericVector prior_rho,
                        const NumericVector prior_sigma2,
-                       const NumericVector prior_mu) {
+                       const NumericVector prior_mu,
+                       const bool gammaprior) {
+  // use variable names to clear the confusion about Gamma and InvGamma
+  //const double gammarate = prior_sigma2(1);
+  //const double gammascale = 1/gammarate;
+  //const double invgammascale = gammarate;
+  // Wikipedia notatio: prior_sigma2(1) is beta in both the case of Gamma and of InvGamma
   return (-log(2)) + R::dbeta((phi+1)/2, prior_phi(0), prior_phi(1), true) +
     (-log(2)) + R::dbeta((rho+1)/2, prior_rho(0), prior_rho(1), true) +
-    R::dgamma(sigma2, prior_sigma2(0), 1/prior_sigma2(1), true) +
-    R::dnorm(mu, prior_mu(0), prior_mu(1), true);
+    R::dnorm(mu, prior_mu(0), prior_mu(1), true) +
+    (gammaprior ?
+      R::dgamma(sigma2, prior_sigma2(0), 1/prior_sigma2(1), true) :  // Gamma(shape, scale)
+      1/R::dgamma(sigma2, prior_sigma2(0)+2, prior_sigma2(1)/(prior_sigma2(0)*(prior_sigma2(0)+1)), true));  // moment matched InvGamma
 }
 
 NumericVector theta_transform(const double f, const double r,

@@ -19,7 +19,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priorrho = c(3, 5), priorbeta = c(0, 10000),
                        thinpara = 1, thinlatent = 1, thintime = 1,
                        quiet = FALSE, startpara, startlatent, expert, ...) {
-  # TODO designmatrix priorbeta gammaprior(expert)
+  # TODO designmatrix priorbeta
   # Some error checking for y
   if (inherits(y, "svsim")) {
     y <- y[["y"]]
@@ -158,7 +158,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   strategies <- c("centered", "non-centered")
   expertdefault <- list(parameterization = rep(strategies, 5),  # default: ASISx5
                         mhcontrol = 0.1,
-                        gammaprior = TRUE)  # TODO
+                        gammaprior = TRUE)
   if (missing(expert)) {
     parameterization <- expertdefault$parameterization
     mhcontrol <- expertdefault$mhcontrol
@@ -223,7 +223,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   phi <- startpara$phi; rho <- startpara$rho; sigma2 <- startpara$sigma^2; mu <- startpara$mu
 
   renameparam <- c("centered" = "C", "non-centered" = "NC")
-  if (!quiet) {  # TODO
+  if (!quiet) {
     cat(paste("\nCalling (", paste(renameparam[parameterization], collapse=", "), ") MCMC sampler with ", draws+burnin, " iter. Series length is ", length(y), ".\n",sep=""), file=stderr())
     flush.console()
   }
