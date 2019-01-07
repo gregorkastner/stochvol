@@ -2,6 +2,7 @@
 #define AUG_KALMAN_FILTER_H
 
 #include <Rcpp.h>
+#include "parameterization.hpp"
 
 // Augmented Kalman filter
 // 
@@ -43,7 +44,7 @@ Rcpp::List aug_kalman_filter(const double phi,
                              const Rcpp::NumericVector y_star,
                              const double mu_mu,
                              const double sigma2_mu,
-                             const Rcpp::StringVector centering);
+                             const Parameterization centering);
 
 Rcpp::List aug_kalman_filter_c(const double phi,
                                const double rho,

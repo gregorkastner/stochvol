@@ -2,6 +2,7 @@
 #define THETA_SAMPLER_H
 
 #include <Rcpp.h>
+#include "parameterization.hpp"
 
 Rcpp::NumericVector draw_theta_rwMH(const double phi, const double rho,
                                     const double sigma2, const double mu,
@@ -11,7 +12,7 @@ Rcpp::NumericVector draw_theta_rwMH(const double phi, const double rho,
                                     const Rcpp::NumericVector prior_rho,
                                     const Rcpp::NumericVector prior_sigma2,
                                     const Rcpp::NumericVector prior_mu,
-                                    const Rcpp::CharacterVector centering,
+                                    const Parameterization centering,
                                     const double stdev,
                                     const bool gammaprior);
 

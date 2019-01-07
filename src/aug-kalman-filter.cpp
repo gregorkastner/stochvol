@@ -1,21 +1,18 @@
 #include <Rcpp.h>
-#include <string>
 #include "aug-kalman-filter.h"
+#include "parameterization.hpp"
 
 using namespace Rcpp;
 
 List aug_kalman_filter(const double phi, const double rho, const double sigma2,
                        const NumericVector a, const NumericVector b, const NumericVector m, const NumericVector v,
                        const NumericVector d, const NumericVector y_star,
-                       const double mu_mu, const double sigma2_mu, const StringVector centering) {
+                       const double mu_mu, const double sigma2_mu, const Parameterization centering) {
   List result;
-  std::string scentering = as<std::string>(centering);
-  if (scentering == "centered") {
+  if (centering == Parameterization::CENTERED) {
     result = aug_kalman_filter_c(phi, rho, sigma2, a, b, m, v, d, y_star, mu_mu, sigma2_mu);
-  } else if (scentering == "non-centered") {
+  } else if (centering == Parameterization::NONCENTERED) {
     result = aug_kalman_filter_nc(phi, rho, sigma2, a, b, m, v, d, y_star, mu_mu, sigma2_mu);
-  } else {
-    ::Rf_error("c++: unknown type of centering");
   }
   return result;
 }

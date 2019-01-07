@@ -2,6 +2,7 @@
 #define H_SAMPLER_H
 
 #include <Rcpp.h>
+#include "parameterization.hpp"
 
 Rcpp::NumericVector draw_h_auxiliary(const Rcpp::NumericVector y_star,
                                      const Rcpp::NumericVector d,
@@ -12,7 +13,7 @@ Rcpp::NumericVector draw_h_auxiliary(const Rcpp::NumericVector y_star,
                                      const double mu,
                                      const double priormu_mu,
                                      const double priormu_sigma,
-                                     const Rcpp::CharacterVector centering);
+                                     const Parameterization centering);
 
 Rcpp::NumericVector draw_latent_auxiliaryMH(const Rcpp::NumericVector y,
                                             const Rcpp::NumericVector y_star,

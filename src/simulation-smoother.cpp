@@ -1,18 +1,16 @@
 #include <Rcpp.h>
-#include <string>
 #include "simulation-smoother.h"
+#include "parameterization.hpp"
+
 using namespace Rcpp;
 
 List simulation_smoother(const double mu, const List filter_results,
-                         const CharacterVector centering) {
+                         const Parameterization centering) {
   List result;
-  std::string scentering = as<std::string>(centering);
-  if (scentering == "centered") {
+  if (centering == Parameterization::CENTERED) {
     result = simulation_smoother_c(mu, filter_results);
-  } else if (scentering == "non-centered") {
+  } else if (centering == Parameterization::NONCENTERED) {
     result = simulation_smoother_nc(mu, filter_results);
-  } else {
-    ::Rf_error("c++: unknown type of centering");
   }
   return result;
 }

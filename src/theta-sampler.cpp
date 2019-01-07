@@ -1,8 +1,9 @@
 #include <Rcpp.h>
-#include <string>
 #include <cmath>
 #include "theta-sampler.h"
 #include "theta-utils.h"
+#include "parameterization.hpp"
+
 using namespace Rcpp;
 
 NumericVector draw_theta_rwMH(const double phi, const double rho,
@@ -12,11 +13,10 @@ NumericVector draw_theta_rwMH(const double phi, const double rho,
                               const NumericVector prior_rho,
                               const NumericVector prior_sigma2,
                               const NumericVector prior_mu,
-                              const CharacterVector centering,
+                              const Parameterization centering,
                               const double stdev,
                               const bool gammaprior) {
   NumericVector result;
-  std::string scentering = as<std::string>(centering);
   const NumericVector proposed = theta_propose(phi, rho, sigma2, mu, y, h, stdev);
   const double phi_prop = proposed(0), rho_prop = proposed(1), sigma2_prop = proposed(2),
     mu_prop = proposed(3), prop_old_logdens = proposed(4), prop_new_logdens = proposed(5);

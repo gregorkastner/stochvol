@@ -8,6 +8,7 @@
 #include "mixture-state-sampler.h"
 #include "simulation-smoother.h"
 #include "auxmix.h"
+#include "parameterization.hpp"
 
 using namespace Rcpp;
  
@@ -20,7 +21,7 @@ NumericVector draw_h_auxiliary(const NumericVector y_star,
                                const double mu,
                                const double priormu_mu,
                                const double priormu_sigma,
-                               const CharacterVector centering) {
+                               const Parameterization centering) {
   NumericVector mixing_a(s.length()); std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
   NumericVector mixing_b(s.length()); std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
   NumericVector mixing_m(s.length()); std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
@@ -35,11 +36,10 @@ NumericVector draw_h_auxiliary(const NumericVector y_star,
   const int n = as<NumericVector>(filter_result["D"]).size();
   NumericVector h = rep(0.0, n);
   NumericVector dt;
-  std::string scentering = as<std::string>(centering);
-  if (scentering == "centered") {
+  if (centering == Parameterization::CENTERED) {
     h(0) = mu + eta0;
     dt = mu*(1-phi) + rho*sqrt(sigma2)*d*mixing_a*exp(mixing_m/2);
-  } else if (scentering == "non-centered") {
+  } else if (centering == Parameterization::NONCENTERED) {
     h(0) = eta0;
     dt = rho*d*mixing_a*exp(mixing_m/2);
   }
@@ -64,8 +64,8 @@ NumericVector draw_latent_auxiliaryMH(const NumericVector y,
                                   //const CharacterVector centering,
   
   // Draw h from AUX
-  const NumericVector s = draw_s_auxiliary(y_star, d, h, phi, rho, sigma2, mu, "centered");
-  const NumericVector proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, "centered");
+  const NumericVector s = draw_s_auxiliary(y_star, d, h, phi, rho, sigma2, mu, Parameterization::CENTERED);
+  const NumericVector proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
 
   // Calculate MH acceptance ratio
   const double log_acceptance = h_log_posterior(proposed, y, phi, rho, sigma2, mu) - h_log_posterior(h, y, phi, rho, sigma2, mu) -

@@ -2,11 +2,12 @@
 #define THETA_UTILS_H
 
 #include <Rcpp.h>
+#include "parameterization.hpp"
 
 double theta_log_likelihood(const double phi, const double rho,
                             const double sigma2, const double mu,
                             const Rcpp::NumericVector y, const Rcpp::NumericVector h,
-                            const Rcpp::CharacterVector centering);
+                            const Parameterization centering);
 
 double theta_log_prior(const double phi, const double rho,
                        const double sigma2, const double mu,

@@ -1,23 +1,19 @@
-#include <RcppArmadillo.h>
-#include <string>
+#include <Rcpp.h>
 #include <cmath>
 #include "theta-utils.h"
-#include "aug-kalman-filter.h"
+#include "parameterization.hpp"
 
 using namespace Rcpp;
 
 double theta_log_likelihood(const double phi, const double rho,
                             const double sigma2, const double mu,
                             const NumericVector y, const NumericVector h,
-                            const CharacterVector centering) {
+                            const Parameterization centering) {
   double result;
-  std::string scentering = as<std::string>(centering);
-  if (scentering == "centered") {
+  if (centering == Parameterization::CENTERED) {
     result = theta_log_likelihood_c(phi, rho, sigma2, mu, y, h);
-  } else if (scentering == "non-centered") {
+  } else if (centering == Parameterization::NONCENTERED) {
     result = theta_log_likelihood_nc(phi, rho, sigma2, mu, y, h);
-  } else {
-    ::Rf_error("invalid centering");
   }
   return result;
 }

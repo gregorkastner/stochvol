@@ -2,6 +2,7 @@
 #define MIXTURE_STATE_SAMPLER_H
 
 #include <Rcpp.h>
+#include "parameterization.hpp"
 
 Rcpp::NumericVector draw_s_auxiliary(const Rcpp::NumericVector y_star,
                                      const Rcpp::NumericVector d,
@@ -10,7 +11,7 @@ Rcpp::NumericVector draw_s_auxiliary(const Rcpp::NumericVector y_star,
                                      const double rho,
                                      const double sigma2,
                                      const double mu,
-                                     const Rcpp::CharacterVector centering);
+                                     const Parameterization centering);
 
 Rcpp::NumericMatrix mixture_state_post_dist(const Rcpp::NumericVector eps_star,
                                             const Rcpp::NumericVector eta,
@@ -18,7 +19,7 @@ Rcpp::NumericMatrix mixture_state_post_dist(const Rcpp::NumericVector eps_star,
                                             const double mu,
                                             const double sigma2,
                                             const double rho,
-                                            const Rcpp::CharacterVector centering);
+                                            const Parameterization centering);
 
 #endif  // MIXTURE_STATE_SAMPLER_H
 

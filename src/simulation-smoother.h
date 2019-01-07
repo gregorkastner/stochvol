@@ -2,10 +2,11 @@
 #define SIMULATION_SMOOTHER_H
 
 #include <Rcpp.h>
+#include "parameterization.hpp"
 
 Rcpp::List simulation_smoother(const double mu,
                                const Rcpp::List filter_results,
-                               const Rcpp::CharacterVector centering);
+                               const Parameterization centering);
 
 Rcpp::List simulation_smoother_c(const double mu,
                                  const Rcpp::List filter_results);

@@ -1,7 +1,7 @@
-#include <string>
 #include "auxmix.h"
 #include "mixture-state-sampler.h"
 #include <Rcpp.h>
+#include "parameterization.hpp"
 #define _USE_MATH_DEFINES
 #include <cmath>
 
@@ -10,12 +10,11 @@ using namespace Rcpp;
 NumericMatrix mixture_state_post_dist(const NumericVector eps_star, const NumericVector eta,
                                       const NumericVector d,
                                       const double mu, const double sigma2, const double rho,
-                                      const CharacterVector centering) {
+                                      const Parameterization centering) {
   
-  std::string scentering = as<std::string>(centering);
   const int n = eps_star.size();
   const int mix_count = sizeof(mix_prob)/sizeof(mix_prob[0]);
-  const double sigma2_used = scentering == "centered" ? sigma2 : 1.0;
+  const double sigma2_used = centering == Parameterization::CENTERED ? sigma2 : 1.0;
   NumericMatrix result(n, mix_count);
   
   for (int r = 0; r < n; r++) {
@@ -49,7 +48,7 @@ NumericVector draw_s_auxiliary(const NumericVector y_star,
                                const NumericVector h,
                                const double phi, const double rho,
                                const double sigma2, const double mu,
-                               const CharacterVector centering) {
+                               const Parameterization centering) {
 
   const int n = y_star.size();
   NumericVector eps_star;
@@ -58,15 +57,12 @@ NumericVector draw_s_auxiliary(const NumericVector y_star,
   NumericVector unif_vec;
   NumericVector new_states(n);
   
-  std::string scentering = as<std::string>(centering);
-  if (scentering == "centered") {
+  if (centering == Parameterization::CENTERED) {
     eps_star = y_star - h;
     eta = (tail(h, -1) - mu) - phi*(head(h, -1) - mu);
-  } else if (scentering == "non-centered") {
+  } else if (centering == Parameterization::NONCENTERED) {
     eps_star = y_star - mu - sqrt(sigma2)*h;
     eta = tail(h, -1) - phi*head(h, -1);
-  } else {
-    ::Rf_error("Invalid centering");
   }
   post_dist = mixture_state_post_dist(eps_star, eta, d, mu, sigma2, rho, centering);
   /*  Exact translation  TODO comment out! */

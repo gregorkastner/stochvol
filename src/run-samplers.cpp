@@ -1,7 +1,9 @@
+#include <algorithm>
 #include "progutils.h"
 #include "run-samplers.h"
 #include "theta-sampler.h"
 #include "h-sampler.h"
+#include "parameterization.hpp"
 
 using namespace Rcpp;
 
@@ -30,7 +32,7 @@ Rcpp::List svlsample_cpp (
     const bool verbose,
     const double stdev,
     const bool gammaprior,
-    const Rcpp::CharacterVector& strategy) {  // TODO
+    const Rcpp::CharacterVector& strategy_rcpp) {  // TODO
 
   const int N = burnin + draws;
 
@@ -40,6 +42,15 @@ Rcpp::List svlsample_cpp (
 
   NumericMatrix params(draws/thinpara, 4);
   NumericMatrix latent(draws/thinlatent, y.length()/thintime);
+
+  // don't use strings or RcppCharacterVector
+  std::vector<Parameterization> strategy(strategy_rcpp.length());
+  std::transform(strategy_rcpp.cbegin(), strategy_rcpp.cend(), strategy.begin(),
+      [](const SEXP& par) -> Parameterization {
+        if (as<std::string>(par) == "centered") return Parameterization::CENTERED;
+        else if (as<std::string>(par) == "non-centered") return Parameterization::NONCENTERED;
+        else Rf_error("Illegal parameterization");
+  });
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
@@ -56,27 +67,25 @@ Rcpp::List svlsample_cpp (
     h = draw_latent_auxiliaryMH(y, y_star, d, h, phi, rho, sigma2, mu, prior_mu_mu, prior_mu_sigma);
     ht = (h-mu)/sqrt(sigma2);
 
-    for (int ind_strategy = 0; ind_strategy < strategy.length(); ind_strategy++) {
-      if (as<std::string>(strategy(ind_strategy)) == "centered") {
+    for (auto par : strategy) {
+      if (par == Parameterization::CENTERED) {
         theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, h,
             NumericVector::create(prior_phi_a, prior_phi_b),
             NumericVector::create(prior_rho_a, prior_rho_b),
             NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
             NumericVector::create(prior_mu_mu, prior_mu_sigma),
-            wrap("centered"),
+            par,
             stdev,
             gammaprior);
-      } else if (as<std::string>(strategy(ind_strategy)) == "non-centered") {
+      } else if (par == Parameterization::NONCENTERED) {
         theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, ht,
             NumericVector::create(prior_phi_a, prior_phi_b),
             NumericVector::create(prior_rho_a, prior_rho_b),
             NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
             NumericVector::create(prior_mu_mu, prior_mu_sigma),
-            wrap("non-centered"),
+            par,
             stdev,
             gammaprior);
-      } else {
-        Rf_error("problem1");
       }
 
       phi = theta(0);
@@ -84,12 +93,10 @@ Rcpp::List svlsample_cpp (
       sigma2 = theta(2);
       mu = theta(3);
 
-      if (as<std::string>(strategy(ind_strategy)) == "centered") {
+      if (par == Parameterization::CENTERED) {
         ht = (h-mu)/sqrt(sigma2);
-      } else if (as<std::string>(strategy(ind_strategy)) == "non-centered") {
+      } else if (par == Parameterization::NONCENTERED) {
         h = sqrt(sigma2)*ht+mu;
-      } else {
-        Rf_error("problem2");
       }
     }
 
