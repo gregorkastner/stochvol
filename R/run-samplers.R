@@ -19,7 +19,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priorrho = c(3, 5), priorbeta = c(0, 10000),
                        thinpara = 1, thinlatent = 1, thintime = 1,
                        quiet = FALSE, startpara, startlatent, expert, ...) {
-  # TODO quiet designmatrix priorbeta gammaprior(expert)
+  # TODO designmatrix priorbeta gammaprior(expert)
   # Some error checking for y
   if (inherits(y, "svsim")) {
     y <- y[["y"]]

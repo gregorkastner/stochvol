@@ -35,7 +35,7 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * factorstochvol and update in Rcpp
 
 ### Code cleanup
-* remove unnecessary svlsamplr code
+* -remove unnecessary svlsamplr code
 
 ### Optimize
 * 'sampler' should do smarter thinning
@@ -49,4 +49,5 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * ggplot2
 * maybe c('svldraws', 'svdraws') should be the new class structure
 * change svpredict's format to include prediction about 'y' as well. or simply discard the y's predicted by svlpredict?
+* create joint file structure
 
