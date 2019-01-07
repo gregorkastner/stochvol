@@ -276,3 +276,29 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   res
 }
 
+#' Minimal overhead version of \code{\link{svlsample}}.
+#'
+#' \code{svsample2} is a minimal overhead version of \code{\link{svsample}}
+#' with slightly different default arguments and a simplified return value
+#' structure. It is intended to be used mainly for one-step updates where speed
+#' is an issue, e.g., as a plug-in into other MCMC samplers. Note that
+#' absolutely no input checking is performed, thus this function is to be used
+#' with proper care!
+#'
+#' @export
+svlsample2 <- function (y, draws = 1, burnin = 0,
+                       priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(3, 5),
+                       thinpara = 1, thinlatent = 1, thintime = 1,
+                       quiet = FALSE, startpara, startlatent) {
+  res <- svlsample_cpp(draws, y, ystar, d, burnin, thinpara, thinlatent, thintime,
+                               phi, rho, sigma2, mu, h,
+                               priorphi[1], priorphi[2], priorrho[1], priorrho[2],
+                               0.5, 0.5/priorsigma, priormu[1], priormu[2], !myquiet,
+                               mhcontrol, gammaprior, parameterization)
+
+  res$para <- res$para[, c(4,1,3,2)]
+  res$para[, 3] <- sqrt(res$para[, 3])
+  colnames(res$para) <- c("mu", "phi", "sigma", "rho")
+  res
+}
+
