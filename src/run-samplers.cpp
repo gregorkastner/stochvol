@@ -30,8 +30,7 @@ Rcpp::List svlsample_cpp (
     const bool verbose,
     const double stdev,
     const bool gammaprior,
-    const Rcpp::CharacterVector& strategy,  // TODO
-    const Rcpp::DataFrame& mixing_constants) {  // TODO
+    const Rcpp::CharacterVector& strategy) {  // TODO
 
   const int N = burnin + draws;
 
@@ -54,7 +53,7 @@ Rcpp::List svlsample_cpp (
     if (verbose && (i % show == 0)) progressbar_print();
 
     // only centered
-    h = draw_latent_auxiliaryMH(y, y_star, d, h, phi, rho, sigma2, mu, mixing_constants);
+    h = draw_latent_auxiliaryMH(y, y_star, d, h, phi, rho, sigma2, mu);
     ht = (h-mu)/sqrt(sigma2);
 
     for (int ind_strategy = 0; ind_strategy < strategy.length(); ind_strategy++) {

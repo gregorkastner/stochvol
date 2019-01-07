@@ -4,19 +4,6 @@
 
 using namespace Rcpp;
 
-//SEXP sampler(const SEXP y_in, const SEXP draws_in,
-//  const SEXP burnin_in, const SEXP X_in,
-//  const SEXP bmu_in, const SEXP Bmu_in,
-//  const SEXP a0_in, const SEXP b0_in, const SEXP Bsigma_in,
-//  const SEXP thin_in, const SEXP timethin_in, const SEXP startpara_in,
-//  const SEXP startvol_in, const SEXP keeptau_in,
-//  const SEXP quiet_in, const SEXP para_in,
-//  const SEXP MHsteps_in, const SEXP B011_in, const SEXP B022_in,
-//  const SEXP mhcontrol_in, const SEXP gammaprior_in,
-//  const SEXP truncnormal_in, const SEXP offset_in,
-//  const SEXP dontupdatemu_in, const SEXP priordf_in,
-//  const SEXP priorbeta_in, const SEXP priorlatent0_in);
-
 RcppExport SEXP _stochvol_sampler(const SEXP y_in, const SEXP draws_in,
   const SEXP burnin_in, const SEXP X_in,
   const SEXP bmu_in, const SEXP Bmu_in,
@@ -48,35 +35,7 @@ BEGIN_RCPP
 END_RCPP
 }
 
-//Rcpp::List svlsample_cpp (
-//    const int draws,
-//    const Rcpp::NumericVector& y,
-//    const Rcpp::NumericVector& y_star,
-//    const Rcpp::NumericVector& d,
-//    const int burnin,
-//    const int thinpara,
-//    const int thinlatent,
-//    const int thintime,
-//    const double phi_init,
-//    const double rho_init,
-//    const double sigma2_init,
-//    const double mu_init,
-//    const Rcpp::NumericVector& h_init,
-//    const double prior_phi_a,
-//    const double prior_phi_b,
-//    const double prior_rho_a,
-//    const double prior_rho_b,
-//    const double prior_sigma2_shape,
-//    const double prior_sigma2_rate,
-//    const double prior_mu_mu,
-//    const double prior_mu_sigma,
-//    const bool verbose,
-//    const double stdev,
-//    const bool gammaprior,
-//    const Rcpp::CharacterVector& strategy,
-//    const Rcpp::DataFrame& mixing_constants);
-
-RcppExport SEXP _stochvol_svlsample_cpp(SEXP drawsSEXP, SEXP ySEXP, SEXP y_starSEXP, SEXP dSEXP, SEXP burninSEXP, SEXP thinparaSEXP, SEXP thinlatentSEXP, SEXP thintimeSEXP, SEXP phi_initSEXP, SEXP rho_initSEXP, SEXP sigma2_initSEXP, SEXP mu_initSEXP, SEXP h_initSEXP, SEXP prior_phi_aSEXP, SEXP prior_phi_bSEXP, SEXP prior_rho_aSEXP, SEXP prior_rho_bSEXP, SEXP prior_sigma2_shapeSEXP, SEXP prior_sigma2_rateSEXP, SEXP prior_mu_muSEXP, SEXP prior_mu_sigmaSEXP, SEXP verboseSEXP, SEXP stdevSEXP, SEXP gammapriorSEXP, SEXP strategySEXP, SEXP mixing_constantsSEXP) {
+RcppExport SEXP _stochvol_svlsample_cpp(SEXP drawsSEXP, SEXP ySEXP, SEXP y_starSEXP, SEXP dSEXP, SEXP burninSEXP, SEXP thinparaSEXP, SEXP thinlatentSEXP, SEXP thintimeSEXP, SEXP phi_initSEXP, SEXP rho_initSEXP, SEXP sigma2_initSEXP, SEXP mu_initSEXP, SEXP h_initSEXP, SEXP prior_phi_aSEXP, SEXP prior_phi_bSEXP, SEXP prior_rho_aSEXP, SEXP prior_rho_bSEXP, SEXP prior_sigma2_shapeSEXP, SEXP prior_sigma2_rateSEXP, SEXP prior_mu_muSEXP, SEXP prior_mu_sigmaSEXP, SEXP verboseSEXP, SEXP stdevSEXP, SEXP gammapriorSEXP, SEXP strategySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -105,8 +64,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type stdev(stdevSEXP);
     Rcpp::traits::input_parameter< const bool >::type gammaprior(gammapriorSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type strategy(strategySEXP);
-    Rcpp::traits::input_parameter< const Rcpp::DataFrame& >::type mixing_constants(mixing_constantsSEXP);
-    rcpp_result_gen = Rcpp::wrap(svlsample_cpp(draws, y, y_star, d, burnin, thinpara, thinlatent, thintime, phi_init, rho_init, sigma2_init, mu_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, verbose, stdev, gammaprior, strategy, mixing_constants));
+    rcpp_result_gen = Rcpp::wrap(svlsample_cpp(draws, y, y_star, d, burnin, thinpara, thinlatent, thintime, phi_init, rho_init, sigma2_init, mu_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, verbose, stdev, gammaprior, strategy));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -120,7 +78,7 @@ void update(const Rcpp::NumericVector &, double *, double *, double &,
 
 static const R_CallMethodDef CallEntries[] = {
     {"_stochvol_sampler", (DL_FUNC) &sampler, 27},
-    {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 26},
+    {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 25},
     {NULL, NULL, 0}
 };
 

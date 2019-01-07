@@ -1,37 +1,30 @@
-#include <Rcpp.h>
 #include <string>
+#include "auxmix.h"
+#include "mixture-state-sampler.h"
+#include <Rcpp.h>
 #define _USE_MATH_DEFINES
 #include <cmath>
-#include "mixture-state-sampler.h"
+
 using namespace Rcpp;
 
 NumericMatrix mixture_state_post_dist(const NumericVector eps_star, const NumericVector eta,
                                       const NumericVector d,
                                       const double mu, const double sigma2, const double rho,
-                                      const CharacterVector centering,
-                                      const DataFrame mixing_constants) {
-  
-  const NumericVector mixing_a = mixing_constants["a"];
-  const NumericVector mixing_b = mixing_constants["b"];
-  const NumericVector mixing_m = mixing_constants["m"];
-  const NumericVector mixing_p = mixing_constants["p"];
-  const NumericVector mixing_v = mixing_constants["v"];
+                                      const CharacterVector centering) {
   
   std::string scentering = as<std::string>(centering);
   const int n = eps_star.size();
-  const int mix_count = mixing_p.size();
+  const int mix_count = sizeof(mix_prob)/sizeof(mix_prob[0]);
   const double sigma2_used = scentering == "centered" ? sigma2 : 1.0;
-  Environment globalenv = Environment::global_env();
-  //NumericMatrix result = globalenv["mspd"];
   NumericMatrix result(n, mix_count);
   
   for (int r = 0; r < n; r++) {
     for (int c = 0; c < mix_count; c++) {
-      const double a = mixing_a(c);
-      const double b = mixing_b(c);
-      const double m = mixing_m(c);
-      const double v = mixing_v(c);
-      const double log_prior = log(mixing_p(c));
+      const double a = mix_a[c];
+      const double b = mix_b[c];
+      const double m = mix_mean[c];
+      const double v = mix_var[c];
+      const double log_prior = log(mix_prob[c]);
       
       double log_eps_star_lik = -0.5 * pow((eps_star[r] - m)/v, 2) - log(v*sqrt(2*M_PI));
       double log_eta_lik;
@@ -56,8 +49,8 @@ NumericVector draw_s_auxiliary(const NumericVector y_star,
                                const NumericVector h,
                                const double phi, const double rho,
                                const double sigma2, const double mu,
-                               const CharacterVector centering,
-                               const DataFrame mixing_constants) {
+                               const CharacterVector centering) {
+
   const int n = y_star.size();
   NumericVector eps_star;
   NumericVector eta;
@@ -75,7 +68,7 @@ NumericVector draw_s_auxiliary(const NumericVector y_star,
   } else {
     ::Rf_error("Invalid centering");
   }
-  post_dist = mixture_state_post_dist(eps_star, eta, d, mu, sigma2, rho, centering, mixing_constants);
+  post_dist = mixture_state_post_dist(eps_star, eta, d, mu, sigma2, rho, centering);
   /*  Exact translation  TODO comment out! */
   for (int r = 0; r < n; r++) {
     new_states(r) = sample(10, 1, true, Nullable<NumericVector>(post_dist.row(r)), false)(0);

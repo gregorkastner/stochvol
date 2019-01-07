@@ -10,8 +10,7 @@ Rcpp::NumericVector draw_s_auxiliary(const Rcpp::NumericVector y_star,
                                      const double rho,
                                      const double sigma2,
                                      const double mu,
-                                     const Rcpp::CharacterVector centering,
-                                     const Rcpp::DataFrame mixing_constants);
+                                     const Rcpp::CharacterVector centering);
 
 Rcpp::NumericMatrix mixture_state_post_dist(const Rcpp::NumericVector eps_star,
                                             const Rcpp::NumericVector eta,
@@ -19,8 +18,7 @@ Rcpp::NumericMatrix mixture_state_post_dist(const Rcpp::NumericVector eps_star,
                                             const double mu,
                                             const double sigma2,
                                             const double rho,
-                                            const Rcpp::CharacterVector centering,
-                                            const Rcpp::DataFrame mixing_constants);
+                                            const Rcpp::CharacterVector centering);
 
 #endif  // MIXTURE_STATE_SAMPLER_H
 

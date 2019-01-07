@@ -235,7 +235,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  phi, rho, sigma2, mu, h,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                  0.5, 0.5/priorsigma, priormu[1], priormu[2], !myquiet,
-                                 mhcontrol, gammaprior, parameterization, dfModelConstants)
+                                 mhcontrol, gammaprior, parameterization)
   })
 
   if (any(is.na(res))) stop("Sampler returned NA. This is most likely due to bad input checks and shouldn't happen. Please report to package maintainer.")

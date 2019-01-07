@@ -28,8 +28,7 @@ Rcpp::List svlsample_cpp (
     const bool verbose,
     const double stdev,
     const bool gammaprior,
-    const Rcpp::CharacterVector& strategy,
-    const Rcpp::DataFrame& mixing_constants);
+    const Rcpp::CharacterVector& strategy);
 
 #endif  // RUN_SAMPLERS_H
 
