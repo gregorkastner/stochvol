@@ -46,6 +46,7 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 
 ### Other
 * Depends: methods ("Rscript --vanilla" doesn't load it)
+* prior_mu in draw_h_auxiliary
 * ggplot2
 * maybe c('svldraws', 'svdraws') should be the new class structure
 * G: change svpredict's format to include prediction about 'y' as well. or simply discard the y's predicted by svlpredict?
