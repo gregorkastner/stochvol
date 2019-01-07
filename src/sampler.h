@@ -3,12 +3,7 @@
 
 // Main sampling steps and helper functions
 
-#include <RcppArmadillo.h>
-#include "auxmix.h"
-#include "progutils.h"
-#include "densities.h"
-
-// "update" is declared in /inst/include/update.h
+#include <Rcpp.h>
 
 // Main sampler (as called from R):
 SEXP sampler(const SEXP y_in, const SEXP draws_in,

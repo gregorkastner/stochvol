@@ -16,8 +16,7 @@
       of dlogdnu (defined in densities.h)
 */
 
-#include <RcppArmadillo.h>
-#include "densities.h"
+#include <Rcpp.h>
 
 // a)
 // Sums up results and prepares return value

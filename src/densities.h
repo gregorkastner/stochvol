@@ -1,6 +1,8 @@
 #ifndef _DENSITIES_H_
 #define _DENSITIES_H_
 
+#include <Rmath.h>
+
 // Some (non-normalized) densities and transformations thereof
 // (such as acceptance rates or other proportions)
 

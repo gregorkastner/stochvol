@@ -1,6 +1,10 @@
 // Main sampling steps and helper functions
 
+#include <RcppArmadillo.h>
 #include "sampler.h"
+#include "auxmix.h"
+#include "progutils.h"
+#include "densities.h"
 
 using namespace Rcpp; // avoid to type Rcpp:: every time
 

@@ -7,7 +7,7 @@ Rcpp::List svlsample_cpp (
     const int draws,
     const Rcpp::NumericVector& y,
     const Rcpp::NumericVector& y_star,
-    const Rcpp::NumericVector d,
+    const Rcpp::NumericVector& d,
     const int burnin,
     const int thinpara,
     const int thinlatent,

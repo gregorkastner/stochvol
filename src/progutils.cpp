@@ -1,4 +1,5 @@
 #include "progutils.h"
+#include "densities.h"
 
 /* Contains the following code modules:
 
