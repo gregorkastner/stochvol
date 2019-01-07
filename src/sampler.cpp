@@ -451,7 +451,7 @@ Rcpp::NumericVector regressionCentered(
  double R = -10000.;
  double sigma2_prop = -10000.;
  double sigma_prop = -10000.;
- Rcpp::NumericVector innov(2);
+ Rcpp::NumericVector innov(1);
  Rcpp::NumericVector quant(2);
 
  // first calculate bT and BT:
@@ -484,27 +484,27 @@ Rcpp::NumericVector regressionCentered(
   }
   z += (h0-mu)*(h0-mu)*Bh0inv;
   if (MHcontrol > 0) {  // let's do a log normal random walk
-   sigma2_prop = exp(Rcpp::rnorm(1,log(sigma*sigma), MHcontrol)[0]);
+   sigma2_prop = exp(R::rnorm(log(sigma*sigma), MHcontrol));
    logR = logacceptrateRW(sigma2_prop, sigma*sigma, Bsigma, T, z);
 
-   if (log(Rcpp::runif(1)[0]) < logR) sigma = sqrt(sigma2_prop);
+   if (log(R::runif(0, 1)) < logR) sigma = sqrt(sigma2_prop);
   } else {  // either IG(-.5,0)-proposal or IG(1.5,1.5*Bsigma)-prior
    if (Gammaprior) {
     CT = .5*z;
-    sigma2_prop = 1/Rcpp::as<double>(Rcpp::rgamma(1, cT, 1/CT));
-    if (log(Rcpp::as<double>(Rcpp::runif(1))) <
+    sigma2_prop = 1/R::rgamma(cT, 1/CT);
+    if (log(R::runif(0, 1)) <
         logacceptrateGamma(sigma2_prop, sigma*sigma, Bsigma)) {
      sigma = sqrt(sigma2_prop);
     }
    } else {
      CT = C0+.5*z;
-     sigma = sqrt(1/Rcpp::as<double>(Rcpp::rgamma(1, cT, 1/CT)));
+     sigma = sqrt(1/R::rgamma(cT, 1/CT));
    }
   }
  } else if (MHsteps == 1) {  // draw sigma^2 marginalized over gamma, phi
   if (Gammaprior) {
    CT = .5*((sum4 - h0*h0 + h[T-1]*h[T-1]) - bT1*sum3 - bT2*sum2);
-   sigma2_prop = 1/Rcpp::as<double>(Rcpp::rgamma(1, cT, 1/CT));
+   sigma2_prop = 1/R::rgamma(cT, 1/CT);
   }
  }
 
@@ -516,7 +516,7 @@ Rcpp::NumericVector regressionCentered(
   double gamma = (1-phi)*mu;  // = 0 if mu = 0
   double BTsqrt = sigma/sqrt(sum4+B011inv);
   double bT = (sum3-gamma*sum1)/(sum4+B011inv);
-  phi_prop = as<double>(Rcpp::rnorm(1, bT, BTsqrt));
+  phi_prop = R::rnorm(bT, BTsqrt);
   
   R = 0;
   if (priorlatent0 < 0.) { // needed only if prior of h0 depends on phi
@@ -528,7 +528,7 @@ Rcpp::NumericVector regressionCentered(
   R += logdnorm(phi, 0, sigma/sqrt(B011inv));
   R -= logdnorm(phi_prop, 0, sigma/sqrt(B011inv));
 
-  if (log(Rcpp::as<double>(Rcpp::runif(1))) < R) {
+  if (log(R::runif(0, 1)) < R) {
    phi = phi_prop;
   }
   
@@ -537,7 +537,7 @@ Rcpp::NumericVector regressionCentered(
    gamma = (1-phi)*mu;
    BTsqrt = sigma/sqrt(T+B022inv);
    bT = (sum2-phi*sum1)/(T+B022inv);
-   gamma_prop = as<double>(Rcpp::rnorm(1, bT, BTsqrt));
+   gamma_prop = R::rnorm(bT, BTsqrt);
   
    R = logdnorm(h0, gamma_prop/(1-phi), sigma/sqrt(Bh0inv));
    R -= logdnorm(h0, gamma/(1-phi), sigma/sqrt(Bh0inv));
@@ -546,7 +546,7 @@ Rcpp::NumericVector regressionCentered(
    R += logdnorm(gamma, 0, sigma/sqrt(B022inv));
    R -= logdnorm(gamma_prop, 0, sigma/sqrt(B022inv));
   
-   if (log(Rcpp::as<double>(Rcpp::runif(1))) < R) {
+   if (log(R::runif(0, 1)) < R) {
     mu = gamma_prop/(1-phi);
    }
   }
@@ -560,20 +560,21 @@ Rcpp::NumericVector regressionCentered(
   chol22 *= sigma;
 
   if (truncnormal) { // draw from truncated normal via inversion method
-   quant = Rcpp::pnorm(Rcpp::NumericVector::create(-1,1), bT1, chol11);
-   phi_prop = (Rcpp::qnorm((quant[0] + Rcpp::runif(1)*(quant[1]-quant[0])),
-               bT1, chol11))[0];
-   gamma_prop = (Rcpp::rnorm(1, bT2 + chol12*((phi_prop-bT1)/chol11),
-                 chol22))[0];
+   quant(0) = R::pnorm(-1, bT1, chol11, true, false);
+   quant(1) = R::pnorm(1, bT1, chol11, true, false);
+   phi_prop = R::qnorm((quant[0] + R::runif(0, 1)*(quant[1]-quant[0])),
+               bT1, chol11, true, false);
+   gamma_prop = R::rnorm(bT2 + chol12*((phi_prop-bT1)/chol11),
+                 chol22);
   }
   else { // draw from normal and reject (return) if outside
-   innov = Rcpp::rnorm(1);
-   phi_prop = bT1 + chol11*innov[0];
+   innov(0) = R::rnorm(0, 1);
+   phi_prop = bT1 + chol11*innov(0);
    if ((phi_prop >= 1) || (phi_prop <= -1)) { // outside the unit sphere
     Rcpp::NumericVector ret = Rcpp::NumericVector::create(mu, phi, sigma);
     return ret;
    }
-   else gamma_prop = bT2 + chol12*innov[0] + chol22*Rcpp::rnorm(1)[0];
+   else gamma_prop = bT2 + chol12*innov(0) + chol22*R::rnorm(0, 1);
   }
 
   // acceptance probability exp(R) calculated on a log scale
@@ -605,7 +606,7 @@ Rcpp::NumericVector regressionCentered(
   R -= logdnorm(gamma_prop, 0, sigma_prop/sqrt(B011inv));
 
   // accept/reject
-  if (log(Rcpp::as<double>(Rcpp::runif(1))) < R) {
+  if (log(R::runif(0, 1)) < R) {
    mu = gamma_prop/(1-phi_prop);
    phi = phi_prop;
    if (MHsteps == 1) sigma = sigma_prop;
@@ -661,7 +662,7 @@ Rcpp::NumericVector regressionNoncentered(
   BT22 = 1/(tmp1+1/Bmu);
   bT2 = BT22*(tmp2 + bmu/Bmu);
 //  REprintf("old: %f, new: mean %f and sd %f\n\n", mu, bT2, sqrt(BT22));
-  mu = as<double>(Rcpp::rnorm(1, bT2, sqrt(BT22)));
+  mu = R::rnorm(bT2, sqrt(BT22));
   }
 
  } else {  // Gibbs-sample mu and sigma jointly (regression) 
@@ -714,12 +715,13 @@ Rcpp::NumericVector regressionNoncentered(
 
  // actual sampling
  if (truncnormal) {  // draw from truncated normal via inversion method
-  quant = Rcpp::pnorm(Rcpp::NumericVector::create(-1,1), tmpmean, tmpsd);
-  phi_prop = (Rcpp::qnorm((quant[0] + Rcpp::runif(1)*(quant[1]-quant[0])),
-                          tmpmean, tmpsd))[0];
+  quant(0) = R::pnorm(-1, tmpmean, tmpsd, true, false);
+  quant(1) = R::pnorm(1, tmpmean, tmpsd, true, false);
+  phi_prop = R::qnorm((quant[0] + R::runif(0, 1)*(quant[1]-quant[0])),
+                          tmpmean, tmpsd, true, false);
  }
  else {  // draw from normal and reject (return) if outside
-  phi_prop = (Rcpp::rnorm(1, tmpmean, tmpsd))[0]; 
+  phi_prop = R::rnorm(tmpmean, tmpsd); 
   if ((phi_prop >= 1) || (phi_prop <= -1)) { // outside the unit sphere
    Rcpp::NumericVector ret = Rcpp::NumericVector::create(mu, phi, fabs(sigma));
    return ret;
@@ -735,7 +737,7 @@ Rcpp::NumericVector regressionNoncentered(
  // ^^note that factor 1/2 from transformation of densities cancels
 
  // accept/reject
- if (Rcpp::as<double>(Rcpp::runif(1)) < expR) phi = phi_prop;
+ if (R::runif(0, 1) < expR) phi = phi_prop;
 
  Rcpp::NumericVector ret = Rcpp::NumericVector::create(mu, phi, fabs(sigma));
  return ret;
