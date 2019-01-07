@@ -48,6 +48,8 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * Depends: methods ("Rscript --vanilla" doesn't load it)
 * ggplot2
 * maybe c('svldraws', 'svdraws') should be the new class structure
-* change svpredict's format to include prediction about 'y' as well. or simply discard the y's predicted by svlpredict?
+* G: change svpredict's format to include prediction about 'y' as well. or simply discard the y's predicted by svlpredict?
 * create joint file structure
+* G: inverse gamma prior parameters!
+* G: plot inverse gamma prior
 
