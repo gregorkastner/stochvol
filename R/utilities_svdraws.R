@@ -247,7 +247,7 @@ print.svldraws <- function (x, showpara = TRUE, showlatent = TRUE, ...) {
 
 #' @export
 residuals.svdraws <- function(object, type = "mean", ...) {
-  if (!is(object, "svdraws")) stop("This function expects an 'svdraws' object.")
+  if (!inherits(object, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (!type %in% c("mean", "median")) stop("Argument 'type' must currently be either 'mean' or 'median'.")
 
   if (object$thinning$time != 1) warning("Not every point in time has been stored ('thintime' was set to a value unequal to 1 during sampling), thus only some residuals have been extracted.")
@@ -313,7 +313,7 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' plot(draws, forecast = fore)
 #' @export
 predict.svdraws <- function(object, steps = 1L, ...) {
-  if (!(is(object, "svdraws") || is(object, "svldraws"))) stop("Argument 'object' must be of class 'svdraws' or 'svldraws'.")
+  if (!(inherits(object, "svdraws"))) stop("Argument 'object' must be of class 'svdraws' or 'svldraws'.")
   steps <- as.integer(steps)
   if (steps < 1) stop("Argument 'steps' must be greater or equal to 1.")
   thinlatent <- object$thinning$latent
@@ -415,8 +415,8 @@ predict.svldraws <- function (object, steps = 1L, ...) {
 #' }
 #' @export arpredict
 arpredict <- function(object, volpred) {
- if (!is(object, "svdraws")) stop("Argument 'object' must be of class 'svdraws'.")
- if (!is(volpred, "svpredict")) stop("Argument 'volpred' must be of class 'svpredict'.")
+ if (!inherits(object, "svdraws")) stop("Argument 'object' must be of class 'svdraws'.")
+ if (!inherits(volpred, "svpredict")) stop("Argument 'volpred' must be of class 'svpredict'.")
  if (colnames(object$priors$designmatrix)[1] == "const") dynamic <- TRUE else stop("Probably not an AR-specification.")
  order <- ncol(object$priors$designmatrix) - 1
 

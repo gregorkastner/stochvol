@@ -43,7 +43,7 @@ paradensplot <- function (x, ...) {
 
 paradensplot.svdraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
                                  mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
-  if (!is(x, "svdraws")) stop("This function expects an 'svdraws' object.")
+  if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (!is.logical(showobs)) stop("If provided, argument 'showobs' must be TRUE or FALSE.")
   if (!is.null(simobj)) {
     if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
@@ -77,7 +77,7 @@ paradensplot.svdraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab =
 
 paradensplot.svldraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
                                   mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
-  if (!is(x, "svldraws")) stop("This function expects an 'svldraws' object.")
+  if (!inherits(x, "svldraws")) stop("This function expects an 'svldraws' object.")
   if (!is.logical(showobs)) stop("If provided, argument 'showobs' must be TRUE or FALSE.")
   if (!is.null(simobj)) {
     if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
@@ -145,9 +145,9 @@ paratraceplot <- function (x, ...) {
 }
 
 paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
-  if (!is(x, "svdraws")) stop("This function expects an 'svdraws' object.")
+  if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (!is.null(simobj)) {
-    if (!is(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
+    if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
     sim <- TRUE
   } else sim <- FALSE
   oldpar <- par(mar=mar)
@@ -164,7 +164,7 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
 }
 
 paratraceplot.svldraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
-  if (!is(x, "svldraws")) stop("This function expects an 'svldraws' object.")
+  if (!inherits(x, "svldraws")) stop("This function expects an 'svldraws' object.")
   if (!is.null(simobj)) {
     if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
     sim <- TRUE
@@ -251,9 +251,9 @@ paratraceplot.svldraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6,
 volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
                     col = NULL, forecastlty = NULL, tcl = -.4,
                     mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
-  if (!is(x, "svdraws") && !is(x, "svldraws")) stop("This function expects an 'svdraws' or an 'svldraws' object.")
+  if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' or an 'svldraws' object.")
   if (!is.null(simobj)) {
-    if (!is(simobj, "svsim") && !is(simobj, "svlsim")) stop("If provided, simobj must be an 'svsim' or an 'svlsim' object.")
+    if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' or an 'svlsim' object.")
     sim <- TRUE
   } else sim <- FALSE
   oldpar <- par(mar = mar)
@@ -261,7 +261,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
   volquants <- t(100*exp(x$summary$latent[,where,drop=FALSE]/2))  # monotone transformation!
   nvolquants <- dim(volquants)[1]
   timelen <- dim(volquants)[2]
-  if (is.null(nvolquants) | all(is.na(volquants))) stop("No quantiles to plot.")
+  if (is.null(nvolquants) || all(is.na(volquants))) stop("No quantiles to plot.")
   if (is.null(col)) {
     cols <- rep(8, nvolquants)
     cols[dimnames(volquants)[[1]] == "50%"] <- 1
@@ -283,7 +283,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
       forecast <- predict(x, forecast)
     }
     if(!inherits(forecast, "svpredict")) stop("Argument 'forecast' must be a single nonnegative integer, or of class type 'svpredict' or 'svlpredict'.")
-    if(is(forecast, "svlpredict")) {
+    if(inherits(forecast, "svlpredict")) {
       show0 <- FALSE
     }
 
@@ -319,7 +319,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
     lines(100*simobj$vol, col = 3)
   }
 
-  if (is(forecast, "svpredict") || is(forecast, "svlpredict")) {
+  if (inherits(forecast, "svpredict")) {
     for (i in 1:nvolquants) lines(xs[,i], ys[,i], lty=forecastlty, col=cols[i])
   }
 
@@ -339,7 +339,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
       dates <- c(dates, seq(length(dates), max(ax), by=dates[2]-dates[1]))
     }
   } else {
-    if (is(dates, "Date")) dates <- as.character(dates)
+    if (inherits(dates, "Date")) dates <- as.character(dates)
     if (length(dates) != ncol(x$latent)) {
       stop("Length of argument 'dates' differs from ncol(x$latent).")
     }
@@ -360,7 +360,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
       lines(100*simobj$vol*standardizer, col = 3)
     }
 
-    if (is(forecast, "svpredict")) {
+    if (inherits(forecast, "svpredict")) {
       standardizer <- sqrt(x$para[,"nu"] / (x$para[,"nu"] - 2))
       where <- grep("%", dimnames(x$summary$latent)[[2]])
       ys <- rbind(100*x$summary$sd[timelen,where,drop=FALSE],
