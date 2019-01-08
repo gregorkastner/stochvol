@@ -1,6 +1,6 @@
 #include <RcppArmadillo.h>
 #include "sampler.h"
-#include "run-samplers.h"
+#include "sampler-leverage.h"
 
 using namespace Rcpp;
 

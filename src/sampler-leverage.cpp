@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <algorithm>
 #include "progutils.h"
-#include "run-samplers.h"
+#include "sampler-leverage.h"
 #include "theta-sampler.h"
 #include "h-sampler.h"
 #include "parameterization.hpp"
