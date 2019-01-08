@@ -46,24 +46,28 @@ paradensplot.svdraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab =
   if (!is(x, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (!is.logical(showobs)) stop("If provided, argument 'showobs' must be TRUE or FALSE.")
   if (!is.null(simobj)) {
-    if (!is(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
+    if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
     sim <- TRUE
   } else sim <- FALSE
   oldpar <- par(mar=mar)
-  paranames <- c(quote(mu), quote(phi), quote(sigma), quote(nu))
+  paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), nu=quote(nu))
   cutat1 <- c(FALSE, TRUE, FALSE, FALSE)
   for (i in 1:ncol(x$para)) {
-    mydensplot(x$para[,i], show.obs=showobs, main=paste("Density of", paranames[i]),
+    parastring <- colnames(x$para)[i]
+    mydensplot(x$para[,parastring], show.obs=showobs, main=paste("Density of", paranames[parastring]),
                cutat1=cutat1[i], showxlab=showxlab, mgp = mgp, ...)
     if (isTRUE(showprior)) {
-      paras <- x$priors[[i]]
+      paras <- x$priors[[parastring]]
       vals <- seq(from=par('usr')[1], to=par('usr')[2], len=1000)
       if (i == 1) lines(vals, dnorm(vals, paras[1], paras[2]), col=8, lty=2)
       else if (i == 2) lines(vals, .5*dbeta((vals+1)/2, paras[1], paras[2]), col=8, lty=2)
-      else if (i == 3) lines(vals, 2*dnorm(vals, 0, sqrt(paras[1])), col=8, lty=2)
-      else if (i == 4) lines(vals, dunif(vals, x$priors$nu[1], x$priors$nu[2]), col = 8, lty = 2)
-      if (sim && (i <= 3 || length(simobj$para) == 4)) {
-        points(simobj$para[i], 0, col = 3, cex = 2, pch = 16)
+      else if (i == 3) {
+        if (x$priors$gammaprior) lines(vals, 2*dnorm(vals, 0, sqrt(paras[1])), col=8, lty=2)
+        else lines(vals, 2*vals^(-3)*dgamma(1/vals^2, 2.5, rate=1.5*paras[1]), col=8, lty=2)
+      }
+      else if (i == 4) lines(vals, dunif(vals, paras[1], paras[2]), col = 8, lty = 2)
+      if (sim && (i <= 3 || "nu" %in% names(simobj$para))) {
+        points(simobj$para[[parastring]], 0, col = 3, cex = 2, pch = 16)
       }
     }
   }
@@ -80,20 +84,24 @@ paradensplot.svldraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab 
     sim <- TRUE
   } else sim <- FALSE
   oldpar <- par(mar=mar)
-  paranames <- c(quote(mu), quote(phi), quote(sigma), quote(rho))
-  cutat1 <- c(FALSE, TRUE, FALSE, FALSE)
+  paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), rho=quote(rho))
+  cutat1 <- c(FALSE, TRUE, FALSE, TRUE)
   for (i in 1:ncol(x$para)) {
-    mydensplot(x$para[,i], show.obs=showobs, main=paste("Density of", paranames[i]),
+    parastring <- colnames(x$para)[i]
+    mydensplot(x$para[,parastring], show.obs=showobs, main=paste("Density of", paranames[parastring]),
                cutat1=cutat1[i], showxlab=showxlab, mgp = mgp, ...)
     if (isTRUE(showprior)) {
-      paras <- x$priors[[i]]
+      paras <- x$priors[[parastring]]
       vals <- seq(from=par('usr')[1], to=par('usr')[2], len=1000)
-      if (i == 1) lines(vals, dnorm(vals, paras[1], paras[2]), col=8, lty=2)
-      else if (i == 2) lines(vals, .5*dbeta((vals+1)/2, paras[1], paras[2]), col=8, lty=2)
-      else if (i == 3) lines(vals, 2*dnorm(vals, 0, sqrt(paras[1])), col=8, lty=2)
-      else if (i == 4) lines(vals, .5*dbeta((vals+1)/2, paras[1], paras[2]), col=8, lty=2)
-      if (sim) {
-        points(simobj$para[i], 0, col = 3, cex = 2, pch = 16)
+      if (parastring == "mu") lines(vals, dnorm(vals, paras[1], paras[2]), col=8, lty=2)
+      else if (parastring == "phi") lines(vals, .5*dbeta((vals+1)/2, paras[1], paras[2]), col=8, lty=2)
+      else if (parastring == "sigma") {
+        if (x$priors$gammaprior) lines(vals, 2*dnorm(vals, 0, sqrt(paras[1])), col=8, lty=2)
+        else lines(vals, 2*vals^(-3)*dgamma(1/vals^2, 3, 3), col=8, lty=2)
+      }
+      else if (parastring == "rho") lines(vals, .5*dbeta((vals+1)/2, paras[1], paras[2]), col=8, lty=2)
+      if (sim && (i <= 3 || "rho" %in% names(simobj$para))) {
+        points(simobj$para[[parastring]], 0, col = 3, cex = 2, pch = 16)
       }
     }
   }
@@ -158,7 +166,7 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
 paratraceplot.svldraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
   if (!is(x, "svldraws")) stop("This function expects an 'svldraws' object.")
   if (!is.null(simobj)) {
-    if (!is(simobj, "svlsim")) stop("If provided, simobj must be an 'svlsim' object.")
+    if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
     sim <- TRUE
   } else sim <- FALSE
   oldpar <- par(mar=mar)
@@ -260,7 +268,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
   } else cols <- col
   if (is.null(forecastlty)) forecastlty <- 2
 
-  if (is(forecast, "svpredict") || is(forecast, "svlpredict") || (is.numeric(forecast) && length(forecast) == 1 && all(forecast != 0))) { # also draw future values
+  if (inherits(forecast, "svpredict") || (is.numeric(forecast) && length(forecast) == 1 && all(forecast != 0))) { # also draw future values
     thintime <- x$thinning$time
 
     if (thintime != 1) {
@@ -274,7 +282,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
       #   warning("Calling prediction method.")
       forecast <- predict(x, forecast)
     }
-    if(!is(forecast, "svpredict") || !is(forecast, "svlpredict")) stop("Argument 'forecast' must be a single nonnegative integer, or of class type 'svpredict' or 'svlpredict'.")
+    if(!inherits(forecast, "svpredict")) stop("Argument 'forecast' must be a single nonnegative integer, or of class type 'svpredict' or 'svlpredict'.")
     if(is(forecast, "svlpredict")) {
       show0 <- FALSE
     }

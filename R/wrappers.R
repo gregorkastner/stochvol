@@ -519,10 +519,10 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   if (ncol(res$para) == 3) {
     attr(res$para, "dimnames") <- list(NULL, c("mu", "phi", "sigma"))
-    res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma)
+    res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, gammaprior = gammaprior)
   } else {
     attr(res$para, "dimnames") <- list(NULL, c("mu", "phi", "sigma", "nu"))
-    res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, nu = priornu)
+    res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, nu = priornu, gammaprior = gammaprior)
     #res$tau <- mcmc(t(res$tau), burnin+thinlatent, burnin+draws, thinlatent)
   }
 

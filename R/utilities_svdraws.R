@@ -363,7 +363,7 @@ predict.svdraws <- function(object, steps = 1L, ...) {
 #' @export
 predict.svldraws <- function (object, steps = 1L, ...) {
   volpred <- predict.svdraws(object = object, steps = steps, ...)
-  class(volpred) <- c("svlpredict", "mcmc")
+  class(volpred) <- c("svlpredict", "svpredict", "mcmc")
   volpred
 }
 

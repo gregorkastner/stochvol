@@ -256,7 +256,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$para <- coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)
   res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
   res$thinning <- list(para = thinpara, latent = thinlatent, time = thintime)
-  res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, rho = priorrho)
+  res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, rho = priorrho, gammaprior = gammaprior)
   if (!any(is.na(designmatrix))) {
     res$beta <- coda::mcmc(res$beta, burnin+thinpara, burnin+draws, thinpara)
     colnames(res$beta) <- paste0("b_", 0:(NCOL(designmatrix)-1))
