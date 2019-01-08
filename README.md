@@ -46,7 +46,7 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * roxygen
 
 ### Other
-* Depends: methods ("Rscript --vanilla" doesn't load it)
+* -Depends: methods ("Rscript --vanilla" doesn't load it)
 * -prior_mu in draw_h_auxiliary
 * ggplot2
 * -maybe c('svldraws', 'svdraws') should be the new class structure
@@ -55,5 +55,5 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * G: inverse gamma prior parameters!
 * G: plot inverse gamma prior
 * check TODOs in the code
-* plot correct prior if gammaprior=FALSE
+* -plot correct prior if gammaprior=FALSE
 
