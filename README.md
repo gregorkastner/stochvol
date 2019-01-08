@@ -20,7 +20,7 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * -paradensplot
 * -paratraceplot
 * -svlsample
-* svlsample2
+* -svlsample2
 * -svlsim
 * -updatesummary
 * -volplot
@@ -29,10 +29,11 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * -svlsample_cpp
 
 ### Features
-* regression, betas
+* -regression, betas
 * -'update' function for svlsample
 * 'update' in Rcpp
-* factorstochvol and update in Rcpp
+* factorstochvol and update in Rcpp or arma
+* prediction using design matrices
 
 ### Code cleanup
 * -remove unnecessary svlsamplr code
@@ -48,10 +49,11 @@ Partial re-write of the R package stochvol to allow for asymmetry (leverage).
 * Depends: methods ("Rscript --vanilla" doesn't load it)
 * -prior_mu in draw_h_auxiliary
 * ggplot2
-* maybe c('svldraws', 'svdraws') should be the new class structure
+* -maybe c('svldraws', 'svdraws') should be the new class structure
 * G: change svpredict's format to include prediction about 'y' as well. or simply discard the y's predicted by svlpredict?
 * create joint file structure
 * G: inverse gamma prior parameters!
 * G: plot inverse gamma prior
 * check TODOs in the code
+* plot correct prior if gammaprior=FALSE
 
