@@ -228,10 +228,11 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   if (.Platform$OS.type != "unix") myquiet <- TRUE else myquiet <- quiet  # Hack to prevent console flushing problems with Windows
 
   runtime <- system.time({
-    res <- svlsample_cpp(draws, y, burnin, thinpara, thinlatent, thintime,
+    res <- svlsample_cpp(draws, y, burnin, designmatrix, thinpara, thinlatent, thintime,
                                  startpara, startlatent,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
-                                 0.5, 0.5/priorsigma, priormu[1], priormu[2], !myquiet,
+                                 0.5, 0.5/priorsigma, priormu[1], priormu[2],
+                                 priorbeta[1], priorbeta[2], !myquiet,
                                  myoffset, mhcontrol, gammaprior, parameterization)
   })
 
@@ -257,9 +258,11 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$thinning <- list(para = thinpara, latent = thinlatent, time = thintime)
   res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, rho = priorrho)
   if (!any(is.na(designmatrix))) {
-    res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)  # TODO
-    colnames(res$beta) <- paste("b", 0:(NCOL(designmatrix)-1), sep = "_")
+    res$beta <- coda::mcmc(res$beta, burnin+thinpara, burnin+draws, thinpara)
+    colnames(res$beta) <- paste0("b_", 0:(NCOL(designmatrix)-1))
     res$priors <- c(res$priors, "beta" = list(priorbeta), "designmatrix" = list(designmatrix))
+  } else {
+    res$beta <- NULL
   }
   class(res) <- c("svldraws", "svdraws")
 
@@ -287,10 +290,11 @@ svlsample2 <- function (y, draws = 1, burnin = 0,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(3, 5),
                        thinpara = 1, thinlatent = 1, thintime = 1,
                        quiet = FALSE, startpara, startlatent) {
-  res <- svlsample_cpp(draws, y, burnin, thinpara, thinlatent, thintime,
+  res <- svlsample_cpp(draws, y, burnin, matrix(NA), thinpara, thinlatent, thintime,
                                startpara, startlatent,
                                priorphi[1], priorphi[2], priorrho[1], priorrho[2],
-                               0.5, 0.5/priorsigma, priormu[1], priormu[2], !quiet,
+                               0.5, 0.5/priorsigma, priormu[1], priormu[2],
+                               0, 1, !quiet,
                                0, 0.1, TRUE, rep(c("centered", "non-centered"), 5))
 
   res$para <- res$para[, c(4,1,3,2)]

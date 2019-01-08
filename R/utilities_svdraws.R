@@ -135,8 +135,7 @@ runtime <- function(x) {
 updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslatent = FALSE) {
 
   # Check if conditional t errors are used
-  if ("nu" %in% colnames(x$para)) terr <- TRUE else terr <- FALSE
-  if (exists("betas", x)) regression <- TRUE else regression <- FALSE
+  terr <- "nu" %in% colnames(x$para)
 
   summaryfunction <- function(x, quants = quantiles, ess = TRUE) {
     if (ess) {
@@ -176,7 +175,7 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
 #' @export
 summary.svldraws <- function(object, showpara = TRUE, showlatent = TRUE, ...) {
   ret <- vector("list")
-  class(ret) <- "summary.svdraws"
+  class(ret) <- "summary.svldraws"
   ret$mcp <- mcpar(para(object))
   ret$mcl <- mcpar(latent(object))
   ret$priors <- priors(object)
@@ -188,6 +187,7 @@ summary.svldraws <- function(object, showpara = TRUE, showlatent = TRUE, ...) {
 #' @export
 summary.svdraws <- function (object, showpara = TRUE, showlatent = TRUE, ...) {
   ret <- summary.svldraws(object, showpara = showpara, showlatent = showlatent)
+  class(ret) <- "summary.svdraws"
   if (isTRUE(showlatent)) ret$latent <- rbind("h_0" = latent0(object$summary), ret$latent)
   ret
 }

@@ -495,9 +495,10 @@ mydensplot <- function(x, show.obs = TRUE, bwf, main = "", ylim, cutat1=FALSE, s
       }
     bw <- bwf(x.i)
     width <- 4 * bw
-    if (max(abs(x.i - floor(x.i))) == 0 || bw == 0) 
+    if (max(abs(x.i - floor(x.i))) == 0 || bw == 0) {
       hist(x.i, prob = TRUE, main = main, ...)
-    else {
+    } else {
+      density.scale <- "open"
       if (isTRUE(cutat1)) {
         if (1-max(x.i) < 2*bw) {
           density.scale <- "cutat1"
@@ -510,18 +511,15 @@ mydensplot <- function(x, show.obs = TRUE, bwf, main = "", ylim, cutat1=FALSE, s
           density.scale <- "cutat-1"
           x.i <- c(x.i, -2 - x.i)
         }
-      }
-      else if (max(x.i) <= 1 && 1 - max(x.i) < 2 * bw) {
+      } else if (max(x.i) <= 1 && 1 - max(x.i) < 2 * bw) {
         if (min(x.i) >= 0 && min(x.i) < 2 * bw) {
           density.scale <- "proportion"
           x.i <- c(x.i, -x.i, 2 - x.i)
         }
-      }
-      else if (min(x.i) >= 0 && min(x.i) < 2 * bw) {
+      } else if (min(x.i) >= 0 && min(x.i) < 2 * bw) {
         density.scale <- "positive"
         x.i <- c(x.i, -x.i)
       }
-      else density.scale <- "open"
       dens <- density(x.i, width = width)
 
       if (density.scale == "proportion") {

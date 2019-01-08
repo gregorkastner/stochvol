@@ -1,6 +1,6 @@
+#include <RcppArmadillo.h>
 #include "sampler.h"
 #include "run-samplers.h"
-#include <Rcpp.h>
 
 using namespace Rcpp;
 
@@ -35,13 +35,14 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP _stochvol_svlsample_cpp(SEXP drawsSEXP, SEXP ySEXP, SEXP burninSEXP, SEXP thinparaSEXP, SEXP thinlatentSEXP, SEXP thintimeSEXP, SEXP startparaSEXP, SEXP startlatentSEXP, SEXP prior_phi_aSEXP, SEXP prior_phi_bSEXP, SEXP prior_rho_aSEXP, SEXP prior_rho_bSEXP, SEXP prior_sigma2_shapeSEXP, SEXP prior_sigma2_rateSEXP, SEXP prior_mu_muSEXP, SEXP prior_mu_sigmaSEXP, SEXP verboseSEXP, SEXP offsetSEXP, SEXP stdevSEXP, SEXP gammapriorSEXP, SEXP strategySEXP) {
+RcppExport SEXP _stochvol_svlsample_cpp(SEXP drawsSEXP, SEXP ySEXP, SEXP burninSEXP, SEXP designmatrixSEXP, SEXP thinparaSEXP, SEXP thinlatentSEXP, SEXP thintimeSEXP, SEXP startparaSEXP, SEXP startlatentSEXP, SEXP prior_phi_aSEXP, SEXP prior_phi_bSEXP, SEXP prior_rho_aSEXP, SEXP prior_rho_bSEXP, SEXP prior_sigma2_shapeSEXP, SEXP prior_sigma2_rateSEXP, SEXP prior_mu_muSEXP, SEXP prior_mu_sigmaSEXP, SEXP prior_beta_muSEXP, SEXP prior_beta_sigmaSEXP, SEXP verboseSEXP, SEXP offsetSEXP, SEXP stdevSEXP, SEXP gammapriorSEXP, SEXP strategySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const int >::type draws(drawsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type designmatrix(designmatrixSEXP);
     Rcpp::traits::input_parameter< const int >::type thinpara(thinparaSEXP);
     Rcpp::traits::input_parameter< const int >::type thinlatent(thinlatentSEXP);
     Rcpp::traits::input_parameter< const int >::type thintime(thintimeSEXP);
@@ -55,19 +56,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type prior_sigma2_rate(prior_sigma2_rateSEXP);
     Rcpp::traits::input_parameter< const double >::type prior_mu_mu(prior_mu_muSEXP);
     Rcpp::traits::input_parameter< const double >::type prior_mu_sigma(prior_mu_sigmaSEXP);
+    Rcpp::traits::input_parameter< const double >::type prior_beta_mu(prior_beta_muSEXP);
+    Rcpp::traits::input_parameter< const double >::type prior_beta_sigma(prior_beta_sigmaSEXP);
     Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< const double >::type offset(offsetSEXP);
     Rcpp::traits::input_parameter< const double >::type stdev(stdevSEXP);
     Rcpp::traits::input_parameter< const bool >::type gammaprior(gammapriorSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type strategy(strategySEXP);
-    rcpp_result_gen = Rcpp::wrap(svlsample_cpp(draws, y, burnin, thinpara, thinlatent, thintime, startpara, startlatent, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, verbose, offset, stdev, gammaprior, strategy));
+    rcpp_result_gen = Rcpp::wrap(svlsample_cpp(draws, y, burnin, designmatrix, thinpara, thinlatent, thintime, startpara, startlatent, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, prior_beta_mu, prior_beta_sigma, verbose, offset, stdev, gammaprior, strategy));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_stochvol_sampler", (DL_FUNC) &sampler, 27},
-    {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 21},
+    {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 24},
     {NULL, NULL, 0}
 };
 

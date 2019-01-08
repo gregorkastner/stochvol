@@ -1,12 +1,13 @@
 #ifndef RUN_SAMPLERS_H
 #define RUN_SAMPLERS_H
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 
 Rcpp::List svlsample_cpp (
     const int draws,
     const Rcpp::NumericVector& y,
     const int burnin,
+    const Rcpp::NumericMatrix& X,
     const int thinpara,
     const int thinlatent,
     const int thintime,
@@ -20,6 +21,8 @@ Rcpp::List svlsample_cpp (
     const double prior_sigma2_rate,
     const double prior_mu_mu,
     const double prior_mu_sigma,
+    const double prior_beta_mu,
+    const double prior_beta_sigma,
     const bool verbose,
     const double offset,
     const double stdev,

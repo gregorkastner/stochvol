@@ -1,5 +1,5 @@
-svlsample_cpp <- function(draws, y, burnin, thinpara, thinlatent, thintime, startpara, startlatent, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, verbose, myoffset, stdev, gammaprior, strategy) {
-    .Call("_stochvol_svlsample_cpp", draws, y, burnin, thinpara, thinlatent, thintime, startpara, startlatent, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, verbose, myoffset, stdev, gammaprior, strategy, PACKAGE = "stochvol")
+svlsample_cpp <- function(draws, y, burnin, designmatrix, thinpara, thinlatent, thintime, startpara, startlatent, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, prior_beta_mu, prior_beta_sigma, verbose, myoffset, stdev, gammaprior, strategy) {
+    .Call("_stochvol_svlsample_cpp", draws, y, burnin, designmatrix, thinpara, thinlatent, thintime, startpara, startlatent, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, prior_beta_mu, prior_beta_sigma, verbose, myoffset, stdev, gammaprior, strategy, PACKAGE = "stochvol")
 }
 
 sampler <- function(y, draws, burnin, designmatrix,

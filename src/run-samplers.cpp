@@ -1,3 +1,4 @@
+#include <RcppArmadillo.h>
 #include <algorithm>
 #include "progutils.h"
 #include "run-samplers.h"
@@ -11,6 +12,7 @@ Rcpp::List svlsample_cpp (
     const int draws,
     const Rcpp::NumericVector& y,
     const int burnin,
+    const Rcpp::NumericMatrix& X,
     const int thinpara,
     const int thinlatent,
     const int thintime,
@@ -24,6 +26,8 @@ Rcpp::List svlsample_cpp (
     const double prior_sigma2_rate,
     const double prior_mu_mu,
     const double prior_mu_sigma,
+    const double prior_beta_mu,
+    const double prior_beta_sigma,
     const bool verbose,
     const double offset,
     const double stdev,
@@ -31,13 +35,18 @@ Rcpp::List svlsample_cpp (
     const Rcpp::CharacterVector& strategy_rcpp) {
 
   const int N = burnin + draws;
-
-  NumericVector theta = {theta_init["phi"], theta_init["rho"], pow(theta_init["sigma"], 2), theta_init["mu"]};
-  NumericVector h = h_init, ht = (h_init-theta(3))/sqrt(theta(2));
-
   const NumericVector y_star = Rcpp::log(y*y + offset);
   const NumericVector d = wrap(ifelse(y > 0, rep(1, y.length()), rep(-1, y.length())));
 
+  const bool regression = !ISNA(X(0,0));
+  const int T = y.length();
+  const int p = X.ncol();
+
+  NumericVector theta = {theta_init["phi"], theta_init["rho"], pow(theta_init["sigma"], 2), theta_init["mu"]};
+  NumericVector h = h_init, ht = (h_init-theta(3))/sqrt(theta(2));
+  arma::vec beta(p); beta.fill(.012345);
+
+  arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
   NumericMatrix params(draws/thinpara, 4);
   NumericMatrix latent(draws/thinlatent, y.length()/thintime);
 
@@ -50,6 +59,20 @@ Rcpp::List svlsample_cpp (
         else Rf_error("Illegal parameterization");
   });
 
+  // some stuff for the regression part
+  // prior mean and precision matrix for the regression part (currently fixed)
+  const arma::vec priorbetamean = arma::ones(p) * prior_beta_mu;
+  const arma::mat priorbetaprec = arma::eye(p, p) / (prior_beta_sigma*prior_beta_sigma);
+  arma::vec normalizer(T);
+  arma::mat X_reg(T, p);
+  arma::vec y_reg(T);
+  arma::vec y_leverage_offset(T);
+  arma::mat postprecchol(p, p);
+  arma::mat postpreccholinv(p, p);
+  arma::mat postcov(p, p);
+  arma::vec postmean(p);
+  arma::vec armadraw(p);
+
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
   const int show = verbose ? progressbar_init(N) : 0;
@@ -61,13 +84,50 @@ Rcpp::List svlsample_cpp (
     // print a progress sign every "show" iterations
     if (verbose && (i % show == 0)) progressbar_print();
 
+    // update theta and h
     update_leverage (y, y_star, d, theta, h, ht,
       prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b,
       prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma,
       stdev, gammaprior, strategy);
 
+    // update beta
+    if (regression) {
+      const double rho = theta(1);
+      const double phi = theta(0);
+      const arma::vec h_arma(h.begin(), h.length(), false);  // create view
+      const arma::vec ht_arma(ht.begin(), ht.length(), false);  // create view
+
+      y_reg = y;
+      y_reg.head(T-1) -= rho * exp(h_arma.head(T-1)/2) % (ht_arma.tail(T-1) - phi*ht_arma.head(T-1));
+      std::copy(X.cbegin(), X.cend(), X_reg.begin());
+
+      normalizer = exp(-h/2);
+      normalizer.head(T-1) /= sqrt(1-pow(rho, 2));
+      X_reg.each_col() %= normalizer;
+      y_reg %= normalizer;
+
+      // cholesky factor of posterior precision matrix
+      postprecchol = arma::chol(X_reg.t() * X_reg + arma::diagmat(priorbetaprec));
+
+      // inverse cholesky factor of posterior precision matrix 
+      postpreccholinv = arma::inv(arma::trimatu(postprecchol));
+
+      // posterior covariance matrix and posterior mean vector
+      postcov = postpreccholinv * postpreccholinv.t();
+      postmean = postcov * (X_reg.t() * y_reg + arma::diagmat(priorbetaprec) * priorbetamean);
+
+      armadraw.imbue([]() -> double {return R::rnorm(0, 1);});  // equivalent to armadraw = Rcpp::rnorm(p); but I don't know if rnorm creates a vector
+
+      // posterior betas
+      beta = postmean + arma::trimatu(postpreccholinv) * armadraw;
+    }
+
+    // store draws
     if ((i >= 1) && !thinpara_round) {
       params.row(i/thinpara-1) = theta;
+      if (regression) {
+        betas.row(i/thinpara-1) = beta.t();
+      }
     }
     if ((i >= 1) && !thinlatent_round) {
       for (int volind = 0, thincol = thintime-1; thincol < h.length(); volind++, thincol += thintime) {
@@ -80,7 +140,8 @@ Rcpp::List svlsample_cpp (
 
   return Rcpp::List::create(
       Rcpp::_["para"] = params,
-      Rcpp::_["latent"] = latent);
+      Rcpp::_["latent"] = latent,
+      Rcpp::_["beta"] = betas);
 }
 
 void update_leverage (
