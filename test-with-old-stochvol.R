@@ -20,8 +20,8 @@ if (generate) {
 } else {
   foo.old <- readRDS(filename)
   foo$runtime <- foo.old$runtime <- NULL
-  if (all.equal(foo$para, foo.old$para) &&
-      all.equal(foo$latent, foo.old$latent)) {
+  if (isTRUE(all.equal(foo$para, foo.old$para)) &&
+      isTRUE(all.equal(foo$latent, foo.old$latent))) {
     message("Test passed!")
   } else {
     stop("Test failed!")
