@@ -85,6 +85,7 @@ Rcpp::List svlsample_cpp (
     if (verbose && (i % show == 0)) progressbar_print();
 
     // update theta and h
+    // TODO demean when regression
     update_leverage (y, y_star, d, theta, h, ht,
       prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b,
       prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma,

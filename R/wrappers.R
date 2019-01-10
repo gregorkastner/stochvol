@@ -232,7 +232,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   if (length(y) < 2) stop("Argument 'y' (data vector) must contain at least two elements.")
 
-  if (any(y^2 == 0)) {
+  if (any(y^2 == 0)) {  # TODO no check when regression
     myoffset <- sd(y)/10000
     warning(paste("Argument 'y' (data vector) contains zeros. I am adding an offset constant of size ", myoffset, " to do the auxiliary mixture sampling. If you want to avoid this, you might consider de-meaning the returns before calling this function.", sep=""))
   } else myoffset <- 0
@@ -960,7 +960,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' with proper care!
 #'
 #' @export
-svlsample2 <- function (y, draws = 1, burnin = 0,
+svlsample2 <- function (y, draws = 1, burnin = 0,  # TODO return same dimensions as svsample2
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(3, 5),
                        thinpara = 1, thinlatent = 1, thintime = 1,
                        quiet = FALSE, startpara, startlatent) {
