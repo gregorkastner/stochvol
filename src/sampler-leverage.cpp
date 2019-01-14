@@ -10,7 +10,7 @@ using namespace Rcpp;
 
 Rcpp::List svlsample_cpp (
     const int draws,
-    const Rcpp::NumericVector& y,
+    const Rcpp::NumericVector& y_in,
     const int burnin,
     const Rcpp::NumericMatrix& X,
     const int thinpara,
@@ -34,6 +34,7 @@ Rcpp::List svlsample_cpp (
     const bool gammaprior,
     const Rcpp::CharacterVector& strategy_rcpp) {
 
+  NumericVector y(y_in);
   const int N = burnin + draws;
   const NumericVector y_star = Rcpp::log(y*y + offset);
   const NumericVector d = wrap(ifelse(y > 0, rep(1, y.length()), rep(-1, y.length())));
@@ -84,8 +85,15 @@ Rcpp::List svlsample_cpp (
     // print a progress sign every "show" iterations
     if (verbose && (i % show == 0)) progressbar_print();
 
+    if (regression) {  // slightly circumstantial due to the combined use of Rcpp and arma
+      std::copy(X.cbegin(), X.cend(), X_reg.begin());  // important!
+      for (int i = 0; i < y.length(); i++) {
+        y(i) = y_in(i) - arma::as_scalar(X_reg.row(i)*beta);
+        y(i) = log(pow(y(i), 2));
+      }
+    }
+
     // update theta and h
-    // TODO demean when regression
     update_leverage (y, y_star, d, theta, h, ht,
       prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b,
       prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma,
@@ -100,10 +108,10 @@ Rcpp::List svlsample_cpp (
 
       y_reg = y;
       y_reg.head(T-1) -= rho * exp(h_arma.head(T-1)/2) % (ht_arma.tail(T-1) - phi*ht_arma.head(T-1));
-      std::copy(X.cbegin(), X.cend(), X_reg.begin());
 
       normalizer = exp(-h/2);
       normalizer.head(T-1) /= sqrt(1-pow(rho, 2));
+      // X has already been copied to X_reg
       X_reg.each_col() %= normalizer;
       y_reg %= normalizer;
 

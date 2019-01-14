@@ -232,7 +232,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   if (length(y) < 2) stop("Argument 'y' (data vector) must contain at least two elements.")
 
-  if (any(y^2 == 0)) {  # TODO no check when regression
+  if (is.na(designmatrix) && any(y^2 == 0)) {
     myoffset <- sd(y)/10000
     warning(paste("Argument 'y' (data vector) contains zeros. I am adding an offset constant of size ", myoffset, " to do the auxiliary mixture sampling. If you want to avoid this, you might consider de-meaning the returns before calling this function.", sep=""))
   } else myoffset <- 0
@@ -320,15 +320,10 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     thinlatent <- as.integer(thinlatent)
   }
 
-  # Some error checking for thintime
-  if (!is.numeric(thintime) || length(thintime) != 1 || thintime < 1) {
-    if (thintime == 'firstlast') {
-      thintime <- length(y) - 1L
-    } else {
-      stop("Argument 'thintime' (thinning parameter for time) must be a single number >= 1 or 'firstlast'.")
-    }
-  } else {
-    thintime <- as.integer(thintime)
+  # thintime deprecated
+  if (!(identical(thintime, 1L) || identical(thintime, 1.0))) {
+    thintime <- 1L
+    warning("Parameter 'thintime' is deprecated. Setting 'thintime' to 1.")
   }
 
   # Some error checking for expert
@@ -486,7 +481,6 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
 
   if (.Platform$OS.type != "unix") myquiet <- TRUE else myquiet <- quiet  # Hack to prevent console flushing problems with Windows
-  #myquiet <- quiet
 
   runtime <- system.time(res <-
     sampler(y, draws, burnin, designmatrix,
@@ -510,7 +504,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$y <- y
   res$para <- mcmc(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
   res$latent <- mcmc(t(res$latent), burnin+thinlatent, burnin+draws, thinlatent)
-  attr(res$latent, "dimnames") <- list(NULL, paste('h_', seq(1, length(y), by=thintime), sep=''))  # TODO set thintime to 1 with a warning
+  attr(res$latent, "dimnames") <- list(NULL, paste('h_', seq(1, length(y), by=thintime), sep=''))
   res$latent0 <- mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
   if (!any(is.na(designmatrix))) {
     res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
@@ -653,12 +647,18 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 
  if (priorlatent0 == "stationary") priorlatent0 <- -1L
 
+  # thintime deprecated
+  if (!(identical(thintime, 1L) || identical(thintime, 1.0))) {
+    thintime <- 1L
+    warning("Parameter 'thintime' is deprecated. Setting 'thintime' to 1.")
+  }
+
  res <- sampler(y, draws, burnin, matrix(NA), priormu[1], priormu[2]^2,
 	      priorphi[1], priorphi[2], priorsigma, thinlatent,
 	      thintime, startpara, startlatent, keeptau, quiet, 3L, 2L, 10^8,
 	      10^12, -1, TRUE, FALSE, 0, FALSE, priornu, c(NA, NA), priorlatent0)
 
- res$para <- t(res$para[-1,,drop=FALSE])  # TODO use thinpara
+ res$para <- t(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE])
  if (nrow(res$para) == 3) {
   rownames(res$para) <- names(res$para) <- c("mu", "phi", "sigma")
  } else {
@@ -773,15 +773,10 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     thinlatent <- as.integer(thinlatent)
   }
 
-  # Some error checking for thintime
-  if (!is.numeric(thintime) || length(thintime) != 1 || thintime < 1) {  # TODO set thintime to 1 with a warning
-    if (thintime == 'firstlast') {
-      thintime <- length(y) - 1L
-    } else {
-      stop("Argument 'thintime' (thinning parameter for time) must be a single number >= 1 or 'firstlast'.")
-    }
-  } else {
-    thintime <- as.integer(thintime)
+  # thintime deprecated
+  if (!(identical(thintime, 1L) || identical(thintime, 1.0))) {
+    thintime <- 1L
+    warning("Parameter 'thintime' is deprecated. Setting 'thintime' to 1.")
   }
 
   # Some input checking for startpara
@@ -957,10 +952,17 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' with proper care!
 #'
 #' @export
-svlsample2 <- function (y, draws = 1, burnin = 0,  # TODO return same dimensions as svsample2
+svlsample2 <- function (y, draws = 1, burnin = 0,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(3, 5),
                        thinpara = 1, thinlatent = 1, thintime = 1,
                        quiet = FALSE, startpara, startlatent) {
+
+  # thintime deprecated
+  if (!(identical(thintime, 1L) || identical(thintime, 1.0))) {
+    thintime <- 1L
+    warning("Parameter 'thintime' is deprecated. Setting 'thintime' to 1.")
+  }
+
   res <- svlsample_cpp(draws, y, burnin, matrix(NA), thinpara, thinlatent, thintime,
                                startpara, startlatent,
                                priorphi[1], priorphi[2], priorrho[1], priorrho[2],
@@ -968,8 +970,9 @@ svlsample2 <- function (y, draws = 1, burnin = 0,  # TODO return same dimensions
                                0, 1, !quiet,
                                0, 0.1, TRUE, rep(c("centered", "non-centered"), 5))
 
-  res$para <- res$para[, c(4,1,3,2)]
+  res$para <- t(res$para[, c(4,1,3,2)])
   res$para[, 3] <- sqrt(res$para[, 3])
+  res$latent <- t(res$latent)
   colnames(res$para) <- c("mu", "phi", "sigma", "rho")
   res
 }
