@@ -508,12 +508,12 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   # store results:
   # remark: +1, because C-sampler also returns the first value
   res$y <- y
-  res$para <- mcmc(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)  # TODO
+  res$para <- mcmc(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
   res$latent <- mcmc(t(res$latent), burnin+thinlatent, burnin+draws, thinlatent)
-  attr(res$latent, "dimnames") <- list(NULL, paste('h_', seq(1, length(y), by=thintime), sep=''))
+  attr(res$latent, "dimnames") <- list(NULL, paste('h_', seq(1, length(y), by=thintime), sep=''))  # TODO set thintime to 1 with a warning
   res$latent0 <- mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
   if (!any(is.na(designmatrix))) {
-    res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)  # TODO
+    res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
     attr(res$beta, "dimnames") <- list(NULL, paste("b", 0:(ncol(designmatrix)-1), sep = "_"))
   } else res$beta <- NULL
 
@@ -657,10 +657,8 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 	      priorphi[1], priorphi[2], priorsigma, thinlatent,
 	      thintime, startpara, startlatent, keeptau, quiet, 3L, 2L, 10^8,
 	      10^12, -1, TRUE, FALSE, 0, FALSE, priornu, c(NA, NA), priorlatent0)
- # TODO this does not use thinpara ever
- # TODO why transpose format??
 
- res$para <- t(res$para[-1,,drop=FALSE])
+ res$para <- t(res$para[-1,,drop=FALSE])  # TODO use thinpara
  if (nrow(res$para) == 3) {
   rownames(res$para) <- names(res$para) <- c("mu", "phi", "sigma")
  } else {
@@ -693,7 +691,6 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priorrho = c(3, 5), priorbeta = c(0, 10000),
                        thinpara = 1, thinlatent = 1, thintime = 1,
                        quiet = FALSE, startpara, startlatent, expert, ...) {
-  # TODO designmatrix priorbeta
   # Some error checking for y
   if (inherits(y, "svsim")) {
     y <- y[["y"]]
@@ -777,7 +774,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
 
   # Some error checking for thintime
-  if (!is.numeric(thintime) || length(thintime) != 1 || thintime < 1) {
+  if (!is.numeric(thintime) || length(thintime) != 1 || thintime < 1) {  # TODO set thintime to 1 with a warning
     if (thintime == 'firstlast') {
       thintime <- length(y) - 1L
     } else {

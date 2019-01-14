@@ -84,7 +84,7 @@ svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
   h <- rep(as.numeric(NA), len)
   h0 <- rnorm(1, mean=mu, sd=sigma/sqrt(1-phi^2))
   eps <- rt(len, df = nu)
-  eta <- rho * eps + sqrt(1-rho^2) * rnorm(len)
+  eta <- rho * eps + sqrt(1-rho^2) * rnorm(len)  # either rho == 0 or eps ~ N(0, 1)
 
   # simulate w/ simple loop
   h[1] <- mu + phi*(h0-mu) + sigma*rnorm(1)  # same marginal distribution as h0
