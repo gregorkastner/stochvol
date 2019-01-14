@@ -335,36 +335,42 @@ predict.svdraws <- function(object, steps = 1L, ...) {
   phi <- object$para[,"phi"][usepara]
   sigma <- object$para[,"sigma"][usepara]
   hlast <- object$latent[,dim(object$latent)[2]][uselatent]
+  ylast <- tail(object$y, 1)
 
   mythin <- max(thinpara, thinlatent)
   len <- length(sigma)
-  volpred <- mcmc(matrix(as.numeric(NA), nrow=len, ncol=steps), start=mythin, end=len*mythin, thin=mythin)
+  volpred <- matrix(as.numeric(NA), nrow=len, ncol=steps)
+  ypred <- matrix(as.numeric(NA), nrow=len, ncol=steps)
 
-  if ("rho" %in% colnames(object$para)) {
-    rho <- object$para[,"rho"][usepara]
-    ylast <- tail(object$y, 1)
-    volpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*ylast*exp(-hlast/2) + (1-rho^2)*rnorm(len))
-    # if we are only interested in generated 'h' values then later 'rho' does not matter
-    # TODO Gregor: am I right?
-  } else {
-    volpred[,1] <- mu + phi*(hlast - mu) + sigma*rnorm(len)
+  rho <- if ("rho" %in% colnames(object$para)) object$para[,"rho"][usepara] else 0
+
+  volpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*ylast*exp(-hlast/2) + sqrt(1-rho^2)*rnorm(len))
+  if (steps > 1) {
+    incr <- rnorm(len)
+    resi <- rho*incr + sqrt(1-rho^2)*rnorm(len)
+    for (i in seq.int(from=2, to=steps)) {
+      ypred[,i-1] <- exp(-volpred[,i-1]/2)*resi
+      volpred[,i] <- mu + phi*(volpred[,i-1] - mu) + sigma*incr
+    }
   }
-  if (steps > 1)
-    for (i in (seq.int(steps-1) + 1))
-      volpred[,i] <- mu + phi*(volpred[,i-1] - mu) + sigma*rnorm(len)
+  ypred[,steps] <- exp(-volpred[,steps]/2)*resi
 
-  class(volpred) <- c("svpredict", "mcmc")
-  lastname <- dimnames(object$latent)[[2]][dim(object$latent)[2]]
+  lastname <- tail(colnames(object$latent), 1)
   lastnumber <- as.integer(gsub("h_", "", lastname))
   colnames(volpred) <- paste("h_", seq(lastnumber + 1, lastnumber + steps), sep='')
-  volpred
+  colnames(ypred) <- paste("y_", seq(lastnumber + 1, lastnumber + steps), sep='')
+  ret <- list(h = coda::mcmc(volpred, start=mythin, end=len*mythin, thin=mythin),
+              y = coda::mcmc(ypred, start=mythin, end=len*mythin, thin=mythin))
+
+  class(ret) <- c("svpredict")
+  ret
 }
 
 #' @export
 predict.svldraws <- function (object, steps = 1L, ...) {
-  volpred <- predict.svdraws(object = object, steps = steps, ...)
-  class(volpred) <- c("svlpredict", "svpredict", "mcmc")
-  volpred
+  ret <- predict.svdraws(object = object, steps = steps, ...)
+  class(ret) <- c("svlpredict", "svpredict")
+  ret
 }
 
 # used to forecast AR-SV models (needs more testing!)

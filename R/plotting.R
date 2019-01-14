@@ -287,11 +287,12 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
       show0 <- FALSE
     }
 
-    futlen <- dim(forecast)[2]
+    volpred <- forecast$h
+    futlen <- NCOL(volpred)
 
     xs <- matrix(rep(seq(timelen, timelen + futlen/thintime, len=futlen+1), nvolquants), nrow=futlen+1)
     quants <- as.numeric(gsub("%", "", dimnames(volquants)[[1]]))/100
-    ys <- rbind(volquants[,timelen], t(matrix(apply(100*exp(forecast/2), 2, quantile, quants), nrow=nvolquants)))
+    ys <- rbind(volquants[,timelen], t(matrix(apply(100*exp(volpred/2), 2, quantile, quants), nrow=nvolquants)))
 
     if (futlen/thintime > .01*timelen) {  # increase xlim to give space for forecast
       if (thintime == 1) {
@@ -364,7 +365,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
       standardizer <- sqrt(x$para[,"nu"] / (x$para[,"nu"] - 2))
       where <- grep("%", dimnames(x$summary$latent)[[2]])
       ys <- rbind(100*x$summary$sd[timelen,where,drop=FALSE],
-                  t(matrix(apply(100*exp(forecast/2)*standardizer, 2, quantile, quants), nrow=nvolquants)))
+                  t(matrix(apply(100*exp(volpred/2)*standardizer, 2, quantile, quants), nrow=nvolquants)))
 
       for (i in 1:nvolquants) lines(xs[,i], ys[,i], lty=forecastlty, col=cols[i])
     }
