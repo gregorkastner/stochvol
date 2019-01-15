@@ -73,6 +73,8 @@ Rcpp::List svlsample_cpp (
   arma::mat postcov(p, p);
   arma::vec postmean(p);
   arma::vec armadraw(p);
+  const arma::vec h_arma(h.begin(), h.length(), false);  // create view
+  const arma::vec ht_arma(ht.begin(), ht.length(), false);  // create view
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
@@ -102,8 +104,6 @@ Rcpp::List svlsample_cpp (
     if (regression) {
       const double rho = theta(1);
       const double phi = theta(0);
-      const arma::vec h_arma(h.begin(), h.length(), false);  // create view
-      const arma::vec ht_arma(ht.begin(), ht.length(), false);  // create view
 
       y_reg = y_in_arma;
       y_reg.head(T-1) -= rho * (arma::exp(h_arma.head(T-1)/2) % (ht_arma.tail(T-1) - phi*ht_arma.head(T-1)));
