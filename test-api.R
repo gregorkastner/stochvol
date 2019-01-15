@@ -102,7 +102,13 @@ trash <- capture.output(lapply(dat, print))
 # test svlsample with designmatrix
 devtools::load_all()
 set.seed(444)
-len <- 15
+len <- 100
+datar <- svsim(len, phi=0.9, mu=-10, sigma=0.1, nu=4)
+for (i in 2:len) {
+  datar$y[i] <- 0.1 - 0.7*datar$y[i-1] + datar$vol[i]*rt(1, df=4)
+}
+drawsar1 <- svsample(datar$y, designmatrix="ar1")
+drawsar2 <- svlsample(datar$y, draws=2000, designmatrix="ar1", burnin=1000)
 dmat <- cbind(rep_len(1, len), rgamma(len, 0.5, 0.25))
 datreg <- svsim(len, phi=0.9, mu=-10, sigma=0.1, rho=-0.4)
 datreg$y <- datreg$y + as.numeric(dmat %*% rbind(-1, 2))
