@@ -6,7 +6,7 @@
 \usage{
 volplot(x, forecast = 0, dates = NULL, show0 = FALSE, col = NULL,
   forecastlty = NULL, tcl = -0.4, mar = c(1.9, 1.9, 1.9, 0.5),
-  mgp = c(2, 0.6, 0), simobj = NULL, ...)
+  mgp = c(2, 0.6, 0), simobj = NULL, newdata = NULL, ...)
 }
 \arguments{
 \item{x}{\code{svdraws} object.}

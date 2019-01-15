@@ -34,22 +34,22 @@ Rcpp::List svlsample_cpp (
     const bool gammaprior,
     const Rcpp::CharacterVector& strategy_rcpp) {
 
-  NumericVector y(y_in);
   const int N = burnin + draws;
-  const NumericVector y_star = Rcpp::log(y*y + offset);
-  const NumericVector d = wrap(ifelse(y > 0, rep(1, y.length()), rep(-1, y.length())));
-
   const bool regression = !ISNA(X(0,0));
-  const int T = y.length();
+  const int T = y_in.length();
   const int p = X.ncol();
+
+  NumericVector y = y_in;
+  NumericVector y_star = Rcpp::log(y*y + offset);
+  NumericVector d(T); std::transform(y_in.cbegin(), y_in.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
 
   NumericVector theta = {theta_init["phi"], theta_init["rho"], pow(theta_init["sigma"], 2), theta_init["mu"]};
   NumericVector h = h_init, ht = (h_init-theta(3))/sqrt(theta(2));
-  arma::vec beta(p); beta.fill(.012345);
+  arma::vec beta(p); beta.fill(0.0);
 
   arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
   NumericMatrix params(draws/thinpara, 4);
-  NumericMatrix latent(draws/thinlatent, y.length()/thintime);
+  NumericMatrix latent(draws/thinlatent, T/thintime);
 
   // don't use strings or RcppCharacterVector
   Rcpp::IntegerVector strategy(strategy_rcpp.length());
@@ -63,11 +63,10 @@ Rcpp::List svlsample_cpp (
   // some stuff for the regression part
   // prior mean and precision matrix for the regression part (currently fixed)
   const arma::vec priorbetamean = arma::ones(p) * prior_beta_mu;
-  const arma::mat priorbetaprec = arma::eye(p, p) / (prior_beta_sigma*prior_beta_sigma);
+  const arma::mat priorbetaprec = arma::eye(p, p) / pow(prior_beta_sigma, 2);
   arma::vec normalizer(T);
   arma::mat X_reg(T, p);
   arma::vec y_reg(T);
-  arma::vec y_leverage_offset(T);
   arma::mat postprecchol(p, p);
   arma::mat postpreccholinv(p, p);
   arma::mat postcov(p, p);
@@ -86,11 +85,16 @@ Rcpp::List svlsample_cpp (
     if (verbose && (i % show == 0)) progressbar_print();
 
     if (regression) {  // slightly circumstantial due to the combined use of Rcpp and arma
-      std::copy(X.cbegin(), X.cend(), X_reg.begin());  // important!
-      for (int i = 0; i < y.length(); i++) {
-        y(i) = y_in(i) - arma::as_scalar(X_reg.row(i)*beta);
-        y(i) = log(pow(y(i), 2));
-      }
+      //std::copy(X.cbegin(), X.cend(), X_reg.begin());  // important!
+      //for (int i = 0; i < T; i++) {
+      //  y(i) = y_in(i) - arma::as_scalar(X_reg.row(i)*beta);
+      //}
+      //y_star = Rcpp::log(y*y + offset);
+      //std::transform(y.cbegin(), y.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
+      X_reg = Rcpp::as<arma::mat>(X);
+      y = Rcpp::as<arma::vec>(y_in) - X_reg*beta;
+      y_star = Rcpp::log(y*y + offset);
+      std::transform(y.cbegin(), y.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
     }
 
     // update theta and h
@@ -106,29 +110,30 @@ Rcpp::List svlsample_cpp (
       const arma::vec h_arma(h.begin(), h.length(), false);  // create view
       const arma::vec ht_arma(ht.begin(), ht.length(), false);  // create view
 
-      y_reg = y;
-      y_reg.head(T-1) -= rho * exp(h_arma.head(T-1)/2) % (ht_arma.tail(T-1) - phi*ht_arma.head(T-1));
+      y_reg = clone(y_in);
+      y_reg.head(T-1) -= rho * (arma::exp(h_arma.head(T-1)/2) % (ht_arma.tail(T-1) - phi*ht_arma.head(T-1)));
 
-      normalizer = exp(-h/2);
+      normalizer = arma::exp(-h_arma/2);
       normalizer.head(T-1) /= sqrt(1-pow(rho, 2));
       // X has already been copied to X_reg
       X_reg.each_col() %= normalizer;
       y_reg %= normalizer;
 
       // cholesky factor of posterior precision matrix
-      postprecchol = arma::chol(X_reg.t() * X_reg + arma::diagmat(priorbetaprec));
+      postprecchol = arma::chol(X_reg.t() * X_reg + priorbetaprec);
 
       // inverse cholesky factor of posterior precision matrix 
-      postpreccholinv = arma::inv(arma::trimatu(postprecchol));
+      postpreccholinv = arma::solve(arma::trimatu(postprecchol), arma::eye(size(postprecchol)));
 
       // posterior covariance matrix and posterior mean vector
       postcov = postpreccholinv * postpreccholinv.t();
-      postmean = postcov * (X_reg.t() * y_reg + arma::diagmat(priorbetaprec) * priorbetamean);
+      postmean = postcov * (X_reg.t() * y_reg + priorbetaprec * priorbetamean);
 
-      armadraw.imbue([]() -> double {return R::rnorm(0, 1);});  // equivalent to armadraw = Rcpp::rnorm(p); but I don't know if rnorm creates a vector
+      //armadraw.imbue([]() -> double {return R::rnorm(0, 1);});  // equivalent to armadraw = Rcpp::rnorm(p); but I don't know if rnorm creates a vector
+      armadraw = Rcpp::rnorm(p);
 
       // posterior betas
-      beta = postmean + arma::trimatu(postpreccholinv) * armadraw;
+      beta = postmean + postpreccholinv * armadraw;
     }
 
     // store draws
@@ -178,10 +183,10 @@ void update_leverage (
   ht = (h-mu)/sqrt(sigma2);
 
   for (int ipar : strategy) {
-    Parameterization par = Parameterization(ipar);
+    const Parameterization par = Parameterization(ipar);
     switch (par) {
       case Parameterization::CENTERED:
-        theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, h,
+        theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, h, ht,
             NumericVector::create(prior_phi_a, prior_phi_b),
             NumericVector::create(prior_rho_a, prior_rho_b),
             NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
@@ -191,7 +196,7 @@ void update_leverage (
             gammaprior);
         break;
       case Parameterization::NONCENTERED:
-        theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, ht,
+        theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, h, ht,
             NumericVector::create(prior_phi_a, prior_phi_b),
             NumericVector::create(prior_rho_a, prior_rho_b),
             NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
@@ -216,5 +221,6 @@ void update_leverage (
         break;
     }
   }
+  return;
 }
 

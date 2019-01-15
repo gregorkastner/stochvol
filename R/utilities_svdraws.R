@@ -219,7 +219,8 @@ print.summary.svdraws <- function(x, ...) {
 #' @method print summary.svldraws
 #' @export
 print.summary.svldraws <- function (x, ...) {
-  print.summary.svdraws(x = x, ...)
+  ret <- print.summary.svdraws(x = x, ...)
+  invisible(ret)
 }
 
 #' @export
@@ -312,10 +313,33 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' summary(fore)
 #' plot(draws, forecast = fore)
 #' @export
-predict.svdraws <- function(object, steps = 1L, ...) {
+predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   if (!(inherits(object, "svdraws"))) stop("Argument 'object' must be of class 'svdraws' or 'svldraws'.")
+
   steps <- as.integer(steps)
   if (steps < 1) stop("Argument 'steps' must be greater or equal to 1.")
+  # Error checking for the mean model
+  arorder <- 0  # AR(0) means either a constant mean or a no mean model here
+  if (object$meanmodel == "none") {
+    if (!is.null(newdata)) warning("No regression coefficients were used when estimating the model. Omitting 'newdata'.")
+    regressors <- function (y, newdata, stepind) matrix(0)
+  } else if (object$meanmodel == "matrix") {
+    if (is.null(newdata)) stop("Regressors needed for prediction. Please provide regressors through parameter 'newdata'.")
+    newdata <- as.matrix(newdata)
+    if (is.null(object$beta) || NCOL(object$beta) != NCOL(newdata)) stop(paste0("The number of fitted regression coefficients (", NCOL(object$beta), ") does not equal the number of given regressors (", NCOL(newdata), ")."))
+    if (NROW(newdata) != steps) stop("The size of the design matrix does not match the number of steps to predict.")
+    regressors <- function (y, newdata, stepind) matrix(newdata[stepind, ], nrow = len, ncol = NCOL(newdata), byrow = TRUE)  # matches the format in the ar* case
+  } else if (object$meanmodel == "constant") {
+    if (!is.null(newdata)) warning("Constant mean was assumed when estimating the model. Omitting 'newdata'.")
+    regressors <- function (y, newdata, stepind) matrix(1)
+  } else if (any(grep("ar[1-9][0-9]*", object$meanmodel))) {
+    arorder <- as.integer(gsub("ar", "", object$meanmodel))
+    if (!is.null(newdata)) warning(paste0("An AR(", arorder, ") mean was assumed when estimating the model. Omitting 'newdata'."))
+    regressors <- function (y, newdata, stepind) cbind(1, y[,seq.int(stepind, stepind-1+arorder),drop=FALSE])
+  } else {
+    stop("Unknown mean model. Please contact the developer.")
+  }
+
   thinlatent <- object$thinning$latent
   thinpara <- object$thinning$para
   if (thinpara != thinlatent) {
@@ -340,25 +364,36 @@ predict.svdraws <- function(object, steps = 1L, ...) {
   mythin <- max(thinpara, thinlatent)
   len <- length(sigma)
   volpred <- matrix(as.numeric(NA), nrow=len, ncol=steps)
-  ypred <- matrix(as.numeric(NA), nrow=len, ncol=steps)
+  ypred <- matrix(as.numeric(NA), nrow=len, ncol=steps+arorder)
 
-  rho <- if ("rho" %in% colnames(object$para)) object$para[,"rho"][usepara] else 0
+  ypred[,seq_len(arorder)] <- matrix(tail(object$y, arorder), nrow=len, ncol=arorder, byrow=TRUE)  # AR(x) helper columns
 
-  volpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*ylast*exp(-hlast/2) + sqrt(1-rho^2)*rnorm(len))
+  rho <- if ("rho" %in% colnames(object$para)) object$para[, "rho"][usepara] else 0
+  nu <- if ("nu" %in% colnames(object$para)) object$para[, "nu"][usepara] else Inf
+  betacoeff <- if (exists("beta", object)) object$beta[usepara, c(1, rev(seq_len(NCOL(object$beta)-1))+1), drop=FALSE] else matrix(0)
+
+  resilast <- if (object$meanmodel == "none") {  # last fitted residual
+    ylast*exp(-hlast/2)
+  } else {  # if mean regression
+    (ylast - colSums(object$priors$designmatrix[NROW(object$priors$designmatrix),]*t(betacoeff)))*exp(-hlast/2)  # recycles the last row of the design matrix
+  }
+
+  volpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*resilast + sqrt(1-rho^2)*rnorm(len))
   if (steps > 1) {
-    incr <- rnorm(len)
-    resi <- rho*incr + sqrt(1-rho^2)*rnorm(len)
+    resi <- rt(len, df=nu)  # either rho == 0 or nu == Inf
+    incr <- rho*resi + sqrt(1-rho^2)*rnorm(len)
     for (i in seq.int(from=2, to=steps)) {
-      ypred[,i-1] <- exp(-volpred[,i-1]/2)*resi
+      ypred[,i-1+arorder] <- rowSums(regressors(ypred, newdata, i-1) * betacoeff) + exp(-volpred[,i-1]/2)*resi
       volpred[,i] <- mu + phi*(volpred[,i-1] - mu) + sigma*incr
     }
   }
-  ypred[,steps] <- exp(-volpred[,steps]/2)*resi
+  ypred[,steps+arorder] <- rowSums(regressors(ypred, newdata, steps) * betacoeff) + exp(-volpred[,steps]/2)*rnorm(len)
 
+  ypred <- ypred[, setdiff(seq_len(NCOL(ypred)), seq_len(arorder)), drop=FALSE]  # remove temporary AR(x) helper columns
   lastname <- tail(colnames(object$latent), 1)
   lastnumber <- as.integer(gsub("h_", "", lastname))
-  colnames(volpred) <- paste("h_", seq(lastnumber + 1, lastnumber + steps), sep='')
-  colnames(ypred) <- paste("y_", seq(lastnumber + 1, lastnumber + steps), sep='')
+  colnames(volpred) <- paste0("h_", seq(lastnumber + 1, lastnumber + steps))
+  colnames(ypred) <- paste0("y_", seq(lastnumber + 1, lastnumber + steps))
   ret <- list(h = coda::mcmc(volpred, start=mythin, end=len*mythin, thin=mythin),
               y = coda::mcmc(ypred, start=mythin, end=len*mythin, thin=mythin))
 
@@ -367,8 +402,8 @@ predict.svdraws <- function(object, steps = 1L, ...) {
 }
 
 #' @export
-predict.svldraws <- function (object, steps = 1L, ...) {
-  ret <- predict.svdraws(object = object, steps = steps, ...)
+predict.svldraws <- function (object, steps = 1L, newdata = NULL, ...) {
+  ret <- predict.svdraws(object = object, steps = steps, newdata = newdata, ...)
   class(ret) <- c("svlpredict", "svpredict")
   ret
 }
@@ -421,6 +456,7 @@ predict.svldraws <- function (object, steps = 1L, ...) {
 #' }
 #' @export arpredict
 arpredict <- function(object, volpred) {
+ warning("Function `arpredict` has been deprecated. Please use the new features of `predict` instead.")
  if (!inherits(object, "svdraws")) stop("Argument 'object' must be of class 'svdraws'.")
  if (!inherits(volpred, "svpredict")) stop("Argument 'volpred' must be of class 'svpredict'.")
  if (colnames(object$priors$designmatrix)[1] == "const") dynamic <- TRUE else stop("Probably not an AR-specification.")

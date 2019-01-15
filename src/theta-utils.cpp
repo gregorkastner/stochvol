@@ -7,13 +7,15 @@ using namespace Rcpp;
 
 double theta_log_likelihood(const double phi, const double rho,
                             const double sigma2, const double mu,
-                            const NumericVector y, const NumericVector h,
+                            const NumericVector y,
+                            const NumericVector h,
+                            const NumericVector ht,
                             const Parameterization centering) {
   double result;
   if (centering == Parameterization::CENTERED) {
     result = theta_log_likelihood_c(phi, rho, sigma2, mu, y, h);
   } else if (centering == Parameterization::NONCENTERED) {
-    result = theta_log_likelihood_nc(phi, rho, sigma2, mu, y, h);
+    result = theta_log_likelihood_nc(phi, rho, sigma2, mu, y, ht);
   }
   return result;
 }
@@ -42,7 +44,7 @@ double theta_log_likelihood_c(const double phi, const double rho,
 
 double theta_log_likelihood_nc(const double phi, const double rho,
                                const double sigma2, const double mu,
-                               const Rcpp::NumericVector y, const Rcpp::NumericVector h) {
+                               const Rcpp::NumericVector y, const Rcpp::NumericVector ht) {
   const int n = y.size();
   const double sigma = sqrt(sigma2);
   double log_lik = 0;
@@ -52,17 +54,17 @@ double theta_log_likelihood_nc(const double phi, const double rho,
       h_mean = 0;
       h_sd = 1/sqrt(1-phi*phi);
     } else {
-      h_mean = phi*h(i-1);
+      h_mean = phi*ht(i-1);
       h_sd = 1;
     }
     if (i < n-1) {
-      y_mean = exp((sigma*h(i)+mu)/2)*rho*(h(i+1)-phi*h(i));
-      y_sd = exp((sigma*h(i)+mu)/2)*sqrt((1-rho*rho));
+      y_mean = exp((sigma*ht(i)+mu)/2)*rho*(ht(i+1)-phi*ht(i));
+      y_sd = exp((sigma*ht(i)+mu)/2)*sqrt((1-rho*rho));
     } else {
       y_mean = 0;
-      y_sd = exp((sigma*h(i) + mu)/2);
+      y_sd = exp((sigma*ht(i) + mu)/2);
     }
-    log_lik += R::dnorm(y(i), y_mean, y_sd, true) + R::dnorm(h(i), h_mean, h_sd, true);
+    log_lik += R::dnorm(y(i), y_mean, y_sd, true) + R::dnorm(ht(i), h_mean, h_sd, true);
   }
   return log_lik;
 }
@@ -109,19 +111,23 @@ double theta_transform_inv_log_det_jac(const double phi, const double rho,
 
 NumericVector theta_proposal_stdev(const double phi, const double rho,
                                    const double sigma2, const double mu,
-                                   const NumericVector y, const NumericVector h,
+                                   const NumericVector y,
+                                   const NumericVector h,
+                                   const NumericVector ht,
                                    const double stdev) {
   return rep(stdev, 4);
 }
 
 NumericVector theta_propose(const double phi, const double rho,
                              const double sigma2, const double mu,
-                             const NumericVector y, const NumericVector h,
+                             const NumericVector y,
+                             const NumericVector h,
+                             const NumericVector ht,
                              const double stdev) {
   const NumericVector theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
   
   const NumericVector &proposal_mean_old = theta_old_t;
-  const NumericVector proposal_sd_old = theta_proposal_stdev(phi, rho, sigma2, mu, y, h, stdev);
+  const NumericVector proposal_sd_old = theta_proposal_stdev(phi, rho, sigma2, mu, y, h, ht, stdev);
   const NumericVector theta_new_t = rnorm(4)*proposal_sd_old + proposal_mean_old;
   const NumericVector theta_new = theta_transform(theta_new_t(0), theta_new_t(1), theta_new_t(2), theta_new_t(3));
   const double phi_new = theta_new(0), rho_new = theta_new(1), sigma2_new = theta_new(2), mu_new = theta_new(3);
@@ -131,7 +137,7 @@ NumericVector theta_propose(const double phi, const double rho,
   }
   
   const NumericVector &proposal_mean_new = theta_new_t;
-  const NumericVector proposal_sd_new = theta_proposal_stdev(phi_new, rho_new, sigma2_new, mu_new, y, h, stdev);
+  const NumericVector proposal_sd_new = theta_proposal_stdev(phi_new, rho_new, sigma2_new, mu_new, y, h, ht, stdev);
   double theta_density_old = theta_transform_inv_log_det_jac(phi, rho, sigma2, mu);
   for (int i = 0; i < 4; i++) {
     theta_density_old += R::dnorm(theta_old_t(i), proposal_mean_new(i), proposal_sd_new(i), true);

@@ -6,7 +6,9 @@
 
 double theta_log_likelihood(const double phi, const double rho,
                             const double sigma2, const double mu,
-                            const Rcpp::NumericVector y, const Rcpp::NumericVector h,
+                            const Rcpp::NumericVector y,
+                            const Rcpp::NumericVector h,
+                            const Rcpp::NumericVector ht,
                             const Parameterization centering);
 
 double theta_log_prior(const double phi, const double rho,
@@ -31,13 +33,17 @@ double theta_transform_inv_log_det_jac(const double phi, const double rho,
 
 Rcpp::NumericVector theta_proposal_stdev(const double phi, const double rho,
                                          const double sigma2, const double mu,
-                                         const Rcpp::NumericVector y, const Rcpp::NumericVector h,
-                                         const double stdev = .1);
+                                         const Rcpp::NumericVector y,
+                                         const Rcpp::NumericVector h,
+                                         const Rcpp::NumericVector ht,
+                                         const double stdev);
 
 Rcpp::NumericVector theta_propose(const double phi, const double rho,
                                   const double sigma2, const double mu,
-                                  const Rcpp::NumericVector y, const Rcpp::NumericVector h,
-                                  const double stdev = .1);
+                                  const Rcpp::NumericVector y,
+                                  const Rcpp::NumericVector h,
+                                  const Rcpp::NumericVector ht,
+                                  const double stdev);
 
 double theta_log_likelihood_c(const double phi, const double rho,
                               const double sigma2, const double mu,

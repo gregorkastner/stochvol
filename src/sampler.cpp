@@ -198,7 +198,7 @@ SEXP sampler(const SEXP y_in, const SEXP draws_in,
    ynew = as<arma::vec>(y) % normalizer;
    
    // cholesky factor of posterior precision matrix
-   postprecchol = arma::chol(Xnew.t() * Xnew + priorbetaprec);
+   postprecchol = arma::chol(Xnew.t() * Xnew + priorbetaprec);  // TODO handle exceptions the R way
    
    // inverse cholesky factor of posterior precision matrix 
    postpreccholinv = arma::solve(arma::trimatu(postprecchol), arma::eye<arma::mat>(p, p));

@@ -4,7 +4,7 @@
 \alias{predict.svdraws}
 \title{Prediction of Future Log-Volatilities}
 \usage{
-\method{predict}{svdraws}(object, steps = 1L, ...)
+\method{predict}{svdraws}(object, steps = 1L, newdata = NULL, ...)
 }
 \arguments{
 \item{object}{\code{svdraws} object.}

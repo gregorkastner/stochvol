@@ -225,7 +225,7 @@ ahead <- 100
 predvol <- predict(res, steps = ahead)
 
 ## Use arpredict to obtain draws from the posterior predictive
-preddraws <- arpredict(res, predvol)
+preddraws <- arpredict(res, predvol)  # TODO rewrite
 
 ## Calculate predictive quantiles
 predquants <- apply(preddraws, 2, quantile, c(.1, .5, .9))

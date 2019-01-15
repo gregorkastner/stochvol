@@ -250,7 +250,8 @@ paratraceplot.svldraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6,
 #' @export
 volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
                     col = NULL, forecastlty = NULL, tcl = -.4,
-                    mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
+                    mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL,
+                    newdata = NULL, ...) {
   if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' or an 'svldraws' object.")
   if (!is.null(simobj)) {
     if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' or an 'svlsim' object.")
@@ -273,14 +274,13 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 
     if (thintime != 1) {
       lasth <- as.integer(gsub("h_", "", dimnames(x$latent)[[2]][dim(x$latent)[2]]))
-      if (length(x$y) > lasth) {
+      if (length(x$y) > lasth) {  # should never happen
         warning(paste("Thinning for time 'thintime' has not been set to one during sampling. This means we are forecasting conditional on h_", lasth, " and not on h_", length(x$y), ".", sep=''))
       }
     }
 
     if(is.numeric(forecast) && length(forecast) == 1 && all(forecast >= 1)) {
-      #   warning("Calling prediction method.")
-      forecast <- predict(x, forecast)
+      forecast <- predict(x, forecast, newdata)
     }
     if(!inherits(forecast, "svpredict")) stop("Argument 'forecast' must be a single nonnegative integer, or of class type 'svpredict' or 'svlpredict'.")
     if(inherits(forecast, "svlpredict")) {
@@ -356,6 +356,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
                                                               paste(dimnames(volquants)[[1]], collapse=' / '),
                                                               " posterior quantiles)", sep=''), ...))
 
+    # TODO with Gregor go through this `standardizer` and see if prediction using 'nu' is possible
     if (sim) {
       standardizer <- sqrt(simobj$para$nu / (simobj$para$nu - 2))
       lines(100*simobj$vol*standardizer, col = 3)
@@ -455,7 +456,7 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
 			 show0 = FALSE, showobs = TRUE, showprior = TRUE, col = NULL,
 			 forecastlty = NULL, tcl = -0.4,
 			 mar = c(1.9, 1.9, 1.7, .5), mgp = c(2, .6, 0),
-			 simobj = NULL, ...) {
+			 simobj = NULL, newdata = NULL, ...) {
   oldpar <- par(mfrow=c(1,1))
   if (ncol(x$para) == 4) {
     layout(matrix(c(1, 1, 1, 1, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10), 4, byrow = TRUE))
@@ -464,7 +465,7 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
   }
   volplot(x, dates = dates, show0 = show0, forecast = forecast,
           forecastlty = forecastlty, col = col, tcl = tcl, mar = mar,
-          mgp = mgp, simobj = simobj, ...)
+          mgp = mgp, simobj = simobj, newdata = newdata, ...)
   paratraceplot(x, mar = mar, mgp = mgp, simobj = simobj, ...)
   paradensplot(x, showobs = showobs, showprior = showprior,
                showxlab = FALSE, mar = mar, mgp = mgp, simobj = simobj, ...)
@@ -480,12 +481,12 @@ plot.svldraws <- function (x, forecast = NULL, dates = NULL,
 			 show0 = FALSE, showobs = TRUE, showprior = TRUE, col = NULL,
 			 forecastlty = NULL, tcl = -0.4,
 			 mar = c(1.9, 1.9, 1.7, .5), mgp = c(2, .6, 0),
-			 simobj = NULL, ...) {
+			 simobj = NULL, newdata = NULL, ...) {
   oldpar <- par(mfrow=c(1,1))
   layout(matrix(c(1, 1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9), ncol=4, byrow = TRUE))
   volplot(x, dates = dates, show0 = show0, forecast = forecast,
           forecastlty = forecastlty, col = col, tcl = tcl, mar = mar,
-          mgp = mgp, simobj = simobj, ...)
+          mgp = mgp, simobj = simobj, newdata = newdata, ...)
   paratraceplot(x, mar = mar, mgp = mgp, simobj = simobj, ...)
   paradensplot(x, showobs = showobs, showprior = showprior,
                showxlab = FALSE, mar = mar, mgp = mgp, simobj = simobj, ...)

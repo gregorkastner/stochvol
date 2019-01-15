@@ -202,7 +202,7 @@
 #' predvol <- predict(res, steps = ahead)
 #' 
 #' ## Use arpredict to obtain draws from the posterior predictive
-#' preddraws <- arpredict(res, predvol)
+#' preddraws <- arpredict(res, predvol)  # TODO rewrite
 #' 
 #' ## Calculate predictive quantiles
 #' predquants <- apply(preddraws, 2, quantile, c(.1, .5, .9))
@@ -232,7 +232,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   if (length(y) < 2) stop("Argument 'y' (data vector) must contain at least two elements.")
 
-  if (is.na(designmatrix) && any(y^2 == 0)) {
+  if (any(is.na(designmatrix)) && any(y^2 == 0)) {
     myoffset <- sd(y)/10000
     warning(paste("Argument 'y' (data vector) contains zeros. I am adding an offset constant of size ", myoffset, " to do the auxiliary mixture sampling. If you want to avoid this, you might consider de-meaning the returns before calling this function.", sep=""))
   } else myoffset <- 0
@@ -251,22 +251,26 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     burnin <- as.integer(burnin)
   }
 
-  # Some error checking for designmatrix
+  # Some error checking for designmatrix and save the mode of mean modelling
+  meanmodel <- "matrix"
   if (any(is.na(designmatrix))) {
     designmatrix <- matrix(NA)
+    meanmodel <- "none"
   } else {
     if (any(grep("ar[0-9]+$", as.character(designmatrix)[1]))) {
-      order <- as.integer(gsub("ar", "", as.character(designmatrix)))
-      if (length(y) <= order + 1) stop("Time series 'y' is to short for this AR process.")
-      designmatrix <- matrix(rep(1, length(y) - order), ncol = 1)
+      arorder <- as.integer(gsub("ar", "", as.character(designmatrix)))
+      if (length(y) <= arorder + 1) stop("Time series 'y' is too short for this AR process.")
+      designmatrix <- matrix(rep(1, length(y) - arorder), ncol = 1)
       colnames(designmatrix) <- c("const")
-      if (order >= 1) {
-        for (i in 1:order) {
+      meanmodel <- "constant"
+      if (arorder >= 1) {  # e.g. first row with "ar(3)": c(1, y_3, y_2, y_1)
+        for (i in 1:arorder) {
           oldnames <- colnames(designmatrix)
-          designmatrix <- cbind(designmatrix, y[(order-i+1):(length(y)-i)])
+          designmatrix <- cbind(designmatrix, y[(arorder-i+1):(length(y)-i)])
           colnames(designmatrix) <- c(oldnames, paste0("ar", i))
         }
-        y <- y[-(1:order)]
+        y <- y[-(1:arorder)]
+        meanmodel <- paste0("ar", arorder)
       }
     }
     if (!is.numeric(designmatrix)) stop("Argument 'designmatrix' must be a numeric matrix or an AR-specification.")
@@ -510,6 +514,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
     attr(res$beta, "dimnames") <- list(NULL, paste("b", 0:(ncol(designmatrix)-1), sep = "_"))
   } else res$beta <- NULL
+  res$meanmodel <- meanmodel
 
   if (ncol(res$para) == 3) {
     attr(res$para, "dimnames") <- list(NULL, c("mu", "phi", "sigma"))
@@ -664,6 +669,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
  } else {
   rownames(res$para) <- names(res$para) <- c("mu", "phi", "sigma", "nu")
  }
+ res.meanmodel <- "none"
 
  res
 }
@@ -714,21 +720,24 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
 
   # Some error checking for designmatrix
+  meanmodel <- "matrix"
   if (any(is.na(designmatrix))) {
     designmatrix <- matrix(NA)
+    meanmodel <- "none"
   } else {
     if (any(grep("ar[0-9]+$", as.character(designmatrix)[1]))) {
-      order <- as.integer(gsub("ar", "", as.character(designmatrix)))
-      if (length(y) <= order + 1) stop("Time series 'y' is to short for this AR process.")
-      designmatrix <- matrix(rep(1, length(y) - order), ncol = 1)
+      arorder <- as.integer(gsub("ar", "", as.character(designmatrix)))
+      meanmodel <- paste0("ar", arorder)
+      if (length(y) <= arorder + 1) stop("Time series 'y' is to short for this AR process.")
+      designmatrix <- matrix(rep(1, length(y) - arorder), ncol = 1)
       colnames(designmatrix) <- c("const")
-      if (order >= 1) {
-        for (i in 1:order) {
+      if (arorder >= 1) {
+        for (i in 1:arorder) {
           oldnames <- colnames(designmatrix)
-          designmatrix <- cbind(designmatrix, y[(order-i+1):(length(y)-i)])
+          designmatrix <- cbind(designmatrix, y[(arorder-i+1):(length(y)-i)])
           colnames(designmatrix) <- c(oldnames, paste0("ar", i))
         }
-        y <- y[-(1:order)]
+        y <- y[-(1:arorder)]
       }
     }
     if (!is.numeric(designmatrix)) stop("Argument 'designmatrix' must be a numeric matrix or an AR-specification.")
@@ -878,7 +887,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     }
   }
   
-  myoffset <- if (any(y^2 == 0)) sd(y)/10000 else 0
+  myoffset <- if (any(y^2 == 0)) 1.0e-8 else 0
   if (myoffset > 0) {
     warning(paste("Argument 'y' (data vector) contains zeros. I am adding an offset constant of size ", myoffset, " to do the auxiliary mixture sampling. If you want to avoid this, you might consider de-meaning the returns before calling this function.", sep=""))
   }
@@ -912,8 +921,8 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     cat("Converting results to coda objects... ", file=stderr())
   }
   
-  res$para <- res$para[, c(4,1,3,2)]
-  res$para[, 3] <- sqrt(res$para[, 3])
+  res$para <- res$para[, c(4,1,3,2), drop=FALSE]
+  res$para[, 3] <- sqrt(res$para[, 3, drop=FALSE])
   colnames(res$para) <- c("mu", "phi", "sigma", "rho")
   colnames(res$latent) <- paste0('h_', seq(1, length(y), by=thintime))
   # create svldraws class
@@ -930,6 +939,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   } else {
     res$beta <- NULL
   }
+  res$meanmodel <- meanmodel
   class(res) <- c("svldraws", "svdraws")
 
   if (!quiet) {
@@ -971,9 +981,10 @@ svlsample2 <- function (y, draws = 1, burnin = 0,
                                0, 0.1, TRUE, rep(c("centered", "non-centered"), 5))
 
   res$para <- t(res$para[, c(4,1,3,2)])
-  res$para[, 3] <- sqrt(res$para[, 3])
+  res$para[3, ] <- sqrt(res$para[3, ])
   res$latent <- t(res$latent)
-  colnames(res$para) <- c("mu", "phi", "sigma", "rho")
+  res$meanmodel <- "none"
+  rownames(res$para) <- c("mu", "phi", "sigma", "rho")
   res
 }
 
