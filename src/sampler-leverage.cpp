@@ -62,6 +62,7 @@ Rcpp::List svlsample_cpp (
 
   // some stuff for the regression part
   // prior mean and precision matrix for the regression part (currently fixed)
+  const arma::vec y_in_arma(y_in.begin(), T);
   const arma::vec priorbetamean = arma::ones(p) * prior_beta_mu;
   const arma::mat priorbetaprec = arma::eye(p, p) / pow(prior_beta_sigma, 2);
   arma::vec normalizer(T);
@@ -85,14 +86,8 @@ Rcpp::List svlsample_cpp (
     if (verbose && (i % show == 0)) progressbar_print();
 
     if (regression) {  // slightly circumstantial due to the combined use of Rcpp and arma
-      //std::copy(X.cbegin(), X.cend(), X_reg.begin());  // important!
-      //for (int i = 0; i < T; i++) {
-      //  y(i) = y_in(i) - arma::as_scalar(X_reg.row(i)*beta);
-      //}
-      //y_star = Rcpp::log(y*y + offset);
-      //std::transform(y.cbegin(), y.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
-      X_reg = Rcpp::as<arma::mat>(X);
-      y = Rcpp::as<arma::vec>(y_in) - X_reg*beta;
+      std::copy(X.cbegin(), X.cend(), X_reg.begin());  // important!
+      y = y_in_arma - X_reg*beta;
       y_star = Rcpp::log(y*y + offset);
       std::transform(y.cbegin(), y.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
     }
@@ -110,7 +105,7 @@ Rcpp::List svlsample_cpp (
       const arma::vec h_arma(h.begin(), h.length(), false);  // create view
       const arma::vec ht_arma(ht.begin(), ht.length(), false);  // create view
 
-      y_reg = clone(y_in);
+      y_reg = y_in_arma;
       y_reg.head(T-1) -= rho * (arma::exp(h_arma.head(T-1)/2) % (ht_arma.tail(T-1) - phi*ht_arma.head(T-1)));
 
       normalizer = arma::exp(-h_arma/2);
@@ -123,14 +118,13 @@ Rcpp::List svlsample_cpp (
       postprecchol = arma::chol(X_reg.t() * X_reg + priorbetaprec);
 
       // inverse cholesky factor of posterior precision matrix 
-      postpreccholinv = arma::solve(arma::trimatu(postprecchol), arma::eye(size(postprecchol)));
+      postpreccholinv = arma::inv(arma::trimatu(postprecchol));
 
       // posterior covariance matrix and posterior mean vector
       postcov = postpreccholinv * postpreccholinv.t();
       postmean = postcov * (X_reg.t() * y_reg + priorbetaprec * priorbetamean);
 
-      //armadraw.imbue([]() -> double {return R::rnorm(0, 1);});  // equivalent to armadraw = Rcpp::rnorm(p); but I don't know if rnorm creates a vector
-      armadraw = Rcpp::rnorm(p);
+      armadraw.imbue([]() -> double {return R::rnorm(0, 1);});  // equivalent to armadraw = Rcpp::rnorm(p); but I don't know if rnorm creates a vector
 
       // posterior betas
       beta = postmean + postpreccholinv * armadraw;
