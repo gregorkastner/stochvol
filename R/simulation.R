@@ -150,6 +150,7 @@ summary.svsim <- function(object, ...) {
 summary.svlsim <- function (object, ...) {
   ret <- summary.svsim(object = object, ...)
   class(ret) <- c("summary.svlsim", "summary.svsim")
+  ret
 }
 
 #' @method print summary.svsim
