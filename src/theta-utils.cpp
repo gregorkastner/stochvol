@@ -12,10 +12,13 @@ double theta_log_likelihood(const double phi, const double rho,
                             const NumericVector ht,
                             const Parameterization centering) {
   double result;
-  if (centering == Parameterization::CENTERED) {
+  switch (centering) {
+    case Parameterization::CENTERED:
     result = theta_log_likelihood_c(phi, rho, sigma2, mu, y, h);
-  } else if (centering == Parameterization::NONCENTERED) {
+    break;
+    case Parameterization::NONCENTERED:
     result = theta_log_likelihood_nc(phi, rho, sigma2, mu, y, ht);
+    break;
   }
   return result;
 }
