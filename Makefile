@@ -32,6 +32,8 @@ CPPFLAGS := 		-Wall $(shell $(R_HOME)/bin/R CMD config CPPFLAGS)
 CXXFLAGS := 		$(RCPPFLAGS) $(RCPPINCL) $(RCPPARMAINCL) $(RINSIDEINCL) $(shell $(R_HOME)/bin/R CMD config CXXFLAGS)
 LDLIBS := $(RLDFLAGS) $(RRPATH) $(RBLAS) $(RLAPACK) $(RCPPLIBS) $(RINSIDELIBS)
 
+sources := 		$(wildcard src/*.cpp)
+
 install:
 	R --vanilla -e "devtools::document(\"${PKGDIR}\")"
 	R CMD INSTALL --no-multiarch --with-keep.source --library=${HOME}/R/under_development ${PKGDIR}
@@ -48,4 +50,4 @@ clean:
 	rm -fv src/*.o src/*.so
 
 test:
-	$(CXX) -xc++ -std=c++11 $(CPPFLAGS) $(CXXFLAGS) $(LDLIBS) -o test_cpp test.cpp
+	$(CXX) -xc++ -std=c++11 $(CPPFLAGS) $(CXXFLAGS) $(LDLIBS) -o test_cpp test.cpp $(sources)
