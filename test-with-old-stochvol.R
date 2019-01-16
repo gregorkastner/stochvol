@@ -5,7 +5,6 @@ if (generate) {
   library(stochvol)
 } else {
   mydevlib <- "~/R/under_development"
-  devtools::install(".", args = paste0("--library=", mydevlib), repos = NULL, dependencies = FALSE)
   library(RcppArmadillo)
   library("methods")
   library(stochvol, lib.loc = mydevlib)
