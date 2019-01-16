@@ -15,16 +15,16 @@ RLAPACK := 		$(shell $(R_HOME)/bin/R CMD config LAPACK_LIBS)
 
 ## include headers and libraries for Rcpp interface classes
 ## note that RCPPLIBS will be empty with Rcpp (>= 0.11.0) and can be omitted
-RCPPINCL := 		$(shell echo 'Rcpp:::CxxFlags()' | $(R_HOME)/bin/R --vanilla --slave)
-RCPPLIBS := 		$(shell echo 'Rcpp:::LdFlags()'  | $(R_HOME)/bin/R --vanilla --slave)
+RCPPINCL := 		$(shell echo 'library(Rcpp, lib.loc="~/R/dev_version/"); Rcpp:::CxxFlags()' | $(R_HOME)/bin/R --vanilla --slave)
+RCPPLIBS := 		$(shell echo 'library(Rcpp, lib.loc="~/R/dev_version/"); Rcpp:::LdFlags()'  | $(R_HOME)/bin/R --vanilla --slave)
 
 
 ## include headers and libraries for RInside embedding classes
-RINSIDEINCL := 		$(shell echo 'RInside:::CxxFlags()' | $(R_HOME)/bin/R --vanilla --slave)
-RINSIDELIBS := 		$(shell echo 'RInside:::LdFlags()'  | $(R_HOME)/bin/R --vanilla --slave)
+RINSIDEINCL := 		$(shell echo 'library(RInside, lib.loc="~/R/dev_version/"); RInside:::CxxFlags()' | $(R_HOME)/bin/R --vanilla --slave)
+RINSIDELIBS := 		$(shell echo 'library(RInside, lib.loc="~/R/dev_version/"); RInside:::LdFlags()'  | $(R_HOME)/bin/R --vanilla --slave)
 
 ## RcppArmadillo headers
-RCPPARMAINCL :=		$(shell echo 'RcppArmadillo:::CxxFlags()' | $(R_HOME)/bin/R --vanilla --slave)	
+RCPPARMAINCL :=		$(shell echo 'library(RcppArmadillo, lib.loc="~/R/dev_version/"); RcppArmadillo:::CxxFlags()' | $(R_HOME)/bin/R --vanilla --slave)	
 
 ## compiler etc settings used in default make rules
 CXX := 			$(shell $(R_HOME)/bin/R CMD config CXX)
@@ -50,4 +50,4 @@ clean:
 	rm -fv src/*.o src/*.so
 
 test:
-	$(CXX) -xc++ -std=c++11 $(CPPFLAGS) $(CXXFLAGS) $(LDLIBS) -o test_cpp test.cpp $(sources)
+	$(CXX) -xc++ -std=c++11 $(CPPFLAGS) $(CXXFLAGS) $(LDLIBS) -g -fprofile-instr-generate -fdebug-info-for-profiling -O0 -o test_cpp test.cpp $(sources)
