@@ -84,7 +84,7 @@ RcppExport void R_init_stochvol(DllInfo *dll) {
  R_useDynamicSymbols(dll, FALSE);
 
  // registering "update" to be available for other packages
- R_RegisterCCallable("stochvol", "update", (DL_FUNC) &update);
- R_RegisterCCallable("stochvol", "update_leverage", (DL_FUNC) &update_leverage);
+ R_RegisterCCallable("stochvol", "update_sv", (DL_FUNC) &update_sv);
+ R_RegisterCCallable("stochvol", "update_svl", (DL_FUNC) &update_svl);
 }
 

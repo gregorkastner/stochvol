@@ -54,12 +54,12 @@ const double mix_pre[10] = {
 -7.7642143280080739842219372803810983896255493164062500000};
 
 // Non-normalized posterior probabilities
-void findMixprobs(double * mixprob, const Rcpp::NumericVector & datanorm);
+void findMixprobs(Rcpp::NumericVector& mixprob, const Rcpp::NumericVector & datanorm);
 
 // Cumulative sum over columns of a matrix
-void colCumsums(double * x, int const nrow, int const ncol);
+void colCumsums(Rcpp::NumericVector& x, int const nrow, int const ncol);
 
 // Combines findMixprobs() and colCumsums() (see above) into one function
-void findMixCDF(double * mixprob, const Rcpp::NumericVector & datanorm);
+void findMixCDF(Rcpp::NumericVector& mixprob, const Rcpp::NumericVector & datanorm);
 
 #endif

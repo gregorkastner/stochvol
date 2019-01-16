@@ -41,43 +41,22 @@ inline void progressbar_print() {
 // finalizes progress bar
 void progressbar_finish(int N);
 
-// to store (some) values of h
-inline void store_h(double * h, double * hstore, int timethin,
-                    int hstorelength,
-		    double h0, double * h0store,
-		    Rcpp::NumericVector curpara,
-		    bool centered_baseline) {
-
- if (centered_baseline) {
-  for (int j = 0; j < hstorelength; j++) hstore[j] = h[timethin*j];
-  *h0store = h0;
- } else {
-  for (int j = 0; j < hstorelength; j++) hstore[j] = curpara[0] + curpara[2]*h[timethin*j];
-  *h0store = curpara[0] + curpara[2]*h0;
- }
-}
-
-// to store (some) values of tau
-inline void store_tau(double * tau, double * taustore, int timethin, int hstorelength) {
- for (int j = 0; j < hstorelength; j++) taustore[j] = tau[timethin*j];
-}
-
 // b)
 // Cholesky factor for a tridiagonal matrix with constant off-diagonal
 void cholTridiag(const Rcpp::NumericVector & omega_diag, double omega_offdiag,
-                 double * chol_diag, double * chol_offdiag);
+                 Rcpp::NumericVector& chol_diag, Rcpp::NumericVector& chol_offdiag);
 
 // Solves Chol*x = covector ("forward algorithm")
 void forwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector & chol_offdiag,
-                const Rcpp::NumericVector & covector, double * htmp);
+                const Rcpp::NumericVector & covector, Rcpp::NumericVector& htmp);
 
 // Solves (Chol')*x = htmp ("backward algorithm")
 void backwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector & chol_offdiag,
-                 const Rcpp::NumericVector & htmp, double * h);
+                 const Rcpp::NumericVector & htmp, Rcpp::NumericVector& h);
 
 // c)
 // draws length(r) RVs, expects the non-normalized CDF mixprob
-void invTransformSampling(const double * const, int * r, int T);
+void invTransformSampling(const Rcpp::NumericVector& mixprob, Rcpp::IntegerVector& r, int T);
 
 // d)
 // find the root of a function (Newton-Raphson)

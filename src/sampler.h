@@ -51,7 +51,7 @@ Rcpp::NumericVector regressionCentered(
 Rcpp::NumericVector regressionNoncentered(
        const Rcpp::NumericVector &data,
        double h0, const Rcpp::NumericVector &h,
-       const int * const r,
+       const Rcpp::IntegerVector& r,
        double mu, double phi, double sigma,
        double Bsigma, double a0, double b0,
        double bmu, double Bmu,
@@ -59,15 +59,15 @@ Rcpp::NumericVector regressionNoncentered(
        const bool dontupdatemu, const double priorlatent0);
 
 // a single MCMC update (normal errors):
-void update(const Rcpp::NumericVector &, double *, double *, double &,
-            double *, int *, const bool, const double,
+void update_sv(const Rcpp::NumericVector&, Rcpp::NumericVector&, Rcpp::NumericVector&, double&,
+            Rcpp::NumericVector&, Rcpp::IntegerVector&, const bool, const double,
 	    const double, const double, const double, const double,
 	    const double, const double, const double, const double,
 	    const bool, const bool, const double, const int, const int,
 	    const bool, const double);
 
 // a single MCMC update (t errors):
-void update_terr(const Rcpp::NumericVector &,
-                 double *, double &, const double, const double);
+void update_terr(const Rcpp::NumericVector&,
+                 Rcpp::NumericVector&, double &, const double, const double);
 
 #endif

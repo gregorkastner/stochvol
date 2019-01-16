@@ -75,7 +75,7 @@ void progressbar_finish(int N) {
 
 // b)
 // Cholesky factor for a tridiagonal matrix with constant off-diagonal
-void cholTridiag(const Rcpp::NumericVector & omega_diag, double omega_offdiag, double * chol_diag, double * chol_offdiag)
+void cholTridiag(const Rcpp::NumericVector & omega_diag, double omega_offdiag, Rcpp::NumericVector& chol_diag, Rcpp::NumericVector& chol_offdiag)
 {
  chol_diag[0] = sqrt(omega_diag[0]);  // maybe speed up via iterators?
  for (int j = 1; j < omega_diag.length(); j++) {
@@ -85,7 +85,7 @@ void cholTridiag(const Rcpp::NumericVector & omega_diag, double omega_offdiag, d
 }
 
 // Solves Chol*x = covector ("forward algorithm")
-void forwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector & chol_offdiag, const Rcpp::NumericVector & covector, double * htmp)
+void forwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector & chol_offdiag, const Rcpp::NumericVector & covector, Rcpp::NumericVector& htmp)
 {
  htmp[0] = covector[0]/chol_diag[0];
  for (int j = 1; j < chol_diag.length(); j++) {
@@ -94,7 +94,7 @@ void forwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector
 }
 
 // Solves (Chol')*x = htmp ("backward algorithm")
-void backwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector & chol_offdiag, const Rcpp::NumericVector & htmp, double * h)
+void backwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector & chol_offdiag, const Rcpp::NumericVector & htmp, Rcpp::NumericVector& h)
 {
  int T = chol_diag.length();
  h[T-1] = htmp[T-1]/chol_diag[T-1];
@@ -105,18 +105,18 @@ void backwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVecto
 
 // c)
 // draws length(r) RVs, expects the non-normalized CDF mixprob
-void invTransformSampling(const double * const mixprob, int * r, int T) {
+void invTransformSampling(const Rcpp::NumericVector& mixprob, Rcpp::IntegerVector& r, int T) {
  int index;
  Rcpp::NumericVector innov = Rcpp::runif(T); 
  double temp;
  bool larger, smaller;
  for (int j = 0; j < T; j++) {
   index = (10-1)/2;  // start searching in the middle
-  temp = innov[j]*mixprob[9 + 10*j];  // current (non-normalized) value
+  temp = innov[j]*mixprob(9 + 10*j);  // current (non-normalized) value
   larger = false;  // indicates that we already went up
   smaller = false; // indicates that we already went down
   while(true) {
-   if (temp > mixprob[index +  10*j]) {
+   if (temp > mixprob(index +  10*j)) {
     if (smaller == true) {
      index++;
      break;
@@ -141,7 +141,7 @@ void invTransformSampling(const double * const mixprob, int * r, int T) {
     } 
    }
   }
- r[j] = index;
+ r(j) = index;
  }
 }
 

@@ -95,7 +95,7 @@ Rcpp::List svlsample_cpp (
     }
 
     // update theta and h
-    update_leverage (y, y_star, d, theta, h, ht,
+    update_svl (y, y_star, d, theta, h, ht,
       prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b,
       prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma,
       stdev, gammaprior, strategy);
@@ -152,7 +152,7 @@ Rcpp::List svlsample_cpp (
       Rcpp::_["beta"] = betas);
 }
 
-void update_leverage (
+void update_svl (
     const Rcpp::NumericVector& y,
     const Rcpp::NumericVector& y_star,
     const Rcpp::NumericVector& d,

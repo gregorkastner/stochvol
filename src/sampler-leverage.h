@@ -29,7 +29,7 @@ Rcpp::List svlsample_cpp (
     const bool gammaprior,
     const Rcpp::CharacterVector& strategy);
 
-void update_leverage (
+void update_svl (
     const Rcpp::NumericVector& y,
     const Rcpp::NumericVector& y_star,
     const Rcpp::NumericVector& d,
