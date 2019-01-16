@@ -6,18 +6,34 @@
 #include <Rcpp.h>
 
 // Main sampler (as called from R):
-SEXP sampler(const SEXP y_in, const SEXP draws_in,
-  const SEXP burnin_in, const SEXP X_in,
-  const SEXP bmu_in, const SEXP Bmu_in,
-  const SEXP a0_in, const SEXP b0_in, const SEXP Bsigma_in,
-  const SEXP thin_in, const SEXP timethin_in, const SEXP startpara_in,
-  const SEXP startvol_in, const SEXP keeptau_in,
-  const SEXP quiet_in, const SEXP para_in,
-  const SEXP MHsteps_in, const SEXP B011_in, const SEXP B022_in,
-  const SEXP mhcontrol_in, const SEXP gammaprior_in,
-  const SEXP truncnormal_in, const SEXP offset_in,
-  const SEXP dontupdatemu_in, const SEXP priordf_in,
-  const SEXP priorbeta_in, const SEXP priorlatent0_in);
+Rcpp::List svsample_cpp(
+    const Rcpp::NumericVector& y_in,
+    const int draws,
+    const int burnin,
+    const Rcpp::NumericMatrix& X_in,
+    const double bmu,
+    const double Bmu,
+    const double a0,
+    const double b0,
+    const double Bsigma,
+    const int thin,
+    const int timethin,
+    const Rcpp::List& startpara_in,
+    const Rcpp::NumericVector& startvol_in,
+    const bool keeptau,
+    const bool quiet,
+    const int para,
+    const int MHsteps,
+    const double B011,
+    const double B022,
+    const double mhcontrol,
+    const bool gammaprior,
+    const bool truncnormal,
+    const double offset,
+    const bool dontupdatemu,
+    const Rcpp::NumericVector& priordf_in,
+    const Rcpp::NumericVector& priorbeta_in,
+    const double priorlatent0);
 
 // Step (b): sample mu, phi, sigma - __CENTERED__ version:
 Rcpp::NumericVector regressionCentered(

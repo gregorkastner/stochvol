@@ -9,18 +9,34 @@
 using namespace Rcpp; // avoid to type Rcpp:: every time
 
 // RcppExport is an alias for 'extern "C"'
-SEXP sampler(const SEXP y_in, const SEXP draws_in,
-  const SEXP burnin_in, const SEXP X_in,
-  const SEXP bmu_in, const SEXP Bmu_in,
-  const SEXP a0_in, const SEXP b0_in, const SEXP Bsigma_in,
-  const SEXP thin_in, const SEXP timethin_in, const SEXP startpara_in,
-  const SEXP startvol_in, const SEXP keeptau_in,
-  const SEXP quiet_in, const SEXP para_in,
-  const SEXP MHsteps_in, const SEXP B011_in, const SEXP B022_in,
-  const SEXP mhcontrol_in, const SEXP gammaprior_in,
-  const SEXP truncnormal_in, const SEXP offset_in,
-  const SEXP dontupdatemu_in, const SEXP priordf_in,
-  const SEXP priorbeta_in, const SEXP priorlatent0_in) {
+Rcpp::List svsample_cpp(
+    const Rcpp::NumericVector& y_in,
+    const int draws,
+    const int burnin,
+    const Rcpp::NumericMatrix& X_in,
+    const double bmu,
+    const double Bmu,
+    const double a0,
+    const double b0,
+    const double Bsigma,
+    const int thin,
+    const int timethin,
+    const Rcpp::List& startpara_in,
+    const Rcpp::NumericVector& startvol_in,
+    const bool keeptau,
+    const bool quiet,
+    const int para,
+    const int MHsteps,
+    const double B011,
+    const double B022,
+    const double mhcontrol,
+    const bool gammaprior,
+    const bool truncnormal,
+    const double offset,
+    const bool dontupdatemu,
+    const Rcpp::NumericVector& priordf_in,
+    const Rcpp::NumericVector& priorbeta_in,
+    const double priorlatent0) {
 
  //RNGScope scope;       // just in case no seed has been set at R level
  //GetRNGstate(); // "by hand" because RNGScope isn't safe if return
@@ -48,50 +64,25 @@ SEXP sampler(const SEXP y_in, const SEXP draws_in,
  
  List startpara(startpara_in);
 
- double priorlatent0 = as<double>(priorlatent0_in);
-
  // number of MCMC draws
- int burnin = as<int>(burnin_in);
- int draws  = as<int>(draws_in);
  int N 	    = burnin + draws;
  
- // prior parameters
- double bmu    = as<double>(bmu_in);
- double Bmu    = as<double>(Bmu_in);
- double a0     = as<double>(a0_in);
- double b0     = as<double>(b0_in);
- double Bsigma = as<double>(Bsigma_in);
- 
- // thinning parameters
- int timethin = as<int>(timethin_in);
- int thin     = as<int>(thin_in);
-
- bool keeptau = as<bool>(keeptau_in);
- 
  // verbosity control
- bool verbose = !as<bool>(quiet_in);
+ bool verbose = !quiet;
 
  // "expert" settings:
- double B011inv         = 1/as<double>(B011_in);
- double B022inv         = 1/as<double>(B022_in);
- bool Gammaprior        = as<bool>(gammaprior_in);
- bool truncnormal       = as<bool>(truncnormal_in);
- double MHcontrol       = as<double>(mhcontrol_in);
- int MHsteps            = as<int>(MHsteps_in);
- int parameterization   = as<int>(para_in);
- bool centered_baseline = as<int>(para_in) % 2; // 0 for C, 1 for NC baseline
-
- // offset:
- double offset		= as<double>(offset_in);
+ double B011inv         = 1/B011;
+ double B022inv         = 1/B022;
+ bool Gammaprior        = gammaprior;
+ double MHcontrol       = mhcontrol;
+ int parameterization   = para;
+ bool centered_baseline = parameterization % 2; // 0 for C, 1 for NC baseline
 
  // t-errors:
  bool terr;
  NumericVector priordf(priordf_in);
 
  if (ISNA(priordf(0))) terr = false; else terr = true;
-
- // indicator telling us whether assume mu = 0 fixed
- bool dontupdatemu      = as<bool>(dontupdatemu_in);
 
  // moment-matched IG-prior
  double c0 = 2.5;
@@ -105,11 +96,11 @@ SEXP sampler(const SEXP y_in, const SEXP draws_in,
  }
  else {
   if (MHsteps == 2) cT = c0 + (T+1)/2.0;  // pre-calculation outside the loop
-  else return LogicalVector::create(NA_LOGICAL);  // not implemented!
+  else Rf_error("This setup is not yet implemented");
  }
 
  if (dontupdatemu == true && MHsteps == 1) { // not implemented (would be easy, though)
-  return LogicalVector::create(NA_LOGICAL);
+  Rf_error("This setup is not yet implemented");
  }
  
  // initialize the variables:

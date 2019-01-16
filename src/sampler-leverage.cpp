@@ -9,8 +9,8 @@
 using namespace Rcpp;
 
 Rcpp::List svlsample_cpp (
-    const int draws,
     const Rcpp::NumericVector& y_in,
+    const int draws,
     const int burnin,
     const Rcpp::NumericMatrix& X,
     const int thinpara,

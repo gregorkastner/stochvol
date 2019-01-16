@@ -4,8 +4,8 @@
 #include <RcppArmadillo.h>
 
 Rcpp::List svlsample_cpp (
-    const int draws,
     const Rcpp::NumericVector& y,
+    const int draws,
     const int burnin,
     const Rcpp::NumericMatrix& X,
     const int thinpara,
