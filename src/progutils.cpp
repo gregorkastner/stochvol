@@ -112,11 +112,11 @@ void invTransformSampling(const Rcpp::NumericVector& mixprob, Rcpp::IntegerVecto
  bool larger, smaller;
  for (int j = 0; j < T; j++) {
   index = (10-1)/2;  // start searching in the middle
-  temp = innov[j]*mixprob(9 + 10*j);  // current (non-normalized) value
+  temp = innov[j]*mixprob[9 + 10*j];  // current (non-normalized) value
   larger = false;  // indicates that we already went up
   smaller = false; // indicates that we already went down
   while(true) {
-   if (temp > mixprob(index +  10*j)) {
+   if (temp > mixprob[index +  10*j]) {
     if (smaller == true) {
      index++;
      break;
@@ -141,7 +141,7 @@ void invTransformSampling(const Rcpp::NumericVector& mixprob, Rcpp::IntegerVecto
     } 
    }
   }
- r(j) = index;
+ r[j] = index;
  }
 }
 

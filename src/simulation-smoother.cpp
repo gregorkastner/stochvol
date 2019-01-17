@@ -30,14 +30,14 @@ List simulation_smoother_c(const double mu, const List filter_results) {
   const NumericVector f = filter_results["f"];
   const NumericVector E = f - mu * F;
   
-  NumericVector eta = rep(double(0), D_ret.size());
+  NumericVector eta = rep(0.0, D_ret.size());
   double eta0;
   
   double r = 0;
   double U = 0;
   const NumericVector D_inv = 1/D_ret;
   double hjpj, C, Eps, V;
-  for (int i = int(D_ret.size())-1; i >= 0; i--) {
+  for (int i = D_ret.size()-1; i >= 0; i--) {
     hjpj = H_ts[i]*J[i] + j_t22;
     C = (pow(H_ts[i], 2) + j_t22) - pow(H_ts[i]*v[i], 2)*D_inv[i] - U*pow(H_ts[i] * J[i] + j_t22, 2);
     Eps = R::rnorm(0, sqrt(C));
@@ -73,14 +73,14 @@ List simulation_smoother_nc(const double mu, const List filter_results) {
   const NumericVector E = f - mu * F;
   
   const double sigma = sqrt(sigma2);
-  NumericVector eta = rep(double(0), D_ret.size());
+  NumericVector eta = rep(0.0, D_ret.size());
   double eta0;
   
   double r = 0;
   double U = 0;
   const NumericVector D_inv = 1/D_ret;
   double hjpj, C, Eps, V;
-  for (int i = int(D_ret.size())-1; i >= 0; i--) {
+  for (int i = D_ret.size()-1; i >= 0; i--) {
     hjpj = H_ts[i]*J[i] + j_t22;
     C = (pow(H_ts[i], 2) + j_t22) - pow(H_ts[i]*v[i], 2)*D_inv[i] - U*pow(H_ts[i] * J[i] + j_t22, 2);
     Eps = R::rnorm(0, sqrt(C));

@@ -31,21 +31,24 @@ NumericVector draw_h_auxiliary(const NumericVector y_star,
   
   const List smoothing_result = simulation_smoother(mu, filter_result, centering);
   const NumericVector eta = smoothing_result["eta"];
-  const double eta0 = as<NumericVector>(smoothing_result["eta0"])(0);
+  const double eta0 = as<NumericVector>(smoothing_result["eta0"])[0];
 
   const int n = as<NumericVector>(filter_result["D"]).size();
   NumericVector h = rep(0.0, n);
   NumericVector dt;
-  if (centering == Parameterization::CENTERED) {
-    h(0) = mu + eta0;
+  switch (centering) {
+    case Parameterization::CENTERED:
+    h[0] = mu + eta0;
     dt = mu*(1-phi) + rho*sqrt(sigma2)*d*mixing_a*exp(mixing_m/2);
-  } else if (centering == Parameterization::NONCENTERED) {
-    h(0) = eta0;
+    break;
+    case Parameterization::NONCENTERED:
+    h[0] = eta0;
     dt = rho*d*mixing_a*exp(mixing_m/2);
+    break;
   }
 
   for (int i = 0; i < n-1; i++) {
-    h(i+1) = dt(i) + phi*h(i) + eta(i);
+    h[i+1] = dt[i] + phi*h[i] + eta[i];
   }
 
   return h;

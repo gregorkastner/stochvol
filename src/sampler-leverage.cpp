@@ -35,7 +35,7 @@ Rcpp::List svlsample_cpp (
     const Rcpp::CharacterVector& strategy_rcpp) {
 
   const int N = burnin + draws;
-  const bool regression = !ISNA(X(0,0));
+  const bool regression = !ISNA(X.at(0,0));
   const int T = y_in.length();
   const int p = X.ncol();
 
@@ -43,13 +43,22 @@ Rcpp::List svlsample_cpp (
   NumericVector y_star = Rcpp::log(y*y + offset);
   NumericVector d(T); std::transform(y_in.cbegin(), y_in.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
 
-  NumericVector theta = {theta_init["phi"], theta_init["rho"], pow(theta_init["sigma"], 2), theta_init["mu"]};
-  NumericVector h = h_init, ht = (h_init-theta(3))/sqrt(theta(2));
+  double phi = theta_init["phi"];
+  double rho = theta_init["rho"];
+  double sigma2 = pow(theta_init["sigma"], 2);
+  double mu = theta_init["mu"];
+  NumericVector h = h_init, ht = (h_init-mu)/sqrt(sigma2);
   arma::vec beta(p); beta.fill(0.0);
 
   arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
   NumericMatrix params(draws/thinpara, 4);
   NumericMatrix latent(draws/thinlatent, T/thintime);
+
+  // priors in objects
+  const NumericVector prior_phi = {prior_phi_a, prior_phi_b};
+  const NumericVector prior_rho = {prior_rho_a, prior_rho_b};
+  const NumericVector prior_sigma2 = {prior_sigma2_shape, prior_sigma2_rate};
+  const NumericVector prior_mu = {prior_mu_mu, prior_mu_sigma};
 
   // don't use strings or RcppCharacterVector
   Rcpp::IntegerVector strategy(strategy_rcpp.length());
@@ -95,16 +104,15 @@ Rcpp::List svlsample_cpp (
     }
 
     // update theta and h
-    update_svl (y, y_star, d, theta, h, ht,
-      prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b,
-      prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma,
+    update_svl (y, y_star, d,
+      phi, rho, sigma2, mu,
+      h, ht,
+      prior_phi, prior_rho,
+      prior_sigma2, prior_mu,
       stdev, gammaprior, strategy);
 
     // update beta
     if (regression) {
-      const double rho = theta(1);
-      const double phi = theta(0);
-
       y_reg = y_in_arma;
       y_reg.head(T-1) -= rho * (arma::exp(h_arma.head(T-1)/2) % (ht_arma.tail(T-1) - phi*ht_arma.head(T-1)));
 
@@ -132,14 +140,17 @@ Rcpp::List svlsample_cpp (
 
     // store draws
     if ((i >= 1) && !thinpara_round) {
-      params.row(i/thinpara-1) = theta;
+      params.at(i/thinpara-1, 0) = mu;
+      params.at(i/thinpara-1, 1) = phi;
+      params.at(i/thinpara-1, 2) = sqrt(sigma2);
+      params.at(i/thinpara-1, 3) = rho;
       if (regression) {
         betas.row(i/thinpara-1) = beta.t();
       }
     }
     if ((i >= 1) && !thinlatent_round) {
       for (int volind = 0, thincol = thintime-1; thincol < h.length(); volind++, thincol += thintime) {
-        latent(i/thinlatent-1, volind) = h(thincol);
+        latent.at(i/thinlatent-1, volind) = h[thincol];
       }
     }
   }
@@ -156,55 +167,50 @@ void update_svl (
     const Rcpp::NumericVector& y,
     const Rcpp::NumericVector& y_star,
     const Rcpp::NumericVector& d,
-    Rcpp::NumericVector& theta,
+    double& phi,
+    double& rho,
+    double& sigma2,
+    double& mu,
     Rcpp::NumericVector& h,
     Rcpp::NumericVector& ht,
-    const double prior_phi_a,
-    const double prior_phi_b,
-    const double prior_rho_a,
-    const double prior_rho_b,
-    const double prior_sigma2_shape,
-    const double prior_sigma2_rate,
-    const double prior_mu_mu,
-    const double prior_mu_sigma,
+    const Rcpp::NumericVector& prior_phi,
+    const Rcpp::NumericVector& prior_rho,
+    const Rcpp::NumericVector& prior_sigma2,
+    const Rcpp::NumericVector& prior_mu,
     const double stdev,
     const bool gammaprior,
     const Rcpp::IntegerVector& strategy) {
-  double phi = theta(0), rho = theta(1), sigma2 = theta(2), mu = theta(3);
 
   // only centered
-  h = draw_latent_auxiliaryMH(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu_mu, prior_mu_sigma);
+  h = draw_latent_auxiliaryMH(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1]);
   ht = (h-mu)/sqrt(sigma2);
 
   for (int ipar : strategy) {
     const Parameterization par = Parameterization(ipar);
     switch (par) {
       case Parameterization::CENTERED:
-        theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, h, ht,
-            NumericVector::create(prior_phi_a, prior_phi_b),
-            NumericVector::create(prior_rho_a, prior_rho_b),
-            NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
-            NumericVector::create(prior_mu_mu, prior_mu_sigma),
+        draw_theta_rwMH(
+            phi, rho, sigma2, mu, y, h, ht,
+            prior_phi,
+            prior_rho,
+            prior_sigma2,
+            prior_mu,
             par,
             stdev,
             gammaprior);
         break;
       case Parameterization::NONCENTERED:
-        theta = draw_theta_rwMH(phi, rho, sigma2, mu, y, h, ht,
-            NumericVector::create(prior_phi_a, prior_phi_b),
-            NumericVector::create(prior_rho_a, prior_rho_b),
-            NumericVector::create(prior_sigma2_shape, prior_sigma2_rate),
-            NumericVector::create(prior_mu_mu, prior_mu_sigma),
+        draw_theta_rwMH(
+            phi, rho, sigma2, mu, y, h, ht,
+            prior_phi,
+            prior_rho,
+            prior_sigma2,
+            prior_mu,
             par,
             stdev,
             gammaprior);
         break;
     }
-
-    phi = theta(0);
-    rho = theta(1);
-    sigma2 = theta(2);
-    mu = theta(3);
 
     switch (par) {
       case Parameterization::CENTERED:

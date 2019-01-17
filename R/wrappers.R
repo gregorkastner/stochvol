@@ -921,8 +921,6 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     cat("Converting results to coda objects... ", file=stderr())
   }
   
-  res$para <- res$para[, c(4,1,3,2), drop=FALSE]
-  res$para[, 3] <- sqrt(res$para[, 3, drop=FALSE])
   colnames(res$para) <- c("mu", "phi", "sigma", "rho")
   colnames(res$latent) <- paste0('h_', seq(1, length(y), by=thintime))
   # create svldraws class
@@ -980,8 +978,7 @@ svlsample2 <- function (y, draws = 1, burnin = 0,
                                0, 1, !quiet,
                                0, 0.1, TRUE, rep(c("centered", "non-centered"), 5))
 
-  res$para <- t(res$para[, c(4,1,3,2)])
-  res$para[3, ] <- sqrt(res$para[3, ])
+  res$para <- t(res$para)
   res$latent <- t(res$latent)
   res$meanmodel <- "none"
   rownames(res$para) <- c("mu", "phi", "sigma", "rho")

@@ -24,7 +24,7 @@ List aug_kalman_filter_c(const double phi, const double rho, const double sigma2
                          const NumericVector a, const NumericVector b, const NumericVector m, const NumericVector v,
                          const NumericVector d, const NumericVector y_star,
                          const double mu_mu, const double sigma2_mu) {
-  const R_xlen_t n = y_star.size();
+  const int n = y_star.size();
   
   const double sigma = sqrt(sigma2);
   const NumericVector gamma_ts = d * rho * sigma * exp(m/2);
@@ -49,7 +49,7 @@ List aug_kalman_filter_c(const double phi, const double rho, const double sigma2
   double K;
   
   // Main loop
-  for (int i = 0; i < int(n); i++) {
+  for (int i = 0; i < n; i++) {
     D[i] = P + v[i]*v[i];
     K = (phi*P + h_ts[i]*v[i])/D[i];
     L[i] = phi - K;
@@ -84,7 +84,7 @@ List aug_kalman_filter_nc(const double phi, const double rho, const double sigma
                           const NumericVector a, const NumericVector b, const NumericVector m, const NumericVector v,
                           const NumericVector d, const NumericVector y_star,
                           const double mu_mu, const double sigma2_mu) {
-  const R_xlen_t n = y_star.size();
+  const int n = y_star.size();
   
   const double sigma = sqrt(sigma2);
   const NumericVector gamma_ts = d * rho * exp(m/2);
@@ -109,7 +109,7 @@ List aug_kalman_filter_nc(const double phi, const double rho, const double sigma
   double K;
   
   // Main loop
-  for (int i = 0; i < int(n); i++) {
+  for (int i = 0; i < n; i++) {
     D[i] = sigma2*P + v[i]*v[i];
     K = (sigma*phi*P + h_ts[i]*v[i])/D[i];
     L[i] = phi - sigma*K;

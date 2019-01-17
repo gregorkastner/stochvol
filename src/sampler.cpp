@@ -54,13 +54,13 @@ Rcpp::List svsample_cpp(
 
       // should we model the mean as well?
       bool regression;
-      if (ISNA(X(0,0))) regression = false; else regression = true;
+      if (ISNA(X.at(0,0))) regression = false; else regression = true;
       NumericVector priorbeta(priorbeta_in);
 
       // prior mean and precision matrix for the regression part (currently fixed)
-      arma::vec priorbetamean(p); priorbetamean.fill(priorbeta(0));
+      arma::vec priorbetamean(p); priorbetamean.fill(priorbeta[0]);
       arma::mat priorbetaprec(p, p, arma::fill::zeros);
-      priorbetaprec.diag() += 1./(priorbeta(1)*priorbeta(1));
+      priorbetaprec.diag() += 1./(priorbeta[1]*priorbeta[1]);
 
       List startpara(startpara_in);
 
@@ -82,7 +82,7 @@ Rcpp::List svsample_cpp(
       bool terr;
       NumericVector priordf(priordf_in);
 
-      if (ISNA(priordf(0))) terr = false; else terr = true;
+      if (ISNA(priordf[0])) terr = false; else terr = true;
 
       // moment-matched IG-prior
       double c0 = 2.5;
@@ -170,8 +170,8 @@ Rcpp::List svsample_cpp(
         }
 
         if (terr) {
-          if (centered_baseline) update_terr(data - h, tau, nu, priordf(0), priordf(1));
-          else update_terr(data - curpara(0) - curpara(2) * h, tau, nu, priordf(0), priordf(1));
+          if (centered_baseline) update_terr(data - h, tau, nu, priordf[0], priordf[1]);
+          else update_terr(data - curpara[0] - curpara[2] * h, tau, nu, priordf[0], priordf[1]);
 
           datastand = data - log(tau);
         }
@@ -210,14 +210,14 @@ Rcpp::List svsample_cpp(
         // storage:
         if (!((i+1) % thin)) if (i >= burnin) {  // this means we should store h
           if (centered_baseline) {
-            for (int j = 0; j < hstorelength; j++) hstore(j, (i-burnin)/thin) = h(timethin*j);
-            h0store((i-burnin)/thin) = h0;
+            for (int j = 0; j < hstorelength; j++) hstore.at(j, (i-burnin)/thin) = h[timethin*j];
+            h0store[(i-burnin)/thin] = h0;
           } else {
-            for (int j = 0; j < hstorelength; j++) hstore(j, (i-burnin)/thin) = curpara(0) + curpara(2)*h(timethin*j);
-            h0store((i-burnin)/thin) = curpara(0) + curpara(2)*h0;
+            for (int j = 0; j < hstorelength; j++) hstore.at(j, (i-burnin)/thin) = curpara[0] + curpara[2]*h[timethin*j];
+            h0store[(i-burnin)/thin] = curpara[0] + curpara[2]*h0;
           }
           if (keeptau && terr) {
-            for (int j = 0; j < hstorelength; j++) taustore(j, (i-burnin)/thin) = tau(timethin*j);
+            for (int j = 0; j < hstorelength; j++) taustore.at(j, (i-burnin)/thin) = tau[timethin*j];
           }
         }
         mu[i+1] = curpara[0];
@@ -249,7 +249,7 @@ void update_terr(const NumericVector &data,
 
   for (int i = 0; i < T; i++) {
     // Watch out, Rf_rgamma(shape, scale), not Rf_rgamma(shape, rate)
-    tau[i] = 1./::Rf_rgamma((nu + 1.) / 2., 2. / (nu + exp(data(i))));
+    tau[i] = 1./::Rf_rgamma((nu + 1.) / 2., 2. / (nu + exp(data[i])));
     sumtau += log(tau[i]) + 1/tau[i];
   }
 
@@ -277,7 +277,7 @@ void update_sv(const NumericVector& data, NumericVector& curpara, NumericVector&
 
   int T = data.length();
 
-  if (dontupdatemu) curpara(0) = 0; // just to be sure
+  if (dontupdatemu) curpara[0] = 0; // just to be sure
 
   NumericVector omega_diag(T+1);  // contains diagonal elements of precision matrix
   double omega_offdiag;  // contains off-diag element of precision matrix (const)
@@ -353,8 +353,8 @@ void update_sv(const NumericVector& data, NumericVector& curpara, NumericVector&
   // Solution of (Chol')*x = htmp ("backward algorithm")
   backwardAlg(chol_diag, chol_offdiag, htmp, hnew);
 
-  for (int j = 0; j < T; j++) h(j) = hnew(j+1);  // TODO: REVISIT!!
-  h0 = hnew(0);
+  for (int j = 0; j < T; j++) h[j] = hnew[j+1];  // TODO: REVISIT!!
+  h0 = hnew[0];
 
   /*
    * Step (b): sample mu, phi, sigma
@@ -530,21 +530,21 @@ if (MHsteps == 3 || dontupdatemu == true) {
   chol22 *= sigma;
 
   if (truncnormal) { // draw from truncated normal via inversion method
-    quant(0) = R::pnorm(-1, bT1, chol11, true, false);
-    quant(1) = R::pnorm(1, bT1, chol11, true, false);
+    quant[0] = R::pnorm(-1, bT1, chol11, true, false);
+    quant[1] = R::pnorm(1, bT1, chol11, true, false);
     phi_prop = R::qnorm((quant[0] + R::runif(0, 1)*(quant[1]-quant[0])),
         bT1, chol11, true, false);
     gamma_prop = R::rnorm(bT2 + chol12*((phi_prop-bT1)/chol11),
         chol22);
   }
   else { // draw from normal and reject (return) if outside
-    innov(0) = R::rnorm(0, 1);
-    phi_prop = bT1 + chol11*innov(0);
+    innov[0] = R::rnorm(0, 1);
+    phi_prop = bT1 + chol11*innov[0];
     if ((phi_prop >= 1) || (phi_prop <= -1)) { // outside the unit sphere
       Rcpp::NumericVector ret = Rcpp::NumericVector::create(mu, phi, sigma);
       return ret;
     }
-    else gamma_prop = bT2 + chol12*innov(0) + chol22*R::rnorm(0, 1);
+    else gamma_prop = bT2 + chol12*innov[0] + chol22*R::rnorm(0, 1);
   }
 
   // acceptance probability exp(R) calculated on a log scale
@@ -617,7 +617,7 @@ Rcpp::NumericVector regressionNoncentered(
     BT11 = 1/(tmp1+1/Bsigma);
     bT1 = BT11*tmp2; 
     //  REprintf("old: %f, new: mean %f and sd %f\n", sigma, bT1, sqrt(BT11));
-    sigma = as<double>(rnorm(1, bT1, sqrt(BT11)));
+    sigma = R::rnorm(bT1, sqrt(BT11));
 
     // TODO: check w.r.t. sign of sigma (low priority, 3 block is
     // practically useless anyway if dontupdatemu==false)
@@ -685,8 +685,8 @@ Rcpp::NumericVector regressionNoncentered(
 
   // actual sampling
   if (truncnormal) {  // draw from truncated normal via inversion method
-    quant(0) = R::pnorm(-1, tmpmean, tmpsd, true, false);
-    quant(1) = R::pnorm(1, tmpmean, tmpsd, true, false);
+    quant[0] = R::pnorm(-1, tmpmean, tmpsd, true, false);
+    quant[1] = R::pnorm(1, tmpmean, tmpsd, true, false);
     phi_prop = R::qnorm((quant[0] + R::runif(0, 1)*(quant[1]-quant[0])),
         tmpmean, tmpsd, true, false);
   }

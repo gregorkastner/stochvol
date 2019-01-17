@@ -4,8 +4,8 @@
 #include <Rcpp.h>
 #include "parameterization.hpp"
 
-Rcpp::NumericVector draw_theta_rwMH(const double phi, const double rho,
-                                    const double sigma2, const double mu,
+void draw_theta_rwMH(double& phi, double& rho,
+                              double& sigma2, double& mu,
                                     const Rcpp::NumericVector y,
                                     const Rcpp::NumericVector h,
                                     const Rcpp::NumericVector ht,

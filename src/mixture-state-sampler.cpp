@@ -32,7 +32,7 @@ NumericMatrix mixture_state_post_dist(const NumericVector eps_star, const Numeri
       } else {
         log_eta_lik = 0.0;
       }
-      /*log_*/result(r, c) = log_prior + log_eps_star_lik + log_eta_lik;
+      /*log_*/result.at(r, c) = log_prior + log_eps_star_lik + log_eta_lik;
     }
     const double max_log_result_row = Rcpp::max(/*log_*/result.row(r));
     /*log_*/result.row(r) = /*log_*/result.row(r) - (max_log_result_row + log(Rcpp::sum(Rcpp::exp(/*log_*/result.row(r)-max_log_result_row))));
@@ -69,26 +69,10 @@ NumericVector draw_s_auxiliary(const NumericVector y_star,
     break;
   }
   post_dist = mixture_state_post_dist(eps_star, eta, d, mu, sigma2, rho, centering);
-  /*  Exact translation  TODO comment out! */
+
   for (int r = 0; r < n; r++) {
-    new_states(r) = sample(10, 1, true, Nullable<NumericVector>(post_dist.row(r)), false)(0);
+    new_states[r] = sample(10, 1, true, Nullable<NumericVector>(post_dist.row(r)), false)[0];
   }
   
   return new_states;
-
-  //const int mix_count = post_dist.row(0).size();
-  //for (int r = 0; r < n; r++) {
-  //  double s = 0;
-  //  for (int c = 0; c < mix_count; c++) {
-  //    s += post_dist(r, c);
-  //    post_dist(r, c) = s;
-  //  }
-  //}
-  //
-  //unif_vec = runif(n);
-  //for (int r = 0; r < n; r++) {
-  //  new_states(r) = sum(post_dist.row(r) < unif_vec(r));  // C++ indexing
-  //}
-  //
-  //return new_states;
 }
