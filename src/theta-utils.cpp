@@ -5,12 +5,15 @@
 
 using namespace Rcpp;
 
-double theta_log_likelihood(const double phi, const double rho,
-                            const double sigma2, const double mu,
-                            const NumericVector y,
-                            const NumericVector h,
-                            const NumericVector ht,
-                            const Parameterization centering) {
+double theta_log_likelihood(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const NumericVector& y,
+    const NumericVector& h,
+    const NumericVector& ht,
+    const Parameterization centering) {
   double result;
   switch (centering) {
     case Parameterization::CENTERED:
@@ -23,9 +26,13 @@ double theta_log_likelihood(const double phi, const double rho,
   return result;
 }
 
-double theta_log_likelihood_c(const double phi, const double rho,
-                              const double sigma2, const double mu,
-                              const Rcpp::NumericVector y, const Rcpp::NumericVector h) {
+double theta_log_likelihood_c(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const Rcpp::NumericVector& y,
+    const Rcpp::NumericVector& h) {
   const int n = y.size();
   const double sigma = sqrt(sigma2);
   double log_lik = 0;
@@ -45,9 +52,13 @@ double theta_log_likelihood_c(const double phi, const double rho,
   return log_lik;
 }
 
-double theta_log_likelihood_nc(const double phi, const double rho,
-                               const double sigma2, const double mu,
-                               const Rcpp::NumericVector y, const Rcpp::NumericVector ht) {
+double theta_log_likelihood_nc(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const Rcpp::NumericVector& y,
+    const Rcpp::NumericVector& ht) {
   const int n = y.size();
   const double sigma = sqrt(sigma2);
   double log_lik = 0;
@@ -72,13 +83,16 @@ double theta_log_likelihood_nc(const double phi, const double rho,
   return log_lik;
 }
 
-double theta_log_prior(const double phi, const double rho,
-                       const double sigma2, const double mu,
-                       const NumericVector prior_phi,
-                       const NumericVector prior_rho,
-                       const NumericVector prior_sigma2,
-                       const NumericVector prior_mu,
-                       const bool gammaprior) {
+double theta_log_prior(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const NumericVector& prior_phi,
+    const NumericVector& prior_rho,
+    const NumericVector& prior_sigma2,
+    const NumericVector& prior_mu,
+    const bool gammaprior) {
   // use variable names to clear the confusion about Gamma and InvGamma
   //const double gammarate = prior_sigma2(1);
   //const double gammascale = 1/gammarate;
@@ -92,41 +106,59 @@ double theta_log_prior(const double phi, const double rho,
       1/R::dgamma(sigma2, prior_sigma2[0]+2, prior_sigma2[1]/(prior_sigma2[0]*(prior_sigma2[0]+1)), true));  // moment matched InvGamma
 }
 
-NumericVector theta_transform(const double f, const double r,
-                              const double s, const double m) {
+NumericVector theta_transform(
+    const double f,
+    const double r,
+    const double s,
+    const double m) {
   return {1-2/(exp(2*f)+1), 1-2/(exp(2*r)+1), exp(s), m};
 }
 
-NumericVector theta_transform_inv(const double phi, const double rho,
-                                  const double sigma2, const double mu) {
+NumericVector theta_transform_inv(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu) {
   return {0.5*log(2/(1-phi)-1), 0.5*log(2/(1-rho)-1), log(sigma2), mu};
 }
 
-double theta_transform_log_det_jac(const double f, const double r,
-                                   const double s, const double m) {
+double theta_transform_log_det_jac(
+    const double f,
+    const double r,
+    const double s,
+    const double m) {
   return 2*(log(4) + f+r+s/2 - log(exp(2*f)+1) - log(exp(2*r)+1));
 }
 
-double theta_transform_inv_log_det_jac(const double phi, const double rho,
-                                       const double sigma2, const double mu) {
+double theta_transform_inv_log_det_jac(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu) {
   return -(log(1-phi*phi)+log(1-rho*rho)+log(sigma2));
 }
 
-NumericVector theta_proposal_stdev(const double phi, const double rho,
-                                   const double sigma2, const double mu,
-                                   const NumericVector y,
-                                   const NumericVector h,
-                                   const NumericVector ht,
-                                   const double stdev) {
+NumericVector theta_proposal_stdev(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const NumericVector& y,
+    const NumericVector& h,
+    const NumericVector& ht,
+    const double stdev) {
   return rep(stdev, 4);
 }
 
-NumericVector theta_propose(const double phi, const double rho,
-                             const double sigma2, const double mu,
-                             const NumericVector y,
-                             const NumericVector h,
-                             const NumericVector ht,
-                             const double stdev) {
+NumericVector theta_propose(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const NumericVector& y,
+    const NumericVector& h,
+    const NumericVector& ht,
+    const double stdev) {
   const NumericVector theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
   
   const NumericVector &proposal_mean_old = theta_old_t;

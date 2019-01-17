@@ -4,8 +4,10 @@
 
 using namespace Rcpp;
 
-List simulation_smoother(const double mu, const List filter_results,
-                         const Parameterization centering) {
+List simulation_smoother(
+    const double mu,
+    const List& filter_results,
+    const Parameterization centering) {
   List result;
   switch (centering) {
     case Parameterization::CENTERED:
@@ -18,7 +20,9 @@ List simulation_smoother(const double mu, const List filter_results,
   return result;
 }
 
-List simulation_smoother_c(const double mu, const List filter_results) {
+List simulation_smoother_c(
+    const double mu,
+    const List& filter_results) {
   const NumericVector D_ret = filter_results["D"];
   const NumericVector J = filter_results["J1"];
   const NumericVector L = filter_results["L"];
@@ -59,7 +63,9 @@ List simulation_smoother_c(const double mu, const List filter_results) {
   );
 }
 
-List simulation_smoother_nc(const double mu, const List filter_results) {
+List simulation_smoother_nc(
+    const double mu,
+    const List& filter_results) {
   const double sigma2 = filter_results["sigma2"];
   const NumericVector D_ret = filter_results["D"];
   const NumericVector J = filter_results["J1"];

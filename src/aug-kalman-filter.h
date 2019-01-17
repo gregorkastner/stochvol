@@ -33,41 +33,44 @@
 // @references Nakajima, Jouchi, and Yasuhiro Omori.
 //   "Leverage, heavy-tails and correlated jumps in stochastic volatility models."
 //   Computational Statistics & Data Analysis 53.6 (2009): 2335-2353.
-Rcpp::List aug_kalman_filter(const double phi,
-                             const double rho,
-                             const double sigma2,
-                             const Rcpp::NumericVector a,
-                             const Rcpp::NumericVector b,
-                             const Rcpp::NumericVector m,
-                             const Rcpp::NumericVector v,
-                             const Rcpp::NumericVector d,
-                             const Rcpp::NumericVector y_star,
-                             const double mu_mu,
-                             const double sigma2_mu,
-                             const Parameterization centering);
+Rcpp::List aug_kalman_filter(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const Rcpp::NumericVector& a,
+    const Rcpp::NumericVector& b,
+    const Rcpp::NumericVector& m,
+    const Rcpp::NumericVector& v,
+    const Rcpp::NumericVector& d,
+    const Rcpp::NumericVector& y_star,
+    const double mu_mu,
+    const double sigma2_mu,
+    const Parameterization centering);
 
-Rcpp::List aug_kalman_filter_c(const double phi,
-                               const double rho,
-                               const double sigma2,
-                               const Rcpp::NumericVector a,
-                               const Rcpp::NumericVector b,
-                               const Rcpp::NumericVector m,
-                               const Rcpp::NumericVector v,
-                               const Rcpp::NumericVector d,
-                               const Rcpp::NumericVector y_star,
-                               const double mu_mu,
-                               const double sigma2_mu);
+Rcpp::List aug_kalman_filter_c(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const Rcpp::NumericVector& a,
+    const Rcpp::NumericVector& b,
+    const Rcpp::NumericVector& m,
+    const Rcpp::NumericVector& v,
+    const Rcpp::NumericVector& d,
+    const Rcpp::NumericVector& y_star,
+    const double mu_mu,
+    const double sigma2_mu);
 
-Rcpp::List aug_kalman_filter_nc(const double phi,
-                                const double rho,
-                                const double sigma2,
-                                const Rcpp::NumericVector a,
-                                const Rcpp::NumericVector b,
-                                const Rcpp::NumericVector m,
-                                const Rcpp::NumericVector v,
-                                const Rcpp::NumericVector d,
-                                const Rcpp::NumericVector y_star,
-                                const double mu_mu,
-                                const double sigma2_mu);
+Rcpp::List aug_kalman_filter_nc(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const Rcpp::NumericVector& a,
+    const Rcpp::NumericVector& b,
+    const Rcpp::NumericVector& m,
+    const Rcpp::NumericVector& v,
+    const Rcpp::NumericVector& d,
+    const Rcpp::NumericVector& y_star,
+    const double mu_mu,
+    const double sigma2_mu);
 
 #endif  // AUG_KALMAN_FILTER_H

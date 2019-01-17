@@ -12,16 +12,17 @@
 
 using namespace Rcpp;
  
-NumericVector draw_h_auxiliary(const NumericVector y_star,
-                               const NumericVector d,
-                               const NumericVector s,
-                               const double phi,
-                               const double rho,
-                               const double sigma2,
-                               const double mu,
-                               const double priormu_mu,
-                               const double priormu_sigma,
-                               const Parameterization centering) {
+NumericVector draw_h_auxiliary(
+    const NumericVector& y_star,
+    const NumericVector& d,
+    const NumericVector& s,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const double priormu_mu,
+    const double priormu_sigma,
+    const Parameterization centering) {
   NumericVector mixing_a(s.length()); std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
   NumericVector mixing_b(s.length()); std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
   NumericVector mixing_m(s.length()); std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
@@ -54,18 +55,19 @@ NumericVector draw_h_auxiliary(const NumericVector y_star,
   return h;
 }
 
-NumericVector draw_latent_auxiliaryMH(const NumericVector y,
-                                  const NumericVector y_star,
-                                  const NumericVector d,
-                                  const NumericVector h,
-                                  const NumericVector ht,
-                                  const double phi,
-                                  const double rho,
-                                  const double sigma2,
-                                  const double mu,
-                                  const double priormu_mu,
-                                  const double priormu_sigma) {
-                                  //const CharacterVector centering,
+NumericVector draw_latent_auxiliaryMH(
+    const NumericVector& y,
+    const NumericVector& y_star,
+    const NumericVector& d,
+    const NumericVector& h,
+    const NumericVector& ht,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const double priormu_mu,
+    const double priormu_sigma) {
+    //const CharacterVector centering,
   
   // Draw h from AUX
   const NumericVector s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);

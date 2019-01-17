@@ -7,10 +7,14 @@
 
 using namespace Rcpp;
 
-NumericMatrix mixture_state_post_dist(const NumericVector eps_star, const NumericVector eta,
-                                      const NumericVector d,
-                                      const double mu, const double sigma2, const double rho,
-                                      const Parameterization centering) {
+NumericMatrix mixture_state_post_dist(
+    const NumericVector& eps_star,
+    const NumericVector& eta,
+    const NumericVector& d,
+    const double mu,
+    const double sigma2,
+    const double rho,
+    const Parameterization centering) {
   
   const int n = eps_star.size();
   const int mix_count = sizeof(mix_prob)/sizeof(mix_prob[0]);
@@ -43,13 +47,16 @@ NumericMatrix mixture_state_post_dist(const NumericVector eps_star, const Numeri
   return result;
 }
 
-NumericVector draw_s_auxiliary(const NumericVector y_star,
-                               const NumericVector d,
-                               const NumericVector h,
-                               const NumericVector ht,
-                               const double phi, const double rho,
-                               const double sigma2, const double mu,
-                               const Parameterization centering) {
+NumericVector draw_s_auxiliary(
+    const NumericVector& y_star,
+    const NumericVector& d,
+    const NumericVector& h,
+    const NumericVector& ht,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const Parameterization centering) {
 
   const int n = y_star.size();
   NumericVector eps_star;

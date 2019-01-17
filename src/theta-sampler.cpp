@@ -6,18 +6,21 @@
 
 using namespace Rcpp;
 
-void draw_theta_rwMH(double& phi, double& rho,
-                              double& sigma2, double& mu,
-                              const NumericVector y,
-                              const NumericVector h,
-                              const NumericVector ht,
-                              const NumericVector prior_phi,
-                              const NumericVector prior_rho,
-                              const NumericVector prior_sigma2,
-                              const NumericVector prior_mu,
-                              const Parameterization centering,
-                              const double stdev,
-                              const bool gammaprior) {
+void draw_theta_rwMH(
+    double& phi,
+    double& rho,
+    double& sigma2,
+    double& mu,
+    const NumericVector& y,
+    const NumericVector& h,
+    const NumericVector& ht,
+    const NumericVector& prior_phi,
+    const NumericVector& prior_rho,
+    const NumericVector& prior_sigma2,
+    const NumericVector& prior_mu,
+    const Parameterization centering,
+    const double stdev,
+    const bool gammaprior) {
   const NumericVector proposed = theta_propose(phi, rho, sigma2, mu, y, h, ht, stdev);
   const double phi_prop = proposed[0], rho_prop = proposed[1], sigma2_prop = proposed[2],
     mu_prop = proposed[3], prop_old_logdens = proposed[4], prop_new_logdens = proposed[5];

@@ -6,12 +6,13 @@
 
 using namespace Rcpp;
 
-double h_log_posterior(const NumericVector h,  // centered
-                       const NumericVector y,
-                       const double phi,
-                       const double rho,
-                       const double sigma2,
-                       const double mu) {
+double h_log_posterior(
+    const NumericVector& h,  // centered
+    const NumericVector& y,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu) {
   const double sigma = sqrt(sigma2);
   const double rho_const = sqrt(1-rho*rho);
   const int n = y.size();
@@ -24,13 +25,14 @@ double h_log_posterior(const NumericVector h,  // centered
   return result;
 }
 
-double h_aux_log_posterior(const NumericVector h,  // centered
-                           const NumericVector y_star,
-                           const NumericVector d,
-                           const double phi,
-                           const double rho,
-                           const double sigma2,
-                           const double mu) {
+double h_aux_log_posterior(
+    const NumericVector& h,  // centered
+    const NumericVector& y_star,
+    const NumericVector& d,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu) {
   const int n = y_star.size();
   const int mix_count = sizeof(mix_prob)/sizeof(mix_prob[0]);
   const double sigma = sqrt(sigma2);
@@ -58,3 +60,4 @@ double h_aux_log_posterior(const NumericVector h,  // centered
 
   return result;
 }
+

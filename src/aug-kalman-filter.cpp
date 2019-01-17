@@ -4,10 +4,19 @@
 
 using namespace Rcpp;
 
-List aug_kalman_filter(const double phi, const double rho, const double sigma2,
-                       const NumericVector a, const NumericVector b, const NumericVector m, const NumericVector v,
-                       const NumericVector d, const NumericVector y_star,
-                       const double mu_mu, const double sigma2_mu, const Parameterization centering) {
+List aug_kalman_filter(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const NumericVector& a,
+    const NumericVector& b,
+    const NumericVector& m,
+    const NumericVector& v,
+    const NumericVector& d,
+    const NumericVector& y_star,
+    const double mu_mu,
+    const double sigma2_mu,
+    const Parameterization centering) {
   List result;
   switch (centering) {
     case Parameterization::CENTERED:
@@ -20,10 +29,18 @@ List aug_kalman_filter(const double phi, const double rho, const double sigma2,
   return result;
 }
 
-List aug_kalman_filter_c(const double phi, const double rho, const double sigma2,
-                         const NumericVector a, const NumericVector b, const NumericVector m, const NumericVector v,
-                         const NumericVector d, const NumericVector y_star,
-                         const double mu_mu, const double sigma2_mu) {
+List aug_kalman_filter_c(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const NumericVector& a,
+    const NumericVector& b,
+    const NumericVector& m,
+    const NumericVector& v,
+    const NumericVector& d,
+    const NumericVector& y_star,
+    const double mu_mu,
+    const double sigma2_mu) {
   const int n = y_star.size();
   
   const double sigma = sqrt(sigma2);
@@ -80,10 +97,18 @@ List aug_kalman_filter_c(const double phi, const double rho, const double sigma2
   );
 }
 
-List aug_kalman_filter_nc(const double phi, const double rho, const double sigma2,
-                          const NumericVector a, const NumericVector b, const NumericVector m, const NumericVector v,
-                          const NumericVector d, const NumericVector y_star,
-                          const double mu_mu, const double sigma2_mu) {
+List aug_kalman_filter_nc(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const NumericVector& a,
+    const NumericVector& b,
+    const NumericVector& m,
+    const NumericVector& v,
+    const NumericVector& d,
+    const NumericVector& y_star,
+    const double mu_mu,
+    const double sigma2_mu) {
   const int n = y_star.size();
   
   const double sigma = sqrt(sigma2);
@@ -139,3 +164,4 @@ List aug_kalman_filter_nc(const double phi, const double rho, const double sigma
     _["h1var"] = h1_var
   );
 }
+
