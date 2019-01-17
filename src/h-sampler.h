@@ -4,27 +4,32 @@
 #include <Rcpp.h>
 #include "parameterization.hpp"
 
-Rcpp::NumericVector draw_h_auxiliary(const Rcpp::NumericVector y_star,
-                                     const Rcpp::NumericVector d,
-                                     const Rcpp::NumericVector s,
-                                     const double phi,
-                                     const double rho,
-                                     const double sigma2,
-                                     const double mu,
-                                     const double priormu_mu,
-                                     const double priormu_sigma,
-                                     const Parameterization centering);
+void draw_h_auxiliary(
+    Rcpp::NumericVector& h,
+    Rcpp::List& cache,
+    const Rcpp::NumericVector& y_star,
+    const Rcpp::NumericVector& d,
+    const Rcpp::NumericVector& s,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const double priormu_mu,
+    const double priormu_sigma,
+    const Parameterization centering);
 
-Rcpp::NumericVector draw_latent_auxiliaryMH(const Rcpp::NumericVector y,
-                                            const Rcpp::NumericVector y_star,
-                                            const Rcpp::NumericVector d,
-                                            const Rcpp::NumericVector h,
-                                            const Rcpp::NumericVector ht,
-                                            const double phi,
-                                            const double rho,
-                                            const double sigma2,
-                                            const double mu,
-                                            const double priormu_mu,
-                                            const double priormu_sigma);
+void draw_latent_auxiliaryMH(
+    Rcpp::NumericVector& h,
+    Rcpp::List& cache,
+    const Rcpp::NumericVector& y,
+    const Rcpp::NumericVector& y_star,
+    const Rcpp::NumericVector& d,
+    const Rcpp::NumericVector& ht,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const double priormu_mu,
+    const double priormu_sigma);
 
 #endif  // H_SAMPLER_H

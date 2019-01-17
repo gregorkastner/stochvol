@@ -5,6 +5,7 @@
 #include "theta-sampler.h"
 #include "h-sampler.h"
 #include "parameterization.hpp"
+#include "init_cache.h"
 
 using namespace Rcpp;
 
@@ -85,6 +86,9 @@ Rcpp::List svlsample_cpp (
   const arma::vec h_arma(h.begin(), h.length(), false);  // create view
   const arma::vec ht_arma(ht.begin(), ht.length(), false);  // create view
 
+  // cache for the updates
+  List cache;
+
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
   const int show = verbose ? progressbar_init(N) : 0;
@@ -109,7 +113,8 @@ Rcpp::List svlsample_cpp (
       h, ht,
       prior_phi, prior_rho,
       prior_sigma2, prior_mu,
-      stdev, gammaprior, strategy);
+      stdev, gammaprior, strategy,
+      cache);
 
     // update beta
     if (regression) {
@@ -179,10 +184,13 @@ void update_svl (
     const Rcpp::NumericVector& prior_mu,
     const double stdev,
     const bool gammaprior,
-    const Rcpp::IntegerVector& strategy) {
+    const Rcpp::IntegerVector& strategy,
+    Rcpp::List& cache) {
+
+  init_cache(cache, y);
 
   // only centered
-  h = draw_latent_auxiliaryMH(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1]);
+  draw_latent_auxiliaryMH(h, cache, y, y_star, d, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1]);
   ht = (h-mu)/sqrt(sigma2);
 
   for (int ipar : strategy) {

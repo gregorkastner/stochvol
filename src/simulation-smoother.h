@@ -4,14 +4,24 @@
 #include <Rcpp.h>
 #include "parameterization.hpp"
 
-Rcpp::List simulation_smoother(const double mu,
-                               const Rcpp::List filter_results,
-                               const Parameterization centering);
+void simulation_smoother(
+    double& eta0,
+    Rcpp::List& cache,
+    const double mu,
+    const Parameterization centering,
+    const double sigma2);
 
-Rcpp::List simulation_smoother_c(const double mu,
-                                 const Rcpp::List filter_results);
-  
-Rcpp::List simulation_smoother_nc(const double mu,
-                                  const Rcpp::List filter_results);
+void simulation_smoother_c(
+    Rcpp::NumericVector& eta,
+    double& eta0,
+    const double mu,
+    const Rcpp::List& filter_results);
+
+void simulation_smoother_nc(
+    Rcpp::NumericVector& eta,
+    double& eta0,
+    const double mu,
+    const Rcpp::List& filter_results,
+    const double sigma2);
 
 #endif  // SIMULATION_SMOOTHER_H

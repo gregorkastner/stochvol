@@ -45,7 +45,8 @@ void update_svl (
     const Rcpp::NumericVector& prior_mu,
     const double stdev,
     const bool gammaprior,
-    const Rcpp::IntegerVector& strategy);
+    const Rcpp::IntegerVector& strategy,
+    Rcpp::List& cache);
 
 #endif  // RUN_SAMPLERS_H
 

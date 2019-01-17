@@ -1,34 +1,64 @@
 #include <Rcpp.h>
 #include "aug-kalman-filter.h"
 #include "parameterization.hpp"
+#include "auxmix.h"
 
 using namespace Rcpp;
 
-List aug_kalman_filter(const double phi, const double rho, const double sigma2,
-                       const NumericVector a, const NumericVector b, const NumericVector m, const NumericVector v,
-                       const NumericVector d, const NumericVector y_star,
-                       const double mu_mu, const double sigma2_mu, const Parameterization centering) {
-  List result;
+void aug_kalman_filter(
+    List& cache,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const NumericVector& mixing_a,
+    const NumericVector& mixing_b,
+    const NumericVector& mixing_m,
+    const NumericVector& mixing_v,
+    const NumericVector& d,  // TODO integervector
+    const NumericVector& y_star,
+    const double mu_mu,
+    const double sigma2_mu,
+    const Parameterization centering) {
+
   switch (centering) {
     case Parameterization::CENTERED:
-    result = aug_kalman_filter_c(phi, rho, sigma2, a, b, m, v, d, y_star, mu_mu, sigma2_mu);
+    aug_kalman_filter_c(cache, phi, rho, sigma2, mixing_a, mixing_b, mixing_m, mixing_v, d, y_star, mu_mu, sigma2_mu);
     break;
     case Parameterization::NONCENTERED:
-    result = aug_kalman_filter_nc(phi, rho, sigma2, a, b, m, v, d, y_star, mu_mu, sigma2_mu);
+    aug_kalman_filter_nc(cache, phi, rho, sigma2, mixing_a, mixing_b, mixing_m, mixing_v, d, y_star, mu_mu, sigma2_mu);
     break;
   }
-  return result;
+  return;
 }
 
-List aug_kalman_filter_c(const double phi, const double rho, const double sigma2,
-                         const NumericVector a, const NumericVector b, const NumericVector m, const NumericVector v,
-                         const NumericVector d, const NumericVector y_star,
-                         const double mu_mu, const double sigma2_mu) {
+void aug_kalman_filter_c(
+    List& cache,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const NumericVector& a,
+    const NumericVector& b,
+    const NumericVector& m,
+    const NumericVector& v,
+    const NumericVector& d,
+    const NumericVector& y_star,
+    const double mu_mu,
+    const double sigma2_mu) {
   const int n = y_star.size();
   
+  // Init returned values
+  NumericVector D = cache["D"];
+  NumericVector J = cache["J1"];
+  NumericVector L = cache["L"];
+  NumericVector f = cache["f"];
+  NumericVector F = cache["F"];
+  NumericVector h_ts = cache["hts"];
+  double Q = 1/sigma2_mu;
+  double q = mu_mu * Q;
+
   const double sigma = sqrt(sigma2);
   const NumericVector gamma_ts = d * rho * sigma * exp(m/2);
-  const NumericVector h_ts = b * v * gamma_ts;
+  h_ts = b * v * gamma_ts;
   const double j_t22 = sigma2 * (1-rho*rho);
   const double h1_var = sigma2/(phi*phi > 1-1e-8 ? 1e-8 : (1-phi*phi));
   
@@ -36,14 +66,6 @@ List aug_kalman_filter_c(const double phi, const double rho, const double sigma2
   double A_star = -1;
   double P = h1_var;
   
-  // Init returned values
-  NumericVector D(n);
-  NumericVector J(n);
-  NumericVector L(n);
-  NumericVector f(n);
-  NumericVector F(n);
-  double Q = 1/sigma2_mu;
-  double q = mu_mu * Q;
   
   // Init for the loop
   double K;
@@ -63,47 +85,50 @@ List aug_kalman_filter_c(const double phi, const double rho, const double sigma2
     q += F[i]*f[i]/D[i];
     Q += F[i]*F[i]/D[i];
   }
+
+  cache["Q"] = Q;
+  cache["q"] = q;
+  cache["jt22"] = j_t22;
+  cache["h1var"] = h1_var;
   
-  return List::create(
-    _["sigma2"] = sigma2,
-    _["D"] = D,
-    _["J1"] = J,
-    _["L"] = L,
-    _["f"] = f,
-    _["F"] = F,
-    _["hts"] = h_ts,
-    _["v"] = v,
-    _["Q"] = Q,
-    _["q"] = q,
-    _["jt22"] = j_t22,
-    _["h1var"] = h1_var
-  );
+  return;
 }
 
-List aug_kalman_filter_nc(const double phi, const double rho, const double sigma2,
-                          const NumericVector a, const NumericVector b, const NumericVector m, const NumericVector v,
-                          const NumericVector d, const NumericVector y_star,
-                          const double mu_mu, const double sigma2_mu) {
+void aug_kalman_filter_nc(
+    List& cache,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const NumericVector& a,
+    const NumericVector& b,
+    const NumericVector& m,
+    const NumericVector& v,
+    const NumericVector& d,
+    const NumericVector& y_star,
+    const double mu_mu,
+    const double sigma2_mu) {
+  
+  // Init returned values
+  NumericVector D = cache["D"];
+  NumericVector J = cache["J1"];
+  NumericVector L = cache["L"];
+  NumericVector f = cache["f"];
+  NumericVector F = cache["F"];
+  NumericVector h_ts = cache["hts"];
+  double Q = 1/sigma2_mu;
+  double q = mu_mu * Q;
+
   const int n = y_star.size();
   
   const double sigma = sqrt(sigma2);
   const NumericVector gamma_ts = d * rho * exp(m/2);
-  const NumericVector h_ts = b * v * gamma_ts;
+  h_ts = b * v * gamma_ts;
   const double j_t22 = (1-rho*rho);
   const double h1_var = 1/(phi*phi > 1-1e-8 ? 1e-8 : (1-phi*phi));
   
   double a_star = 0;
   double A_star = 0;
   double P = h1_var;
-  
-  // Init returned values
-  NumericVector D(n);
-  NumericVector J(n);
-  NumericVector L(n);
-  NumericVector f(n);
-  NumericVector F(n);
-  double Q = 1/sigma2_mu;
-  double q = mu_mu * Q;
   
   // Init for the loop
   double K;
@@ -123,19 +148,11 @@ List aug_kalman_filter_nc(const double phi, const double rho, const double sigma
     q += F[i]*f[i]/D[i];
     Q += F[i]*F[i]/D[i];
   }
+
+  cache["Q"] = Q;
+  cache["q"] = q;
+  cache["jt22"] = j_t22;
+  cache["h1var"] = h1_var;
   
-  return List::create(
-    _["sigma2"] = sigma2,
-    _["D"] = D,
-    _["J1"] = J,
-    _["L"] = L,
-    _["f"] = f,
-    _["F"] = F,
-    _["hts"] = h_ts,
-    _["v"] = v,
-    _["Q"] = Q,
-    _["q"] = q,
-    _["jt22"] = j_t22,
-    _["h1var"] = h1_var
-  );
+  return;
 }
