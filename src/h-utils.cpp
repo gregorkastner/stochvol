@@ -1,14 +1,12 @@
+#include <RcppArmadillo.h>
 #include "h-utils.h"
 #include "auxmix.h"
-#include <Rcpp.h>
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-using namespace Rcpp;
-
 double h_log_posterior(
-    const NumericVector& h,  // centered
-    const NumericVector& y,
+    const arma::vec& h,  // centered
+    const arma::vec& y,
     const double phi,
     const double rho,
     const double sigma2,
@@ -26,9 +24,9 @@ double h_log_posterior(
 }
 
 double h_aux_log_posterior(
-    const NumericVector& h,  // centered
-    const NumericVector& y_star,
-    const NumericVector& d,
+    const arma::vec& h,  // centered
+    const arma::vec& y_star,
+    const arma::vec& d,
     const double phi,
     const double rho,
     const double sigma2,

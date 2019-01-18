@@ -2,12 +2,16 @@
 // Constants relating to the approximation of log(chisq) through
 // normal mixture (Omori et al., 2007) can be found in auxmix.h
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #include "auxmix.h"
 
+using namespace Rcpp;
+
 // Non-normalized posterior probabilities
-void findMixprobs(Rcpp::NumericVector& mixprob, const Rcpp::NumericVector & datanorm)  {
- int T = datanorm.length();
+void findMixprobs(
+    arma::vec& mixprob,
+    const arma::vec& datanorm)  {
+ int T = datanorm.size();
  int tmp; 
  for (int c = 0; c < T; c++) {  // SLOW (10*T calls to exp)!
   tmp = 10*c;
@@ -18,7 +22,10 @@ void findMixprobs(Rcpp::NumericVector& mixprob, const Rcpp::NumericVector & data
 }
 
 // Cumulative sum over columns of a matrix
-void colCumsums(Rcpp::NumericVector& x, int const nrow, int const ncol) {
+void colCumsums(
+    arma::vec& x,
+    int const nrow,
+    int const ncol) {
  int tmp;
  for (int c = 0; c < ncol; c++) {
   tmp = c*nrow;
@@ -29,8 +36,10 @@ void colCumsums(Rcpp::NumericVector& x, int const nrow, int const ncol) {
 }
 
 // Combines findMixprobs() and colCumsums() (see above) into one function
-void findMixCDF(Rcpp::NumericVector& mixprob, const Rcpp::NumericVector & datanorm)  {
- int T = datanorm.length();
+void findMixCDF(
+    arma::vec& mixprob,
+    const arma::vec& datanorm)  {
+ int T = datanorm.size();
  int tmp; 
  for (int c = 0; c < T; c++) {  // SLOW (10*T calls to exp)!
   tmp = 10*c;

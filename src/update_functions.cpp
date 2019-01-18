@@ -1,3 +1,4 @@
+#include <RcppArmadillo.h>
 #include "update_functions.h"
 #include "auxmix.h"
 #include "progutils.h"
@@ -5,27 +6,26 @@
 #include "regression.h"
 #include "h-sampler.h"
 #include "theta-sampler.h"
-#include <Rcpp.h>
 
 using namespace Rcpp;
 
 // update_terr performs an update of latent tau and df parameter nu
 void update_terr(
-    const NumericVector &data, 
-    Rcpp::NumericVector& tau,
+    const arma::vec& data, 
+    arma::vec& tau,
     double &nu,
     const double lower,
     const double upper) {
 
-  int T = data.length();
+  int T = data.size();
 
   // **** STEP 1: Update tau ****
 
   double sumtau = 0.;
 
   for (int i = 0; i < T; i++) {
-    // Watch out, Rf_rgamma(shape, scale), not Rf_rgamma(shape, rate)
-    tau[i] = 1./::Rf_rgamma((nu + 1.) / 2., 2. / (nu + exp(data[i])));
+    // Watch out, R::rgamma(shape, scale), not Rf_rgamma(shape, rate)
+    tau[i] = 1./R::rgamma((nu + 1.) / 2., 2. / (nu + exp(data[i])));
     sumtau += log(tau[i]) + 1/tau[i];
   }
 
@@ -34,21 +34,21 @@ void update_terr(
 
   double numean = newtonRaphson(nu, sumtau, T, lower, upper);
   double auxsd = sqrt(-1/ddlogdnu(numean, T)); 
-  double nuprop = ::Rf_rnorm(numean, auxsd);
+  double nuprop = R::rnorm(numean, auxsd);
   double logR = logdnu(nuprop, sumtau, T) - logdnu(nu, sumtau, T) +
     logdnorm(nu, numean, auxsd) - logdnorm(nuprop, numean, auxsd);
 
-  if (log(::Rf_runif(0.,1.)) < logR && nuprop < upper && nuprop > lower) nu = nuprop;
+  if (log(R::runif(0.,1.)) < logR && nuprop < upper && nuprop > lower) nu = nuprop;
 }
 
 // update performs one MCMC sampling step (normal errors):
 void update_sv(
-    const NumericVector& data,
-    NumericVector& curpara,
-    NumericVector& h,
+    const arma::vec& data,
+    arma::vec& curpara,
+    arma::vec& h,
     double& h0,
-    NumericVector& mixprob,
-    IntegerVector& r,
+    arma::vec& mixprob,
+    arma::ivec& r,
     const bool centered_baseline,
     const double C0,
     const double cT,
@@ -67,17 +67,16 @@ void update_sv(
     const bool dontupdatemu,
     const double priorlatent0) {
 
-  int T = data.length();
+  int T = data.size();
 
   if (dontupdatemu) curpara[0] = 0; // just to be sure
 
-  NumericVector omega_diag(T+1);  // contains diagonal elements of precision matrix
+  arma::vec omega_diag(T+1);  // contains diagonal elements of precision matrix
   double omega_offdiag;  // contains off-diag element of precision matrix (const)
-  NumericVector chol_offdiag(T), chol_diag(T+1);  // Cholesky-factor of Omega
-  NumericVector covector(T+1);  // holds covector (see McCausland et al. 2011)
-  NumericVector htmp(T+1);  // intermediate vector for sampling h
-  NumericVector hnew(T+1);  // intermediate vector for sampling h
-
+  arma::vec chol_offdiag(T), chol_diag(T+1);  // Cholesky-factor of Omega
+  arma::vec covector(T+1);  // holds covector (see McCausland et al. 2011)
+  arma::vec htmp(T+1);  // intermediate vector for sampling h
+  arma::vec hnew(T+1);  // intermediate vector for sampling h
 
   const double mu = curpara[0];
   const double phi = curpara[1];
@@ -140,12 +139,12 @@ void update_sv(
   // Solution of Chol*x = covector ("forward algorithm")
   forwardAlg(chol_diag, chol_offdiag, covector, htmp);
 
-  htmp = htmp + rnorm(T+1);
+  htmp += as<arma::vec>(rnorm(T+1));
 
   // Solution of (Chol')*x = htmp ("backward algorithm")
   backwardAlg(chol_diag, chol_offdiag, htmp, hnew);
 
-  for (int j = 0; j < T; j++) h[j] = hnew[j+1];  // TODO: REVISIT!!
+  h = hnew.tail(T);
   h0 = hnew[0];
 
   /*
@@ -190,22 +189,22 @@ void update_sv(
 }
 
 void update_svl (
-    const Rcpp::NumericVector& y,
-    const Rcpp::NumericVector& y_star,
-    const Rcpp::NumericVector& d,
+    const arma::vec& y,
+    const arma::vec& y_star,
+    const arma::vec& d,
     double& phi,
     double& rho,
     double& sigma2,
     double& mu,
-    Rcpp::NumericVector& h,
-    Rcpp::NumericVector& ht,
-    const Rcpp::NumericVector& prior_phi,
-    const Rcpp::NumericVector& prior_rho,
-    const Rcpp::NumericVector& prior_sigma2,
-    const Rcpp::NumericVector& prior_mu,
+    arma::vec& h,
+    arma::vec& ht,
+    const arma::vec& prior_phi,
+    const arma::vec& prior_rho,
+    const arma::vec& prior_sigma2,
+    const arma::vec& prior_mu,
     const double stdev,
     const bool gammaprior,
-    const Rcpp::IntegerVector& strategy) {
+    const IntegerVector& strategy) {
 
   // only centered
   h = draw_latent_auxiliaryMH(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1]);

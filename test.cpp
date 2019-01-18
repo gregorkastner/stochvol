@@ -1,7 +1,6 @@
 #include <RcppArmadillo.h>
 #include <RInside.h>
 #include "src/sampler.h"
-#include "src/sampler-leverage.h"
 
 using namespace std;
 using namespace Rcpp;
@@ -14,7 +13,7 @@ int main(int argc, char** argv) {
     library(stochvol, lib.loc = mydevlib)
 
     set.seed(421)
-    len <- 100
+    len <- 5
     #dmat <- cbind(rep_len(1, len), rgamma(len, 0.5, 0.25))
     dmat <- matrix(NA_real_)
     datreg <- svsim(len, phi=0.9, mu=-10, sigma=0.1, rho=-0.4)
@@ -35,23 +34,23 @@ int main(int argc, char** argv) {
     )";
   R.parseEvalQ(evalstr);
 
-  NumericMatrix designmatrix = R["dmat"];
-  NumericVector y = R["y"];
+  arma::mat designmatrix = R["dmat"];
+  arma::vec y = R["y"];
   List startpara = R["startpara"];
-  NumericVector startvol = R["startlatent"];
-  NumericVector priorbeta = R["priorbeta"];
-  NumericVector priordf = R["priornu"];
+  arma::vec startvol = R["startlatent"];
+  arma::vec priorbeta = R["priorbeta"];
+  arma::vec priordf = R["priornu"];
   CharacterVector strategy = R["strategy"];
-  //List svdraws = svsample_cpp(
-  //    y, 20000, 1000, designmatrix,
-  //    0, 100*100, 5, 1.5, 1, 1, 1,
-  //    startpara, startvol,
-  //    false, true, 3, 2,
-  //    100000000, 1000000000000,
-  //    -1, true, false, 1e-9, false,
-  //    priordf, priorbeta, -1);
+  List svdraws = svsample_cpp(
+      y, 20, 10, designmatrix,
+      0, 100*100, 5, 1.5, 1, 1, 1,
+      startpara, startvol,
+      false, true, 3, 2,
+      100000000, 1000000000000,
+      -1, true, false, 1e-9, false,
+      priordf, priorbeta, -1);
   List svldraws = svlsample_cpp(
-      y, 20000, 1000, designmatrix,
+      y, 20, 10, designmatrix,
       1, 1, 1, startpara, startvol,
       5, 1.5, 3, 5, 0.5, 0.5,
       0, 100, priorbeta(0), priorbeta(1),

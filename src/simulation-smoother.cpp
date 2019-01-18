@@ -1,6 +1,6 @@
-#include <Rcpp.h>
 #include "simulation-smoother.h"
 #include "parameterization.hpp"
+#include <Rcpp.h>
 
 using namespace Rcpp;
 

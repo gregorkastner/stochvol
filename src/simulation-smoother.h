@@ -1,8 +1,8 @@
 #ifndef SIMULATION_SMOOTHER_H
 #define SIMULATION_SMOOTHER_H
 
-#include <Rcpp.h>
 #include "parameterization.hpp"
+#include <Rcpp.h>
 
 Rcpp::List simulation_smoother(
     const double mu,

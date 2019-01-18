@@ -1,24 +1,24 @@
 #ifndef MIXTURE_STATE_SAMPLER_H
 #define MIXTURE_STATE_SAMPLER_H
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #include "parameterization.hpp"
 
-Rcpp::NumericVector draw_s_auxiliary(
-    const Rcpp::NumericVector& y_star,
-    const Rcpp::NumericVector& d,
-    const Rcpp::NumericVector& h,
-    const Rcpp::NumericVector& ht,
+arma::vec draw_s_auxiliary(
+    const arma::vec& y_star,
+    const arma::vec& d,
+    const arma::vec& h,
+    const arma::vec& ht,
     const double phi,
     const double rho,
     const double sigma2,
     const double mu,
     const Parameterization centering);
 
-Rcpp::NumericMatrix mixture_state_post_dist(
-    const Rcpp::NumericVector& eps_star,
-    const Rcpp::NumericVector& eta,
-    const Rcpp::NumericVector& d,
+arma::mat mixture_state_post_dist(
+    const arma::vec& eps_star,
+    const arma::vec& eta,
+    const arma::vec& d,
     const double mu,
     const double sigma2,
     const double rho,

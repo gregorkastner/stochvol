@@ -16,18 +16,19 @@
       of dlogdnu (defined in densities.h)
 */
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 
 // a)
 // Sums up results and prepares return value
-Rcpp::List cleanUp(const Rcpp::NumericVector & mu,
-                   const Rcpp::NumericVector & phi,
-		   const Rcpp::NumericVector & sigma,
-		   const Rcpp::NumericMatrix & hstore,
-		   const Rcpp::NumericVector & h0store,
-		   const Rcpp::NumericVector & nustore,
-		   const Rcpp::NumericMatrix & taustore,
-		   const Rcpp::NumericMatrix & betastore);
+Rcpp::List cleanUp(
+    const arma::vec& mu,
+    const arma::vec& phi,
+    const arma::vec& sigma,
+    const arma::mat& hstore,
+    const arma::vec& h0store,
+    const arma::vec& nustore,
+    const arma::mat& taustore,
+    const arma::mat& betastore);
 
 // sets up the progress bar
 int progressbar_init(int N);
@@ -43,24 +44,41 @@ void progressbar_finish(int N);
 
 // b)
 // Cholesky factor for a tridiagonal matrix with constant off-diagonal
-void cholTridiag(const Rcpp::NumericVector & omega_diag, double omega_offdiag,
-                 Rcpp::NumericVector& chol_diag, Rcpp::NumericVector& chol_offdiag);
+void cholTridiag(
+    const arma::vec& omega_diag,
+    double omega_offdiag,
+    arma::vec& chol_diag,
+    arma::vec& chol_offdiag);
 
 // Solves Chol*x = covector ("forward algorithm")
-void forwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector & chol_offdiag,
-                const Rcpp::NumericVector & covector, Rcpp::NumericVector& htmp);
+void forwardAlg(
+    const arma::vec& chol_diag,
+    const arma::vec& chol_offdiag,
+    const arma::vec& covector,
+    arma::vec& htmp);
 
 // Solves (Chol')*x = htmp ("backward algorithm")
-void backwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector & chol_offdiag,
-                 const Rcpp::NumericVector & htmp, Rcpp::NumericVector& h);
+void backwardAlg(
+    const arma::vec& chol_diag,
+    const arma::vec& chol_offdiag,
+    const arma::vec& htmp,
+    arma::vec& h);
 
 // c)
 // draws length(r) RVs, expects the non-normalized CDF mixprob
-void invTransformSampling(const Rcpp::NumericVector& mixprob, Rcpp::IntegerVector& r, int T);
+void invTransformSampling(
+    const arma::vec& mixprob,
+    arma::ivec& r,
+    int T);
 
 // d)
 // find the root of a function (Newton-Raphson)
-double newtonRaphson(double startval, double sumtau, int n,
-                     double lower = R_NegInf, double upper = R_PosInf,
-		     double tol = 1e-03, int maxiter = 50);
+double newtonRaphson(
+    double startval,
+    double sumtau,
+    int n,
+    double lower = R_NegInf,
+    double upper = R_PosInf,
+    double tol = 1e-03,
+    int maxiter = 50);
 #endif

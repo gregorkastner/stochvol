@@ -1,7 +1,4 @@
-#include <Rcpp.h>
-#include <algorithm>
-#include <cmath>
-#include <string>
+#include <RcppArmadillo.h>
 #include "aug-kalman-filter.h"
 #include "h-sampler.h"
 #include "h-utils.h"
@@ -12,10 +9,10 @@
 
 using namespace Rcpp;
  
-NumericVector draw_h_auxiliary(
-    const NumericVector& y_star,
-    const NumericVector& d,
-    const NumericVector& s,
+arma::vec draw_h_auxiliary(
+    const arma::vec& y_star,
+    const arma::vec& d,
+    const arma::vec& s,
     const double phi,
     const double rho,
     const double sigma2,
@@ -23,28 +20,28 @@ NumericVector draw_h_auxiliary(
     const double priormu_mu,
     const double priormu_sigma,
     const Parameterization centering) {
-  NumericVector mixing_a(s.length()); std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
-  NumericVector mixing_b(s.length()); std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
-  NumericVector mixing_m(s.length()); std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
-  NumericVector mixing_v(s.length()); std::transform(s.cbegin(), s.cend(), mixing_v.begin(), [](const int selem) -> double {return mix_var[selem];});
+  arma::vec mixing_a(s.size()); std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
+  arma::vec mixing_b(s.size()); std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
+  arma::vec mixing_m(s.size()); std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
+  arma::vec mixing_v(s.size()); std::transform(s.cbegin(), s.cend(), mixing_v.begin(), [](const int selem) -> double {return mix_var[selem];});
   
   const List filter_result = aug_kalman_filter(phi, rho, sigma2, mixing_a, mixing_b, mixing_m, mixing_v, d, y_star, priormu_mu, pow(priormu_sigma, 2), centering);
   
   const List smoothing_result = simulation_smoother(mu, filter_result, centering);
-  const NumericVector eta = smoothing_result["eta"];
-  const double eta0 = as<NumericVector>(smoothing_result["eta0"])[0];
+  const arma::vec eta = smoothing_result["eta"];
+  const double eta0 = as<arma::vec>(smoothing_result["eta0"])[0];
 
-  const int n = as<NumericVector>(filter_result["D"]).size();
-  NumericVector h = rep(0.0, n);
-  NumericVector dt;
+  const int n = as<arma::vec>(filter_result["D"]).size();
+  arma::vec h = rep(0.0, n);
+  arma::vec dt;
   switch (centering) {
     case Parameterization::CENTERED:
     h[0] = mu + eta0;
-    dt = mu*(1-phi) + rho*sqrt(sigma2)*d*mixing_a*exp(mixing_m/2);
+    dt = mu*(1-phi) + rho*sqrt(sigma2)*d%mixing_a%exp(mixing_m/2);
     break;
     case Parameterization::NONCENTERED:
     h[0] = eta0;
-    dt = rho*d*mixing_a*exp(mixing_m/2);
+    dt = rho*d%mixing_a%exp(mixing_m/2);
     break;
   }
 
@@ -55,12 +52,12 @@ NumericVector draw_h_auxiliary(
   return h;
 }
 
-NumericVector draw_latent_auxiliaryMH(
-    const NumericVector& y,
-    const NumericVector& y_star,
-    const NumericVector& d,
-    const NumericVector& h,
-    const NumericVector& ht,
+arma::vec draw_latent_auxiliaryMH(
+    const arma::vec& y,
+    const arma::vec& y_star,
+    const arma::vec& d,
+    const arma::vec& h,
+    const arma::vec& ht,
     const double phi,
     const double rho,
     const double sigma2,
@@ -70,14 +67,14 @@ NumericVector draw_latent_auxiliaryMH(
     //const CharacterVector centering,
   
   // Draw h from AUX
-  const NumericVector s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
-  const NumericVector proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
+  const arma::vec s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
+  const arma::vec proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
 
   // Calculate MH acceptance ratio
   const double log_acceptance = h_log_posterior(proposed, y, phi, rho, sigma2, mu) - h_log_posterior(h, y, phi, rho, sigma2, mu) -
     (h_aux_log_posterior(proposed, y_star, d, phi, rho, sigma2, mu) -
      h_aux_log_posterior(h, y_star, d, phi, rho, sigma2, mu));
-  NumericVector result;
+  arma::vec result;
   if (log_acceptance > 0 || exp(log_acceptance) > R::runif(0, 1)) {
     result = proposed;
   } else {

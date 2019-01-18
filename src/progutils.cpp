@@ -1,5 +1,8 @@
+#include <RcppArmadillo.h>
 #include "progutils.h"
 #include "densities.h"
+
+using namespace Rcpp;
 
 /* Contains the following code modules:
 
@@ -18,33 +21,30 @@
 
 // a)
 // Sums up results and prepares return value
-Rcpp::List cleanUp(const Rcpp::NumericVector & mu,
-                   const Rcpp::NumericVector & phi,
-		   const Rcpp::NumericVector & sigma,
-		   const Rcpp::NumericMatrix & hstore,
-		   const Rcpp::NumericVector & h0store,
-		   const Rcpp::NumericVector & nustore,
-		   const Rcpp::NumericMatrix & taustore,
-		   const Rcpp::NumericMatrix & betastore) {
+List cleanUp(
+    const arma::vec& mu,
+    const arma::vec& phi,
+    const arma::vec& sigma,
+    const arma::mat& hstore,
+    const arma::vec& h0store,
+    const arma::vec& nustore,
+    const arma::mat& taustore,
+    const arma::mat& betastore) {
  int paracols;
  if (nustore.size() > 0) paracols = 4; else paracols = 3;
  
- Rcpp::NumericMatrix res(mu.length(), paracols); 
- res(Rcpp::_,0) = mu;
- res(Rcpp::_,1) = phi;
- res(Rcpp::_,2) = sigma;
- if (nustore.size() > 0) res(Rcpp::_,3) = nustore;
+ arma::mat res(mu.size(), paracols); 
+ res.col(0) = mu;
+ res.col(1) = phi;
+ res.col(2) = sigma;
+ if (nustore.size() > 0) res.col(3) = nustore;
 
-/* res.attr("dimnames") = Rcpp::List::create(
-   R_NilValue, 
-   Rcpp::CharacterVector::create("mu", "phi", "sigma")); */
-
- Rcpp::List val = Rcpp::List::create(
-   Rcpp::_["para"] = res,
-   Rcpp::_["latent"] = hstore,
-   Rcpp::_["latent0"] = h0store,
-   Rcpp::_["beta"] = betastore,
-   Rcpp::_["tau"] = taustore);
+ List val = List::create(
+   _["para"] = res,
+   _["latent"] = hstore,
+   _["latent0"] = h0store,
+   _["beta"] = betastore,
+   _["tau"] = taustore);
 
  return val;
 }
@@ -75,28 +75,37 @@ void progressbar_finish(int N) {
 
 // b)
 // Cholesky factor for a tridiagonal matrix with constant off-diagonal
-void cholTridiag(const Rcpp::NumericVector & omega_diag, double omega_offdiag, Rcpp::NumericVector& chol_diag, Rcpp::NumericVector& chol_offdiag)
-{
+void cholTridiag(
+    const arma::vec& omega_diag,
+    double omega_offdiag,
+    arma::vec& chol_diag,
+    arma::vec& chol_offdiag) {
  chol_diag[0] = sqrt(omega_diag[0]);  // maybe speed up via iterators?
- for (int j = 1; j < omega_diag.length(); j++) {
+ for (int j = 1; j < omega_diag.size(); j++) {
   chol_offdiag[j-1] = omega_offdiag/chol_diag[j-1];
   chol_diag[j] = sqrt(omega_diag[j]-chol_offdiag[j-1]*chol_offdiag[j-1]);
  }
 }
 
 // Solves Chol*x = covector ("forward algorithm")
-void forwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector & chol_offdiag, const Rcpp::NumericVector & covector, Rcpp::NumericVector& htmp)
-{
+void forwardAlg(
+    const arma::vec& chol_diag,
+    const arma::vec& chol_offdiag,
+    const arma::vec& covector,
+    arma::vec& htmp) {
  htmp[0] = covector[0]/chol_diag[0];
- for (int j = 1; j < chol_diag.length(); j++) {
+ for (int j = 1; j < chol_diag.size(); j++) {
   htmp[j] = (covector[j] - chol_offdiag[j-1]*htmp[j-1])/chol_diag[j];
  }
 }
 
 // Solves (Chol')*x = htmp ("backward algorithm")
-void backwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVector & chol_offdiag, const Rcpp::NumericVector & htmp, Rcpp::NumericVector& h)
-{
- int T = chol_diag.length();
+void backwardAlg(
+    const arma::vec& chol_diag,
+    const arma::vec& chol_offdiag,
+    const arma::vec& htmp,
+    arma::vec& h) {
+ int T = chol_diag.size();
  h[T-1] = htmp[T-1]/chol_diag[T-1];
  for (int j = T-2; j >= 0; j--) {
   h[j] = (htmp[j] - chol_offdiag[j]*h[j+1])/chol_diag[j];
@@ -105,9 +114,12 @@ void backwardAlg(const Rcpp::NumericVector & chol_diag, const Rcpp::NumericVecto
 
 // c)
 // draws length(r) RVs, expects the non-normalized CDF mixprob
-void invTransformSampling(const Rcpp::NumericVector& mixprob, Rcpp::IntegerVector& r, int T) {
+void invTransformSampling(
+    const arma::vec& mixprob,
+    arma::ivec& r,
+    int T) {
  int index;
- Rcpp::NumericVector innov = Rcpp::runif(T); 
+ arma::vec innov = runif(T); 
  double temp;
  bool larger, smaller;
  for (int j = 0; j < T; j++) {
@@ -147,9 +159,14 @@ void invTransformSampling(const Rcpp::NumericVector& mixprob, Rcpp::IntegerVecto
 
 // d)
 // find the root of a function (Newton-Raphson)
-double newtonRaphson(double startval, double sumtau, int n,
-                     double lower, double upper, double tol,
-		     int maxiter) {
+double newtonRaphson(
+    double startval,
+    double sumtau,
+    int n,
+    double lower,
+    double upper,
+    double tol,
+    int maxiter) {
  double x = startval;
  double error = R_PosInf;
  double xnew;

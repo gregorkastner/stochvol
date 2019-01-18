@@ -1,4 +1,4 @@
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #include "aug-kalman-filter.h"
 #include "parameterization.hpp"
 
@@ -8,12 +8,12 @@ List aug_kalman_filter(
     const double phi,
     const double rho,
     const double sigma2,
-    const NumericVector& a,
-    const NumericVector& b,
-    const NumericVector& m,
-    const NumericVector& v,
-    const NumericVector& d,
-    const NumericVector& y_star,
+    const arma::vec& a,
+    const arma::vec& b,
+    const arma::vec& m,
+    const arma::vec& v,
+    const arma::vec& d,
+    const arma::vec& y_star,
     const double mu_mu,
     const double sigma2_mu,
     const Parameterization centering) {
@@ -33,19 +33,19 @@ List aug_kalman_filter_c(
     const double phi,
     const double rho,
     const double sigma2,
-    const NumericVector& a,
-    const NumericVector& b,
-    const NumericVector& m,
-    const NumericVector& v,
-    const NumericVector& d,
-    const NumericVector& y_star,
+    const arma::vec& a,
+    const arma::vec& b,
+    const arma::vec& m,
+    const arma::vec& v,
+    const arma::vec& d,
+    const arma::vec& y_star,
     const double mu_mu,
     const double sigma2_mu) {
   const int n = y_star.size();
   
   const double sigma = sqrt(sigma2);
-  const NumericVector gamma_ts = d * rho * sigma * exp(m/2);
-  const NumericVector h_ts = b * v * gamma_ts;
+  const arma::vec gamma_ts = rho * sigma * d % exp(m/2);
+  const arma::vec h_ts = b % v % gamma_ts;
   const double j_t22 = sigma2 * (1-rho*rho);
   const double h1_var = sigma2/(phi*phi > 1-1e-8 ? 1e-8 : (1-phi*phi));
   
@@ -54,11 +54,11 @@ List aug_kalman_filter_c(
   double P = h1_var;
   
   // Init returned values
-  NumericVector D(n);
-  NumericVector J(n);
-  NumericVector L(n);
-  NumericVector f(n);
-  NumericVector F(n);
+  arma::vec D(n);
+  arma::vec J(n);
+  arma::vec L(n);
+  arma::vec f(n);
+  arma::vec F(n);
   double Q = 1/sigma2_mu;
   double q = mu_mu * Q;
   
@@ -101,19 +101,19 @@ List aug_kalman_filter_nc(
     const double phi,
     const double rho,
     const double sigma2,
-    const NumericVector& a,
-    const NumericVector& b,
-    const NumericVector& m,
-    const NumericVector& v,
-    const NumericVector& d,
-    const NumericVector& y_star,
+    const arma::vec& a,
+    const arma::vec& b,
+    const arma::vec& m,
+    const arma::vec& v,
+    const arma::vec& d,
+    const arma::vec& y_star,
     const double mu_mu,
     const double sigma2_mu) {
   const int n = y_star.size();
   
   const double sigma = sqrt(sigma2);
-  const NumericVector gamma_ts = d * rho * exp(m/2);
-  const NumericVector h_ts = b * v * gamma_ts;
+  const arma::vec gamma_ts = rho * d % exp(m/2);
+  const arma::vec h_ts = b % v % gamma_ts;
   const double j_t22 = (1-rho*rho);
   const double h1_var = 1/(phi*phi > 1-1e-8 ? 1e-8 : (1-phi*phi));
   
@@ -122,11 +122,11 @@ List aug_kalman_filter_nc(
   double P = h1_var;
   
   // Init returned values
-  NumericVector D(n);
-  NumericVector J(n);
-  NumericVector L(n);
-  NumericVector f(n);
-  NumericVector F(n);
+  arma::vec D(n);
+  arma::vec J(n);
+  arma::vec L(n);
+  arma::vec f(n);
+  arma::vec F(n);
   double Q = 1/sigma2_mu;
   double q = mu_mu * Q;
   

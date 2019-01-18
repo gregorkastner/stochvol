@@ -3,14 +3,14 @@
 
 // [[Rcpp::interfaces(r)]]
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 
 // [[Rcpp::export]]
 Rcpp::List svsample_cpp(
-    const Rcpp::NumericVector& y_in,
+    const arma::vec& y_in,
     const int draws,
     const int burnin,
-    const Rcpp::NumericMatrix& X_in,
+    const arma::mat& X_in,
     const double bmu,
     const double Bmu,
     const double a0,
@@ -19,7 +19,7 @@ Rcpp::List svsample_cpp(
     const int thin,
     const int timethin,
     const Rcpp::List& startpara_in,
-    const Rcpp::NumericVector& startvol_in,
+    const arma::vec& startvol_in,
     const bool keeptau,
     const bool quiet,
     const int para,
@@ -31,21 +31,21 @@ Rcpp::List svsample_cpp(
     const bool truncnormal,
     const double offset,
     const bool dontupdatemu,
-    const Rcpp::NumericVector& priordf_in,
-    const Rcpp::NumericVector& priorbeta_in,
+    const arma::vec& priordf_in,
+    const arma::vec& priorbeta_in,
     const double priorlatent0);
 
 // [[Rcpp::export]]
 Rcpp::List svlsample_cpp (
-    const Rcpp::NumericVector& y,
+    const arma::vec& y,
     const int draws,
     const int burnin,
-    const Rcpp::NumericMatrix& X,
+    const arma::mat& X,
     const int thinpara,
     const int thinlatent,
     const int thintime,
     const Rcpp::List& theta_init,
-    const Rcpp::NumericVector& h_init,
+    const arma::vec& h_init,
     const double prior_phi_a,
     const double prior_phi_b,
     const double prior_rho_a,

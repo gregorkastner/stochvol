@@ -1,7 +1,7 @@
 #ifndef _AUXMIX_H_
 #define _AUXMIX_H_
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 
 // Some constants relating to the approximation of log(chisq) trough
 // normal mixture (from Omori et al., 2007), and
@@ -54,12 +54,19 @@ const double mix_pre[10] = {
 -7.7642143280080739842219372803810983896255493164062500000};
 
 // Non-normalized posterior probabilities
-void findMixprobs(Rcpp::NumericVector& mixprob, const Rcpp::NumericVector & datanorm);
+void findMixprobs(
+    arma::vec& mixprob,
+    const arma::vec& datanorm);
 
 // Cumulative sum over columns of a matrix
-void colCumsums(Rcpp::NumericVector& x, int const nrow, int const ncol);
+void colCumsums(
+    arma::vec& x,
+    int const nrow,
+    int const ncol);
 
 // Combines findMixprobs() and colCumsums() (see above) into one function
-void findMixCDF(Rcpp::NumericVector& mixprob, const Rcpp::NumericVector & datanorm);
+void findMixCDF(
+    arma::vec& mixprob,
+    const arma::vec& datanorm);
 
 #endif

@@ -25,11 +25,11 @@ namespace stochvol {
         }
     }
 
-    inline void update_sv(const Rcpp::NumericVector& data, Rcpp::NumericVector& curpara, Rcpp::NumericVector& h, double& h0, Rcpp::NumericVector& mixprob, Rcpp::IntegerVector& r, const bool centered_baseline, const double C0, const double cT, const double Bsigma, const double a0, const double b0, const double bmu, const double Bmu, const double B011inv, const double B022inv, const bool Gammaprior, const bool truncnormal, const double MHcontrol, const int MHsteps, const int parameterization, const bool dontupdatemu, const double priorlatent0) {
+    inline void update_sv(const arma::vec& data, arma::vec& curpara, arma::vec& h, double& h0, arma::vec& mixprob, arma::ivec& r, const bool centered_baseline, const double C0, const double cT, const double Bsigma, const double a0, const double b0, const double bmu, const double Bmu, const double B011inv, const double B022inv, const bool Gammaprior, const bool truncnormal, const double MHcontrol, const int MHsteps, const int parameterization, const bool dontupdatemu, const double priorlatent0) {
         typedef SEXP(*Ptr_update_sv)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_update_sv p_update_sv = NULL;
         if (p_update_sv == NULL) {
-            validateSignature("void(*update_sv)(const Rcpp::NumericVector&,Rcpp::NumericVector&,Rcpp::NumericVector&,double&,Rcpp::NumericVector&,Rcpp::IntegerVector&,const bool,const double,const double,const double,const double,const double,const double,const double,const double,const double,const bool,const bool,const double,const int,const int,const bool,const double)");
+            validateSignature("void(*update_sv)(const arma::vec&,arma::vec&,arma::vec&,double&,arma::vec&,arma::ivec&,const bool,const double,const double,const double,const double,const double,const double,const double,const double,const double,const bool,const bool,const double,const int,const int,const bool,const double)");
             p_update_sv = (Ptr_update_sv)R_GetCCallable("stochvol", "_stochvol_update_sv");
         }
         RObject rcpp_result_gen;
@@ -45,11 +45,11 @@ namespace stochvol {
             throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
     }
 
-    inline void update_svl(const Rcpp::NumericVector& y, const Rcpp::NumericVector& y_star, const Rcpp::NumericVector& d, double& phi, double& rho, double& sigma2, double& mu, Rcpp::NumericVector& h, Rcpp::NumericVector& ht, const Rcpp::NumericVector& prior_phi, const Rcpp::NumericVector& prior_rho, const Rcpp::NumericVector& prior_sigma2, const Rcpp::NumericVector& prior_mu, const double stdev, const bool gammaprior, const Rcpp::IntegerVector& strategy) {
+    inline void update_svl(const arma::vec& y, const arma::vec& y_star, const arma::vec& d, double& phi, double& rho, double& sigma2, double& mu, arma::vec& h, arma::vec& ht, const arma::vec& prior_phi, const arma::vec& prior_rho, const arma::vec& prior_sigma2, const arma::vec& prior_mu, const double stdev, const bool gammaprior, const Rcpp::IntegerVector& strategy) {
         typedef SEXP(*Ptr_update_svl)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_update_svl p_update_svl = NULL;
         if (p_update_svl == NULL) {
-            validateSignature("void(*update_svl)(const Rcpp::NumericVector&,const Rcpp::NumericVector&,const Rcpp::NumericVector&,double&,double&,double&,double&,Rcpp::NumericVector&,Rcpp::NumericVector&,const Rcpp::NumericVector&,const Rcpp::NumericVector&,const Rcpp::NumericVector&,const Rcpp::NumericVector&,const double,const bool,const Rcpp::IntegerVector&)");
+            validateSignature("void(*update_svl)(const arma::vec&,const arma::vec&,const arma::vec&,double&,double&,double&,double&,arma::vec&,arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const double,const bool,const Rcpp::IntegerVector&)");
             p_update_svl = (Ptr_update_svl)R_GetCCallable("stochvol", "_stochvol_update_svl");
         }
         RObject rcpp_result_gen;

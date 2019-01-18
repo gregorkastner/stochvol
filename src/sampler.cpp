@@ -8,11 +8,11 @@
 
 using namespace Rcpp;
 
-Rcpp::List svsample_cpp(
-    const Rcpp::NumericVector& y_in,
+List svsample_cpp(
+    const arma::vec& y_in,
     const int draws,
     const int burnin,
-    const Rcpp::NumericMatrix& X_in,
+    const arma::mat& X_in,
     const double bmu,
     const double Bmu,
     const double a0,
@@ -20,8 +20,8 @@ Rcpp::List svsample_cpp(
     const double Bsigma,
     const int thin,
     const int timethin,
-    const Rcpp::List& startpara_in,
-    const Rcpp::NumericVector& startvol_in,
+    const List& startpara,
+    const arma::vec& startvol,
     const bool keeptau,
     const bool quiet,
     const int para,
@@ -33,30 +33,26 @@ Rcpp::List svsample_cpp(
     const bool truncnormal,
     const double offset,
     const bool dontupdatemu,
-    const Rcpp::NumericVector& priordf_in,
-    const Rcpp::NumericVector& priorbeta_in,
+    const arma::vec& priordf_in,
+    const arma::vec& priorbeta_in,
     const double priorlatent0) {
 
-  NumericVector y(y_in), startvol(startvol_in);
-  arma::vec armay(y.begin(), y.length(), false);
+  arma::vec y(y_in);
 
-  NumericMatrix X(X_in);
+  arma::mat X(X_in);
 
-  int T = y.length();
-  int p = X.ncol();
-  arma::mat armaX(X.begin(), T, p, false);
+  int T = y.size();
+  int p = X.n_cols;
 
   // should we model the mean as well?
   bool regression;
   if (ISNA(X.at(0,0))) regression = false; else regression = true;
-  NumericVector priorbeta(priorbeta_in);
+  arma::vec priorbeta(priorbeta_in);
 
   // prior mean and precision matrix for the regression part (currently fixed)
   arma::vec priorbetamean(p); priorbetamean.fill(priorbeta[0]);
   arma::mat priorbetaprec(p, p, arma::fill::zeros);
   priorbetaprec.diag() += 1./(priorbeta[1]*priorbeta[1]);
-
-  List startpara(startpara_in);
 
   // number of MCMC draws
   int N 	    = burnin + draws;
@@ -74,7 +70,7 @@ Rcpp::List svsample_cpp(
 
   // t-errors:
   bool terr;
-  NumericVector priordf(priordf_in);
+  arma::vec priordf(priordf_in);
 
   if (ISNA(priordf[0])) terr = false; else terr = true;
 
@@ -98,56 +94,52 @@ Rcpp::List svsample_cpp(
   }
 
   // initialize the variables:
-  NumericVector sigma2inv(N+1, pow(as<double>(startpara["sigma"]), -2));
-  NumericVector phi(N+1, as<double>(startpara["phi"]));
-  NumericVector mu(N+1, as<double>(startpara["mu"]));
+  arma::vec sigma2inv = arma::ones(N+1) * pow(as<double>(startpara["sigma"]), -2);
+  arma::vec phi = arma::ones(N+1) * as<double>(startpara["phi"]);
+  arma::vec mu = arma::ones(N+1) * as<double>(startpara["mu"]);
 
-  NumericVector h(T);  // contains h1 to hT, but not h0!
-  for (int i = 0; i < T; i++) h[i] = startvol[i];  // need to make a manual copy (!)
+  arma::vec h = startvol;  // contains h1 to hT, but not h0!
   if (!centered_baseline) h = (h-mu[0])*sqrt(sigma2inv[0]);
 
   double h0;
 
-  IntegerVector r(T);  // mixture indicators
+  arma::ivec r(T);  // mixture indicators
 
   int hstorelength = (T-1)/timethin+1;
-  NumericMatrix hstore(hstorelength, draws/thin);
-  NumericVector h0store(draws/thin);
+  arma::mat hstore(hstorelength, draws/thin);
+  arma::vec h0store(draws/thin);
 
-  NumericMatrix mixprob(10, T);  // mixture probabilities
+  arma::mat mixprob(10, T);  // mixture probabilities
+  arma::vec mixprob_vec(mixprob.begin(), mixprob.n_elem, false);
 
-  NumericVector data = log(y*y + offset);  // commonly used transformation
-  arma::vec armadata(data.begin(), data.length(), false);
+  arma::vec data = log(y%y + offset);  // commonly used transformation
 
-  NumericVector datastand = clone(data);  // standardized "data" (different for t-errors)
-  arma::vec armadatastand(datastand.begin(), datastand.length(), false);
+  arma::vec datastand = data;  // standardized "data" (different for t-errors)
 
-  NumericVector curpara(3);  // holds mu, phi, sigma in every iteration
+  arma::vec curpara(3);  // holds mu, phi, sigma in every iteration
   curpara[0] = mu[0];
   curpara[1] = phi[0];
   curpara[2] = 1/sqrt(sigma2inv[0]);
 
   // some stuff for the t-errors
-  double nu;
+  double nu = -1;
   if (terr) nu = as<double>(startpara["nu"]);
-  NumericVector tau(T, 1.);
+  arma::vec tau = arma::ones(T);
 
-  NumericVector nustore(terr * (N+1), nu);
-  NumericMatrix taustore(hstorelength * keeptau, draws/thin);
+  arma::vec nustore = arma::ones(terr * (N+1)) * nu;
+  arma::mat taustore(hstorelength * keeptau, draws/thin);
 
   // some stuff for the regression part
-  NumericVector curbeta(p, .012345);
-  arma::vec armabeta(curbeta.begin(), curbeta.length(), false);
+  arma::vec curbeta(p, arma::fill::ones);
   arma::vec normalizer;
-  arma::mat Xnew = as<arma::mat>(clone(X));
-  arma::vec ynew = as<arma::vec>(clone(y));
+  arma::mat Xnew = X;
+  arma::vec ynew = y;
   arma::mat postprecchol(p, p);
   arma::mat postpreccholinv(p, p);
   arma::mat postcov(p, p);
   arma::vec postmean(p);
   arma::vec armadraw(p);
-  NumericMatrix betastore(regression * (N+1), p);
-  arma::mat armabetastore(betastore.begin(), betastore.nrow(), betastore.ncol(), false);
+  arma::mat betastore(regression * (N+1), p);
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
@@ -160,7 +152,7 @@ Rcpp::List svsample_cpp(
     if (verbose) if (!(i % show)) progressbar_print();
 
     if (regression) {
-      armadatastand = armadata = log(square(armay - armaX * armabeta));
+      datastand = data = log(square(y - X*curbeta));
     }
 
     if (terr) {
@@ -172,15 +164,15 @@ Rcpp::List svsample_cpp(
 
     // a single MCMC update: update indicators, latent volatilities,
     // and parameters ONCE
-    update_sv(datastand, curpara, h, h0, mixprob, r, centered_baseline, C0, cT,
+    update_sv(datastand, curpara, h, h0, mixprob_vec, r, centered_baseline, C0, cT,
         Bsigma, a0, b0, bmu, Bmu, B011inv, B022inv, Gammaprior,
         truncnormal, MHcontrol, MHsteps, parameterization, dontupdatemu, priorlatent0);
 
     if (regression) { // update betas (regression)
       normalizer = exp(-h/2);
-      Xnew = armaX;
+      Xnew = X;
       Xnew.each_col() %= normalizer;
-      ynew = as<arma::vec>(y) % normalizer;
+      ynew = y % normalizer;
 
       // cholesky factor of posterior precision matrix
       postprecchol = arma::chol(Xnew.t() * Xnew + priorbetaprec);  // TODO handle exceptions the R way
@@ -195,7 +187,7 @@ Rcpp::List svsample_cpp(
       armadraw = rnorm(p);
 
       // posterior betas
-      armabeta = postmean + postpreccholinv * armadraw;
+      curbeta = postmean + postpreccholinv * armadraw;
     }
 
     // storage:
@@ -215,7 +207,7 @@ Rcpp::List svsample_cpp(
     phi[i+1] = curpara[1];
     sigma2inv[i+1] = 1/(curpara[2]*curpara[2]);
     if (terr) nustore[i+1] = nu;
-    if (regression) armabetastore.row(i+1) = armabeta.t();
+    if (regression) betastore.row(i+1) = curbeta.t();
   }  // END main MCMC loop
 
   if (verbose) progressbar_finish(N);  // finalize progress bar
@@ -224,16 +216,16 @@ Rcpp::List svsample_cpp(
   return cleanUp(mu, phi, sqrt(1/sigma2inv), hstore, h0store, nustore, taustore, betastore);
 }
 
-Rcpp::List svlsample_cpp (
-    const Rcpp::NumericVector& y_in,
+List svlsample_cpp (
+    const arma::vec& y_in,
     const int draws,
     const int burnin,
-    const Rcpp::NumericMatrix& X,
+    const arma::mat& X,
     const int thinpara,
     const int thinlatent,
     const int thintime,
-    const Rcpp::List& theta_init,
-    const Rcpp::NumericVector& h_init,
+    const List& theta_init,
+    const arma::vec& h_init,
     const double prior_phi_a,
     const double prior_phi_b,
     const double prior_rho_a,
@@ -248,36 +240,36 @@ Rcpp::List svlsample_cpp (
     const double offset,
     const double stdev,
     const bool gammaprior,
-    const Rcpp::CharacterVector& strategy_rcpp) {
+    const CharacterVector& strategy_rcpp) {
 
   const int N = burnin + draws;
   const bool regression = !ISNA(X.at(0,0));
-  const int T = y_in.length();
-  const int p = X.ncol();
+  const int T = y_in.size();
+  const int p = X.n_cols;
 
-  NumericVector y = y_in;
-  NumericVector y_star = Rcpp::log(y*y + offset);
-  NumericVector d(T); std::transform(y_in.cbegin(), y_in.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
+  arma::vec y = y_in;
+  arma::vec y_star = log(y%y + offset);
+  arma::vec d(T); std::transform(y_in.cbegin(), y_in.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
 
   double phi = theta_init["phi"];
   double rho = theta_init["rho"];
   double sigma2 = pow(theta_init["sigma"], 2);
   double mu = theta_init["mu"];
-  NumericVector h = h_init, ht = (h_init-mu)/sqrt(sigma2);
+  arma::vec h = h_init, ht = (h_init-mu)/sqrt(sigma2);
   arma::vec beta(p); beta.fill(0.0);
 
   arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
-  NumericMatrix params(draws/thinpara, 4);
-  NumericMatrix latent(draws/thinlatent, T/thintime);
+  arma::mat params(draws/thinpara, 4);
+  arma::mat latent(draws/thinlatent, T/thintime);
 
   // priors in objects
-  const NumericVector prior_phi = {prior_phi_a, prior_phi_b};
-  const NumericVector prior_rho = {prior_rho_a, prior_rho_b};
-  const NumericVector prior_sigma2 = {prior_sigma2_shape, prior_sigma2_rate};
-  const NumericVector prior_mu = {prior_mu_mu, prior_mu_sigma};
+  const arma::vec prior_phi = {prior_phi_a, prior_phi_b};
+  const arma::vec prior_rho = {prior_rho_a, prior_rho_b};
+  const arma::vec prior_sigma2 = {prior_sigma2_shape, prior_sigma2_rate};
+  const arma::vec prior_mu = {prior_mu_mu, prior_mu_sigma};
 
   // don't use strings or RcppCharacterVector
-  Rcpp::IntegerVector strategy(strategy_rcpp.length());
+  IntegerVector strategy(strategy_rcpp.length());
   std::transform(strategy_rcpp.cbegin(), strategy_rcpp.cend(), strategy.begin(),
       [](const SEXP& par) -> int {
         if (as<std::string>(par) == "centered") return int(Parameterization::CENTERED);
@@ -298,8 +290,6 @@ Rcpp::List svlsample_cpp (
   arma::mat postcov(p, p);
   arma::vec postmean(p);
   arma::vec armadraw(p);
-  const arma::vec h_arma(h.begin(), h.length(), false);  // create view
-  const arma::vec ht_arma(ht.begin(), ht.length(), false);  // create view
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
@@ -315,7 +305,7 @@ Rcpp::List svlsample_cpp (
     if (regression) {  // slightly circumstantial due to the combined use of Rcpp and arma
       std::copy(X.cbegin(), X.cend(), X_reg.begin());  // important!
       y = y_in_arma - X_reg*beta;
-      y_star = Rcpp::log(y*y + offset);
+      y_star = log(y*y + offset);
       std::transform(y.cbegin(), y.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
     }
 
@@ -330,9 +320,9 @@ Rcpp::List svlsample_cpp (
     // update beta
     if (regression) {
       y_reg = y_in_arma;
-      y_reg.head(T-1) -= rho * (arma::exp(h_arma.head(T-1)/2) % (ht_arma.tail(T-1) - phi*ht_arma.head(T-1)));
+      y_reg.head(T-1) -= rho * (arma::exp(h.head(T-1)/2) % (ht.tail(T-1) - phi*ht.head(T-1)));
 
-      normalizer = arma::exp(-h_arma/2);
+      normalizer = arma::exp(-h/2);
       normalizer.head(T-1) /= sqrt(1-pow(rho, 2));
       // X has already been copied to X_reg
       X_reg.each_col() %= normalizer;
@@ -348,7 +338,7 @@ Rcpp::List svlsample_cpp (
       postcov = postpreccholinv * postpreccholinv.t();
       postmean = postcov * (X_reg.t() * y_reg + priorbetaprec * priorbetamean);
 
-      armadraw.imbue([]() -> double {return R::rnorm(0, 1);});  // equivalent to armadraw = Rcpp::rnorm(p); but I don't know if rnorm creates a vector
+      armadraw.imbue([]() -> double {return R::rnorm(0, 1);});  // equivalent to armadraw = rnorm(p); but I don't know if rnorm creates a vector
 
       // posterior betas
       beta = postmean + postpreccholinv * armadraw;
@@ -365,7 +355,7 @@ Rcpp::List svlsample_cpp (
       }
     }
     if ((i >= 1) && !thinlatent_round) {
-      for (int volind = 0, thincol = thintime-1; thincol < h.length(); volind++, thincol += thintime) {
+      for (int volind = 0, thincol = thintime-1; thincol < h.size(); volind++, thincol += thintime) {
         latent.at(i/thinlatent-1, volind) = h[thincol];
       }
     }
@@ -373,9 +363,9 @@ Rcpp::List svlsample_cpp (
 
   if (verbose) progressbar_finish(N);  // finalize progress bar
 
-  return Rcpp::List::create(
-      Rcpp::_["para"] = params,
-      Rcpp::_["latent"] = latent,
-      Rcpp::_["beta"] = betas);
+  return List::create(
+      _["para"] = params,
+      _["latent"] = latent,
+      _["beta"] = betas);
 }
 

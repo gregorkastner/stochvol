@@ -1,7 +1,7 @@
 #ifndef AUG_KALMAN_FILTER_H
 #define AUG_KALMAN_FILTER_H
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #include "parameterization.hpp"
 
 // Augmented Kalman filter
@@ -37,12 +37,12 @@ Rcpp::List aug_kalman_filter(
     const double phi,
     const double rho,
     const double sigma2,
-    const Rcpp::NumericVector& a,
-    const Rcpp::NumericVector& b,
-    const Rcpp::NumericVector& m,
-    const Rcpp::NumericVector& v,
-    const Rcpp::NumericVector& d,
-    const Rcpp::NumericVector& y_star,
+    const arma::vec& a,
+    const arma::vec& b,
+    const arma::vec& m,
+    const arma::vec& v,
+    const arma::vec& d,
+    const arma::vec& y_star,
     const double mu_mu,
     const double sigma2_mu,
     const Parameterization centering);
@@ -51,12 +51,12 @@ Rcpp::List aug_kalman_filter_c(
     const double phi,
     const double rho,
     const double sigma2,
-    const Rcpp::NumericVector& a,
-    const Rcpp::NumericVector& b,
-    const Rcpp::NumericVector& m,
-    const Rcpp::NumericVector& v,
-    const Rcpp::NumericVector& d,
-    const Rcpp::NumericVector& y_star,
+    const arma::vec& a,
+    const arma::vec& b,
+    const arma::vec& m,
+    const arma::vec& v,
+    const arma::vec& d,
+    const arma::vec& y_star,
     const double mu_mu,
     const double sigma2_mu);
 
@@ -64,12 +64,12 @@ Rcpp::List aug_kalman_filter_nc(
     const double phi,
     const double rho,
     const double sigma2,
-    const Rcpp::NumericVector& a,
-    const Rcpp::NumericVector& b,
-    const Rcpp::NumericVector& m,
-    const Rcpp::NumericVector& v,
-    const Rcpp::NumericVector& d,
-    const Rcpp::NumericVector& y_star,
+    const arma::vec& a,
+    const arma::vec& b,
+    const arma::vec& m,
+    const arma::vec& v,
+    const arma::vec& d,
+    const arma::vec& y_star,
     const double mu_mu,
     const double sigma2_mu);
 

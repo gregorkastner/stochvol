@@ -1,13 +1,13 @@
 #ifndef H_SAMPLER_H
 #define H_SAMPLER_H
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #include "parameterization.hpp"
 
-Rcpp::NumericVector draw_h_auxiliary(
-    const Rcpp::NumericVector& y_star,
-    const Rcpp::NumericVector& d,
-    const Rcpp::NumericVector& s,
+arma::vec draw_h_auxiliary(
+    const arma::vec& y_star,
+    const arma::vec& d,
+    const arma::vec& s,
     const double phi,
     const double rho,
     const double sigma2,
@@ -16,12 +16,12 @@ Rcpp::NumericVector draw_h_auxiliary(
     const double priormu_sigma,
     const Parameterization centering);
 
-Rcpp::NumericVector draw_latent_auxiliaryMH(
-    const Rcpp::NumericVector& y,
-    const Rcpp::NumericVector& y_star,
-    const Rcpp::NumericVector& d,
-    const Rcpp::NumericVector& h,
-    const Rcpp::NumericVector& ht,
+arma::vec draw_latent_auxiliaryMH(
+    const arma::vec& y,
+    const arma::vec& y_star,
+    const arma::vec& d,
+    const arma::vec& h,
+    const arma::vec& ht,
     const double phi,
     const double rho,
     const double sigma2,

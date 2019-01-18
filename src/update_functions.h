@@ -3,17 +3,17 @@
 
 // [[Rcpp::interfaces(cpp)]]
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 
 // a single MCMC update (normal errors):
 // [[Rcpp::export]]
 void update_sv(
-    const Rcpp::NumericVector& data,
-    Rcpp::NumericVector& curpara,
-    Rcpp::NumericVector& h,
+    const arma::vec& data,
+    arma::vec& curpara,
+    arma::vec& h,
     double& h0,
-    Rcpp::NumericVector& mixprob,
-    Rcpp::IntegerVector& r,
+    arma::vec& mixprob,
+    arma::ivec& r,
     const bool centered_baseline,
     const double C0,
     const double cT,
@@ -34,27 +34,27 @@ void update_sv(
 
 // a single MCMC update (t errors):
 void update_terr(
-    const Rcpp::NumericVector&,
-    Rcpp::NumericVector&,
-    double &,
-    const double,
-    const double);
+    const arma::vec& data,
+    arma::vec& tau,
+    double& nu,
+    const double lower,
+    const double upper);
 
 // [[Rcpp::export]]
 void update_svl (
-    const Rcpp::NumericVector& y,
-    const Rcpp::NumericVector& y_star,
-    const Rcpp::NumericVector& d,
+    const arma::vec& y,
+    const arma::vec& y_star,
+    const arma::vec& d,
     double& phi,
     double& rho,
     double& sigma2,
     double& mu,
-    Rcpp::NumericVector& h,
-    Rcpp::NumericVector& ht,
-    const Rcpp::NumericVector& prior_phi,
-    const Rcpp::NumericVector& prior_rho,
-    const Rcpp::NumericVector& prior_sigma2,
-    const Rcpp::NumericVector& prior_mu,
+    arma::vec& h,
+    arma::vec& ht,
+    const arma::vec& prior_phi,
+    const arma::vec& prior_rho,
+    const arma::vec& prior_sigma2,
+    const arma::vec& prior_mu,
     const double stdev,
     const bool gammaprior,
     const Rcpp::IntegerVector& strategy);
