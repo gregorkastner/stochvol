@@ -33,10 +33,19 @@ CXXFLAGS := 		$(RCPPFLAGS) $(RCPPINCL) $(RCPPARMAINCL) $(RINSIDEINCL) $(shell $(
 LDLIBS := $(RLDFLAGS) $(RRPATH) $(RBLAS) $(RLAPACK) $(RCPPLIBS) $(RINSIDELIBS)
 
 sources := 		$(wildcard src/*.cpp)
+objects := $(sources:.cpp=.o)
 
 install:
-	R --vanilla -e "devtools::document(\"${PKGDIR}\")"
+	#R --vanilla -e "devtools::document(\"${PKGDIR}\")"
 	R CMD INSTALL --no-multiarch --with-keep.source --library=${HOME}/R/under_development ${PKGDIR}
+
+debug: src/stochvol.so
+
+%.o: %.cpp
+	$(CXX) -xc++ -c -fPIC -std=c++11 $(CPPFLAGS) $(CXXFLAGS) -g -fdebug-info-for-profiling -O0 -o $@ $<
+
+src/stochvol.so: $(objects)
+	$(CXX) -shared -std=c++11 -g -fdebug-info-for-profiling $(CPPFLAGS) $(CXXFLAGS) $(LDLIBS) -L./src/ -Wl,-rpath,/home/dhosszejni/Development/stochvol/src/ -O0 $^ -o $@
 
 build:
 	R --vanilla -e "devtools::document(\"${PKGDIR}\")"

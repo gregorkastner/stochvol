@@ -1,12 +1,9 @@
 #ifndef UPDATE_FUNCTIONS_H
 #define UPDATE_FUNCTIONS_H
 
-// [[Rcpp::interfaces(cpp)]]
-
 #include <RcppArmadillo.h>
 
 // a single MCMC update (normal errors):
-// [[Rcpp::export]]
 void update_sv(
     const arma::vec& data,
     arma::vec& curpara,
@@ -40,7 +37,6 @@ void update_terr(
     const double lower,
     const double upper);
 
-// [[Rcpp::export]]
 void update_svl (
     const arma::vec& y,
     const arma::vec& y_star,
@@ -57,6 +53,6 @@ void update_svl (
     const arma::vec& prior_mu,
     const double stdev,
     const bool gammaprior,
-    const Rcpp::IntegerVector& strategy);
+    const arma::ivec& strategy);
 
 #endif  // UPDATE_FUNCTIONS_H

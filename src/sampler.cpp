@@ -269,7 +269,7 @@ List svlsample_cpp (
   const arma::vec prior_mu = {prior_mu_mu, prior_mu_sigma};
 
   // don't use strings or RcppCharacterVector
-  IntegerVector strategy(strategy_rcpp.length());
+  arma::ivec strategy(strategy_rcpp.length());
   std::transform(strategy_rcpp.cbegin(), strategy_rcpp.cend(), strategy.begin(),
       [](const SEXP& par) -> int {
         if (as<std::string>(par) == "centered") return int(Parameterization::CENTERED);

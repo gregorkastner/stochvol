@@ -66,7 +66,6 @@ void update_sv(
     const int parameterization,
     const bool dontupdatemu,
     const double priorlatent0) {
-
   int T = data.size();
 
   if (dontupdatemu) curpara[0] = 0; // just to be sure
@@ -204,7 +203,7 @@ void update_svl (
     const arma::vec& prior_mu,
     const double stdev,
     const bool gammaprior,
-    const IntegerVector& strategy) {
+    const arma::ivec& strategy) {
 
   // only centered
   h = draw_latent_auxiliaryMH(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1]);

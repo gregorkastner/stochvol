@@ -1,11 +1,8 @@
 #ifndef _SAMPLER_H_
 #define _SAMPLER_H_
 
-// [[Rcpp::interfaces(r)]]
-
 #include <RcppArmadillo.h>
 
-// [[Rcpp::export]]
 Rcpp::List svsample_cpp(
     const arma::vec& y_in,
     const int draws,
@@ -35,7 +32,6 @@ Rcpp::List svsample_cpp(
     const arma::vec& priorbeta_in,
     const double priorlatent0);
 
-// [[Rcpp::export]]
 Rcpp::List svlsample_cpp (
     const arma::vec& y,
     const int draws,
