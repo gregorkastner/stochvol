@@ -175,7 +175,7 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
 #' @export
 summary.svldraws <- function(object, showpara = TRUE, showlatent = TRUE, ...) {
   ret <- vector("list")
-  class(ret) <- "summary.svldraws"
+  class(ret) <- c("summary.svldraws", "summary.svdraws")
   ret$mcp <- mcpar(para(object))
   ret$mcl <- mcpar(latent(object))
   ret$priors <- priors(object)
@@ -216,13 +216,6 @@ print.summary.svdraws <- function(x, ...) {
   invisible(x)
 }
 
-#' @method print summary.svldraws
-#' @export
-print.summary.svldraws <- function (x, ...) {
-  ret <- print.summary.svdraws(x = x, ...)
-  invisible(ret)
-}
-
 #' @export
 print.svdraws <- function(x, showpara = TRUE, showlatent = TRUE, ...) {
   if (isTRUE(showpara)) {
@@ -239,11 +232,6 @@ print.svdraws <- function(x, showpara = TRUE, showlatent = TRUE, ...) {
     print(latent(x), ...)
   }
   invisible(x)
-}
-
-#' @export
-print.svldraws <- function (x, showpara = TRUE, showlatent = TRUE, ...) {
-  print.svdraws(x = x, showpara = showpara, showlatent = showlatent, ...)
 }
 
 #' @export
@@ -274,7 +262,7 @@ residuals.svdraws <- function(object, type = "mean", ...) {
 #' @export
 residuals.svldraws <- function (object, type = "mean", ...) {
   res <- residuals.svdraws(object = object, type = type, ...)
-  class(res) <- "svlresid"
+  class(res) <- c("svlresid", "svresid")
   res
 }
 
