@@ -17,7 +17,7 @@ arma::mat mixture_state_post_dist(
   const int n = eps_star.size();
   const int mix_count = sizeof(mix_prob)/sizeof(mix_prob[0]);
   const double sigma2_used = centering == Parameterization::CENTERED ? sigma2 : 1.0;
-  arma::mat result(n, mix_count);
+  arma::mat result(mix_count, n);
   
   for (int r = 0; r < n; r++) {
     for (int c = 0; c < mix_count; c++) {
@@ -34,13 +34,13 @@ arma::mat mixture_state_post_dist(
       } else {
         log_eta_lik = 0.0;
       }
-      /*log_*/result.at(r, c) = log_prior + log_eps_star_lik + log_eta_lik;
+      /*log_*/result.at(c, r) = log_prior + log_eps_star_lik + log_eta_lik;
     }
-    const double max_log_result_row = arma::max(/*log_*/result.row(r));
-    /*log_*/result.row(r) = /*log_*/result.row(r) - (max_log_result_row + log(arma::sum(arma::exp(/*log_*/result.row(r)-max_log_result_row))));
-    result.row(r) = arma::exp(/*log_*/result.row(r));
-    result.row(r) = arma::cumsum(result.row(r));
-    result.row(r) = result.row(r) / result.at(r, mix_count-1);
+    const double max_log_result_col = arma::max(/*log_*/result.col(r));
+    /*log_*/result.col(r) = /*log_*/result.col(r) - (max_log_result_col + log(arma::sum(arma::exp(/*log_*/result.col(r)-max_log_result_col))));
+    result.col(r) = arma::exp(/*log_*/result.col(r));
+    result.col(r) = arma::cumsum(result.col(r));
+    result.col(r) = result.col(r) / result.at(mix_count-1, r);
   }
   
   return result;
@@ -77,9 +77,9 @@ arma::vec draw_s_auxiliary(
   post_dist = mixture_state_post_dist(eps_star, eta, d, mu, sigma2, rho, centering);
 
   for (int r = 0; r < n; r++) {
-    const arma::vec post_dist_row_r(post_dist.begin()+r*post_dist.n_cols, post_dist.n_cols, false);
-    auto binary_search_result = std::lower_bound(post_dist_row_r.cbegin(), post_dist_row_r.cend(), R::runif(0, 1));
-    new_states[r] = std::distance(post_dist_row_r.cbegin(), binary_search_result);
+    const arma::vec post_dist_col_r = post_dist.unsafe_col(r);
+    auto binary_search_result = std::lower_bound(post_dist_col_r.cbegin(), post_dist_col_r.cend(), R::runif(0, 1));
+    new_states[r] = std::distance(post_dist_col_r.cbegin(), binary_search_result);
   }
   
   return new_states;
