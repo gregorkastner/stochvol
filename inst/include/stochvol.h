@@ -4,6 +4,6 @@
 #ifndef RCPP_stochvol_H_GEN_
 #define RCPP_stochvol_H_GEN_
 
-#include "stochvol_RcppExports.h"
+#include "stochvol_exports.h"
 
 #endif // RCPP_stochvol_H_GEN_
