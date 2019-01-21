@@ -37,11 +37,7 @@
 #' \code{\link{plot.svdraws}}
 #' @keywords hplot
 #' @export
-paradensplot <- function (x, ...) {
-  UseMethod("paradensplot")
-}
-
-paradensplot.svdraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
+paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
                                  mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
   if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (!is.logical(showobs)) stop("If provided, argument 'showobs' must be TRUE or FALSE.")
@@ -50,46 +46,12 @@ paradensplot.svdraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab =
     sim <- TRUE
   } else sim <- FALSE
   oldpar <- par(mar=mar)
-  paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), nu=quote(nu))
-  cutat1 <- c(FALSE, TRUE, FALSE, FALSE)
+  paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), rho=quote(rho), nu=quote(nu))
+  cutat1 <- c(mu=FALSE, phi=TRUE, sigma=FALSE, rho=TRUE, nu=FALSE)
   for (i in 1:ncol(x$para)) {
     parastring <- colnames(x$para)[i]
     mydensplot(x$para[,parastring], show.obs=showobs, main=paste("Density of", paranames[parastring]),
-               cutat1=cutat1[i], showxlab=showxlab, mgp = mgp, ...)
-    if (isTRUE(showprior)) {
-      paras <- x$priors[[parastring]]
-      vals <- seq(from=par('usr')[1], to=par('usr')[2], len=1000)
-      if (i == 1) lines(vals, dnorm(vals, paras[1], paras[2]), col=8, lty=2)
-      else if (i == 2) lines(vals, .5*dbeta((vals+1)/2, paras[1], paras[2]), col=8, lty=2)
-      else if (i == 3) {
-        if (x$priors$gammaprior) lines(vals, 2*dnorm(vals, 0, sqrt(paras[1])), col=8, lty=2)
-        else lines(vals, 2*vals^(-3)*dgamma(1/vals^2, 2.5, rate=1.5*paras[1]), col=8, lty=2)
-      }
-      else if (i == 4) lines(vals, dunif(vals, paras[1], paras[2]), col = 8, lty = 2)
-      if (sim && (i <= 3 || "nu" %in% names(simobj$para))) {
-        points(simobj$para[[parastring]], 0, col = 3, cex = 2, pch = 16)
-      }
-    }
-  }
-  par(oldpar)
-  invisible(x)
-}
-
-paradensplot.svldraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
-                                  mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
-  if (!inherits(x, "svldraws")) stop("This function expects an 'svldraws' object.")
-  if (!is.logical(showobs)) stop("If provided, argument 'showobs' must be TRUE or FALSE.")
-  if (!is.null(simobj)) {
-    if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
-    sim <- TRUE
-  } else sim <- FALSE
-  oldpar <- par(mar=mar)
-  paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), rho=quote(rho))
-  cutat1 <- c(FALSE, TRUE, FALSE, TRUE)
-  for (i in 1:ncol(x$para)) {
-    parastring <- colnames(x$para)[i]
-    mydensplot(x$para[,parastring], show.obs=showobs, main=paste("Density of", paranames[parastring]),
-               cutat1=cutat1[i], showxlab=showxlab, mgp = mgp, ...)
+               cutat1=cutat1[parastring], showxlab=showxlab, mgp = mgp, ...)
     if (isTRUE(showprior)) {
       paras <- x$priors[[parastring]]
       vals <- seq(from=par('usr')[1], to=par('usr')[2], len=1000)
@@ -100,7 +62,8 @@ paradensplot.svldraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab 
         else lines(vals, 2*vals^(-3)*dgamma(1/vals^2, 3, 3), col=8, lty=2)
       }
       else if (parastring == "rho") lines(vals, .5*dbeta((vals+1)/2, paras[1], paras[2]), col=8, lty=2)
-      if (sim && (i <= 3 || "rho" %in% names(simobj$para))) {
+      else if (parastring == "nu") lines(vals, dunif(vals, paras[1], paras[2]), col = 8, lty = 2)
+      if (sim && parastring %in% names(simobj$para)) {
         points(simobj$para[[parastring]], 0, col = 3, cex = 2, pch = 16)
       }
     }
@@ -108,8 +71,6 @@ paradensplot.svldraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab 
   par(oldpar)
   invisible(x)
 }
-
-
 
 #' Trace Plot of MCMC Draws from the Parameter Posteriors
 #' 
@@ -140,49 +101,25 @@ paradensplot.svldraws <- function(x, showobs = TRUE, showprior = TRUE, showxlab 
 #' \code{\link{plot.svdraws}}
 #' @keywords hplot
 #' @export
-paratraceplot <- function (x, ...) {
-  UseMethod("paratraceplot")
-}
-
-paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
+paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
   if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (!is.null(simobj)) {
     if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
     sim <- TRUE
   } else sim <- FALSE
   oldpar <- par(mar=mar)
-  paranames <- c(quote(mu), quote(phi), quote(sigma), quote(nu))
+  paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), nu=quote(nu), rho=quote(rho))
   for (i in 1:ncol(x$para)) {
-    mytraceplot(x$para[,i], xlab="", mgp = mgp,
-                main=paste("Trace of ", paranames[i], " (thinning = ", x$thinning$para,")", sep=''), ...)
-    if (sim && (i <= 3 || length(simobj$para) == 4)) {
-      abline(h = simobj$para[i], col = 3, lty = 2)
+    parastring <- colnames(x$para)[i]
+    mytraceplot(x$para[,parastring], xlab="", mgp = mgp,
+                main=paste("Trace of ", paranames[parastring], " (thinning = ", x$thinning$para,")", sep=''), ...)
+    if (sim && parastring %in% names(simobj$para)) {
+      abline(h = simobj$para[[parastring]], col = 3, lty = 2)
     }
   }
   par(oldpar)
   invisible(x)
 }
-
-paratraceplot.svldraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
-  if (!inherits(x, "svldraws")) stop("This function expects an 'svldraws' object.")
-  if (!is.null(simobj)) {
-    if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
-    sim <- TRUE
-  } else sim <- FALSE
-  oldpar <- par(mar=mar)
-  paranames <- c(quote(mu), quote(phi), quote(sigma), quote(rho))
-  for (i in 1:ncol(x$para)) {
-    mytraceplot(x$para[,i], xlab="", mgp = mgp,
-                main=paste("Trace of ", paranames[i], " (thinning = ", x$thinning$para,")", sep=''), ...)
-    if (sim) {
-      abline(h = simobj$para[i], col = 3, lty = 2)
-    }
-  }
-  par(oldpar)
-  invisible(x)
-}
-
-
 
 #' Plotting Quantiles of the Latent Volatilities
 #' 
