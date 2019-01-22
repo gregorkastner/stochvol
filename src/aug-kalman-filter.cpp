@@ -44,7 +44,7 @@ List aug_kalman_filter_c(
   const int n = y_star.size();
   
   const double sigma = sqrt(sigma2);
-  const arma::vec gamma_ts = rho * sigma * d % exp(m/2);
+  const arma::vec gamma_ts = rho * sigma * (d % exp(m/2));
   const arma::vec h_ts = b % v % gamma_ts;
   const double j_t22 = sigma2 * (1-rho*rho);
   const double h1_var = sigma2/(phi*phi > 1-1e-8 ? 1e-8 : (1-phi*phi));
@@ -112,7 +112,7 @@ List aug_kalman_filter_nc(
   const int n = y_star.size();
   
   const double sigma = sqrt(sigma2);
-  const arma::vec gamma_ts = rho * d % exp(m/2);
+  const arma::vec gamma_ts = rho * (d % exp(m/2));
   const arma::vec h_ts = b % v % gamma_ts;
   const double j_t22 = (1-rho*rho);
   const double h1_var = 1/(phi*phi > 1-1e-8 ? 1e-8 : (1-phi*phi));

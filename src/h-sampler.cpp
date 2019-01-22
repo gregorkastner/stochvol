@@ -37,11 +37,11 @@ arma::vec draw_h_auxiliary(
   switch (centering) {
     case Parameterization::CENTERED:
     h[0] = mu + eta0;
-    dt = mu*(1-phi) + rho*sqrt(sigma2)*d%mixing_a%exp(mixing_m/2);
+    dt = mu*(1-phi) + rho*sqrt(sigma2)*(d%mixing_a%exp(mixing_m/2));
     break;
     case Parameterization::NONCENTERED:
     h[0] = eta0;
-    dt = rho*d%mixing_a%exp(mixing_m/2);
+    dt = rho*(d%mixing_a%exp(mixing_m/2));
     break;
   }
 
