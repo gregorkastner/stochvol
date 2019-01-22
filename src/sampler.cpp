@@ -273,7 +273,7 @@ List svlsample_cpp (
   std::transform(strategy_rcpp.cbegin(), strategy_rcpp.cend(), strategy.begin(),
       [](const SEXP& par) -> int {
         if (as<std::string>(par) == "centered") return int(Parameterization::CENTERED);
-        else if (as<std::string>(par) == "non-centered") return int(Parameterization::NONCENTERED);
+        else if (as<std::string>(par) == "noncentered") return int(Parameterization::NONCENTERED);
         else Rf_error("Illegal parameterization");
   });
 

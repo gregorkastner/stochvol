@@ -2,13 +2,13 @@
 #' 
 #' Displays a plot of the density estimate for the posterior distribution of
 #' the parameters \code{mu}, \code{phi}, \code{sigma} (and potentially
-#' \code{nu}), computed by the \code{\link[stats]{density}} function.
+#' \code{nu} or \code{rho}), computed by the \code{\link[stats]{density}} function.
 #' 
 #' \code{paradensplot} is modeled after \code{\link[coda]{densplot}} in the
 #' \code{coda} package, with some modifications for parameters that have
 #' (half-)bounded support.
 #' 
-#' @param x \code{svdraws} object.
+#' @param x \code{svdraws} or \code{svldraws} object.
 #' @param showobs logical value, indicating whether the observations should be
 #' displayed along the x-axis. If many draws have been obtained, the default
 #' (\code{TRUE}) can render the plotting to be quite slow, and you might want
@@ -38,7 +38,7 @@
 #' @keywords hplot
 #' @export
 paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
-                                 mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
+                         mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
   if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (!is.logical(showobs)) stop("If provided, argument 'showobs' must be TRUE or FALSE.")
   if (!is.null(simobj)) {
@@ -75,13 +75,13 @@ paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
 #' Trace Plot of MCMC Draws from the Parameter Posteriors
 #' 
 #' Displays a plot of iterations vs. sampled values the parameters \code{mu},
-#' \code{phi}, \code{sigma} (and potentially \code{nu}), with a separate plot
+#' \code{phi}, \code{sigma} (and potentially \code{nu} or \code{rho}), with a separate plot
 #' per variable.
 #' 
 #' \code{paratraceplot} is modeled after \code{\link[coda]{traceplot}} in the
 #' \code{coda} package, with very minor modifications.
 #' 
-#' @param x \code{svdraws} object.
+#' @param x \code{svdraws} or \code{svldraws} object.
 #' @param mar numerical vector of length 4, indicating the plot margins. See
 #' \code{\link[graphics]{par}} for details. The default value is \code{c(1.9,
 #' 1.9, 1.9, 0.5)}, which is slightly smaller than the R-defaults.
@@ -127,7 +127,7 @@ paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simo
 #' time as well as predictive distributions of future volatilities.
 #' 
 #' 
-#' @param x \code{svdraws} object.
+#' @param x \code{svdraws} or \code{svldraws} object.
 #' @param forecast nonnegative integer or object of class \code{svpredict}, as
 #' returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
 #' provided, \code{\link{predict.svdraws}} is invoked to obtain the
@@ -137,6 +137,7 @@ paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simo
 #' case, the axis will be labeled with numbers.
 #' @param show0 logical value, indicating whether the initial volatility
 #' \code{exp(h_0/2)} should be displayed. The default value is \code{FALSE}.
+#' Only available for inputs \code{x} of class \code{svdraws}.
 #' @param col vector of color values (see \code{\link[graphics]{par}}) used for
 #' plotting the quantiles. The default value \code{NULL} results in gray lines
 #' for all quantiles expect the median, which is displayed in black.
@@ -191,7 +192,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
                     newdata = NULL, ...) {
   if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' or an 'svldraws' object.")
   if (!is.null(simobj)) {
-    if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' or an 'svlsim' object.")
+    if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
     sim <- TRUE
   } else sim <- FALSE
   oldpar <- par(mar = mar)
@@ -221,6 +222,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
     }
     if(!inherits(forecast, "svpredict")) stop("Argument 'forecast' must be a single nonnegative integer, or of class type 'svpredict' or 'svlpredict'.")
     if(inherits(forecast, "svlpredict")) {
+      if (show0) warning("Initial volatility not available for the SV model with leverage. Setting 'show0' to 'FALSE'.")
       show0 <- FALSE
     }
 
@@ -318,14 +320,14 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 
 #' Graphical Summary of the Posterior Distribution
 #' 
-#' \code{plot.svdraws} generates some plots visualizing the posterior
+#' \code{plot.svdraws} and \code{plot.svldraws} generate some plots visualizing the posterior
 #' distribution and can also be used to display predictive distributions of
 #' future volatilities.
 #' 
-#' This function sets up the page layout and calls \code{\link{volplot}},
+#' These functions set up the page layout and call \code{\link{volplot}},
 #' \code{\link{paratraceplot}} and \code{\link{paradensplot}}.
 #' 
-#' @param x \code{svdraws} object.
+#' @param x \code{svdraws} or \code{svldraws} object.
 #' @param forecast nonnegative integer or object of class \code{svpredict}, as
 #' returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
 #' provided, \code{\link{predict.svdraws}} is invoked to obtain the
@@ -335,6 +337,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 #' case, the axis will be labelled with numbers.
 #' @param show0 logical value, indicating whether the initial volatility
 #' \code{exp(h_0/2)} should be displayed. The default value is \code{FALSE}.
+#' Only available for inputs \code{x} of class \code{svdraws}.
 #' @param showobs logical value, indicating whether the observations should be
 #' displayed along the x-axis. If many draws have been obtained, the default
 #' (\code{TRUE}) can render the plotting to be quite slow, and you might want
@@ -410,9 +413,7 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
   invisible(x)
 }
 
-
-# TODO joint docs with plot.svdraws
-
+#' @rdname plot.svdraws
 #' @export
 plot.svldraws <- function (x, forecast = NULL, dates = NULL,
 			 show0 = FALSE, showobs = TRUE, showprior = TRUE, col = NULL,
@@ -577,14 +578,3 @@ plot.svresid <- function(x, origdata = NA,
   invisible(x)
 }
 
-
-#' @export
-plot.svlresid <- function(x, origdata = NA,
-                          mains = c("Residual plot", "Q-Q plot"),
-                          mar = c(2.9, 2.7, 2.2, .5),
-                          mgp = c(1.7, .6, 0), ...) {
-  plot.svresid(x = x, origdata = origdata,
-               mains = mains,
-               mar = mar,
-               mgp = mgp, ...)
-}

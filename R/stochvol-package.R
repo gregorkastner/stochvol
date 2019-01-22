@@ -38,13 +38,16 @@ NULL
 #' @param x \code{svdraws} object.
 #' @return The return value depends on the actual funtion:
 #' \item{para(x)}{extracts the parameter draws and returns them as an
-#' \code{mcmc} object.} \item{latent(x)}{extracts the latent contemporaneous
+#' \code{mcmc} object.}
+#' \item{latent(x)}{extracts the latent contemporaneous
 #' log-volatility draws and returns them as an \code{mcmc} object.}
 #' \item{latent0(x)}{extracts the latent initial log-volatility draws and
-#' returns as an \code{mcmc} object.} \item{priors(x)}{extracts the prior
+#' returns as an \code{mcmc} object.}
+#' \item{priors(x)}{extracts the prior
 #' parameters used and returns them in a \code{list}.}
 #' \item{thinning(x)}{extracts the thinning parameters used and returns them in
-#' a \code{list}.} \item{runtime(x)}{extracts the runtime and returns it as a
+#' a \code{list}.}
+#' \item{runtime(x)}{extracts the runtime and returns it as a
 #' \code{proc_time} object.}
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @keywords utilities
@@ -110,7 +113,21 @@ NULL
 #' ## plot the results
 #' plot(draws, forecast = fore)
 #' 
+#' \dontrun{
+#' ## Simulate an SV process with leverage
+#' sim <- svsim(500, mu = -10, phi = 0.95, sigma = 0.2, rho=-0.5)
+#' 
+#' ## Obtain 8000 draws from the sampler (that's too little!)
+#' draws <- svlsample(sim$y, draws = 4000, burnin = 3000, priormu = c(-10, 1),
+#'                    priorphi = c(20, 1.2), priorsigma = 0.2,
+#'                    priorrho = c(1, 1))
+#' 
+#' ## Predict 20 days ahead
+#' fore <- predict(draws, 20)
+#' 
+#' ## plot the results
+#' plot(draws, forecast = fore)
+#' }
+#' 
 NULL
-
-
 

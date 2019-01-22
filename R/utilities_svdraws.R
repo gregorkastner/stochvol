@@ -20,41 +20,46 @@ logret <- function(x, demean = FALSE) {
 }
 
 
+#' @rdname extractors
 #' @export
 para <- function(x) {
  x$para
 }
 
 
+#' @rdname extractors
 #' @export
 latent <- function(x) {
  x$latent
 }
 
 
+#' @rdname extractors
 #' @export
 latent0 <- function(x) {
  x$latent0
 }
 
 
+#' @rdname extractors
 #' @export
 priors <- function(x) {
  x$priors
 }
 
 
+#' @rdname extractors
 #' @export
 thinning <- function(x) {
  x$thinning
 }
 
 
+#' @rdname extractors
 #' @export
 runtime <- function(x) {
  x$runtime
 }
-# TODO common docs for the above functions
 
 
 #' Updating the Summary of MCMC Draws
@@ -108,7 +113,7 @@ runtime <- function(x) {
 #' don't forget to overwrite the old object if this is want you intend to do.
 #' See the examples below for more details.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
-#' @seealso \code{\link{svsample}}
+#' @seealso \code{\link{svsample}}, \code{\link{svlsample}}
 #' @keywords utilities
 #' @examples
 #' 
@@ -267,26 +272,33 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 }
 
 
-#' Prediction of Future Log-Volatilities
+#' Prediction of Future Returns and Log-Volatilities
 #' 
-#' Simulates draws from the predictive density of the latent log-volatility
-#' process.
+#' Simulates draws from the predictive density of the returns and the latent log-volatility
+#' process. The same mean model is used for prediction as was used for fitting, which is
+#' either a) no mean parameter, b) constant mean, c) AR(k) structure, or d) general
+#' Bayesian regression. In the last case, new regressors need to be provided for prediction.
 #' 
 #' 
-#' @param object \code{svdraws} object.
-#' @param steps single number, coercible to integer. Denotes the number of
+#' @param object \code{svdraws} or \code{svldraws} object.
+#' @param steps \emph{optional} single number, coercible to integer. Denotes the number of
 #' steps to forecast.
-#' @param ...  currently ignored.
-#' @return Returns an object of class \code{c("svpredict", "mcmc")} containing
-#' simulations from the predictive density of \code{h_(n+1),...,h_(n+steps)}.
-#' @note You can use the usual \code{coda} methods for \code{mcmc} objects to
-#' print, plot, or summarize the predictions, or use them within
-#' \code{\link{volplot}} or \code{\link{plot.svdraws}}.
+#' @param newdata \emph{only in case d) of the description} corresponds to input
+#' parameter \code{designmatrix} in \link{\code{svsample}} and \link{\code{svlsample}}.
+#' A matrix of regressors with number of rows equal to parameter \code{steps}.
+#' @param \dots  currently ignored.
+#' @return Returns an object of class \code{svpredict}, a list containing
+#' two elements:
+#' \item{h}{\code{mcmc} object of simulations from the predictive density of \code{h_(n+1),...,h_(n+steps)}}
+#' \item{y}{\code{mcmc} object of simulations from the predictive density of \code{y_(n+1),...,y_(n+steps)}}
+#' @note You can use the resulting object within \code{\link{plot.svdraws}}, or use
+#' the list items in the usual \code{coda} methods for \code{mcmc} objects to
+#' print, plot, or summarize the predictions.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @seealso \code{\link{plot.svdraws}}, \code{\link{volplot}}.
 #' @keywords ts
 #' @examples
-#' 
+#' # Example 1
 #' ## Simulate a short and highly persistent SV process 
 #' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
 #' 
@@ -300,6 +312,54 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' ## Check out the results
 #' summary(fore)
 #' plot(draws, forecast = fore)
+#' 
+#' 
+#' # Example 2
+#' ## Simulate now an SV process with an AR(1) mean structure
+#' len <- 109L
+#' simar <- svsim(len, phi=0.93, sigma=0.15, mu=-9)
+#' for (i in 2:len) {
+#'   simar$y[i] <- 0.1 - 0.7*simar$y[i-1] + simar$vol[i]*rnorm(1)
+#' }
+#' 
+#' ## Obtain 7000 draws
+#' drawsar <- svsample(simar$y, draws = 7000, burnin = 300,
+#'      designmatrix = "ar1",
+#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+#' 
+#' ## Predict 7 days ahead (using AR(2) mean for the returns)
+#' forear <- predict(drawsar, 7)
+#' 
+#' ## Check out the results
+#' summary(forear)
+#' plot(drawsar, forecast = forear)
+#' 
+#' 
+#' dontrun{
+#' # Example 3
+#' ## Simulate now an SV process with leverage and with non-zero mean
+#' len <- 96L
+#' regressors <- cbind(rep_len(1, len),
+#'                     rgamma(len, 0.5, 0.25))
+#' betas <- rbind(-1.1, 2)
+#' simreg <- svsim(len, rho=-0.42)
+#' simreg$y <- simreg$y + as.numeric(regressors %*% betas)
+#' 
+#' ## Obtain 12000 draws
+#' drawsreg <- svlsample(simreg$y, draws = 12000, burnin = 3000,
+#'      designmatrix = regressors,
+#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+#' 
+#' ## Predict 5 days ahead using new regressors
+#' predlen <- 5L
+#' predregressors <- cbind(rep_len(1, predlen),
+#'                         rgamma(predlen, 0.5, 0.25))
+#' forereg <- predict(drawsreg, predlen, predregressors)
+#' 
+#' ## Check out the results
+#' summary(forereg)
+#' plot(drawsreg, forecast = forereg)
+#' }
 #' @export
 predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   if (!(inherits(object, "svdraws"))) stop("Argument 'object' must be of class 'svdraws' or 'svldraws'.")
@@ -316,7 +376,7 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
     newdata <- as.matrix(newdata)
     if (is.null(object$beta) || NCOL(object$beta) != NCOL(newdata)) stop(paste0("The number of fitted regression coefficients (", NCOL(object$beta), ") does not equal the number of given regressors (", NCOL(newdata), ")."))
     if (NROW(newdata) != steps) stop("The size of the design matrix does not match the number of steps to predict.")
-    regressors <- function (y, newdata, stepind) matrix(newdata[stepind, ], nrow = len, ncol = NCOL(newdata), byrow = TRUE)  # matches the format in the ar* case
+    regressors <- function (y, newdata, stepind) matrix(newdata[stepind, ], nrow = NROW(y), ncol = NCOL(newdata), byrow = TRUE)  # matches the format in the ar* case
   } else if (object$meanmodel == "constant") {
     if (!is.null(newdata)) warning("Constant mean was assumed when estimating the model. Omitting 'newdata'.")
     regressors <- function (y, newdata, stepind) matrix(1)
@@ -358,7 +418,11 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
 
   rho <- if ("rho" %in% colnames(object$para)) object$para[, "rho"][usepara] else 0
   nu <- if ("nu" %in% colnames(object$para)) object$para[, "nu"][usepara] else Inf
-  betacoeff <- if (exists("beta", object)) object$beta[usepara, c(1, rev(seq_len(NCOL(object$beta)-1))+1), drop=FALSE] else matrix(0)
+  standardizer <- if ("nu" %in% colnames(object$para)) sqrt((nu-2)/nu) else 1
+  betacoeff <- if (exists("beta", object)) {
+    if (arorder > 0) object$beta[usepara, c(1, rev(seq_len(NCOL(object$beta)-1))+1), drop=FALSE]
+    else object$beta[usepara, , drop=FALSE]
+  } else matrix(0)
 
   resilast <- if (object$meanmodel == "none") {  # last fitted residual
     ylast*exp(-hlast/2)
@@ -366,16 +430,16 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
     (ylast - colSums(object$priors$designmatrix[NROW(object$priors$designmatrix),]*t(betacoeff)))*exp(-hlast/2)  # recycles the last row of the design matrix
   }
 
-  volpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*resilast + sqrt(1-rho^2)*rnorm(len))
+  volpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*resilast*standardizer + sqrt(1-rho^2)*rnorm(len))
   if (steps > 1) {
     resi <- rt(len, df=nu)  # either rho == 0 or nu == Inf
-    incr <- rho*resi + sqrt(1-rho^2)*rnorm(len)
+    incr <- rho*resi*standardizer + sqrt(1-rho^2)*rnorm(len)
     for (i in seq.int(from=2, to=steps)) {
-      ypred[,i-1+arorder] <- rowSums(regressors(ypred, newdata, i-1) * betacoeff) + exp(-volpred[,i-1]/2)*resi
+      ypred[,i-1+arorder] <- rowSums(regressors(ypred, newdata, i-1) * betacoeff) + exp(volpred[,i-1]/2)*resi
       volpred[,i] <- mu + phi*(volpred[,i-1] - mu) + sigma*incr
     }
   }
-  ypred[,steps+arorder] <- rowSums(regressors(ypred, newdata, steps) * betacoeff) + exp(-volpred[,steps]/2)*rnorm(len)
+  ypred[,steps+arorder] <- rowSums(regressors(ypred, newdata, steps) * betacoeff) + exp(volpred[,steps]/2)*rt(len, df=nu)
 
   ypred <- ypred[, setdiff(seq_len(NCOL(ypred)), seq_len(arorder)), drop=FALSE]  # remove temporary AR(x) helper columns
   lastname <- tail(colnames(object$latent), 1)
@@ -389,6 +453,7 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   ret
 }
 
+#' @rdname predict.svdraws
 #' @export
 predict.svldraws <- function (object, steps = 1L, newdata = NULL, ...) {
   ret <- predict.svdraws(object = object, steps = steps, newdata = newdata, ...)
@@ -396,13 +461,13 @@ predict.svldraws <- function (object, steps = 1L, newdata = NULL, ...) {
   ret
 }
 
-# used to forecast AR-SV models (needs more testing!)
 
-
-#' Dynamic prediction for the AR-SV model
+#' Dynamic prediction for the AR-SV model (deprecated)
 #' 
 #' Simulates draws from the posterior predictive density of a fitted AR-SV
 #' model.
+#' DEPRECATED: please use \code{predict.svdraws} on \code{svdraws} objects
+#' resulting from model estimation with an autoregressive mean structure.
 #' 
 #' 
 #' @param object \code{svdraws} object as returned from \code{\link{svsample}}.

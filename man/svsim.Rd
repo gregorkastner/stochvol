@@ -21,23 +21,23 @@ default value is \code{0.2}.}
 \item{nu}{degrees-of-freedom for the conditional innovations distribution.
 The default value is \code{Inf}, corresponding to standard normal
 conditional innovations.}
+
+\item{rho}{correlation between the observation and the increment of the
+log-volatility. The default value is \code{0}, corresponding to the basic
+SV model with symmetric ``log-returns''.}
 }
 \value{
 The output is a list object of class \code{svsim} containing
 \item{y}{a vector of length \code{len} containing the simulated data,
-usually interpreted as ``log-returns''.} \item{vol}{a vector of length
+usually interpreted as ``log-returns''.}
+\item{vol}{a vector of length
 \code{len} containing the simulated instantaneous volatilities
-\code{exp(h_t/2)}.} \item{vol0}{the initial volatility \code{exp(h_0/2)},
+\code{exp(h_t/2)}.}
+\item{vol0}{The initial volatility \code{exp(h_0/2)},
 drawn from the stationary distribution of the latent AR(1) process.}
-\item{para}{a named list with three elements \code{mu}, \code{phi},
-\code{sigma} (and potentially \code{nu}), containing the corresponding
-arguments.}
-
-To display the output use \code{print}, \code{summary} and \code{plot}. The
-\code{print} method simply prints the content of the object in a moderately
-formatted manner. The \code{summary} method provides some summary statistics
-(in \%), and the \code{plot} method plots the the simulated 'log-returns'
-\code{y} along with the corresponding volatilities \code{vol}.
+\item{para}{a named list with five elements \code{mu}, \code{phi},
+\code{sigma}, \code{nu}, and \code{rho}, containing
+the corresponding arguments.}
 }
 \description{
 \code{svsim} is used to produce realizations of a stochastic volatility (SV)
@@ -45,9 +45,25 @@ process.
 }
 \details{
 This function draws an initial log-volatility \code{h_0} from the stationary
-distribution of the AR(1) process and iteratively generates
-\code{h_1,...,h_n}. Finally, the ``log-returns'' are simulated from a normal
-distribution with mean 0 and standard deviation \code{exp(h/2)}.
+distribution of the AR(1) process defined by \code{phi}, \code{sigma}, and \code{mu}.
+Then the function jointly simulates the log-volatility series
+\code{h_1,...,h_n} with the given AR(1) structure, and the ``log-return'' series
+\code{y_1,...,y_n} with mean 0 and standard deviation \code{exp(h/2)}.
+Additionally, for each index \code{i}, \code{y_i} can be set to have a conditionally heavy-tailed
+residual (through \code{nu}) and/or to be correlated with \code{(h_{i+1}-h_i)}
+(through \code{rho}, the so-called leverage effect, resulting in asymmetric ``log-returns'').
+}
+\note{
+The function generates the ``log-returns'' by
+\code{y <- exp(-h/2)*rt(h, df=nu)}. That means that in the case of \code{nu < Inf}
+the (conditional) volatility is \code{sqrt(nu/(nu-2))*exp(h/2)}, and that corrected value
+is shown in the \code{print}, \code{summary} and \code{plot} methods.
+
+To display the output use \code{print}, \code{summary} and \code{plot}. The
+\code{print} method simply prints the content of the object in a moderately
+formatted manner. The \code{summary} method provides some summary statistics
+(in \%), and the \code{plot} method plots the the simulated 'log-returns'
+\code{y} along with the corresponding volatilities \code{vol}.
 }
 \examples{
 
@@ -58,6 +74,19 @@ print(sim)
 summary(sim)
 plot(sim)
 
+## Simulate an SV process with leverage
+sim <- svsim(200, phi = 0.94, sigma = 0.15, rho = -0.6)
+
+print(sim)
+summary(sim)
+plot(sim)
+
+## Simulate an SV process with conditionally heavy-tails
+sim <- svsim(250, phi = 0.91, sigma = 0.05, nu = 5)
+
+print(sim)
+summary(sim)
+plot(sim)
 }
 \seealso{
 \code{\link{svsample}}

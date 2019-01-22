@@ -4,9 +4,13 @@
 #' process.
 #' 
 #' This function draws an initial log-volatility \code{h_0} from the stationary
-#' distribution of the AR(1) process and iteratively generates
-#' \code{h_1,...,h_n}. Finally, the ``log-returns'' are simulated from a normal
-#' distribution with mean 0 and standard deviation \code{exp(h/2)}.
+#' distribution of the AR(1) process defined by \code{phi}, \code{sigma}, and \code{mu}.
+#' Then the function jointly simulates the log-volatility series
+#' \code{h_1,...,h_n} with the given AR(1) structure, and the ``log-return'' series
+#' \code{y_1,...,y_n} with mean 0 and standard deviation \code{exp(h/2)}.
+#' Additionally, for each index \code{i}, \code{y_i} can be set to have a conditionally heavy-tailed
+#' residual (through \code{nu}) and/or to be correlated with \code{(h_{i+1}-h_i)}
+#' (through \code{rho}, the so-called leverage effect, resulting in asymmetric ``log-returns'').
 #' 
 #' @param len length of the simulated time series.
 #' @param mu level of the latent log-volatility AR(1) process. The defaults
@@ -18,15 +22,24 @@
 #' @param nu degrees-of-freedom for the conditional innovations distribution.
 #' The default value is \code{Inf}, corresponding to standard normal
 #' conditional innovations.
+#' @param rho correlation between the observation and the increment of the
+#' log-volatility. The default value is \code{0}, corresponding to the basic
+#' SV model with symmetric ``log-returns''.
 #' @return The output is a list object of class \code{svsim} containing
 #' \item{y}{a vector of length \code{len} containing the simulated data,
-#' usually interpreted as ``log-returns''.} \item{vol}{a vector of length
+#' usually interpreted as ``log-returns''.}
+#' \item{vol}{a vector of length
 #' \code{len} containing the simulated instantaneous volatilities
-#' \code{exp(h_t/2)}.} \item{vol0}{the initial volatility \code{exp(h_0/2)},
+#' \code{exp(h_t/2)}.}
+#' \item{vol0}{The initial volatility \code{exp(h_0/2)},
 #' drawn from the stationary distribution of the latent AR(1) process.}
-#' \item{para}{a named list with three elements \code{mu}, \code{phi},
-#' \code{sigma} (and potentially \code{nu}), containing the corresponding
-#' arguments.}
+#' \item{para}{a named list with five elements \code{mu}, \code{phi},
+#' \code{sigma}, \code{nu}, and \code{rho}, containing
+#' the corresponding arguments.}
+#' @note The function generates the ``log-returns'' by
+#' \code{y <- exp(-h/2)*rt(h, df=nu)}. That means that in the case of \code{nu < Inf}
+#' the (conditional) volatility is \code{sqrt(nu/(nu-2))*exp(h/2)}, and that corrected value
+#' is shown in the \code{print}, \code{summary} and \code{plot} methods.
 #' 
 #' To display the output use \code{print}, \code{summary} and \code{plot}. The
 #' \code{print} method simply prints the content of the object in a moderately
@@ -45,6 +58,19 @@
 #' summary(sim)
 #' plot(sim)
 #' 
+#' ## Simulate an SV process with leverage
+#' sim <- svsim(200, phi = 0.94, sigma = 0.15, rho = -0.6)
+#' 
+#' print(sim)
+#' summary(sim)
+#' plot(sim)
+#' 
+#' ## Simulate an SV process with conditionally heavy-tails
+#' sim <- svsim(250, phi = 0.91, sigma = 0.05, nu = 5)
+#' 
+#' print(sim)
+#' summary(sim)
+#' plot(sim)
 #' @export
 svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
 
@@ -75,16 +101,11 @@ svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
     stop("Argument 'rho' (correlation between the observations and the volatility increments) must be a single number between -1 and 1 exclusive.")
   }
 
-  if (is.finite(nu) && !isTRUE(all.equal(rho, 0))) {  # to make life simpler
-    stop("The case of both t-distributed errors and asymmetry is not yet implemented. Either argument 'rho' has to be 0 or argument 'nu' has to be infinite.")
-  }
-
-  if (isTRUE(all.equal(rho, 0))) rho <- 0
-
   h <- rep(as.numeric(NA), len)
   h0 <- rnorm(1, mean=mu, sd=sigma/sqrt(1-phi^2))
+  standardizer <- if (is.finite(nu)) sqrt((nu-2)/nu) else 1
   eps <- rt(len, df = nu)
-  eta <- rho * eps + sqrt(1-rho^2) * rnorm(len)  # either rho == 0 or eps ~ N(0, 1)
+  eta <- rho * eps * standardizer + sqrt(1-rho^2) * rnorm(len)
 
   # simulate w/ simple loop
   h[1] <- mu + phi*(h0-mu) + sigma*rnorm(1)  # same marginal distribution as h0
@@ -98,14 +119,11 @@ svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
               para = list(mu = mu,
                           phi = phi,
                           sigma = sigma))
-  if (is.finite(nu)) ret$para$nu <- nu
-  if (!isTRUE(all.equal(rho, 0))) {
-    ret$para$rho <- rho
-    class(ret) <- c("svlsim", "svsim")
-  } else {
-    ret$vol0 <- exp(h0/2)
-    class(ret) <- "svsim"
-  }
+  ret$vol0 <- exp(h0/2)
+  ret$para$rho <- rho
+  ret$para$nu <- nu
+  ret$correction <- 1/standardizer  # TODO discuss with Gregor
+  class(ret) <- "svsim"
   ret
 }
 
@@ -119,7 +137,7 @@ print.svsim <- function(x, ...) {
   if ("rho" %in% names(x$para)) cat("            leverage effect parameter                rho =", x$para$rho, "\n")
   cat("\nSimulated initial conditional volatility:", x$vol0, "\n")
   cat("\nSimulated conditional volatilities:\n")
-  print(x$vol, ...)
+  print(x$vol*x$correction, ...)
   cat("\nSimulated data (usually interpreted as 'log-returns'):\n")
   print(x$y, ...)
 }
@@ -129,7 +147,7 @@ plot.svsim <- function(x, mar = c(3, 2, 2, 1), mgp = c(1.8, .6, 0), ...) {
   op <- par(mfrow = c(2, 1), mar = mar, mgp = mgp)
   plot.ts(100*x$y, ylab = "", ...)
   mtext("Simulated data: 'log-returns' (in %)", cex = 1.2, line = .4, font = 2)
-  plot.ts(100*x$vol, ylab = "", ...)
+  plot.ts(100*x$vol*x$correction, ylab = "", ...)
   mtext("Simulated conditional volatilities (in %)", cex = 1.2, line = .4, font = 2)
   par(op)
 }
@@ -141,15 +159,9 @@ summary.svsim <- function(object, ...) {
   ret$len <- length(object$y)
   ret$para <- object$para
   ret$vol <- summary(100*object$vol)
+  ret$vol.corrected <- summary(100*object$vol*x$correction)
   ret$y <- summary(100*object$y)
-  if (exists("vol0", ret)) ret$vol0 <- 100*object$vol0
-  ret
-}
-
-#' @export
-summary.svlsim <- function (object, ...) {
-  ret <- summary.svsim(object = object, ...)
-  class(ret) <- c("summary.svlsim", "summary.svsim")
+  ret$vol0 <- 100*object$vol0
   ret
 }
 
@@ -159,16 +171,13 @@ print.summary.svsim  <- function(x, ...) {
   cat("\nSimulated time series consisting of ", x$len, " observations.\n",
       "\nParameters: level of latent variable                  mu = ", x$para$mu, 
       "\n            persistence of latent variable           phi = ", x$para$phi,
-      "\n            standard deviation of latent variable  sigma = ", x$para$sigma, "\n", sep="")
-  if ("nu" %in% names(x$para)) cat("            degrees of freedom parameter              nu =", x$para$nu, "\n")
-  if ("rho" %in% names(x$para)) cat("            leverage effect parameter                 rho =", x$para$rho, "\n")
-
-  if (exists("vol0", x)) {
-    cat("\nSimulated initial conditional volatility (in %): ")
-    cat(x$vol0, "\n")
-  }
+      "\n            standard deviation of latent variable  sigma = ", x$para$sigma,
+      "\n            degrees of freedom parameter              nu =", x$para$nu,
+      "\n            leverage effect parameter                 rho =", x$para$rho, "\n", sep="")
+  cat("\nSimulated initial conditional volatility (in %): ")
+  cat(x$vol0, "\n")
   cat("\nSummary of simulated conditional volatilities (in %):\n")
-  print(x$vol)
+  print(x$vol.corrected)
   cat("\nSummary of simulated data (in %):\n")
   print(x$y)
   invisible(x)

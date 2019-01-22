@@ -89,7 +89,7 @@ plot(res)
 
 }
 \seealso{
-\code{\link{svsample}}
+\code{\link{svsample}}, \code{\link{svlsample}}
 }
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}

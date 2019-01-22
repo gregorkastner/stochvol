@@ -2,28 +2,246 @@
 % Please edit documentation in R/wrappers.R
 \name{svlsample}
 \alias{svlsample}
-\title{Main function}
+\title{Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility
+Model with Leverage (SVL)}
 \usage{
-svlsample(y, draws = 10000, burnin = 1000, designmatrix = NA,
+svlsample(y, draws = 10000, burnin = 3000, designmatrix = NA,
   priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
-  priorrho = c(3, 5), priorbeta = c(0, 10000), thinpara = 1,
+  priorrho = c(1, 1), priorbeta = c(0, 10000), thinpara = 1,
   thinlatent = 1, thintime = 1, quiet = FALSE, startpara,
   startlatent, expert, ...)
 }
+\arguments{
+\item{y}{numeric vector containing the data (usually log-returns), which
+must not contain zeros. Alternatively, \code{y} can be an \code{svsim}
+object. In this case, the returns will be extracted and a warning is thrown.}
+
+\item{draws}{single number greater or equal to 1, indicating the number of
+draws after burn-in (see below). Will be automatically coerced to integer.
+The default value is 10000.}
+
+\item{burnin}{single number greater or equal to 0, indicating the number of
+draws discarded as burn-in. Will be automatically coerced to integer. The
+default value is 3000.}
+
+\item{designmatrix}{regression design matrix for modeling the mean. Must
+have \code{length(y)} rows. Alternatively, \code{designmatrix} may be a
+string of the form \code{"arX"}, where \code{X} is a nonnegative integer. To
+fit a constant mean model, use \code{designmatrix = "ar0"} (which is
+equivalent to \code{designmatrix = matrix(1, nrow = length(y))}). To fit an
+AR(1) model, use \code{designmatrix = "ar1"}, and so on. If some elements of
+\code{designmatrix} are \code{NA}, the mean is fixed to zero (pre-1.2.0
+behavior of \pkg{stochvol}).}
+
+\item{priormu}{numeric vector of length 2, indicating mean and standard
+deviation for the Gaussian prior distribution of the parameter \code{mu},
+the level of the log-volatility. The default value is \code{c(0, 100)},
+which constitutes a practically uninformative prior for common exchange rate
+datasets, stock returns and the like.}
+
+\item{priorphi}{numeric vector of length 2, indicating the shape parameters
+for the Beta prior distribution of the transformed parameter
+\code{(phi+1)/2}, where \code{phi} denotes the persistence of the
+log-volatility. The default value is \code{c(5, 1.5)}, which constitutes a
+prior that puts some belief in a persistent log-volatility but also
+encompasses the region where \code{phi} is around 0.}
+
+\item{priorsigma}{single positive real number, which stands for the scaling
+of the transformed parameter \code{sigma^2}, where \code{sigma} denotes the
+volatility of log-volatility. More precisely, \code{sigma^2 ~ priorsigma *
+chisq(df = 1)}. The default value is \code{1}, which constitutes a
+reasonably vague prior for many common exchange rate datasets, stock returns
+and the like.}
+
+\item{priorrho}{numeric vector of length 2, indicating the shape parameters
+for the Beta prior distribution of the transformed parameter
+\code{(rho+1)/2}, where \code{rho} denotes the conditional correlation
+between observation and the increment of the
+log-volatility. The default value is \code{c(1, 1)}, which constitutes a
+vague prior.}
+
+\item{priorbeta}{numeric vector of length 2, indicating the mean and
+standard deviation of the Gaussian prior for the regression parameters. The
+default value is \code{c(0, 10000)}, which constitutes a very vague prior
+for many common datasets. Not used if \code{designmatrix} is \code{NA}.}
+
+\item{thinpara}{single number greater or equal to 1, coercible to integer.
+Every \code{thinpara}th parameter draw is kept and returned. The default
+value is 1, corresponding to no thinning of the parameter draws i.e. every
+draw is stored.}
+
+\item{thinlatent}{single number greater or equal to 1, coercible to integer.
+Every \code{thinlatent}th latent variable draw is kept and returned. The
+default value is 1, corresponding to no thinning of the latent variable
+draws, i.e. every draw is kept.}
+
+\item{thintime}{\emph{deprecated}}
+
+\item{quiet}{logical value indicating whether the progress bar and other
+informative output during sampling should be omitted. The default value is
+\code{FALSE}, implying verbose output.}
+
+\item{startpara}{\emph{optional} named list, containing the starting values
+for the parameter draws. If supplied, \code{startpara} must contain four
+elements named \code{mu}, \code{phi}, \code{sigma}, and \code{rho}, where \code{mu} is
+an arbitrary numerical value, \code{phi} is a real number between \code{-1}
+and \code{1}, \code{sigma} is a positive real number, and \code{rho} is
+a real number between \code{-1} and \code{1}. The default value is
+is \code{list(mu = -10, phi = 0.9, sigma = 0.3, rho = 0)}.}
+
+\item{startlatent}{\emph{optional} vector of length \code{length(y)},
+containing the starting values for the latent log-volatility draws. The
+default value is \code{rep(-10, length(y))}.}
+
+\item{expert}{\emph{optional} named list of expert parameters. For most
+applications, the default values probably work best. If
+\code{expert} is provided, it may contain the following named elements:
+\item{\code{parameterization}}{Character string containing values \code{"centered"},
+and \code{"noncentered"}. Alternatively, it can be a single element character
+vector of the form \code{"asisX"}, where \code{X} is an integer, which is
+equivalent to \code{rep_len(c("centered", "noncentered"), X)}.
+Defaults to \code{"asis5"}.}
+\item{\code{mhcontrol}}{Single numeric value controlling the proposal density of a
+Metropolis-Hastings (MH) update step when jointly sampling \code{mu}, \code{phi},
+\code{sigma}, and \code{rho}. It controls the stepsize of a log-random-walk
+proposal. Defaults to \code{0.1}.}
+\item{\code{gammaprior}}{Single logical value indicating whether a Gamma prior for
+\code{sigma^2} should be used. If set to \code{FALSE}, a moment-matched Inverse Gamma
+prior is employed. Defaults to \code{TRUE}.}}
+
+\item{\dots}{Any extra arguments will be forwarded to
+\code{\link{updatesummary}}, controlling the type of statistics calculated
+for the posterior draws.}
+}
+\value{
+The value returned is a list object of class \code{svldraws} holding
+\item{para}{\code{mcmc} object containing the \emph{parameter} draws from
+the posterior distribution.}
+\item{latent}{\code{mcmc} object containing the
+\emph{latent instantaneous log-volatility} draws from the posterior
+distribution.}
+\item{beta}{\code{mcmc} object containing the \emph{regression coefficient}
+draws from the posterior distribution \emph{(optional)}.}
+\item{y}{the argument \code{y}.}
+\item{runtime}{\code{proc_time} object containing the
+run time of the sampler.}
+\item{priors}{\code{list} containing the parameter
+values of the prior distribution, i.e. the arguments \code{priormu},
+\code{priorphi}, \code{priorsigma}, and \code{priorrho}, and potentially
+\code{priorbeta}.}
+\item{thinning}{\code{list} containing the thinning
+parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
+\code{thintime}.}
+\item{summary}{\code{list} containing a collection of
+summary statistics of the posterior draws for \code{para}, and \code{latent}.}
+\item{meanmodel}{\code{character} containing information about how \code{designmatrix}
+was used.}
+
+To display the output, use \code{print}, \code{summary} and \code{plot}. The
+\code{print} method simply prints the posterior draws (which is very likely
+a lot of output); the \code{summary} method displays the summary statistics
+currently stored in the object; the \code{plot} method
+\code{\link{plot.svdraws}} gives a graphical overview of the posterior
+distribution by calling \code{\link{volplot}}, \code{\link{traceplot}} and
+\code{\link{densplot}} and displaying the results on a single page.
+}
 \description{
-Some text about \code{svlsample}.
+\code{svlsample} simulates from the joint posterior distribution of the SVL
+parameters \code{mu}, \code{phi}, \code{sigma}, and \code{rho},
+along with the latent log-volatilities \code{h_1,...,h_n} and returns the
+MCMC draws. If a design matrix is provided, simple Bayesian regression can
+also be conducted.
+}
+\note{
+If \code{y} contains zeros, you might want to consider de-meaning your
+returns or use \code{designmatrix = "ar0"}.
 }
 \examples{
-
-## Simulate a short and highly persistent SV process
+\dontrun{
+# Example 1
+## Simulate a short and highly persistent SVL process
 sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2, rho = -0.4)
 
 ## Obtain 5000 draws from the sampler (that's not a lot)
-draws <- svlsample(sim$y, draws = 2000, burnin = 500,
-		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2, priorrho = c(3, 6))
+draws <- svlsample(sim$y, draws = 5000, burnin = 3000,
+		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2,
+     priorrho = c(3, 5))
 
 ## Check out the results
 summary(draws)
-plot(draws)
+plot(draws, simobj = sim)
 
+
+# Example 2
+## AR(1) structure for the mean
+data(exrates)
+len <- 1200
+ahead <- 100
+y <- head(exrates$USD, len)
+
+## Fit AR(1)-SVL model to EUR-USD exchange rates
+res <- svlsample(y, designmatrix = "ar1")
+
+## Use predict.svdraws to obtain predictive distributions
+preddraws <- predict(res, steps = ahead)
+
+## Calculate predictive quantiles
+predquants <- apply(preddraws$y, 2, quantile, c(.1, .5, .9))
+
+## Visualize
+expost <- tail(head(exrates$USD, len+ahead), ahead)
+ts.plot(y, xlim = c(length(y)-4*ahead, length(y)+ahead),
+	       ylim = range(c(predquants, expost, tail(y, 4*ahead))))
+for (i in 1:3) {
+  lines((length(y)+1):(length(y)+ahead), predquants[i,],
+        col = 3, lty = c(2, 1, 2)[i])
 }
+lines((length(y)+1):(length(y)+ahead), expost,
+      col = 2)
+
+
+# Example 3
+## Predicting USD based on JPY and GBP in the mean
+data(exrates)
+len <- 1200
+ahead <- 30
+## Calculate log-returns
+logreturns <- apply(exrates[, c("USD", "JPY", "GBP")], 2,
+                    function (x) diff(log(x)))
+logretUSD <- logreturns[2:(len+1), "USD"]
+regressors <- cbind(1, as.matrix(dat[1:len, ]))  # lagged by 1 day
+
+## Fit SV model to EUR-USD exchange rates
+res <- svlsample(logretUSD, designmatrix = regressors)
+
+## Use predict.svdraws to obtain predictive distributions
+predregressors <- cbind(1, as.matrix(logreturns[(len+1):(len+ahead), ]))
+preddraws <- predict(res, steps = ahead,
+                     newdata = predregressors)
+predprice <- exrates[len+2, "USD"] * exp(t(apply(preddraws$y, 1, cumsum)))
+
+## Calculate predictive quantiles
+predquants <- apply(predprice, 2, quantile, c(.1, .5, .9))
+
+## Visualize
+priceUSD <- exrates[3:(len+2), "USD"]
+expost <- exrates[(len+3):(len+ahead+2), "USD"]
+ts.plot(priceUSD, xlim = c(len-4*ahead, len+ahead+1),
+	       ylim = range(c(expost, predquants, tail(priceUSD, 4*ahead))))
+for (i in 1:3) {
+  lines(len:(len+ahead), c(tail(priceUSD, 1), predquants[i,]),
+        col = 3, lty = c(2, 1, 2)[i])
+}
+lines(len:(len+ahead), c(tail(priceUSD, 1), expost),
+      col = 2)
+}
+}
+\seealso{
+\code{\link{svsim}}, \code{\link{svsample}}, \code{\link{updatesummary}},
+\code{\link{predict.svdraws}}, \code{\link{plot.svdraws}}.
+}
+\author{
+Darjus Hosszejni \email{darjus.hosszejni@wu.ac.at}
+}
+\keyword{models}
+\keyword{ts}

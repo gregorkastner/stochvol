@@ -2,15 +2,21 @@
 % Please edit documentation in R/plotting.R
 \name{plot.svdraws}
 \alias{plot.svdraws}
+\alias{plot.svldraws}
 \title{Graphical Summary of the Posterior Distribution}
 \usage{
 \method{plot}{svdraws}(x, forecast = NULL, dates = NULL,
   show0 = FALSE, showobs = TRUE, showprior = TRUE, col = NULL,
   forecastlty = NULL, tcl = -0.4, mar = c(1.9, 1.9, 1.7, 0.5),
   mgp = c(2, 0.6, 0), simobj = NULL, newdata = NULL, ...)
+
+\method{plot}{svldraws}(x, forecast = NULL, dates = NULL,
+  show0 = FALSE, showobs = TRUE, showprior = TRUE, col = NULL,
+  forecastlty = NULL, tcl = -0.4, mar = c(1.9, 1.9, 1.7, 0.5),
+  mgp = c(2, 0.6, 0), simobj = NULL, newdata = NULL, ...)
 }
 \arguments{
-\item{x}{\code{svdraws} object.}
+\item{x}{\code{svdraws} or \code{svldraws} object.}
 
 \item{forecast}{nonnegative integer or object of class \code{svpredict}, as
 returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
@@ -22,7 +28,8 @@ dates for labelling the x-axis. The default value is \code{NULL}; in this
 case, the axis will be labelled with numbers.}
 
 \item{show0}{logical value, indicating whether the initial volatility
-\code{exp(h_0/2)} should be displayed. The default value is \code{FALSE}.}
+\code{exp(h_0/2)} should be displayed. The default value is \code{FALSE}.
+Only available for inputs \code{x} of class \code{svdraws}.}
 
 \item{showobs}{logical value, indicating whether the observations should be
 displayed along the x-axis. If many draws have been obtained, the default
@@ -63,12 +70,12 @@ functions.}
 Called for its side effects. Returns argument \code{x} invisibly.
 }
 \description{
-\code{plot.svdraws} generates some plots visualizing the posterior
+\code{plot.svdraws} and \code{plot.svldraws} generate some plots visualizing the posterior
 distribution and can also be used to display predictive distributions of
 future volatilities.
 }
 \details{
-This function sets up the page layout and calls \code{\link{volplot}},
+These functions set up the page layout and call \code{\link{volplot}},
 \code{\link{paratraceplot}} and \code{\link{paradensplot}}.
 }
 \note{

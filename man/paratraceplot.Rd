@@ -8,7 +8,7 @@ paratraceplot(x, mar = c(1.9, 1.9, 1.9, 0.5), mgp = c(2, 0.6, 0),
   simobj = NULL, ...)
 }
 \arguments{
-\item{x}{\code{svdraws} object.}
+\item{x}{\code{svdraws} or \code{svldraws} object.}
 
 \item{mar}{numerical vector of length 4, indicating the plot margins. See
 \code{\link[graphics]{par}} for details. The default value is \code{c(1.9,
@@ -30,7 +30,7 @@ Called for its side effects. Returns argument \code{x} invisibly.
 }
 \description{
 Displays a plot of iterations vs. sampled values the parameters \code{mu},
-\code{phi}, \code{sigma} (and potentially \code{nu}), with a separate plot
+\code{phi}, \code{sigma} (and potentially \code{nu} or \code{rho}), with a separate plot
 per variable.
 }
 \details{

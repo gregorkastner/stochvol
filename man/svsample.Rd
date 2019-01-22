@@ -18,7 +18,7 @@ object. In this case, the returns will be extracted and a warning is thrown.}
 
 \item{draws}{single number greater or equal to 1, indicating the number of
 draws after burn-in (see below). Will be automatically coerced to integer.
-The defaults value is 10000.}
+The default value is 10000.}
 
 \item{burnin}{single number greater or equal to 0, indicating the number of
 draws discarded as burn-in. Will be automatically coerced to integer. The
@@ -82,11 +82,7 @@ Every \code{thinlatent}th latent variable draw is kept and returned. The
 default value is 1, corresponding to no thinning of the latent variable
 draws, i.e. every draw is kept.}
 
-\item{thintime}{single number greater or equal to 1, coercible to integer.
-If \code{thintime} is different from 1, only every \code{thintime}th latent
-log-volatility is being monitored. If, e.g., \code{thintime = 3}, the latent
-log-volatilities \code{h_1,h_4,h_7,...} will be kept. The default value is
-1, meaning that all latent variables \code{h_1,h_2,h_3,...} are stored.}
+\item{thintime}{\emph{deprecated}}
 
 \item{keeptau}{logical value indicating whether the 'variance inflation
 factors' should be stored (used for the sampler with conditional t
@@ -108,47 +104,40 @@ is \code{list(mu = -10, phi = 0.9, sigma = 0.3)}. Moreover, if
 element named \code{nu} (the degrees of freedom parameter for the
 t-innovations).}
 
-\item{startlatent}{\emph{optional} vector of length \code{length(x$y)},
+\item{startlatent}{\emph{optional} vector of length \code{length(y)},
 containing the starting values for the latent log-volatility draws. The
-default value is \code{rep(-10, length(x$y))}.}
+default value is \code{rep(-10, length(y))}.}
 
 \item{expert}{\emph{optional} named list of expert parameters. For most
 applications, the default values probably work best. Interested users are
 referred to the literature provided in the References section. If
 \code{expert} is provided, it may contain the following named elements:
-
-\code{parameterization}: Character string equal to \code{"centered"},
+\item{\code{parameterization}}{Character string equal to \code{"centered"},
 \code{"noncentered"}, \code{"GIS_C"}, or \code{"GIS_NC"}. Defaults to
-\code{"GIS_C"}.
-
-\code{mhcontrol}: Single numeric value controlling the proposal density of a
+\code{"GIS_C"}.}
+\item{\code{mhcontrol}}{Single numeric value controlling the proposal density of a
 Metropolis-Hastings (MH) update step when sampling \code{sigma}. If
 \code{mhcontrol} is smaller than 0, an independence proposal will be used,
 while values greater than zero control the stepsize of a log-random-walk
-proposal. Defaults to \code{-1}.
-
-\code{gammaprior}: Single logical value indicating whether a Gamma prior for
+proposal. Defaults to \code{-1}.}
+\item{\code{gammaprior}}{Single logical value indicating whether a Gamma prior for
 \code{sigma^2} should be used. If set to \code{FALSE}, an Inverse Gamma
-prior is employed. Defaults to \code{TRUE}.
-
-\code{truncnormal}: Single logical value indicating whether a truncated
+prior is employed. Defaults to \code{TRUE}.}
+\item{\code{truncnormal}}{Single logical value indicating whether a truncated
 Gaussian distribution should be used as proposal for draws of \code{phi}. If
 set to \code{FALSE}, a regular Gaussian prior is employed and the draw is
 immediately discarded when values outside the unit ball happen to be drawn.
-Defaults to \code{FALSE}.
-
-\code{mhsteps}: Either \code{1}, \code{2}, or \code{3}. Indicates the number
+Defaults to \code{FALSE}.}
+\item{\code{mhsteps}}{Either \code{1}, \code{2}, or \code{3}. Indicates the number
 of blocks used for drawing from the posterior of the parameters. Defaults to
-\code{2}.
-
-\code{proposalvar4sigmaphi}: Single positive number indicating the
+\code{2}.}
+\item{\code{proposalvar4sigmaphi}}{Single positive number indicating the
 conditional prior variance of \code{sigma*phi} in the ridge \emph{proposal}
-density for sampling \code{(mu, phi)}. Defaults to \code{10^8}.
-
-\code{proposalvar4sigmatheta}: Single positive number indicating the
+density for sampling \code{(mu, phi)}. Defaults to \code{10^8}.}
+\item{\code{proposalvar4sigmatheta}}{Single positive number indicating the
 conditional prior variance of \code{sigma*theta} in the ridge
 \emph{proposal} density for sampling \code{(mu, phi)}. Defaults to
-\code{10^12}.}
+\code{10^12}.}}
 
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
@@ -157,23 +146,32 @@ for the posterior draws.}
 \value{
 The value returned is a list object of class \code{svdraws} holding
 \item{para}{\code{mcmc} object containing the \emph{parameter} draws from
-the posterior distribution.} \item{latent}{\code{mcmc} object containing the
+the posterior distribution.}
+\item{latent}{\code{mcmc} object containing the
 \emph{latent instantaneous log-volatility} draws from the posterior
-distribution.} \item{latent0}{\code{mcmc} object containing the \emph{latent
+distribution.}
+\item{latent0}{\code{mcmc} object containing the \emph{latent
 initial log-volatility} draws from the posterior distribution.}
 \item{tau}{\code{mcmc} object containing the \emph{latent variance inflation
 factors} for the sampler with conditional t-innovations \emph{(optional)}.}
 \item{beta}{\code{mcmc} object containing the \emph{regression coefficient}
-draws from the posterior distribution \emph{(optional)}.} \item{y}{the
-argument \code{y}.} \item{runtime}{\code{proc_time} object containing the
-run time of the sampler.} \item{priors}{\code{list} containing the parameter
+draws from the posterior distribution \emph{(optional)}.}
+\item{y}{the
+argument \code{y}.}
+\item{runtime}{\code{proc_time} object containing the
+run time of the sampler.}
+\item{priors}{\code{list} containing the parameter
 values of the prior distribution, i.e. the arguments \code{priormu},
 \code{priorphi}, \code{priorsigma}, and potentially \code{priornu} and
-\code{priorbeta}.} \item{thinning}{\code{list} containing the thinning
+\code{priorbeta}.}
+\item{thinning}{\code{list} containing the thinning
 parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
-\code{thintime}.} \item{summary}{\code{list} containing a collection of
+\code{thintime}.}
+\item{summary}{\code{list} containing a collection of
 summary statistics of the posterior draws for \code{para}, \code{latent},
 and \code{latent0}.}
+\item{meanmodel}{\code{character} containing information about how \code{designmatrix}
+was employed.}
 
 To display the output, use \code{print}, \code{summary} and \code{plot}. The
 \code{print} method simply prints the posterior draws (which is very likely
@@ -199,7 +197,7 @@ If \code{y} contains zeros, you might want to consider de-meaning your
 returns or use \code{designmatrix = "ar0"}.
 }
 \examples{
-
+# Example 1
 ## Simulate a short and highly persistent SV process 
 sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
 
@@ -212,33 +210,70 @@ summary(draws)
 plot(draws)
 
 
-## Another example, this time with an AR(1) structure for the mean
 \dontrun{
+# Example 2
+## AR(1) structure for the mean
 data(exrates)
-y <- exrates$USD
+len <- 3000
+ahead <- 100
+y <- head(exrates$USD, len)
 
-## Fit AR(1)-SV model to EUR-USD exchange rates
+## Fit AR(1)-SVL model to EUR-USD exchange rates
 res <- svsample(y, designmatrix = "ar1")
 
-## Use predict.svdraws to obtain predictive volatilities
-ahead <- 100
-predvol <- predict(res, steps = ahead)
-
-## Use arpredict to obtain draws from the posterior predictive
-preddraws <- arpredict(res, predvol)  # TODO rewrite
+## Use predict.svdraws to obtain predictive distributions
+preddraws <- predict(res, steps = ahead)
 
 ## Calculate predictive quantiles
-predquants <- apply(preddraws, 2, quantile, c(.1, .5, .9))
+predquants <- apply(preddraws$y, 2, quantile, c(.1, .5, .9))
 
 ## Visualize
-ts.plot(y, xlim = c(length(y) - ahead, length(y) + ahead),
-	ylim = range(predquants))
+expost <- tail(head(exrates$USD, len+ahead), ahead)
+ts.plot(y, xlim = c(length(y)-4*ahead, length(y)+ahead),
+	       ylim = range(c(predquants, expost, tail(y, 4*ahead))))
 for (i in 1:3) {
- lines((length(y) + 1):(length(y) + ahead), predquants[i,],
-       col = 3, lty = c(2, 1, 2)[i])
+  lines((length(y)+1):(length(y)+ahead), predquants[i,],
+        col = 3, lty = c(2, 1, 2)[i])
 }
-}
+lines((length(y)+1):(length(y)+ahead), expost,
+      col = 2)
 
+
+# Example 3
+## Predicting USD based on JPY and GBP in the mean
+data(exrates)
+len <- 3000
+ahead <- 30
+## Calculate log-returns
+logreturns <- apply(exrates[, c("USD", "JPY", "GBP")], 2,
+                    function (x) diff(log(x)))
+logretUSD <- logreturns[2:(len+1), "USD"]
+regressors <- cbind(1, as.matrix(dat[1:len, ]))  # lagged by 1 day
+
+## Fit SV model to EUR-USD exchange rates
+res <- svsample(logretUSD, designmatrix = regressors)
+
+## Use predict.svdraws to obtain predictive distributions
+predregressors <- cbind(1, as.matrix(logreturns[(len+1):(len+ahead), ]))
+preddraws <- predict(res, steps = ahead,
+                     newdata = predregressors)
+predprice <- exrates[len+2, "USD"] * exp(t(apply(preddraws$y, 1, cumsum)))
+
+## Calculate predictive quantiles
+predquants <- apply(predprice, 2, quantile, c(.1, .5, .9))
+
+## Visualize
+priceUSD <- exrates[3:(len+2), "USD"]
+expost <- exrates[(len+3):(len+ahead+2), "USD"]
+ts.plot(priceUSD, xlim = c(len-4*ahead, len+ahead+1),
+	       ylim = range(c(expost, predquants, tail(priceUSD, 4*ahead))))
+for (i in 1:3) {
+  lines(len:(len+ahead), c(tail(priceUSD, 1), predquants[i,]),
+        col = 3, lty = c(2, 1, 2)[i])
+}
+lines(len:(len+ahead), c(tail(priceUSD, 1), expost),
+      col = 2)
+}
 }
 \references{
 Kastner, G. and Frühwirth-Schnatter, S. (2014).
@@ -248,7 +283,7 @@ Data Analysis}, \bold{76}, 408--423,
 \url{http://dx.doi.org/10.1016/j.csda.2013.01.002}.
 }
 \seealso{
-\code{\link{svsim}}, \code{\link{updatesummary}},
+\code{\link{svsim}}, \code{\link{svlsample}}, \code{\link{updatesummary}},
 \code{\link{predict.svdraws}}, \code{\link{plot.svdraws}}.
 }
 \author{

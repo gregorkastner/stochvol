@@ -9,7 +9,7 @@ paradensplot(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
   ...)
 }
 \arguments{
-\item{x}{\code{svdraws} object.}
+\item{x}{\code{svdraws} or \code{svldraws} object.}
 
 \item{showobs}{logical value, indicating whether the observations should be
 displayed along the x-axis. If many draws have been obtained, the default
@@ -44,7 +44,7 @@ Called for its side effects. Returns argument \code{x} invisibly.
 \description{
 Displays a plot of the density estimate for the posterior distribution of
 the parameters \code{mu}, \code{phi}, \code{sigma} (and potentially
-\code{nu}), computed by the \code{\link[stats]{density}} function.
+\code{nu} or \code{rho}), computed by the \code{\link[stats]{density}} function.
 }
 \details{
 \code{paradensplot} is modeled after \code{\link[coda]{densplot}} in the

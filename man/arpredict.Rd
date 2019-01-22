@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities_svdraws.R
 \name{arpredict}
 \alias{arpredict}
-\title{Dynamic prediction for the AR-SV model}
+\title{Dynamic prediction for the AR-SV model (deprecated)}
 \usage{
 arpredict(object, volpred)
 }
@@ -20,6 +20,8 @@ containing simulations from the posterior predictive density of
 \description{
 Simulates draws from the posterior predictive density of a fitted AR-SV
 model.
+DEPRECATED: please use \code{predict.svdraws} on \code{svdraws} objects
+resulting from model estimation with an autoregressive mean structure.
 }
 \note{
 You can use the usual \code{coda} methods for \code{mcmc} objects to

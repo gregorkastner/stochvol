@@ -2,33 +2,44 @@
 % Please edit documentation in R/utilities_svdraws.R
 \name{predict.svdraws}
 \alias{predict.svdraws}
-\title{Prediction of Future Log-Volatilities}
+\alias{predict.svldraws}
+\title{Prediction of Future Returns and Log-Volatilities}
 \usage{
 \method{predict}{svdraws}(object, steps = 1L, newdata = NULL, ...)
+
+\method{predict}{svldraws}(object, steps = 1L, newdata = NULL, ...)
 }
 \arguments{
-\item{object}{\code{svdraws} object.}
+\item{object}{\code{svdraws} or \code{svldraws} object.}
 
-\item{steps}{single number, coercible to integer. Denotes the number of
+\item{steps}{\emph{optional} single number, coercible to integer. Denotes the number of
 steps to forecast.}
 
-\item{...}{currently ignored.}
+\item{newdata}{\emph{only in case d) of the description} corresponds to input
+parameter \code{designmatrix} in \link{\code{svsample}} and \link{\code{svlsample}}.
+A matrix of regressors with number of rows equal to parameter \code{steps}.}
+
+\item{\dots}{currently ignored.}
 }
 \value{
-Returns an object of class \code{c("svpredict", "mcmc")} containing
-simulations from the predictive density of \code{h_(n+1),...,h_(n+steps)}.
+Returns an object of class \code{svpredict}, a list containing
+two elements:
+\item{h}{\code{mcmc} object of simulations from the predictive density of \code{h_(n+1),...,h_(n+steps)}}
+\item{y}{\code{mcmc} object of simulations from the predictive density of \code{y_(n+1),...,y_(n+steps)}}
 }
 \description{
-Simulates draws from the predictive density of the latent log-volatility
-process.
+Simulates draws from the predictive density of the returns and the latent log-volatility
+process. The same mean model is used for prediction as was used for fitting, which is
+either a) no mean parameter, b) constant mean, c) AR(k) structure, or d) general
+Bayesian regression. In the last case, new regressors need to be provided for prediction.
 }
 \note{
-You can use the usual \code{coda} methods for \code{mcmc} objects to
-print, plot, or summarize the predictions, or use them within
-\code{\link{volplot}} or \code{\link{plot.svdraws}}.
+You can use the resulting object within \code{\link{plot.svdraws}}, or use
+the list items in the usual \code{coda} methods for \code{mcmc} objects to
+print, plot, or summarize the predictions.
 }
 \examples{
-
+# Example 1
 ## Simulate a short and highly persistent SV process 
 sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
 
@@ -42,6 +53,54 @@ fore <- predict(draws, 10)
 ## Check out the results
 summary(fore)
 plot(draws, forecast = fore)
+
+
+# Example 2
+## Simulate now an SV process with an AR(1) mean structure
+len <- 109L
+simar <- svsim(len, phi=0.93, sigma=0.15, mu=-9)
+for (i in 2:len) {
+  simar$y[i] <- 0.1 - 0.7*simar$y[i-1] + simar$vol[i]*rnorm(1)
+}
+
+## Obtain 7000 draws
+drawsar <- svsample(simar$y, draws = 7000, burnin = 300,
+     designmatrix = "ar1",
+		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+
+## Predict 7 days ahead (using AR(2) mean for the returns)
+forear <- predict(drawsar, 7)
+
+## Check out the results
+summary(forear)
+plot(drawsar, forecast = forear)
+
+
+dontrun{
+# Example 3
+## Simulate now an SV process with leverage and with non-zero mean
+len <- 96L
+regressors <- cbind(rep_len(1, len),
+                    rgamma(len, 0.5, 0.25))
+betas <- rbind(-1.1, 2)
+simreg <- svsim(len, rho=-0.42)
+simreg$y <- simreg$y + as.numeric(regressors \%*\% betas)
+
+## Obtain 12000 draws
+drawsreg <- svlsample(simreg$y, draws = 12000, burnin = 3000,
+     designmatrix = regressors,
+		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+
+## Predict 5 days ahead using new regressors
+predlen <- 5L
+predregressors <- cbind(rep_len(1, predlen),
+                        rgamma(predlen, 0.5, 0.25))
+forereg <- predict(drawsreg, predlen, predregressors)
+
+## Check out the results
+summary(forereg)
+plot(drawsreg, forecast = forereg)
+}
 }
 \seealso{
 \code{\link{plot.svdraws}}, \code{\link{volplot}}.
