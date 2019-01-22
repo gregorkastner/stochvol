@@ -11,7 +11,7 @@ using namespace Rcpp;
  
 arma::vec draw_h_auxiliary(
     const arma::vec& y_star,
-    const arma::vec& d,
+    const arma::ivec& d,
     const arma::vec& s,
     const double phi,
     const double rho,
@@ -55,7 +55,7 @@ arma::vec draw_h_auxiliary(
 arma::vec draw_latent_auxiliaryMH(
     const arma::vec& y,
     const arma::vec& y_star,
-    const arma::vec& d,
+    const arma::ivec& d,
     const arma::vec& h,
     const arma::vec& ht,
     const double phi,

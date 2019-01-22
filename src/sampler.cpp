@@ -249,7 +249,7 @@ List svlsample_cpp (
 
   arma::vec y = y_in;
   arma::vec y_star = log(y%y + offset);
-  arma::vec d(T); std::transform(y_in.cbegin(), y_in.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
+  arma::ivec d(T); std::transform(y_in.cbegin(), y_in.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
 
   double phi = theta_init["phi"];
   double rho = theta_init["rho"];

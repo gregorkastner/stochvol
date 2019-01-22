@@ -190,7 +190,7 @@ void update_sv(
 void update_svl (
     const arma::vec& y,
     const arma::vec& y_star,
-    const arma::vec& d,
+    const arma::ivec& d,
     double& phi,
     double& rho,
     double& sigma2,

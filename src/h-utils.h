@@ -14,7 +14,7 @@ double h_log_posterior(
 double h_aux_log_posterior(
     const arma::vec& h,
     const arma::vec& y_star,
-    const arma::vec& d,
+    const arma::ivec& d,
     const double phi,
     const double rho,
     const double sigma2,

@@ -20,11 +20,11 @@ namespace stochvol {
         }
     }
 
-    inline void update_svl(const arma::vec& y, const arma::vec& y_star, const arma::vec& d, double& phi, double& rho, double& sigma2, double& mu, arma::vec& h, arma::vec& ht, const arma::vec& prior_phi, const arma::vec& prior_rho, const arma::vec& prior_sigma2, const arma::vec& prior_mu, const double stdev, const bool gammaprior, const arma::ivec& strategy) {
-        typedef void(*Update_svl)(const arma::vec&, const arma::vec&, const arma::vec&, double&, double&, double&, double&, arma::vec&, arma::vec&, const arma::vec&, const arma::vec&, const arma::vec&, const arma::vec&, const double, const bool, const arma::ivec&);
+    inline void update_svl(const arma::vec& y, const arma::vec& y_star, const arma::ivec& d, double& phi, double& rho, double& sigma2, double& mu, arma::vec& h, arma::vec& ht, const arma::vec& prior_phi, const arma::vec& prior_rho, const arma::vec& prior_sigma2, const arma::vec& prior_mu, const double stdev, const bool gammaprior, const arma::ivec& strategy) {
+        typedef void(*Update_svl)(const arma::vec&, const arma::vec&, const arma::ivec&, double&, double&, double&, double&, arma::vec&, arma::vec&, const arma::vec&, const arma::vec&, const arma::vec&, const arma::vec&, const double, const bool, const arma::ivec&);
         static Update_svl p_update_svl = NULL;
         if (p_update_svl == NULL) {
-            //validateSignature("void(*update_svl)(const arma::vec&,const arma::vec&,const arma::vec&,double&,double&,double&,double&,arma::vec&,arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const double,const bool,const arma::ivec&)");
+            //validateSignature("void(*update_svl)(const arma::vec&,const arma::vec&,const arma::ivec&,double&,double&,double&,double&,arma::vec&,arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const double,const bool,const arma::ivec&)");
             p_update_svl = (Update_svl)R_GetCCallable("stochvol", "update_svl");
         }
         {

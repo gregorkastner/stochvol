@@ -8,7 +8,7 @@
 arma::mat mixture_state_post_dist(
     const arma::vec& eps_star,
     const arma::vec& eta,
-    const arma::vec& d,
+    const arma::ivec& d,
     const double mu,
     const double sigma2,
     const double rho,
@@ -48,7 +48,7 @@ arma::mat mixture_state_post_dist(
 
 arma::vec draw_s_auxiliary(
     const arma::vec& y_star,
-    const arma::vec& d,
+    const arma::ivec& d,
     const arma::vec& h,
     const arma::vec& ht,
     const double phi,

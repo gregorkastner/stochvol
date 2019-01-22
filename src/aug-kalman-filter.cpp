@@ -12,7 +12,7 @@ List aug_kalman_filter(
     const arma::vec& b,
     const arma::vec& m,
     const arma::vec& v,
-    const arma::vec& d,
+    const arma::ivec& d,
     const arma::vec& y_star,
     const double mu_mu,
     const double sigma2_mu,
@@ -37,7 +37,7 @@ List aug_kalman_filter_c(
     const arma::vec& b,
     const arma::vec& m,
     const arma::vec& v,
-    const arma::vec& d,
+    const arma::ivec& d,
     const arma::vec& y_star,
     const double mu_mu,
     const double sigma2_mu) {
@@ -105,7 +105,7 @@ List aug_kalman_filter_nc(
     const arma::vec& b,
     const arma::vec& m,
     const arma::vec& v,
-    const arma::vec& d,
+    const arma::ivec& d,
     const arma::vec& y_star,
     const double mu_mu,
     const double sigma2_mu) {
