@@ -162,13 +162,13 @@ returns or use \code{designmatrix = "ar0"}.
 \examples{
 \dontrun{
 # Example 1
-## Simulate a short and highly persistent SVL process
-sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2, rho = -0.4)
+## Simulate a short SVL process
+sim <- svsim(200, mu = -10, phi = 0.95, sigma = 0.2, rho = -0.5)
 
 ## Obtain 5000 draws from the sampler (that's not a lot)
-draws <- svlsample(sim$y, draws = 5000, burnin = 3000,
-		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2,
-     priorrho = c(3, 5))
+draws <- svlsample(sim$y, draws = 5000, burnin = 2000,
+		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.05,
+     priorrho = c(3, 9))
 
 ## Check out the results
 summary(draws)
