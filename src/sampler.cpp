@@ -147,6 +147,7 @@ List svsample_cpp(
   if (verbose) show = progressbar_init(N);
 
   for (int i = 0; i < N; i++) {  // BEGIN main MCMC loop
+    R_CheckUserInterrupt();
 
     // print a progress sign every "show" iterations
     if (verbose) if (!(i % show)) progressbar_print();
@@ -296,6 +297,8 @@ List svlsample_cpp (
   const int show = verbose ? progressbar_init(N) : 0;
 
   for (int i = -burnin+1; i < draws+1; i++) {
+    R_CheckUserInterrupt();
+
     const bool thinpara_round = (thinpara > 1) && (i % thinpara != 0);  // is this a parameter thinning round?
     const bool thinlatent_round = (thinlatent > 1) && (i % thinlatent != 0);  // is this a latent thinning round?
 
