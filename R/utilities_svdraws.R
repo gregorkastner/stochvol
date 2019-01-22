@@ -507,9 +507,9 @@ predict.svldraws <- function (object, steps = 1L, newdata = NULL, ...) {
 #'        col = 3, lty = c(2, 1, 2)[i])
 #' }
 #' }
-#' @export arpredict
+#' @export
 arpredict <- function(object, volpred) {
- warning("Function `arpredict` has been deprecated. Please use the new features of `predict` instead.")
+ .Deprecated("predict.svdraws")
  if (!inherits(object, "svdraws")) stop("Argument 'object' must be of class 'svdraws'.")
  if (!inherits(volpred, "svpredict")) stop("Argument 'volpred' must be of class 'svpredict'.")
  if (colnames(object$priors$designmatrix)[1] == "const") dynamic <- TRUE else stop("Probably not an AR-specification.")
