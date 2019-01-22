@@ -96,18 +96,21 @@ default value is \code{rep(-10, length(y))}.}
 \item{expert}{\emph{optional} named list of expert parameters. For most
 applications, the default values probably work best. If
 \code{expert} is provided, it may contain the following named elements:
-\item{\code{parameterization}}{Character string containing values \code{"centered"},
+
+\code{parameterization}: Character string containing values \code{"centered"},
 and \code{"noncentered"}. Alternatively, it can be a single element character
 vector of the form \code{"asisX"}, where \code{X} is an integer, which is
 equivalent to \code{rep_len(c("centered", "noncentered"), X)}.
-Defaults to \code{"asis5"}.}
-\item{\code{mhcontrol}}{Single numeric value controlling the proposal density of a
+Defaults to \code{"asis5"}.
+
+\code{mhcontrol}: Single numeric value controlling the proposal density of a
 Metropolis-Hastings (MH) update step when jointly sampling \code{mu}, \code{phi},
 \code{sigma}, and \code{rho}. It controls the stepsize of a log-random-walk
-proposal. Defaults to \code{0.1}.}
-\item{\code{gammaprior}}{Single logical value indicating whether a Gamma prior for
+proposal. Defaults to \code{0.1}.
+
+\code{gammaprior}: Single logical value indicating whether a Gamma prior for
 \code{sigma^2} should be used. If set to \code{FALSE}, a moment-matched Inverse Gamma
-prior is employed. Defaults to \code{TRUE}.}}
+prior is employed. Defaults to \code{TRUE}.}
 
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated

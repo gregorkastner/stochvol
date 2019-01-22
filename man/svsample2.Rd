@@ -96,11 +96,13 @@ t-innovations).}
 containing the starting values for the latent log-volatility draws.}
 }
 \value{
-A list with three components: \item{para}{\code{3} times
+A list with three components:
+\item{para}{\code{3} times
 \code{draws} matrix containing the parameter draws. If \code{priornu} is not
 \code{NA}, this is a \code{4} times \code{draws} matrix.}
 \item{latent}{\code{length(y)} times \code{draws} matrix containing draws of
-the latent variables \code{h_1, \dots{}, h_n}.} \item{latent0}{Vector of
+the latent variables \code{h_1, \dots{}, h_n}.}
+\item{latent0}{Vector of
 length \code{draws} containing the draw(s) of the initial latent variable
 \code{h_0}.}
 }

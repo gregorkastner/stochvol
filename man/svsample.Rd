@@ -112,32 +112,39 @@ default value is \code{rep(-10, length(y))}.}
 applications, the default values probably work best. Interested users are
 referred to the literature provided in the References section. If
 \code{expert} is provided, it may contain the following named elements:
-\item{\code{parameterization}}{Character string equal to \code{"centered"},
+
+\code{parameterization}: Character string equal to \code{"centered"},
 \code{"noncentered"}, \code{"GIS_C"}, or \code{"GIS_NC"}. Defaults to
-\code{"GIS_C"}.}
-\item{\code{mhcontrol}}{Single numeric value controlling the proposal density of a
+\code{"GIS_C"}.
+
+\code{mhcontrol}: Single numeric value controlling the proposal density of a
 Metropolis-Hastings (MH) update step when sampling \code{sigma}. If
 \code{mhcontrol} is smaller than 0, an independence proposal will be used,
 while values greater than zero control the stepsize of a log-random-walk
-proposal. Defaults to \code{-1}.}
-\item{\code{gammaprior}}{Single logical value indicating whether a Gamma prior for
+proposal. Defaults to \code{-1}.
+
+\code{gammaprior}: Single logical value indicating whether a Gamma prior for
 \code{sigma^2} should be used. If set to \code{FALSE}, an Inverse Gamma
-prior is employed. Defaults to \code{TRUE}.}
-\item{\code{truncnormal}}{Single logical value indicating whether a truncated
+prior is employed. Defaults to \code{TRUE}.
+
+\code{truncnormal}: Single logical value indicating whether a truncated
 Gaussian distribution should be used as proposal for draws of \code{phi}. If
 set to \code{FALSE}, a regular Gaussian prior is employed and the draw is
 immediately discarded when values outside the unit ball happen to be drawn.
-Defaults to \code{FALSE}.}
-\item{\code{mhsteps}}{Either \code{1}, \code{2}, or \code{3}. Indicates the number
+Defaults to \code{FALSE}.
+
+\code{mhsteps}: Either \code{1}, \code{2}, or \code{3}. Indicates the number
 of blocks used for drawing from the posterior of the parameters. Defaults to
-\code{2}.}
-\item{\code{proposalvar4sigmaphi}}{Single positive number indicating the
+\code{2}.
+
+\code{proposalvar4sigmaphi}: Single positive number indicating the
 conditional prior variance of \code{sigma*phi} in the ridge \emph{proposal}
-density for sampling \code{(mu, phi)}. Defaults to \code{10^8}.}
-\item{\code{proposalvar4sigmatheta}}{Single positive number indicating the
+density for sampling \code{(mu, phi)}. Defaults to \code{10^8}.
+
+\code{proposalvar4sigmatheta}: Single positive number indicating the
 conditional prior variance of \code{sigma*theta} in the ridge
 \emph{proposal} density for sampling \code{(mu, phi)}. Defaults to
-\code{10^12}.}}
+\code{10^12}.}
 
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
