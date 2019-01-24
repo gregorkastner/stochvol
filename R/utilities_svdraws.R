@@ -287,7 +287,7 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' @param steps \emph{optional} single number, coercible to integer. Denotes the number of
 #' steps to forecast.
 #' @param newdata \emph{only in case d) of the description} corresponds to input
-#' parameter \code{designmatrix} in \link{\code{svsample}} and \link{\code{svlsample}}.
+#' parameter \code{designmatrix} in \code{\link{svsample}} and \code{\link{svlsample}}.
 #' A matrix of regressors with number of rows equal to parameter \code{steps}.
 #' @param \dots  currently ignored.
 #' @return Returns an object of class \code{svpredict}, a list containing
@@ -338,7 +338,7 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' plot(drawsar, forecast = forear)
 #' 
 #' 
-#' dontrun{
+#' \dontrun{
 #' # Example 3
 #' ## Simulate now an SV process with leverage and with non-zero mean
 #' len <- 96L

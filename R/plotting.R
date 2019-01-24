@@ -158,13 +158,19 @@ paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simo
 #' will be added to the plot(s).
 #' @param \dots further arguments are passed on to the invoked \code{ts.plot}
 #' function.
+#' @param newdata corresponds to parameter \code{newdata} in \code{\link{predict.svdraws}}.
+#' \emph{Only if \code{forecast} is a positive integer and \code{\link{predict.svdraws}}
+#' needs a \code{newdata} object.} Corresponds to input
+#' parameter \code{designmatrix} in \code{\link{svsample}} and \code{\link{svlsample}}.
+#' A matrix of regressors with number of rows equal to parameter \code{forecast}.
 #' @return Called for its side effects. Returns argument \code{x} invisibly.
 #' @note In case you want different quantiles to be plotted, use
 #' \code{\link{updatesummary}} on the \code{svdraws} object first. An example
 #' of doing so is given below.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @seealso \code{\link{updatesummary}}, \code{\link{paratraceplot}},
-#' \code{\link{paradensplot}}, \code{\link{plot.svdraws}}.
+#' \code{\link{paradensplot}}, \code{\link{plot.svdraws}},
+#' \code{\link{predict.svdraws}}.
 #' @keywords hplot ts
 #' @examples
 #' 
@@ -362,6 +368,11 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 #' @param simobj object of class \code{svsim} as returned by the SV simulation
 #' function \code{\link{svsim}}. If provided, the ``true'' data generating
 #' values will be added to the plots.
+#' @param newdata corresponds to parameter \code{newdata} in \code{\link{predict.svdraws}}.
+#' \emph{Only if \code{forecast} is a positive integer and \code{\link{predict.svdraws}}
+#' needs a \code{newdata} object.} Corresponds to input
+#' parameter \code{designmatrix} in \code{\link{svsample}} and \code{\link{svlsample}}.
+#' A matrix of regressors with number of rows equal to parameter \code{forecast}.
 #' @param \dots further arguments are passed on to the invoked plotting
 #' functions.
 #' @return Called for its side effects. Returns argument \code{x} invisibly.
@@ -370,7 +381,8 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 #' of doing so is given in the Examples section.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @seealso \code{\link{updatesummary}}, \code{\link{volplot}},
-#' \code{\link{paratraceplot}}, \code{\link{paradensplot}}.
+#' \code{\link{paratraceplot}}, \code{\link{paradensplot}},
+#' \code{\link{predict.svdraws}}.
 #' @keywords hplot
 #' @examples
 #' 

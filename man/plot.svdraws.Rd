@@ -63,6 +63,12 @@ positions. See \code{\link[graphics]{par}} for details. The default value is
 function \code{\link{svsim}}. If provided, the ``true'' data generating
 values will be added to the plots.}
 
+\item{newdata}{corresponds to parameter \code{newdata} in \code{\link{predict.svdraws}}.
+\emph{Only if \code{forecast} is a positive integer and \code{\link{predict.svdraws}}
+needs a \code{newdata} object.} Corresponds to input
+parameter \code{designmatrix} in \code{\link{svsample}} and \code{\link{svlsample}}.
+A matrix of regressors with number of rows equal to parameter \code{forecast}.}
+
 \item{\dots}{further arguments are passed on to the invoked plotting
 functions.}
 }
@@ -105,7 +111,8 @@ plot(draws, forecast = 20, showobs = FALSE, col = seq(along = newquants),
 }
 \seealso{
 \code{\link{updatesummary}}, \code{\link{volplot}},
-\code{\link{paratraceplot}}, \code{\link{paradensplot}}.
+\code{\link{paratraceplot}}, \code{\link{paradensplot}},
+\code{\link{predict.svdraws}}.
 }
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}
