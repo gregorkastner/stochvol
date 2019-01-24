@@ -607,7 +607,6 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' for \code{draws}, \code{burnin}, and \code{quiet}. Note that currently
 #' neither \code{expert} nor \code{\dots{}} arguments are provided.
 #' 
-#' @aliases svsample2 .svsample
 #' @param y numeric vector containing the data (usually log-returns), which
 #' must not contain zeroes.
 #' @param draws single number greater or equal to 1, indicating the number of
@@ -1224,6 +1223,7 @@ svlsample2 <- function (y, draws = 1, burnin = 0,
 }
 
 
-# Note: .svsample is deprecated and will be faded out, use svsample2 instead
-
-.svsample <- svsample2
+.svsample <- function (...) {
+  .Deprecated("svsample2")
+  svsample(...)
+}
