@@ -159,7 +159,7 @@ summary.svsim <- function(object, ...) {
   ret$len <- length(object$y)
   ret$para <- object$para
   ret$vol <- summary(100*object$vol)
-  ret$vol.corrected <- summary(100*object$vol*x$correction)
+  ret$vol.corrected <- summary(100*object$vol*object$correction)
   ret$y <- summary(100*object$y)
   ret$vol0 <- 100*object$vol0
   ret
@@ -172,8 +172,8 @@ print.summary.svsim  <- function(x, ...) {
       "\nParameters: level of latent variable                  mu = ", x$para$mu, 
       "\n            persistence of latent variable           phi = ", x$para$phi,
       "\n            standard deviation of latent variable  sigma = ", x$para$sigma,
-      "\n            degrees of freedom parameter              nu =", x$para$nu,
-      "\n            leverage effect parameter                 rho =", x$para$rho, "\n", sep="")
+      "\n            degrees of freedom parameter              nu = ", x$para$nu,
+      "\n            leverage effect parameter                rho = ", x$para$rho, "\n", sep="")
   cat("\nSimulated initial conditional volatility (in %): ")
   cat(x$vol0, "\n")
   cat("\nSummary of simulated conditional volatilities (in %):\n")
