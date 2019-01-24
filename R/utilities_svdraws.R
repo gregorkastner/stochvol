@@ -207,7 +207,7 @@ print.summary.svdraws <- function(x, ...) {
   cat("sigma^2   ~ ", x$priors$sigma, " * Chisq(df = 1)\n", sep="")
 
   if ("nu" %in% colnames(x$priors)) cat("nu        ~ Unif(lower = ", x$priors$nu[1], ", upper = ", x$priors$nu[2], ")\n", sep="")
-  if ("rho" %in% colnames(x$priors)) cat("(phi+1)/2 ~ Beta(a0 = ", x$priors$phi[1], ", b0 = ", x$priors$phi[2], ")\n", sep="")
+  if ("rho" %in% colnames(x$priors)) cat("(rho+1)/2 ~ Beta(a0 = ", x$priors$rho[1], ", b0 = ", x$priors$rho[2], ")\n", sep="")
 
   if (exists("para", x)) {
     cat("\nPosterior draws of parameters (thinning = ", x$mcp[3], "):\n", sep='')
