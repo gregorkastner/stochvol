@@ -690,6 +690,13 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @seealso \code{\link{svsample}}
 #' @keywords models ts
+#' @examples
+#' data(exrates)
+#' aud.price <- subset(exrates, as.Date("2010-01-01") <= date & date < as.Date("2011-01-01"), "AUD")[,1]
+#' draws <- svsample2(logret(aud.price),
+#'                    draws = 10, burnin = 0,
+#'                    startpara = list(phi=0.95, mu=-10, sigma=0.2, rho=-0.1),
+#'                    startlatent = rep_len(-10, length(aud.price)-1))
 #' @export
 svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priornu = NA, priorlatent0 = "stationary", thinpara = 1, thinlatent = 1, thintime = 1, keeptau = FALSE, quiet = TRUE, startpara, startlatent) {
 
@@ -1235,19 +1242,92 @@ svlsample <- function (y, draws = 10000, burnin = 3000, designmatrix = NA,
 }
 
 #' Minimal overhead version of \code{\link{svlsample}}.
-#'
-#' \code{svsample2} is a minimal overhead version of \code{\link{svsample}}
+#' 
+#' \code{svlsample2} is a minimal overhead version of \code{\link{svlsample}}
 #' with slightly different default arguments and a simplified return value
 #' structure. It is intended to be used mainly for one-step updates where speed
 #' is an issue, e.g., as a plug-in into other MCMC samplers. Note that
 #' absolutely no input checking is performed, thus this function is to be used
 #' with proper care!
-#'
+#' 
+#' As opposed to the ordinary \code{\link{svlsample}}, the default values differ
+#' for \code{draws}, \code{burnin}, and \code{quiet}. Note that currently
+#' neither \code{expert} nor \code{\dots{}} arguments are provided.
+#' 
+#' @param y numeric vector containing the data (usually log-returns), which
+#' must not contain zeros. Alternatively, \code{y} can be an \code{svsim}
+#' object. In this case, the returns will be extracted and a warning is thrown.
+#' @param draws single number greater or equal to 1, indicating the number of
+#' draws after burn-in (see below). Will be automatically coerced to integer.
+#' The default value is 1.
+#' @param burnin single number greater or equal to 0, indicating the number of
+#' draws discarded as burn-in. Will be automatically coerced to integer. The
+#' default value is 0.
+#' @param priormu numeric vector of length 2, indicating mean and standard
+#' deviation for the Gaussian prior distribution of the parameter \code{mu},
+#' the level of the log-volatility. The default value is \code{c(0, 100)},
+#' which constitutes a practically uninformative prior for common exchange rate
+#' datasets, stock returns and the like.
+#' @param priorphi numeric vector of length 2, indicating the shape parameters
+#' for the Beta prior distribution of the transformed parameter
+#' \code{(phi+1)/2}, where \code{phi} denotes the persistence of the
+#' log-volatility. The default value is \code{c(5, 1.5)}, which constitutes a
+#' prior that puts some belief in a persistent log-volatility but also
+#' encompasses the region where \code{phi} is around 0.
+#' @param priorsigma single positive real number, which stands for the scaling
+#' of the transformed parameter \code{sigma^2}, where \code{sigma} denotes the
+#' volatility of log-volatility. More precisely, \code{sigma^2 ~ priorsigma *
+#' chisq(df = 1)}. The default value is \code{1}, which constitutes a
+#' reasonably vague prior for many common exchange rate datasets, stock returns
+#' and the like.
+#' @param priorrho numeric vector of length 2, indicating the shape parameters
+#' for the Beta prior distribution of the transformed parameter
+#' \code{(rho+1)/2}, where \code{rho} denotes the conditional correlation
+#' between observation and the increment of the
+#' log-volatility. The default value is \code{c(4, 4)}, which constitutes a
+#' slightly informative prior around 0 (the no leverage case) to boost convergence.
+#' @param thinpara single number greater or equal to 1, coercible to integer.
+#' Every \code{thinpara}th parameter draw is kept and returned. The default
+#' value is 1, corresponding to no thinning of the parameter draws i.e. every
+#' draw is stored.
+#' @param thinlatent single number greater or equal to 1, coercible to integer.
+#' Every \code{thinlatent}th latent variable draw is kept and returned. The
+#' default value is 1, corresponding to no thinning of the latent variable
+#' draws, i.e. every draw is kept.
+#' @param thintime \emph{deprecated}
+#' @param quiet logical value indicating whether the progress bar and other
+#' informative output during sampling should be omitted. The default value is
+#' \code{TRUE}.
+#' @param startpara named list, containing the starting values
+#' for the parameter draws. It must contain four
+#' elements named \code{mu}, \code{phi}, \code{sigma}, and \code{rho}, where \code{mu} is
+#' an arbitrary numerical value, \code{phi} is a real number between \code{-1}
+#' and \code{1}, \code{sigma} is a positive real number, and \code{rho} is
+#' a real number between \code{-1} and \code{1}.
+#' @param startlatent vector of length \code{length(y)},
+#' containing the starting values for the latent log-volatility draws.
+#' @return The value returned is a list object holding
+#' \item{para}{matrix of dimension \code{4 x draws} containing
+#' the \emph{parameter} draws from the posterior distribution.}
+#' \item{latent}{matrix of dimension \code{length(y) x draws} containing the
+#' \emph{latent instantaneous log-volatility} draws from the posterior
+#' distribution.}
+#' \item{meanmodel}{always equals \code{"none"}}
+#' @author Darjus Hosszejni \email{darjus.hosszejni@@wu.ac.at}
+#' @seealso \code{\link{svlsample}}
+#' @keywords models ts
+#' @examples
+#' data(exrates)
+#' aud.price <- subset(exrates, as.Date("2010-01-01") <= date & date < as.Date("2011-01-01"), "AUD")[,1]
+#' draws <- svlsample2(logret(aud.price),
+#'                     draws = 10, burnin = 0,
+#'                     startpara = list(phi=0.95, mu=-10, sigma=0.2, rho=-0.1),
+#'                     startlatent = rep_len(-10, length(aud.price)-1))
 #' @export
-svlsample2 <- function (y, draws = 1, burnin = 0,
-                       priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(3, 5),
+svlsample2 <- function(y, draws = 1, burnin = 0,
+                       priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(4, 4),
                        thinpara = 1, thinlatent = 1, thintime = 1,
-                       quiet = FALSE, startpara, startlatent) {
+                       quiet = TRUE, startpara, startlatent) {
 
   # thintime deprecated
   if (!(identical(thintime, 1L) || identical(thintime, 1.0))) {
