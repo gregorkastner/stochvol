@@ -1130,8 +1130,6 @@ svlsample <- function (y, draws = 10000, burnin = 3000, designmatrix = NA,
   }
   
   }
-  
-  phi <- startpara$phi; rho <- startpara$rho; sigma2 <- startpara$sigma^2; mu <- startpara$mu
 
   renameparam <- c("centered" = "C", "noncentered" = "NC")
   if (!quiet) {
