@@ -690,7 +690,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @seealso \code{\link{svsample}}
 #' @keywords models ts
-#' @export svsample2
+#' @export
 svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priornu = NA, priorlatent0 = "stationary", thinpara = 1, thinlatent = 1, thintime = 1, keeptau = FALSE, quiet = TRUE, startpara, startlatent) {
 
  if (priorlatent0 == "stationary") priorlatent0 <- -1L
@@ -853,7 +853,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' #\dontrun{
 #' # Example 1
 #' ## Simulate a short SVL process
-#' sim <- svsim(200, mu = -10, phi = 0.95, sigma = 0.2, rho = -0.5)
+#' sim <- svsim(200, mu = -10, phi = 0.95, sigma = 0.2, rho = -0.4)
 #' 
 #' ## Obtain 5000 draws from the sampler (that's not a lot)
 #' draws <- svlsample(sim$y, draws = 5000, burnin = 2000,
