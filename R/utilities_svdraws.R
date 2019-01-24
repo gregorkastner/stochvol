@@ -154,8 +154,11 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
   res <- list()
 
   res$para <- t(apply(x$para, 2, summaryfunction, ess = esspara))
-  res$para <- rbind(res$para, "exp(mu/2)" = c(summaryfunction(exp(x$para[,"mu"]/2), ess=FALSE), res$para["mu", "ESS"]))
-  res$para <- rbind(res$para, "sigma^2" = c(summaryfunction(x$para[,"sigma"]^2, ess=FALSE), res$para["sigma", "ESS"]))
+  toadd <- rbind("exp(mu/2)" = c(summaryfunction(exp(x$para[,"mu"]/2), ess=FALSE)),
+                 "sigma^2" = c(summaryfunction(x$para[,"sigma"]^2, ess=FALSE)))
+  if (esspara)
+    toadd <- cbind(toadd, ESS = c(res$para["mu", "ESS"], res$para["sigma", "ESS"]))
+  res$para <- rbind(res$para, toadd)
 
   res$latent <- t(apply(x$latent, 2, summaryfunction, ess = esslatent))
   vol <- exp(x$latent/2)
