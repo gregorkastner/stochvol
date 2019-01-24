@@ -194,7 +194,7 @@
 #' plot(draws)
 #' 
 #' 
-#' #\dontrun{
+#' \dontrun{
 #' # Example 2
 #' ## AR(1) structure for the mean
 #' data(exrates)
@@ -257,7 +257,7 @@
 #' }
 #' lines(len:(len+ahead), c(tail(priceUSD, 1), expost),
 #'       col = 2)
-#' #}
+#' }
 #' @export
 svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
@@ -862,15 +862,13 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' \code{\link{predict.svdraws}}, \code{\link{plot.svdraws}}.
 #' @keywords models ts
 #' @examples
-#' #\dontrun{
+#' \dontrun{
 #' # Example 1
 #' ## Simulate a short SVL process
 #' sim <- svsim(200, mu = -10, phi = 0.95, sigma = 0.2, rho = -0.4)
 #' 
 #' ## Obtain 5000 draws from the sampler (that's not a lot)
-#' draws <- svlsample(sim$y, draws = 5000, burnin = 2000,
-#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.05,
-#'      priorrho = c(3, 9))
+#' draws <- svlsample(sim$y)
 #' 
 #' ## Check out the results
 #' summary(draws)
@@ -939,7 +937,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' }
 #' lines(len:(len+ahead), c(tail(priceUSD, 1), expost),
 #'       col = 2)
-#' #}
+#' }
 #' @export
 svlsample <- function (y, draws = 10000, burnin = 3000, designmatrix = NA,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
