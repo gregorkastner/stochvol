@@ -2,7 +2,6 @@
 % Please edit documentation in R/wrappers.R
 \name{svsample2}
 \alias{svsample2}
-\alias{.svsample}
 \title{Minimal overhead version of \code{\link{svsample}}.}
 \usage{
 svsample2(y, draws = 1, burnin = 0, priormu = c(0, 100),
@@ -127,6 +126,14 @@ Please refer to the package vignette for an example.
 \code{\link{svsample}} is recommended.
 }
 
+\examples{
+data(exrates)
+aud.price <- subset(exrates, as.Date("2010-01-01") <= date & date < as.Date("2011-01-01"), "AUD")[,1]
+draws <- svsample2(logret(aud.price),
+                   draws = 10, burnin = 0,
+                   startpara = list(phi=0.95, mu=-10, sigma=0.2, rho=-0.1),
+                   startlatent = rep_len(-10, length(aud.price)-1))
+}
 \seealso{
 \code{\link{svsample}}
 }

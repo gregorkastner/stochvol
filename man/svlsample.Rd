@@ -5,9 +5,9 @@
 \title{Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility
 Model with Leverage (SVL)}
 \usage{
-svlsample(y, draws = 10000, burnin = 3000, designmatrix = NA,
+svlsample(y, draws = 10000, burnin = 10000, designmatrix = NA,
   priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
-  priorrho = c(1, 1), priorbeta = c(0, 10000), thinpara = 1,
+  priorrho = c(4, 4), priorbeta = c(0, 10000), thinpara = 1,
   thinlatent = 1, thintime = 1, quiet = FALSE, startpara,
   startlatent, expert, ...)
 }
@@ -22,7 +22,7 @@ The default value is 10000.}
 
 \item{burnin}{single number greater or equal to 0, indicating the number of
 draws discarded as burn-in. Will be automatically coerced to integer. The
-default value is 3000.}
+default value is 10000.}
 
 \item{designmatrix}{regression design matrix for modeling the mean. Must
 have \code{length(y)} rows. Alternatively, \code{designmatrix} may be a
@@ -57,8 +57,8 @@ and the like.}
 for the Beta prior distribution of the transformed parameter
 \code{(rho+1)/2}, where \code{rho} denotes the conditional correlation
 between observation and the increment of the
-log-volatility. The default value is \code{c(1, 1)}, which constitutes a
-vague prior.}
+log-volatility. The default value is \code{c(4, 4)}, which constitutes a
+slightly informative prior around 0 (the no leverage case) to boost convergence.}
 
 \item{priorbeta}{numeric vector of length 2, indicating the mean and
 standard deviation of the Gaussian prior for the regression parameters. The
@@ -110,7 +110,12 @@ proposal. Defaults to \code{0.1}.
 
 \code{gammaprior}: Single logical value indicating whether a Gamma prior for
 \code{sigma^2} should be used. If set to \code{FALSE}, a moment-matched Inverse Gamma
-prior is employed. Defaults to \code{TRUE}.}
+prior is employed. Defaults to \code{TRUE}.
+
+\code{init.with.svsample}: Single integer indicating the length of a ``pre-burnin'' run using
+the computationally much more efficient \code{\link{svsample}}. This run helps
+in finding good initial values for the latent states, giving \code{svlsample}
+a considerable initial boost for convergence. Defaults to \code{1000L}.}
 
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
@@ -163,12 +168,10 @@ returns or use \code{designmatrix = "ar0"}.
 \dontrun{
 # Example 1
 ## Simulate a short SVL process
-sim <- svsim(200, mu = -10, phi = 0.95, sigma = 0.2, rho = -0.5)
+sim <- svsim(200, mu = -10, phi = 0.95, sigma = 0.2, rho = -0.4)
 
 ## Obtain 5000 draws from the sampler (that's not a lot)
-draws <- svlsample(sim$y, draws = 5000, burnin = 2000,
-		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.05,
-     priorrho = c(3, 9))
+draws <- svlsample(sim$y)
 
 ## Check out the results
 summary(draws)
@@ -212,7 +215,7 @@ ahead <- 30
 logreturns <- apply(exrates[, c("USD", "JPY", "GBP")], 2,
                     function (x) diff(log(x)))
 logretUSD <- logreturns[2:(len+1), "USD"]
-regressors <- cbind(1, as.matrix(dat[1:len, ]))  # lagged by 1 day
+regressors <- cbind(1, as.matrix(logreturns[1:len, ]))  # lagged by 1 day
 
 ## Fit SV model to EUR-USD exchange rates
 res <- svlsample(logretUSD, designmatrix = regressors)

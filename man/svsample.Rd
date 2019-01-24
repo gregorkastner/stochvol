@@ -255,7 +255,7 @@ ahead <- 30
 logreturns <- apply(exrates[, c("USD", "JPY", "GBP")], 2,
                     function (x) diff(log(x)))
 logretUSD <- logreturns[2:(len+1), "USD"]
-regressors <- cbind(1, as.matrix(dat[1:len, ]))  # lagged by 1 day
+regressors <- cbind(1, as.matrix(logreturns[1:len, ]))  # lagged by 1 day
 
 ## Fit SV model to EUR-USD exchange rates
 res <- svsample(logretUSD, designmatrix = regressors)
