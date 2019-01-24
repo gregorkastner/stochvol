@@ -810,6 +810,11 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' \code{gammaprior}: Single logical value indicating whether a Gamma prior for
 #' \code{sigma^2} should be used. If set to \code{FALSE}, a moment-matched Inverse Gamma
 #' prior is employed. Defaults to \code{TRUE}.
+#' 
+#' \code{init.with.svsample}: Single integer indicating the length of a ``pre-burnin'' run using
+#' the computationally much more efficient \code{\link{svsample}}. This run helps
+#' in finding good initial values for the latent states, giving \code{svlsample}
+#' a considerable initial boost for convergence. Defaults to \code{100L}.
 #' @param \dots Any extra arguments will be forwarded to
 #' \code{\link{updatesummary}}, controlling the type of statistics calculated
 #' for the posterior draws.
@@ -1075,18 +1080,20 @@ svlsample <- function (y, draws = 10000, burnin = 3000, designmatrix = NA,
   strategies <- c("centered", "noncentered")
   expertdefault <- list(parameterization = rep(strategies, 5),  # default: ASISx5
                         mhcontrol = 0.1,
-                        gammaprior = TRUE)
+                        gammaprior = TRUE,
+                        init.with.svsample = 100L)
   if (missing(expert)) {
     parameterization <- expertdefault$parameterization
     mhcontrol <- expertdefault$mhcontrol
     gammaprior <- expertdefault$gammaprior
+    init.with.svsample <- expertdefault$init.with.svsample
   } else {
     expertnames <- names(expert)
     if (!is.list(expert) || is.null(expertnames) || any(expertnames == ""))
       stop("Argument 'expert' must be a named list with nonempty names.")
     if (length(unique(expertnames)) != length(expertnames))
       stop("No duplicate elements allowed in argument 'expert'.")
-    allowednames <- c("parameterization", "mhcontrol", "gammaprior")
+    allowednames <- c("parameterization", "mhcontrol", "gammaprior", "init.with.svsample")
     exist <- pmatch(expertnames, allowednames)
     if (any(is.na(exist)))
       stop(paste("Illegal element '", paste(expertnames[is.na(exist)], collapse="' and '"), "' in argument 'expert'.", sep=''))
@@ -1127,8 +1134,48 @@ svlsample <- function (y, draws = 10000, burnin = 3000, designmatrix = NA,
     } else {
       gammaprior <- expertdefault$gammaprior
     }
+
+    if (exists("init.with.svsample", expertenv)) {
+      init.with.svsample <- expert[["init.with.svsample"]]
+      if (!is.numeric(init.with.svsample) || length(init.with.svsample) != 1 || init.with.svsample < 0)
+        stop("Argument 'init.with.svsample' must be a single non-negative number.")
+      init.with.svsample <- as.integer(init.with.svsample)
+    } else {
+      init.with.svsample <- expertdefault$init.with.svsample
+    }
   }
   
+  if (init.with.svsample > 0L) {
+    if (!quiet) {
+      cat(paste0("\nInitial values: calling function 'svsample' with ", init.with.svsample, " iter. Series length is ", length(y), ".\n"), file=stderr())
+      flush.console()
+    }
+
+    init.runtime <- system.time({
+      init.res <- svsample(y,  # not svsample2 because of 'designmatrix'
+                           draws = as.integer(init.with.svsample/2),
+                           burnin = as.integer(init.with.svsample/2),
+                           designmatrix = designmatrix, priormu = priormu,
+                           priorphi = priorphi, priorsigma = priorsigma,
+                           priornu = NA, priorbeta = priorbeta,
+                           priorlatent0 = "stationary",
+                           thinpara = 1L, thinlatent = 1L, thintime = 1L,
+                           keeptau = FALSE, quiet = TRUE,
+                           startpara = startpara[c("phi", "mu", "sigma")],
+                           startlatent = startlatent,
+                           expert = list(gammaprior = gammaprior,
+                                         parameterization = "GIS_C"),
+                           quantiles = .5, esspara = FALSE,  # updatesummary
+                           esslatent = FALSE)
+    })
+
+    if (!quiet) {
+      cat(paste0("\nInitial values: time taken by 'svsample': ", round(init.runtime["elapsed"], 3), " seconds.\n"), file=stderr())
+    }
+
+    startpara[c("mu", "phi", "sigma")] <-
+      as.list(apply(init.res$para, 2, median))
+    startlatent <- as.numeric(apply(init.res$latent, 2, median))
   }
 
   renameparam <- c("centered" = "C", "noncentered" = "NC")
