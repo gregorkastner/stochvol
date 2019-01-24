@@ -764,8 +764,8 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' for the Beta prior distribution of the transformed parameter
 #' \code{(rho+1)/2}, where \code{rho} denotes the conditional correlation
 #' between observation and the increment of the
-#' log-volatility. The default value is \code{c(1, 1)}, which constitutes a
-#' vague prior.
+#' log-volatility. The default value is \code{c(4, 4)}, which constitutes a
+#' slightly informative prior around 0 (the no leverage case) to boost convergence.
 #' @param priorbeta numeric vector of length 2, indicating the mean and
 #' standard deviation of the Gaussian prior for the regression parameters. The
 #' default value is \code{c(0, 10000)}, which constitutes a very vague prior
@@ -931,7 +931,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' @export
 svlsample <- function (y, draws = 10000, burnin = 3000, designmatrix = NA,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
-                       priorrho = c(1, 1), priorbeta = c(0, 10000),
+                       priorrho = c(4, 4), priorbeta = c(0, 10000),
                        thinpara = 1, thinlatent = 1, thintime = 1,
                        quiet = FALSE, startpara, startlatent, expert, ...) {
   # Some error checking for y
