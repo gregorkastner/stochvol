@@ -14,3 +14,4 @@ Imports: Rcpp (>= 0.11), graphics, stats, utils
 Suggests: mvtnorm
 LinkingTo: Rcpp, RcppArmadillo (>= 0.4)
 RoxygenNote: 6.1.0
+BuildResaveData: best

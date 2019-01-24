@@ -37,7 +37,9 @@ res <- svsample(y, designmatrix = "ar1")
 
 ## Use predict.svdraws to obtain predictive volatilities
 ahead <- 100
-predvol <- predict(res, steps = ahead)
+preds <- predict(res, steps = ahead)
+predvol <- preds$h
+class(predvol) <- "svpredict"
 
 ## Use arpredict to obtain draws from the posterior predictive
 preddraws <- arpredict(res, predvol)

@@ -692,7 +692,9 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' @keywords models ts
 #' @examples
 #' data(exrates)
-#' aud.price <- subset(exrates, as.Date("2010-01-01") <= date & date < as.Date("2011-01-01"), "AUD")[,1]
+#' aud.price <- subset(exrates,
+#'   as.Date("2010-01-01") <= date & date < as.Date("2011-01-01"),
+#'   "AUD")[,1]
 #' draws <- svsample2(logret(aud.price),
 #'                    draws = 10, burnin = 0,
 #'                    startpara = list(phi=0.95, mu=-10, sigma=0.2, rho=-0.1),
@@ -1316,7 +1318,9 @@ svlsample <- function (y, draws = 10000, burnin = 10000, designmatrix = NA,
 #' @keywords models ts
 #' @examples
 #' data(exrates)
-#' aud.price <- subset(exrates, as.Date("2010-01-01") <= date & date < as.Date("2011-01-01"), "AUD")[,1]
+#' aud.price <- subset(exrates,
+#'   as.Date("2010-01-01") <= date & date < as.Date("2011-01-01"),
+#'   "AUD")[,1]
 #' draws <- svlsample2(logret(aud.price),
 #'                     draws = 10, burnin = 0,
 #'                     startpara = list(phi=0.95, mu=-10, sigma=0.2, rho=-0.1),
