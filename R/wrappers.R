@@ -1170,7 +1170,7 @@ svlsample <- function (y, draws = 10000, burnin = 3000, designmatrix = NA,
     })
 
     if (!quiet) {
-      cat(paste0("\nInitial values: time taken by 'svsample': ", round(init.runtime["elapsed"], 3), " seconds.\n"), file=stderr())
+      cat(paste0("Initial values: time taken by 'svsample': ", round(init.runtime["elapsed"], 3), " seconds.\n"), file=stderr())
     }
 
     startpara[c("mu", "phi", "sigma")] <-
