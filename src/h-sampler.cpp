@@ -5,7 +5,7 @@
 #include "mixture-state-sampler.h"
 #include "simulation-smoother.h"
 #include "auxmix.h"
-#include "parameterization.hpp"
+#include "parameterization.h"
 
 using namespace Rcpp;
  

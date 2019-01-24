@@ -2,7 +2,7 @@
 #define H_SAMPLER_H
 
 #include <RcppArmadillo.h>
-#include "parameterization.hpp"
+#include "parameterization.h"
 
 arma::vec draw_h_auxiliary(
     const arma::vec& y_star,

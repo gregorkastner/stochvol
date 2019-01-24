@@ -2,7 +2,7 @@
 #define AUG_KALMAN_FILTER_H
 
 #include <RcppArmadillo.h>
-#include "parameterization.hpp"
+#include "parameterization.h"
 
 // Augmented Kalman filter
 // 

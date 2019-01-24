@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include "theta-utils.h"
-#include "parameterization.hpp"
+#include "parameterization.h"
 
 using namespace Rcpp;
 

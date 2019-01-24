@@ -1,6 +1,6 @@
 #include <RcppArmadillo.h>
 #include "aug-kalman-filter.h"
-#include "parameterization.hpp"
+#include "parameterization.h"
 
 using namespace Rcpp;
 

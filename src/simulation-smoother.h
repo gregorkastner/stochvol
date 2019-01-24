@@ -1,7 +1,7 @@
 #ifndef SIMULATION_SMOOTHER_H
 #define SIMULATION_SMOOTHER_H
 
-#include "parameterization.hpp"
+#include "parameterization.h"
 #include <Rcpp.h>
 
 Rcpp::List simulation_smoother(

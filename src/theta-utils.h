@@ -2,7 +2,7 @@
 #define THETA_UTILS_H
 
 #include <RcppArmadillo.h>
-#include "parameterization.hpp"
+#include "parameterization.h"
 
 double theta_log_likelihood(
     const double phi,

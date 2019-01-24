@@ -2,7 +2,7 @@
 #include <cmath>
 #include "theta-sampler.h"
 #include "theta-utils.h"
-#include "parameterization.hpp"
+#include "parameterization.h"
 
 void draw_theta_rwMH(
     double& phi,

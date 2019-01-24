@@ -2,7 +2,7 @@
 #define THETA_SAMPLER_H
 
 #include <RcppArmadillo.h>
-#include "parameterization.hpp"
+#include "parameterization.h"
 
 void draw_theta_rwMH(
     double& phi,

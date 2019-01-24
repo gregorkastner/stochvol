@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include "auxmix.h"
 #include "mixture-state-sampler.h"
-#include "parameterization.hpp"
+#include "parameterization.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
 

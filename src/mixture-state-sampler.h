@@ -2,7 +2,7 @@
 #define MIXTURE_STATE_SAMPLER_H
 
 #include <RcppArmadillo.h>
-#include "parameterization.hpp"
+#include "parameterization.h"
 
 arma::vec draw_s_auxiliary(
     const arma::vec& y_star,
