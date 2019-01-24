@@ -941,6 +941,11 @@ svlsample <- function (y, draws = 10000, burnin = 3000, designmatrix = NA,
   }
   if (!is.numeric(y)) stop("Argument 'y' (data vector) must be numeric.")
   if (length(y) < 2) stop("Argument 'y' (data vector) must contain at least two elements.")
+  
+  myoffset <- if (any(is.na(designmatrix)) && any(y^2 == 0)) 1.0e-8 else 0
+  if (myoffset > 0) {
+    warning(paste("Argument 'y' (data vector) contains zeros. I am adding an offset constant of size ", myoffset, " to do the auxiliary mixture sampling. If you want to avoid this, you might consider de-meaning the returns before calling this function.", sep=""))
+  }
 
   # Some error checking for draws
   if (!is.numeric(draws) || length(draws) != 1 || draws < 1) {
@@ -1124,9 +1129,6 @@ svlsample <- function (y, draws = 10000, burnin = 3000, designmatrix = NA,
     }
   }
   
-  myoffset <- if (any(y^2 == 0)) 1.0e-8 else 0
-  if (myoffset > 0) {
-    warning(paste("Argument 'y' (data vector) contains zeros. I am adding an offset constant of size ", myoffset, " to do the auxiliary mixture sampling. If you want to avoid this, you might consider de-meaning the returns before calling this function.", sep=""))
   }
   
   phi <- startpara$phi; rho <- startpara$rho; sigma2 <- startpara$sigma^2; mu <- startpara$mu
