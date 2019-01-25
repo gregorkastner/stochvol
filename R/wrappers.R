@@ -396,7 +396,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
     if (exists("parameterization", expertenv)) {
       parameterization <- expert[["parameterization"]]
-      if (!is.character(parameterization) | is.na(parameterization)) {
+      if (!is.character(parameterization) || any(is.na(parameterization))) {
         stop("Argument 'parameterization' must be either 'centered', 'noncentered', 'GIS_C', or 'GIS_NC'.")
       }
       switch(parameterization,
@@ -497,10 +497,10 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     if (startpara[["sigma"]] <= 0)
       stop('Argument \'startpara[["sigma"]]\' must be positive.')
 
-    if (!is.na(priornu) && !is.numeric(startpara[["nu"]]))
+    if (!any(is.na(priornu)) && !is.numeric(startpara[["nu"]]))
       stop('Argument \'startpara[["nu"]]\' must exist and be numeric.')
 
-    if (!is.na(priornu) && (startpara[["nu"]] > priornu[2] || startpara[["nu"]] < priornu[1]))
+    if (!any(is.na(priornu)) && (startpara[["nu"]] > priornu[2] || startpara[["nu"]] < priornu[1]))
       stop('Argument \'startpara[["nu"]]\' must be within range(priornu).')
   }
 
@@ -516,7 +516,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     stop("Argument 'keeptau' must be TRUE or FALSE.")
   }
 
-  if (is.na(priornu) && keeptau) {
+  if (any(is.na(priornu)) && keeptau) {
     warning("Setting argument 'keeptau' to FALSE, as 'priornu' is NA.")
     keeptau <- FALSE
   }
