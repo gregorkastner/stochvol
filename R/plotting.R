@@ -250,8 +250,8 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
     }
   } else xlim <- NULL
 
-  if(exists("sd", x$summary)) {
-    mymain <- paste("Estimated conditional volatilities in percent (", paste(dimnames(volquants)[[1]], collapse=' / '),
+  if(exists("sd", x$summary)) {  # heavy-tailed innovation
+    mymain <- paste("Estimated scaling in percent (", paste(dimnames(volquants)[[1]], collapse=' / '),
                     " posterior quantiles)", sep = '')
   } else {
     mymain <- paste("Estimated volatilities in percent (", paste(dimnames(volquants)[[1]], collapse=' / '),
@@ -294,14 +294,13 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
   }
   axis(1, at=ax, labels=dates[ax+1], mgp=mgp, tcl=tcl)
 
-  if(exists("sd", x$summary)) {  # only for t distributed residuals
+  if(exists("sd", x$summary)) {  # only for t-distributed residuals
     where <- grep("%", dimnames(x$summary$latent)[[2]])
     ts.plot(100*x$summary$sd[,where], gpars=list(xlim=xlim, col=cols, xlab='', xaxt='n', mgp=mgp, tcl=tcl,
                                                  main = paste("Estimated volatilities in percent (",
                                                               paste(dimnames(volquants)[[1]], collapse=' / '),
                                                               " posterior quantiles)", sep=''), ...))
 
-    # TODO with Gregor go through this `standardizer` and see if prediction using 'nu' is possible
     if (sim) {
       standardizer <- sqrt(simobj$para$nu / (simobj$para$nu - 2))
       lines(100*simobj$vol*standardizer, col = 3)

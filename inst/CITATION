@@ -2,7 +2,7 @@
 
 ## R >= 2.8.0 passes package metadata to citation().
 if(!exists("meta") || is.null(meta)) meta <- packageDescription("stochvol")
-year <- sub("-.*", "", meta$Date)
+year <- sub("-.*", "", meta$Packaged)
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(bibtype = "Article",

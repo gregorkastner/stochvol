@@ -1,6 +1,22 @@
 Changes in Version 2.0.0:
   - New collaborator: Darjus Hosszejni
-  - Can now do leverage.
+  - New functionality:
+    - leverage effect through 'svlsample'
+    - simulation of asymmetric returns with 'svsim'
+    - prediction using designmatrices and heavy-tails
+  - Updated functionality:
+    - the exported C++ function 'update' uses RcppArmadillo objects
+    - new examples
+  - Bugfix:
+    - correct plotting after sampling with 'gammaprior=FALSE'
+    - fixed naming of latent states in printing and plotting in the case of time
+      series with conditionally heavy-tailed innovations
+    - in 'svsample': input check for length of burnin is now fixed (thanks
+      to Nikolas Kuschnig)
+    - other small fixes
+  - Deprecated:
+    - functions 'arpredict' and '.svsample'
+    - parameter 'thintime' in function 'svsample'
 
 Changes in Version 1.3.4:
   - DESCRIPTION file updated.

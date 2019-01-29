@@ -135,8 +135,8 @@ print.svsim <- function(x, ...) {
       "            standard deviation of latent variable  sigma = ", x$para$sigma, "\n", sep="")
   if ("nu" %in% names(x$para)) cat("            degrees of freedom parameter              nu =", x$para$nu, "\n")
   if ("rho" %in% names(x$para)) cat("            leverage effect parameter                rho =", x$para$rho, "\n")
-  cat("\nSimulated initial conditional volatility:", x$vol0, "\n")
-  cat("\nSimulated conditional volatilities:\n")
+  cat("\nSimulated initial volatility:", x$vol0*x$correction, "\n")
+  cat("\nSimulated volatilities:\n")
   print(x$vol*x$correction, ...)
   cat("\nSimulated data (usually interpreted as 'log-returns'):\n")
   print(x$y, ...)
@@ -148,7 +148,7 @@ plot.svsim <- function(x, mar = c(3, 2, 2, 1), mgp = c(1.8, .6, 0), ...) {
   plot.ts(100*x$y, ylab = "", ...)
   mtext("Simulated data: 'log-returns' (in %)", cex = 1.2, line = .4, font = 2)
   plot.ts(100*x$vol*x$correction, ylab = "", ...)
-  mtext("Simulated conditional volatilities (in %)", cex = 1.2, line = .4, font = 2)
+  mtext("Simulated volatilities (in %)", cex = 1.2, line = .4, font = 2)
   par(op)
 }
 
@@ -162,6 +162,7 @@ summary.svsim <- function(object, ...) {
   ret$vol.corrected <- summary(100*object$vol*object$correction)
   ret$y <- summary(100*object$y)
   ret$vol0 <- 100*object$vol0
+  ret$vol0.corrected <- 100*object$vol0*object$correction
   ret
 }
 
@@ -174,9 +175,9 @@ print.summary.svsim  <- function(x, ...) {
       "\n            standard deviation of latent variable  sigma = ", x$para$sigma,
       "\n            degrees of freedom parameter              nu = ", x$para$nu,
       "\n            leverage effect parameter                rho = ", x$para$rho, "\n", sep="")
-  cat("\nSimulated initial conditional volatility (in %): ")
-  cat(x$vol0, "\n")
-  cat("\nSummary of simulated conditional volatilities (in %):\n")
+  cat("\nSimulated initial volatility (in %): ")
+  cat(x$vol0.corrected, "\n")
+  cat("\nSummary of simulated volatilities (in %):\n")
   print(x$vol.corrected)
   cat("\nSummary of simulated data (in %):\n")
   print(x$y)
