@@ -23,7 +23,7 @@ arma::vec draw_h_auxiliary(
   arma::vec mixing_a(s.size()); std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
   arma::vec mixing_b(s.size()); std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
   arma::vec mixing_m(s.size()); std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
-  arma::vec mixing_v(s.size()); std::transform(s.cbegin(), s.cend(), mixing_v.begin(), [](const int selem) -> double {return mix_var[selem];});
+  arma::vec mixing_v(s.size()); std::transform(s.cbegin(), s.cend(), mixing_v.begin(), [](const int selem) -> double {return sqrt(mix_var[selem]);});
   
   const List filter_result = aug_kalman_filter(phi, rho, sigma2, mixing_a, mixing_b, mixing_m, mixing_v, d, y_star, priormu_mu, pow(priormu_sigma, 2), centering);
   

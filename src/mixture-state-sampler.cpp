@@ -24,10 +24,10 @@ arma::mat mixture_state_post_dist(
       const double a = mix_a[c];
       const double b = mix_b[c];
       const double m = mix_mean[c];
-      const double v = mix_var[c];
+      const double v2 = mix_var[c];
       const double log_prior = log(mix_prob[c]);
       
-      double log_eps_star_lik = -0.5 * pow((eps_star[r] - m)/v, 2) - log(v*sqrt(2*M_PI));
+      double log_eps_star_lik = -0.5 * pow((eps_star[r] - m), 2)/v2 - log(sqrt(2*M_PI*v2));
       double log_eta_lik;
       if (r < n-1) {
         log_eta_lik = -0.5/(sigma2_used*(1-rho*rho)) * pow(eta[r] - rho*sqrt(sigma2_used)*d[r]*exp(m/2)*(a+b*(eps_star[r]-m)), 2) - 0.5*log(2*M_PI*(1-rho*rho)*sigma2_used);

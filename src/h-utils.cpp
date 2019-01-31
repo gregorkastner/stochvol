@@ -42,15 +42,15 @@ double h_aux_log_posterior(
       for (int j = 0; j < mix_count; j++) {
         const double C = rho*sigma*exp(mix_mean[j]*.5);  // re-used constant
         const double h_mean = mu+phi*(h[t]-mu)+d[t]*C*mix_a[j];
-        const double h_var = pow(C*mix_var[j]*mix_b[j], 2) + sigma2*(1-rho*rho);
-        const double yh_cov = d[t]*C*mix_b[j]*pow(mix_var[j], 2);
+        const double h_var = mix_var[j]*pow(C*mix_b[j], 2) + sigma2*(1-rho*rho);
+        const double yh_cov = d[t]*C*mix_b[j]*mix_var[j];
         const double y_mean = h[t]+mix_mean[j] + yh_cov/h_var*(h[t+1]-h_mean);
-        const double y_var = (1-pow(yh_cov/mix_var[j], 2)/h_var) * pow(mix_var[j], 2);
+        const double y_var = (1-pow(yh_cov, 2)/(mix_var[j]*h_var)) * mix_var[j];
         subresult += R::dnorm(y_star[t], y_mean, sqrt(y_var), false) * R::dnorm(h[t+1], h_mean, sqrt(h_var), false) * mix_prob[j];
       }
     } else {
       for (int j = 0; j < mix_count; j++) {
-        subresult += R::dnorm(y_star[t], h[t]+mix_mean[j], mix_var[j], false) * mix_prob[j];
+        subresult += R::dnorm(y_star[t], h[t]+mix_mean[j], sqrt(mix_var[j]), false) * mix_prob[j];
       }
     }
     result += log(subresult);
