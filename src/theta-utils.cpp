@@ -98,8 +98,8 @@ double theta_log_prior(
   //const double gammascale = 1/gammarate;
   //const double invgammascale = gammarate;
   // Wikipedia notatio: prior_sigma2(1) is beta in both the case of Gamma and of InvGamma
-  return (-log(2)) + R::dbeta((phi+1)/2, prior_phi[0], prior_phi[1], true) +
-    (-log(2)) + R::dbeta((rho+1)/2, prior_rho[0], prior_rho[1], true) +
+  return (-log(2.)) + R::dbeta((phi+1)/2, prior_phi[0], prior_phi[1], true) +
+    (-log(2.)) + R::dbeta((rho+1)/2, prior_rho[0], prior_rho[1], true) +
     R::dnorm(mu, prior_mu[0], prior_mu[1], true) +
     (gammaprior ?
       R::dgamma(sigma2, prior_sigma2[0], 1/prior_sigma2[1], true) :  // Gamma(shape, scale)
@@ -119,7 +119,7 @@ arma::vec theta_transform_inv(
     const double rho,
     const double sigma2,
     const double mu) {
-  return {0.5*log(2/(1-phi)-1), 0.5*log(2/(1-rho)-1), log(sigma2), mu};
+  return {0.5*log(2./(1-phi)-1), 0.5*log(2./(1-rho)-1), log(sigma2), mu};
 }
 
 double theta_transform_log_det_jac(
@@ -127,7 +127,7 @@ double theta_transform_log_det_jac(
     const double r,
     const double s,
     const double m) {
-  return 2*(log(4) + f+r+s/2 - log(exp(2*f)+1) - log(exp(2*r)+1));
+  return 2*(log(4.) + f+r+s/2. - log(exp(2.*f)+1.) - log(exp(2.*r)+1.));
 }
 
 double theta_transform_inv_log_det_jac(
@@ -135,7 +135,7 @@ double theta_transform_inv_log_det_jac(
     const double rho,
     const double sigma2,
     const double mu) {
-  return -(log(1-phi*phi)+log(1-rho*rho)+log(sigma2));
+  return -(log(1.-phi*phi)+log(1.-rho*rho)+log(sigma2));
 }
 
 arma::vec theta_proposal_stdev(
