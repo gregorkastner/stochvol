@@ -306,10 +306,9 @@ List svlsample_cpp (
     // print a progress sign every "show" iterations
     if (verbose && (i % show == 0)) progressbar_print();
 
-    if (regression) {  // slightly circumstantial due to the combined use of Rcpp and arma
-      std::copy(X.cbegin(), X.cend(), X_reg.begin());  // important!
-      y = y_in_arma - X_reg*beta;
-      y_star = log(y*y + offset);
+    if (regression) {
+      y = y_in_arma - X*beta;
+      y_star = arma::log(arma::square(y));
       std::transform(y.cbegin(), y.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
     }
 
@@ -330,6 +329,7 @@ List svlsample_cpp (
       normalizer = arma::exp(-h/2);
       normalizer.head(T-1) /= sqrt(1-pow(rho, 2));
       // X has already been copied to X_reg
+      std::copy(X.cbegin(), X.cend(), X_reg.begin());  // important!
       X_reg.each_col() %= normalizer;
       y_reg %= normalizer;
 
