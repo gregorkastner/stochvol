@@ -30,7 +30,7 @@ datasets, stock returns and the like.}
 
 \item{priorphi}{numeric vector of length 2, indicating the shape parameters
 for the Beta prior distribution of the transformed parameter
-\code{(phi+1)/2}, where \code{phi} denotes the persistence of the
+\code{(phi + 1) / 2}, where \code{phi} denotes the persistence of the
 log-volatility. The default value is \code{c(5, 1.5)}, which constitutes a
 prior that puts some belief in a persistent log-volatility but also
 encompasses the region where \code{phi} is around 0.}
@@ -133,8 +133,8 @@ aud.price <- subset(exrates,
   "AUD")[,1]
 draws <- svsample2(logret(aud.price),
                    draws = 10, burnin = 0,
-                   startpara = list(phi=0.95, mu=-10, sigma=0.2, rho=-0.1),
-                   startlatent = rep_len(-10, length(aud.price)-1))
+                   startpara = list(phi = 0.95, mu = -10, sigma = 0.2, rho = -0.1),
+                   startlatent = rep_len(-10, length(aud.price) - 1))
 }
 \seealso{
 \code{\link{svsample}}

@@ -38,7 +38,7 @@
 #' datasets, stock returns and the like.
 #' @param priorphi numeric vector of length 2, indicating the shape parameters
 #' for the Beta prior distribution of the transformed parameter
-#' \code{(phi+1)/2}, where \code{phi} denotes the persistence of the
+#' \code{(phi + 1) / 2}, where \code{phi} denotes the persistence of the
 #' log-volatility. The default value is \code{c(5, 1.5)}, which constitutes a
 #' prior that puts some belief in a persistent log-volatility but also
 #' encompasses the region where \code{phi} is around 0.
@@ -85,11 +85,10 @@
 #' for the parameter draws. If supplied, \code{startpara} must contain three
 #' elements named \code{mu}, \code{phi}, and \code{sigma}, where \code{mu} is
 #' an arbitrary numerical value, \code{phi} is a real number between \code{-1}
-#' and \code{1}, and \code{sigma} is a positive real number. The default value
-#' is \code{list(mu = -10, phi = 0.9, sigma = 0.3)}. Moreover, if
+#' and \code{1}, and \code{sigma} is a positive real number. Moreover, if
 #' \code{priornu} is not \code{NA}, \code{startpara} must also contain an
 #' element named \code{nu} (the degrees of freedom parameter for the
-#' t-innovations).
+#' t-innovations). The default value is equal to the prior mean. 
 #' @param startlatent \emph{optional} vector of length \code{length(y)},
 #' containing the starting values for the latent log-volatility draws. The
 #' default value is \code{rep(-10, length(y))}.
@@ -328,7 +327,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
 
   if (!is.numeric(priorphi) | length(priorphi) != 2) {
-    stop("Argument 'priorphi' (shape1 and shape2 parameters for the Beta prior for (phi+1)/2) must be numeric and of length 2.")
+    stop("Argument 'priorphi' (shape1 and shape2 parameters for the Beta prior for (phi + 1) / 2) must be numeric and of length 2.")
   }
 
   if (!is.numeric(priorsigma) | length(priorsigma) != 1 | priorsigma <= 0) {
@@ -622,7 +621,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' datasets, stock returns and the like.
 #' @param priorphi numeric vector of length 2, indicating the shape parameters
 #' for the Beta prior distribution of the transformed parameter
-#' \code{(phi+1)/2}, where \code{phi} denotes the persistence of the
+#' \code{(phi + 1) / 2}, where \code{phi} denotes the persistence of the
 #' log-volatility. The default value is \code{c(5, 1.5)}, which constitutes a
 #' prior that puts some belief in a persistent log-volatility but also
 #' encompasses the region where \code{phi} is around 0.
@@ -697,8 +696,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #'   "AUD")[,1]
 #' draws <- svsample2(logret(aud.price),
 #'                    draws = 10, burnin = 0,
-#'                    startpara = list(phi=0.95, mu=-10, sigma=0.2, rho=-0.1),
-#'                    startlatent = rep_len(-10, length(aud.price)-1))
+#'                    startpara = list(phi = 0.95, mu = -10, sigma = 0.2, rho = -0.1),
+#'                    startlatent = rep_len(-10, length(aud.price) - 1))
 #' @export
 svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priornu = NA, priorlatent0 = "stationary", thinpara = 1, thinlatent = 1, thintime = 1, keeptau = FALSE, quiet = TRUE, startpara, startlatent) {
 
@@ -759,7 +758,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' datasets, stock returns and the like.
 #' @param priorphi numeric vector of length 2, indicating the shape parameters
 #' for the Beta prior distribution of the transformed parameter
-#' \code{(phi+1)/2}, where \code{phi} denotes the persistence of the
+#' \code{(phi + 1) / 2}, where \code{phi} denotes the persistence of the
 #' log-volatility. The default value is \code{c(5, 1.5)}, which constitutes a
 #' prior that puts some belief in a persistent log-volatility but also
 #' encompasses the region where \code{phi} is around 0.
@@ -771,7 +770,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' and the like.
 #' @param priorrho numeric vector of length 2, indicating the shape parameters
 #' for the Beta prior distribution of the transformed parameter
-#' \code{(rho+1)/2}, where \code{rho} denotes the conditional correlation
+#' \code{(rho + 1) / 2}, where \code{rho} denotes the conditional correlation
 #' between observation and the increment of the
 #' log-volatility. The default value is \code{c(4, 4)}, which constitutes a
 #' slightly informative prior around 0 (the no leverage case) to boost convergence.
@@ -796,8 +795,8 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' elements named \code{mu}, \code{phi}, \code{sigma}, and \code{rho}, where \code{mu} is
 #' an arbitrary numerical value, \code{phi} is a real number between \code{-1}
 #' and \code{1}, \code{sigma} is a positive real number, and \code{rho} is
-#' a real number between \code{-1} and \code{1}. The default value is
-#' is \code{list(mu = -10, phi = 0.9, sigma = 0.3, rho = 0)}.
+#' a real number between \code{-1} and \code{1}. The default value is equal
+#' to the prior mean.
 #' @param startlatent \emph{optional} vector of length \code{length(y)},
 #' containing the starting values for the latent log-volatility draws. The
 #' default value is \code{rep(-10, length(y))}.
@@ -1031,7 +1030,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
 
   if (!is.numeric(priorphi) || length(priorphi) != 2) {
-    stop("Argument 'priorphi' (shape1 and shape2 parameters for the Beta prior for (phi+1)/2) must be numeric and of length 2.")
+    stop("Argument 'priorphi' (shape1 and shape2 parameters for the Beta prior for (phi + 1) / 2) must be numeric and of length 2.")
   }
 
   if (!is.numeric(priorsigma) || length(priorsigma) != 1 || priorsigma <= 0) {
@@ -1039,7 +1038,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
 
   if (!is.numeric(priorrho) || length(priorrho) != 2) {
-    stop("Argument 'priorrho' (shape1 and shape2 parameters for the Beta prior for (rho+1)/2) must be numeric and of length 2.")
+    stop("Argument 'priorrho' (shape1 and shape2 parameters for the Beta prior for (rho + 1) / 2) must be numeric and of length 2.")
   }
 
   if (!is.numeric(priorbeta) || length(priorbeta) != 2) {
@@ -1303,7 +1302,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' datasets, stock returns and the like.
 #' @param priorphi numeric vector of length 2, indicating the shape parameters
 #' for the Beta prior distribution of the transformed parameter
-#' \code{(phi+1)/2}, where \code{phi} denotes the persistence of the
+#' \code{(phi + 1) / 2}, where \code{phi} denotes the persistence of the
 #' log-volatility. The default value is \code{c(5, 1.5)}, which constitutes a
 #' prior that puts some belief in a persistent log-volatility but also
 #' encompasses the region where \code{phi} is around 0.
@@ -1315,7 +1314,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' and the like.
 #' @param priorrho numeric vector of length 2, indicating the shape parameters
 #' for the Beta prior distribution of the transformed parameter
-#' \code{(rho+1)/2}, where \code{rho} denotes the conditional correlation
+#' \code{(rho + 1) / 2}, where \code{rho} denotes the conditional correlation
 #' between observation and the increment of the
 #' log-volatility. The default value is \code{c(4, 4)}, which constitutes a
 #' slightly informative prior around 0 (the no leverage case) to boost convergence.
@@ -1331,13 +1330,13 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' @param quiet logical value indicating whether the progress bar and other
 #' informative output during sampling should be omitted. The default value is
 #' \code{TRUE}.
-#' @param startpara named list, containing the starting values
+#' @param startpara \emph{compulsory} named list, containing the starting values
 #' for the parameter draws. It must contain four
 #' elements named \code{mu}, \code{phi}, \code{sigma}, and \code{rho}, where \code{mu} is
 #' an arbitrary numerical value, \code{phi} is a real number between \code{-1}
 #' and \code{1}, \code{sigma} is a positive real number, and \code{rho} is
 #' a real number between \code{-1} and \code{1}.
-#' @param startlatent vector of length \code{length(y)},
+#' @param startlatent \emph{compulsory} vector of length \code{length(y)},
 #' containing the starting values for the latent log-volatility draws.
 #' @return The value returned is a list object holding
 #' \item{para}{matrix of dimension \code{4 x draws} containing

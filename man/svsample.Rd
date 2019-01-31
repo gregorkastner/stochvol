@@ -41,7 +41,7 @@ datasets, stock returns and the like.}
 
 \item{priorphi}{numeric vector of length 2, indicating the shape parameters
 for the Beta prior distribution of the transformed parameter
-\code{(phi+1)/2}, where \code{phi} denotes the persistence of the
+\code{(phi + 1) / 2}, where \code{phi} denotes the persistence of the
 log-volatility. The default value is \code{c(5, 1.5)}, which constitutes a
 prior that puts some belief in a persistent log-volatility but also
 encompasses the region where \code{phi} is around 0.}
@@ -98,11 +98,10 @@ informative output during sampling should be omitted. The default value is
 for the parameter draws. If supplied, \code{startpara} must contain three
 elements named \code{mu}, \code{phi}, and \code{sigma}, where \code{mu} is
 an arbitrary numerical value, \code{phi} is a real number between \code{-1}
-and \code{1}, and \code{sigma} is a positive real number. The default value
-is \code{list(mu = -10, phi = 0.9, sigma = 0.3)}. Moreover, if
+and \code{1}, and \code{sigma} is a positive real number. Moreover, if
 \code{priornu} is not \code{NA}, \code{startpara} must also contain an
 element named \code{nu} (the degrees of freedom parameter for the
-t-innovations).}
+t-innovations). The default value is equal to the prior mean.}
 
 \item{startlatent}{\emph{optional} vector of length \code{length(y)},
 containing the starting values for the latent log-volatility draws. The

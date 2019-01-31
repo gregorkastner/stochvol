@@ -9,8 +9,8 @@
 This package provides an efficient algorithm for fully Bayesian estimation
 of stochastic volatility (SV) models via Markov chain Monte Carlo (MCMC)
 methods. Methodological details are given in Kastner and Frühwirth-Schnatter
-(2014) <doi:10.1016/j.csda.2013.01.002>; the most common use cases are
-described in Kastner (2016) <doi:10.18637/jss.v069.i05>.
+(2014); the most common use cases are described in Kastner (2016). Recently,
+the package has been extended to allow for the leverage effect.
 }
 \details{
 Bayesian inference for stochastic volatility models using MCMC methods
@@ -64,19 +64,23 @@ plot(draws, forecast = fore)
 }
 \references{
 Kastner, G. and Frühwirth-Schnatter, S. (2014).
-Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC
-estimation of stochastic volatility models. \emph{Computational Statistics &
+Ancillarity-Sufficiency Interweaving Strategy (ASIS) for Boosting MCMC
+Estimation of Stochastic Volatility Models. \emph{Computational Statistics &
 Data Analysis}, \bold{76}, 408--423,
 \url{http://dx.doi.org/10.1016/j.csda.2013.01.002}.
+
+Kastner, G. (2016). Dealing with Stochastic Volatility in Time Series Using the R Package stochvol.
+\emph{Journal of Statistical Software}, \bold{69}(5), 1--30,
+\url{http://dx.doi.org/10.18637/jss.v069.i05}.
 
 Yu, Y. and Meng, X.-L. (2011). To Center or Not to Center: That is Not the
 Question---An Ancillarity-Suffiency Interweaving Strategy (ASIS) for
 Boosting MCMC Efficiency. \emph{Journal of Computational and Graphical
-Statistics}, \bold{20}, 531--570,
+Statistics}, \bold{20}(3), 531--570,
 \url{http://dx.doi.org/10.1198/jcgs.2011.203main}.
 }
 \author{
-Gregor Kastner \email{gregor.kastner@wu.ac.at}
+Gregor Kastner \email{gregor.kastner@wu.ac.at}, Darjus Hosszejni \email{darjus.hosszejni@wu.ac.at}
 }
 \keyword{models}
 \keyword{package}

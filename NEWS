@@ -9,7 +9,7 @@ Changes in Version 2.0.0:
       it has been renamed to 'update_sv'
     - new examples
   - Bugfix:
-    - correct plotting after sampling with 'gammaprior=FALSE'
+    - correct plotting after sampling with 'gammaprior = FALSE'
     - fixed naming of latent states in printing and plotting in the case of time
       series with conditionally heavy-tailed innovations
     - in 'svsample': input check for length of burnin is now fixed (thanks

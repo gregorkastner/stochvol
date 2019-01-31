@@ -41,7 +41,7 @@ datasets, stock returns and the like.}
 
 \item{priorphi}{numeric vector of length 2, indicating the shape parameters
 for the Beta prior distribution of the transformed parameter
-\code{(phi+1)/2}, where \code{phi} denotes the persistence of the
+\code{(phi + 1) / 2}, where \code{phi} denotes the persistence of the
 log-volatility. The default value is \code{c(5, 1.5)}, which constitutes a
 prior that puts some belief in a persistent log-volatility but also
 encompasses the region where \code{phi} is around 0.}
@@ -55,7 +55,7 @@ and the like.}
 
 \item{priorrho}{numeric vector of length 2, indicating the shape parameters
 for the Beta prior distribution of the transformed parameter
-\code{(rho+1)/2}, where \code{rho} denotes the conditional correlation
+\code{(rho + 1) / 2}, where \code{rho} denotes the conditional correlation
 between observation and the increment of the
 log-volatility. The default value is \code{c(4, 4)}, which constitutes a
 slightly informative prior around 0 (the no leverage case) to boost convergence.}
@@ -86,8 +86,8 @@ for the parameter draws. If supplied, \code{startpara} must contain four
 elements named \code{mu}, \code{phi}, \code{sigma}, and \code{rho}, where \code{mu} is
 an arbitrary numerical value, \code{phi} is a real number between \code{-1}
 and \code{1}, \code{sigma} is a positive real number, and \code{rho} is
-a real number between \code{-1} and \code{1}. The default value is
-is \code{list(mu = -10, phi = 0.9, sigma = 0.3, rho = 0)}.}
+a real number between \code{-1} and \code{1}. The default value is equal
+to the prior mean.}
 
 \item{startlatent}{\emph{optional} vector of length \code{length(y)},
 containing the starting values for the latent log-volatility draws. The
