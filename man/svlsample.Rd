@@ -100,7 +100,7 @@ applications, the default values probably work best. If
 \code{parameterization}: Character string containing values \code{"centered"},
 and \code{"noncentered"}. Alternatively, it can be a single element character
 vector of the form \code{"asisX"}, where \code{X} is an integer, which is
-equivalent to \code{rep_len(c("centered", "noncentered"), X)}.
+equivalent to \code{rep(c("centered", "noncentered"), X)}.
 Defaults to \code{"asis5"}.
 
 \code{mhcontrol}: Single numeric value controlling the proposal density of a
@@ -115,7 +115,11 @@ prior is employed. Defaults to \code{TRUE}.
 \code{init.with.svsample}: Single integer indicating the length of a ``pre-burnin'' run using
 the computationally much more efficient \code{\link{svsample}}. This run helps
 in finding good initial values for the latent states, giving \code{svlsample}
-a considerable initial boost for convergence. Defaults to \code{1000L}.}
+a considerable initial boost for convergence. Defaults to \code{1000L}.
+
+\code{correct.latent.draws}: Single logical value indicating whether to correct
+the draws obtained from the auxiliary model of Omori, et al. (2007). Defaults
+to \code{TRUE}.}
 
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
@@ -162,7 +166,15 @@ also be conducted.
 }
 \note{
 If \code{y} contains zeros, you might want to consider de-meaning your
-returns or use \code{designmatrix = "ar0"}.
+returns or use \code{designmatrix = "ar0"}. We use the Metropolis-Hastings
+algorithm for sampling the latent vector \code{h}, where the proposal is a
+draw from an auxiliary mixture approximation model [Omori, et al. (2007)].
+We draw the parameters \code{mu}, \code{phi}, \code{sigma}, and \code{rho}
+jointly by employing a Metropolis random walk step. By default, we boost the
+random walk through the repeated application of the ancillarity-sufficiency
+interweaving strategy (ASIS) [Yu, Meng (2011)]. A message in the beginning
+of sampling indicates the interweaving strategy used, which can be modified
+through parameter \code{expert}.
 }
 \examples{
 \dontrun{
@@ -241,6 +253,18 @@ for (i in 1:3) {
 lines(len:(len+ahead), c(tail(priceUSD, 1), expost),
       col = 2)
 }
+}
+\references{
+Yu, Y. and Meng, X.-L. (2011).
+To Center or not to Center: That is not the Question---An Ancillarity-Sufficiency
+Interweaving Strategy (ASIS) for Boosting MCMC Efficiency. \emph{Journal of
+Computational and Graphical Statistics}, \bold{20}(3), 531--570,
+\url{http://dx.doi.org/10.1198/jcgs.2011.203main}
+
+Omori, Y. and Chib, S. and Shephard, N. and Nakajima, J. (2007).
+Stochastic Volatility with Leverage: Fast and Efficient Likelihood Inference.
+\emph{Journal of Econometrics}, \bold{140}(2), 425--449,
+\url{http://dx.doi.org/10.1016/j.jeconom.2006.07.008}
 }
 \seealso{
 \code{\link{svsim}}, \code{\link{svsample}}, \code{\link{updatesummary}},
