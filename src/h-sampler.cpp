@@ -29,10 +29,10 @@ arma::vec draw_h_auxiliary(
   
   const List smoothing_result = simulation_smoother(mu, filter_result, centering);
   const arma::vec eta = smoothing_result["eta"];
-  const double eta0 = as<arma::vec>(smoothing_result["eta0"])[0];
+  const double eta0 = as<NumericVector>(smoothing_result["eta0"])[0];
 
-  const int n = as<arma::vec>(filter_result["D"]).size();
-  arma::vec h = rep(0.0, n);
+  const int n = as<NumericVector>(filter_result["D"]).size();
+  arma::vec h(n, arma::fill::zeros);
   arma::vec dt;
   switch (centering) {
     case Parameterization::CENTERED:
@@ -71,9 +71,11 @@ arma::vec draw_latent_auxiliaryMH(
   const arma::vec proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
 
   // Calculate MH acceptance ratio
-  const double log_acceptance = h_log_posterior(proposed, y, phi, rho, sigma2, mu) - h_log_posterior(h, y, phi, rho, sigma2, mu) -
-    (h_aux_log_posterior(proposed, y_star, d, phi, rho, sigma2, mu) -
-     h_aux_log_posterior(h, y_star, d, phi, rho, sigma2, mu));
+  const double hlp1 = h_log_posterior(proposed, y, phi, rho, sigma2, mu);
+  const double hlp2 = h_log_posterior(h, y, phi, rho, sigma2, mu);
+  const double halp1 = h_aux_log_posterior(proposed, y_star, d, phi, rho, sigma2, mu);
+  const double halp2 = h_aux_log_posterior(h, y_star, d, phi, rho, sigma2, mu);
+  const double log_acceptance = hlp1-hlp2-(halp1-halp2);
   arma::vec result;
   if (log_acceptance > 0 || exp(log_acceptance) > R::runif(0, 1)) {
     result = proposed;
