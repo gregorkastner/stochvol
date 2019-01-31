@@ -255,7 +255,7 @@ List svlsample_cpp (
 
   double phi = theta_init["phi"];
   double rho = theta_init["rho"];
-  double sigma2 = pow(theta_init["sigma"], 2);
+  double sigma2 = pow(as<double>(theta_init["sigma"]), 2);
   double mu = theta_init["mu"];
   arma::vec h = h_init, ht = (h_init-mu)/sqrt(sigma2);
   arma::vec beta(p); beta.fill(0.0);
