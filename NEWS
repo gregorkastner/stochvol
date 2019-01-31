@@ -5,7 +5,8 @@ Changes in Version 2.0.0:
     - simulation of asymmetric returns with 'svsim'
     - prediction using designmatrices and heavy-tails
   - Updated functionality:
-    - the exported C++ function 'update' uses RcppArmadillo objects
+    - the exported C++ function 'update' uses RcppArmadillo objects and
+      it has been renamed to 'update_sv'
     - new examples
   - Bugfix:
     - correct plotting after sampling with 'gammaprior=FALSE'
