@@ -1374,7 +1374,7 @@ svlsample2 <- function(y, draws = 1, burnin = 0,
                                priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                0.5, 0.5/priorsigma, priormu[1], priormu[2],
                                0, 1, !quiet,
-                               0, 0.1, TRUE, rep(c("centered", "noncentered"), 5))
+                               0, 0.1, TRUE, TRUE, rep(c("centered", "noncentered"), 5))
 
   res$para <- t(res$para)
   res$latent <- t(res$latent)
