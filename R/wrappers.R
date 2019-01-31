@@ -1185,7 +1185,7 @@ svlsample <- function (y, draws = 10000, burnin = 10000, designmatrix = NA,
   
   if (init.with.svsample > 0L) {
     if (!quiet) {
-      cat(paste0("\nInitial values: calling function 'svsample' with ", init.with.svsample, " iter. Series length is ", length(y), ".\n"), file=stderr())
+      cat(paste0("\nInitial values: calling 'svsample' with ", init.with.svsample, " iter. Series length is ", length(y), ".\n"), file=stderr())
       flush.console()
     }
 
