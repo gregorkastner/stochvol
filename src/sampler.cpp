@@ -360,7 +360,7 @@ List svlsample_cpp (
       }
     }
     if ((i >= 1) && !thinlatent_round) {
-      for (int volind = 0, thincol = thintime-1; thincol < h.size(); volind++, thincol += thintime) {
+      for (int volind = 0, thincol = thintime-1; thincol < int(h.size()); volind++, thincol += thintime) {
         latent.at(i/thinlatent-1, volind) = h[thincol];
       }
     }

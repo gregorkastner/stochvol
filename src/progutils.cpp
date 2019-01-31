@@ -81,7 +81,7 @@ void cholTridiag(
     arma::vec& chol_diag,
     arma::vec& chol_offdiag) {
  chol_diag[0] = sqrt(omega_diag[0]);  // maybe speed up via iterators?
- for (int j = 1; j < omega_diag.size(); j++) {
+ for (int j = 1; j < int(omega_diag.size()); j++) {
   chol_offdiag[j-1] = omega_offdiag/chol_diag[j-1];
   chol_diag[j] = sqrt(omega_diag[j]-chol_offdiag[j-1]*chol_offdiag[j-1]);
  }
@@ -94,7 +94,7 @@ void forwardAlg(
     const arma::vec& covector,
     arma::vec& htmp) {
  htmp[0] = covector[0]/chol_diag[0];
- for (int j = 1; j < chol_diag.size(); j++) {
+ for (int j = 1; j < int(chol_diag.size()); j++) {
   htmp[j] = (covector[j] - chol_offdiag[j-1]*htmp[j-1])/chol_diag[j];
  }
 }
