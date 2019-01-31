@@ -56,6 +56,7 @@ Rcpp::List svlsample_cpp (
     const double offset,
     const double stdev,
     const bool gammaprior,
+    const bool correct,
     const Rcpp::CharacterVector& strategy);
 
 #endif  // _SAMPLER_H_

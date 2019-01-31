@@ -8,6 +8,30 @@
 #include "parameterization.h"
 
 using namespace Rcpp;
+
+arma::vec draw_latent(
+    const arma::vec& y,
+    const arma::vec& y_star,
+    const arma::ivec& d,
+    const arma::vec& h,
+    const arma::vec& ht,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const double priormu_mu,
+    const double priormu_sigma,
+    const bool correct) {
+  // Draw h from AUX
+  const arma::vec s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
+  const arma::vec proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
+
+  if (correct) {
+    return correct_latent_auxiliaryMH(y, y_star, d, h, ht, proposed, phi, rho, sigma2, mu);
+  } else {
+    return proposed;
+  }
+}
  
 arma::vec draw_h_auxiliary(
     const arma::vec& y_star,
@@ -52,23 +76,18 @@ arma::vec draw_h_auxiliary(
   return h;
 }
 
-arma::vec draw_latent_auxiliaryMH(
+arma::vec correct_latent_auxiliaryMH(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,
     const arma::vec& h,
     const arma::vec& ht,
+    const arma::vec& proposed,
     const double phi,
     const double rho,
     const double sigma2,
-    const double mu,
-    const double priormu_mu,
-    const double priormu_sigma) {
+    const double mu) {
     //const CharacterVector centering,
-  
-  // Draw h from AUX
-  const arma::vec s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
-  const arma::vec proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
 
   // Calculate MH acceptance ratio
   const double hlp1 = h_log_posterior(proposed, y, phi, rho, sigma2, mu);

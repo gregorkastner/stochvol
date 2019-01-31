@@ -241,6 +241,7 @@ List svlsample_cpp (
     const double offset,
     const double stdev,
     const bool gammaprior,
+    const bool correct,
     const CharacterVector& strategy_rcpp) {
 
   const int N = burnin + draws;
@@ -318,7 +319,8 @@ List svlsample_cpp (
       h, ht,
       prior_phi, prior_rho,
       prior_sigma2, prior_mu,
-      stdev, gammaprior, strategy);
+      stdev, gammaprior, correct,
+      strategy);
 
     // update beta
     if (regression) {

@@ -203,10 +203,11 @@ void update_svl (
     const arma::vec& prior_mu,
     const double stdev,
     const bool gammaprior,
+    const bool correct,
     const arma::ivec& strategy) {
 
   // only centered
-  h = draw_latent_auxiliaryMH(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1]);
+  h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1], correct);
   ht = (h-mu)/sqrt(sigma2);
 
   for (int ipar : strategy) {

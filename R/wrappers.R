@@ -824,6 +824,10 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' the computationally much more efficient \code{\link{svsample}}. This run helps
 #' in finding good initial values for the latent states, giving \code{svlsample}
 #' a considerable initial boost for convergence. Defaults to \code{1000L}.
+#' 
+#' \code{correct.latent.draws}: Single logical value indicating whether to correct
+#' the draws obtained from the auxiliary model of Omori, et al. (2007). Defaults
+#' to \code{TRUE}.
 #' @param \dots Any extra arguments will be forwarded to
 #' \code{\link{updatesummary}}, controlling the type of statistics calculated
 #' for the posterior draws.
@@ -1107,19 +1111,21 @@ svlsample <- function (y, draws = 10000, burnin = 10000, designmatrix = NA,
   expertdefault <- list(parameterization = rep(strategies, 5),  # default: ASISx5
                         mhcontrol = 0.1,
                         gammaprior = TRUE,
-                        init.with.svsample = 1000L)
+                        init.with.svsample = 1000L,
+                        correct.latent.draws = TRUE)
   if (missing(expert)) {
     parameterization <- expertdefault$parameterization
     mhcontrol <- expertdefault$mhcontrol
     gammaprior <- expertdefault$gammaprior
     init.with.svsample <- expertdefault$init.with.svsample
+    correct.latent.draws <- expertdefault$correct.latent.draws
   } else {
     expertnames <- names(expert)
     if (!is.list(expert) || is.null(expertnames) || any(expertnames == ""))
       stop("Argument 'expert' must be a named list with nonempty names.")
     if (length(unique(expertnames)) != length(expertnames))
       stop("No duplicate elements allowed in argument 'expert'.")
-    allowednames <- c("parameterization", "mhcontrol", "gammaprior", "init.with.svsample")
+    allowednames <- c("parameterization", "mhcontrol", "gammaprior", "init.with.svsample", "correct.latent.draws")
     exist <- pmatch(expertnames, allowednames)
     if (any(is.na(exist)))
       stop(paste("Illegal element '", paste(expertnames[is.na(exist)], collapse="' and '"), "' in argument 'expert'.", sep=''))
@@ -1153,7 +1159,6 @@ svlsample <- function (y, draws = 10000, burnin = 10000, designmatrix = NA,
       mhcontrol <- expertdefault$mhcontrol
     }
 
-    # use a Gamma prior for sigma^2 in C?
     if (exists("gammaprior", expertenv)) {
       gammaprior <- expert[["gammaprior"]]
       if (!is.logical(gammaprior)) stop("Argument 'gammaprior' must be TRUE or FALSE.")
@@ -1168,6 +1173,13 @@ svlsample <- function (y, draws = 10000, burnin = 10000, designmatrix = NA,
       init.with.svsample <- as.integer(init.with.svsample)
     } else {
       init.with.svsample <- expertdefault$init.with.svsample
+    }
+
+    if (exists("correct.latent.draws", expertenv)) {
+      correct.latent.draws <- expert[["correct.latent.draws"]]
+      if (!is.logical(correct.latent.draws)) stop("Argument 'correct.latent.draws' must be TRUE or FALSE.")
+    } else {
+      correct.latent.draws <- expertdefault$correct.latent.draws
     }
   }
   
@@ -1218,7 +1230,8 @@ svlsample <- function (y, draws = 10000, burnin = 10000, designmatrix = NA,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                  0.5, 0.5/priorsigma, priormu[1], priormu[2],
                                  priorbeta[1], priorbeta[2], !myquiet,
-                                 myoffset, mhcontrol, gammaprior, parameterization)
+                                 myoffset, mhcontrol, gammaprior, correct.latent.draws,
+                                 parameterization)
   })
 
   if (any(is.na(res))) stop("Sampler returned NA. This is most likely due to bad input checks and shouldn't happen. Please report to package maintainer.")

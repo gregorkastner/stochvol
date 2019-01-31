@@ -53,6 +53,7 @@ void update_svl (
     const arma::vec& prior_mu,
     const double stdev,
     const bool gammaprior,
+    const bool correct,
     const arma::ivec& strategy);
 
 #endif  // UPDATE_FUNCTIONS_H
