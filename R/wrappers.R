@@ -1187,7 +1187,7 @@ svlsample <- function (y, draws = 10000, burnin = 10000, designmatrix = NA,
 
   renameparam <- c("centered" = "C", "noncentered" = "NC")
   if (!quiet) {
-    cat(paste("\nCalling (", paste(renameparam[parameterization], collapse=", "), ") MCMC sampler with ", draws+burnin, " iter. Series length is ", length(y), ".\n",sep=""), file=stderr())
+    cat(paste("\nCalling ", asisprint(renameparam[parameterization], renameparam), " MCMC sampler with ", draws+burnin, " iter. Series length is ", length(y), ".\n",sep=""), file=stderr())
     flush.console()
   }
 

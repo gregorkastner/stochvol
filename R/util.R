@@ -39,3 +39,12 @@ rangetransform.phi <- function (x, r) {
 rangetransform.sigma2 <- function (x, r) {
   rangetransform(x, r, funcinv.sigma2, func.sigma2)
 }
+
+asisprint <- function (x, censtring) {
+  if (length(x) %% 2 == 0) {
+    toshorten <- rep(as.character(censtring), length(x)/2)
+    if (identical(toshorten, as.character(x)))
+      return(sprintf("ASISx%d", length(x)/2))
+  }
+  paste0("(", paste(x, collapse=", "), ")")
+}
