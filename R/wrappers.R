@@ -743,7 +743,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' The default value is 10000.
 #' @param burnin single number greater or equal to 0, indicating the number of
 #' draws discarded as burn-in. Will be automatically coerced to integer. The
-#' default value is 10000.
+#' default value is 1000.
 #' @param designmatrix regression design matrix for modeling the mean. Must
 #' have \code{length(y)} rows. Alternatively, \code{designmatrix} may be a
 #' string of the form \code{"arX"}, where \code{X} is a nonnegative integer. To
@@ -964,7 +964,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #'       col = 2)
 #' }
 #' @export
-svlsample <- function (y, draws = 10000, burnin = 10000, designmatrix = NA,
+svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                        priorrho = c(4, 4), priorbeta = c(0, 10000),
                        thinpara = 1, thinlatent = 1, thintime = 1,
@@ -1004,10 +1004,10 @@ svlsample <- function (y, draws = 10000, burnin = 10000, designmatrix = NA,
   } else {
     if (any(grep("ar[0-9]+$", as.character(designmatrix)[1]))) {
       arorder <- as.integer(gsub("ar", "", as.character(designmatrix)))
-      meanmodel <- paste0("ar", arorder)
       if (length(y) <= arorder + 1) stop("Time series 'y' is to short for this AR process.")
       designmatrix <- matrix(rep(1, length(y) - arorder), ncol = 1)
       colnames(designmatrix) <- c("const")
+      meanmodel <- "constant"
       if (arorder >= 1) {
         for (i in 1:arorder) {
           oldnames <- colnames(designmatrix)
@@ -1015,6 +1015,7 @@ svlsample <- function (y, draws = 10000, burnin = 10000, designmatrix = NA,
           colnames(designmatrix) <- c(oldnames, paste0("ar", i))
         }
         y <- y[-(1:arorder)]
+        meanmodel <- paste0("ar", arorder)
       }
     }
     if (!is.numeric(designmatrix)) stop("Argument 'designmatrix' must be a numeric matrix or an AR-specification.")
