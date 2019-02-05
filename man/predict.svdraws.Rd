@@ -34,7 +34,7 @@ either a) no mean parameter, b) constant mean, c) AR(k) structure, or d) general
 Bayesian regression. In the last case, new regressors need to be provided for prediction.
 }
 \note{
-You can use the resulting object within \code{\link{plot.svdraws}}, or use
+You can use the resulting object within \code{\link{plot.svdraws}} (see example below), or use
 the list items in the usual \code{coda} methods for \code{mcmc} objects to
 print, plot, or summarize the predictions.
 }
@@ -45,7 +45,7 @@ sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
 
 ## Obtain 5000 draws from the sampler (that's not a lot)
 draws <- svsample(sim$y, draws = 5000, burnin = 100,
-		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
 
 ## Predict 10 days ahead
 fore <- predict(draws, 10)
@@ -58,17 +58,17 @@ plot(draws, forecast = fore)
 # Example 2
 ## Simulate now an SV process with an AR(1) mean structure
 len <- 109L
-simar <- svsim(len, phi=0.93, sigma=0.15, mu=-9)
+simar <- svsim(len, phi = 0.93, sigma = 0.15, mu = -9)
 for (i in 2:len) {
-  simar$y[i] <- 0.1 - 0.7*simar$y[i-1] + simar$vol[i]*rnorm(1)
+  simar$y[i] <- 0.1 - 0.7 * simar$y[i-1] + simar$vol[i] * rnorm(1)
 }
 
 ## Obtain 7000 draws
 drawsar <- svsample(simar$y, draws = 7000, burnin = 300,
-     designmatrix = "ar1",
-		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+  designmatrix = "ar1", priormu = c(-10, 1), priorphi = c(20, 1.5),
+  priorsigma = 0.2)
 
-## Predict 7 days ahead (using AR(2) mean for the returns)
+## Predict 7 days ahead (using AR(1) mean for the returns)
 forear <- predict(drawsar, 7)
 
 ## Check out the results
@@ -80,26 +80,24 @@ plot(drawsar, forecast = forear)
 # Example 3
 ## Simulate now an SV process with leverage and with non-zero mean
 len <- 96L
-regressors <- cbind(rep_len(1, len),
-                    rgamma(len, 0.5, 0.25))
+regressors <- cbind(rep_len(1, len), rgamma(len, 0.5, 0.25))
 betas <- rbind(-1.1, 2)
-simreg <- svsim(len, rho=-0.42)
+simreg <- svsim(len, rho = -0.42)
 simreg$y <- simreg$y + as.numeric(regressors \%*\% betas)
 
 ## Obtain 12000 draws
 drawsreg <- svlsample(simreg$y, draws = 12000, burnin = 3000,
-     designmatrix = regressors,
-		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+  designmatrix = regressors, priormu = c(-10, 1), priorphi = c(20, 1.5),
+  priorsigma = 0.2)
 
 ## Predict 5 days ahead using new regressors
 predlen <- 5L
-predregressors <- cbind(rep_len(1, predlen),
-                        rgamma(predlen, 0.5, 0.25))
+predregressors <- cbind(rep_len(1, predlen), rgamma(predlen, 0.5, 0.25))
 forereg <- predict(drawsreg, predlen, predregressors)
 
 ## Check out the results
 summary(forereg)
-plot(drawsreg, forecast = forereg)
+  plot(drawsreg, forecast = forereg)
 }
 }
 \seealso{

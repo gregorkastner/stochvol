@@ -2,6 +2,8 @@
 
 S3method(plot,svdraws)
 S3method(plot,svldraws)
+S3method(plot,svlpredict)
+S3method(plot,svpredict)
 S3method(plot,svresid)
 S3method(plot,svsim)
 S3method(predict,svdraws)

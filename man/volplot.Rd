@@ -54,7 +54,7 @@ needs a \code{newdata} object.} Corresponds to input
 parameter \code{designmatrix} in \code{\link{svsample}} and \code{\link{svlsample}}.
 A matrix of regressors with number of rows equal to parameter \code{forecast}.}
 
-\item{\dots}{further arguments are passed on to the invoked \code{ts.plot}
+\item{\dots}{further arguments are passed on to the invoked \code{\link[stats]{ts.plot}}
 function.}
 }
 \value{
@@ -84,7 +84,7 @@ volplot(draws, forecast = 10)
 
 ## Re-plot with different quantiles
 newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
-draws <- updatesummary(draws, quantiles=newquants)
+draws <- updatesummary(draws, quantiles = newquants)
 
 volplot(draws, forecast = 10)
 

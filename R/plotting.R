@@ -1,3 +1,58 @@
+#' Graphical Summary of the Posterior Predictive Distribution
+#' 
+#' \code{plot.svpredict} and \code{plot.svlpredict} generate some plots
+#' visualizing the posterior predictive distribution of future volatilites and
+#' future observations.
+#' 
+#' @param x \code{svpredict} or \code{svlpredict} object.
+#' @param quantiles Which quantiles to plot? Defaults to
+#' \code{c(.05, .25, .5, .75, .95)}.
+#' @param \dots further arguments are passed on to the invoked
+#' \code{\link[stats]{ts.plot}} function.
+#' @return Called for its side effects. Returns argument \code{x} invisibly.
+#' @note Note that \code{svpredict} or \code{svlpredict} objects can also be used within
+#' \code{\link{plot.svdraws}} for a possibly more useful visualization. See the examples in
+#' \code{\link{predict.svdraws}} and those below for use cases.
+#' function.
+#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
+#' @seealso \code{\link{plot.svdraws}}, \code{\link{predict.svdraws}}.
+#' @keywords hplot
+#' @examples
+#' 
+#' ## Simulate a short and highly persistent SV process 
+#' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.1)
+#' 
+#' ## Obtain 5000 draws from the sampler (that's not a lot)
+#' draws <- svsample(sim$y, draws = 5000, burnin = 1000)
+#'
+#' ## Predict 10 steps ahead
+#' pred <- predict(draws, 10)
+#'
+#' ## Visualize the predicted distributions
+#' plot(pred)
+#' 
+#' ## Plot the latent volatilities and some forecasts
+#' plot(draws, forecast = pred)
+#' 
+#' @export
+plot.svpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
+  oldpar <- par(mfrow = c(2, 1), mgp = c(1.8, .8, 0), mar = c(3, 3, 3, 1))
+  ts.plot(t(apply(exp(x$h / 2), 2, quantile, quantiles)), xlab = "Periods ahead")
+  title(paste0("Predicted volatility (", paste0(100*quantiles, collapse = '% / '),
+	       "% quantiles)"))
+  ts.plot(t(apply(x$y, 2, quantile, quantiles)), xlab = "Periods ahead")
+  title(paste0("Predicted data (", paste0(100*quantiles, collapse = '% / '),
+	       "% quantiles)"))
+  par(oldpar)
+  invisible(x)
+}
+
+#' @rdname plot.svpredict
+#' @export
+plot.svlpredict <- function(x, ...) {
+  plot.svpredict(x, ...)
+}
+
 #' Probability Density Function Plot for the Parameter Posteriors
 #' 
 #' Displays a plot of the density estimate for the posterior distribution of
@@ -156,7 +211,7 @@ paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simo
 #' @param simobj object of class \code{svsim} as returned by the SV simulation
 #' function \code{\link{svsim}}. If provided, ``true'' data generating values
 #' will be added to the plot(s).
-#' @param \dots further arguments are passed on to the invoked \code{ts.plot}
+#' @param \dots further arguments are passed on to the invoked \code{\link[stats]{ts.plot}}
 #' function.
 #' @param newdata corresponds to parameter \code{newdata} in \code{\link{predict.svdraws}}.
 #' \emph{Only if \code{forecast} is a positive integer and \code{\link{predict.svdraws}}
@@ -187,7 +242,7 @@ paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simo
 #' 
 #' ## Re-plot with different quantiles
 #' newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
-#' draws <- updatesummary(draws, quantiles=newquants)
+#' draws <- updatesummary(draws, quantiles = newquants)
 #' 
 #' volplot(draws, forecast = 10)
 #' 

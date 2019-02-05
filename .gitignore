@@ -1,3 +1,6 @@
+# Swap files
+.swp
+
 # History files
 .Rhistory
 .Rapp.history
