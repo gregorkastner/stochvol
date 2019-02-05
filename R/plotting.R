@@ -8,7 +8,7 @@
 #' @param quantiles Which quantiles to plot? Defaults to
 #' \code{c(.05, .25, .5, .75, .95)}.
 #' @param \dots further arguments are passed on to the invoked
-#' \code{\link[stats]{ts.plot}} function.
+#' \code{\link[stats]{ts.plot}} or \code{\link[graphics]{boxplot}} function.
 #' @return Called for its side effects. Returns argument \code{x} invisibly.
 #' @note Note that \code{svpredict} or \code{svlpredict} objects can also be used within
 #' \code{\link{plot.svdraws}} for a possibly more useful visualization. See the examples in
@@ -38,16 +38,18 @@
 plot.svpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
   oldpar <- par(mfrow = c(2, 1), mgp = c(1.8, .8, 0), mar = c(3, 3, 3, 1))
   if (ncol(x$h) == 1L) {
-    boxplot(apply(exp(x$h / 2), 2, quantile, quantiles), names = "1 period ahead", show.names = TRUE)
+    boxplot(apply(exp(x$h / 2), 2, quantile, quantiles), names = "1 period ahead",
+	    show.names = TRUE, ...)
   } else {
-    ts.plot(t(apply(exp(x$h / 2), 2, quantile, quantiles)), xlab = "Periods ahead")
+    ts.plot(t(apply(exp(x$h / 2), 2, quantile, quantiles)), xlab = "Periods ahead", ...)
   }
   title(paste0("Predicted volatility (", paste0(100*quantiles, collapse = '% / '),
 	       "% quantiles)"))
   if (ncol(x$h) == 1L) {
-    boxplot(apply(x$y, 2, quantile, quantiles), names = "1 period ahead", show.names = TRUE)
+    boxplot(apply(x$y, 2, quantile, quantiles), names = "1 period ahead",
+	    show.names = TRUE, ...)
   } else {
-    ts.plot(t(apply(x$y, 2, quantile, quantiles)), xlab = "Periods ahead")
+    ts.plot(t(apply(x$y, 2, quantile, quantiles)), xlab = "Periods ahead", ...)
   }
   title(paste0("Predicted data (", paste0(100*quantiles, collapse = '% / '),
 	       "% quantiles)"))

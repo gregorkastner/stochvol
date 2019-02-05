@@ -17,7 +17,7 @@
 \code{c(.05, .25, .5, .75, .95)}.}
 
 \item{\dots}{further arguments are passed on to the invoked
-\code{\link[stats]{ts.plot}} function.}
+\code{\link[stats]{ts.plot}} or \code{\link[graphics]{boxplot}} function.}
 }
 \value{
 Called for its side effects. Returns argument \code{x} invisibly.
