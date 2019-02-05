@@ -10,10 +10,10 @@
 #' @param \dots further arguments are passed on to the invoked
 #' \code{\link[stats]{ts.plot}} or \code{\link[graphics]{boxplot}} function.
 #' @return Called for its side effects. Returns argument \code{x} invisibly.
-#' @note Note that \code{svpredict} or \code{svlpredict} objects can also be used within
-#' \code{\link{plot.svdraws}} for a possibly more useful visualization. See the examples in
-#' \code{\link{predict.svdraws}} and those below for use cases.
-#' function.
+#' @note Note that \code{svpredict} or \code{svlpredict} objects can also be
+#' used within \code{\link{plot.svdraws}} for a possibly more useful
+#' visualization. See the examples in \code{\link{predict.svdraws}} and
+#' those below for use cases.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @seealso \code{\link{plot.svdraws}}, \code{\link{predict.svdraws}}.
 #' @keywords hplot

@@ -28,10 +28,10 @@ visualizing the posterior predictive distribution of future volatilites and
 future observations.
 }
 \note{
-Note that \code{svpredict} or \code{svlpredict} objects can also be used within
-\code{\link{plot.svdraws}} for a possibly more useful visualization. See the examples in
-\code{\link{predict.svdraws}} and those below for use cases.
-function.
+Note that \code{svpredict} or \code{svlpredict} objects can also be
+used within \code{\link{plot.svdraws}} for a possibly more useful
+visualization. See the examples in \code{\link{predict.svdraws}} and
+those below for use cases.
 }
 \examples{
 
