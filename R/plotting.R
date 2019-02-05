@@ -37,10 +37,18 @@
 #' @export
 plot.svpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
   oldpar <- par(mfrow = c(2, 1), mgp = c(1.8, .8, 0), mar = c(3, 3, 3, 1))
-  ts.plot(t(apply(exp(x$h / 2), 2, quantile, quantiles)), xlab = "Periods ahead")
+  if (ncol(x$h) == 1L) {
+    boxplot(apply(exp(x$h / 2), 2, quantile, quantiles), names = "1 period ahead", show.names = TRUE)
+  } else {
+    ts.plot(t(apply(exp(x$h / 2), 2, quantile, quantiles)), xlab = "Periods ahead")
+  }
   title(paste0("Predicted volatility (", paste0(100*quantiles, collapse = '% / '),
 	       "% quantiles)"))
-  ts.plot(t(apply(x$y, 2, quantile, quantiles)), xlab = "Periods ahead")
+  if (ncol(x$h) == 1L) {
+    boxplot(apply(x$y, 2, quantile, quantiles), names = "1 period ahead", show.names = TRUE)
+  } else {
+    ts.plot(t(apply(x$y, 2, quantile, quantiles)), xlab = "Periods ahead")
+  }
   title(paste0("Predicted data (", paste0(100*quantiles, collapse = '% / '),
 	       "% quantiles)"))
   par(oldpar)
