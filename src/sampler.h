@@ -54,7 +54,7 @@ Rcpp::List svlsample_cpp (
     const double prior_beta_sigma,
     const bool verbose,
     const double offset,
-    const double stdev,
+    const arma::mat& proposal_chol,
     const bool gammaprior,
     const bool correct,
     const Rcpp::CharacterVector& strategy);

@@ -201,7 +201,8 @@ void update_svl (
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
-    const double stdev,
+    const arma::mat& proposal_chol,
+    const arma::mat& proposal_chol_inv,
     const bool gammaprior,
     const bool correct,
     const arma::ivec& strategy) {
@@ -221,7 +222,8 @@ void update_svl (
             prior_sigma2,
             prior_mu,
             par,
-            stdev,
+            proposal_chol,
+            proposal_chol_inv,
             gammaprior);
         break;
       case Parameterization::NONCENTERED:
@@ -232,7 +234,8 @@ void update_svl (
             prior_sigma2,
             prior_mu,
             par,
-            stdev,
+            proposal_chol,
+            proposal_chol_inv,
             gammaprior);
         break;
     }

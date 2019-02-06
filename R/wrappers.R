@@ -1214,6 +1214,19 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     startpara[c("mu", "phi", "sigma")] <-
       as.list(apply(init.res$para, 2, median))
     startlatent <- as.numeric(apply(init.res$latent, 2, median))
+
+    # calculate proposal covariance matrix (in the order of svlsample)
+    phi.t <- 0.5*log(2/(1-init.res$para[, "phi"])-1)
+    #rho.t we don't have
+    sigma2.t <- 2*log(init.res$para[, "sigma"])
+    mu.t <- init.res$para[, "mu"]
+    cov.svsample <- cov(cbind(phi.t, 0, sigma2.t, mu.t))
+    cov.svsample[2, 2] <- if (is.null(expert$var.rho)) 1 else expert$var.rho
+    if (!quiet) {
+      cat("Covariance matrix used for proposal:\n", file=stderr())
+      print(cov.svsample)
+      cat("\n", file=stderr())
+    }
   }
 
   renameparam <- c("centered" = "C", "noncentered" = "NC")
@@ -1230,7 +1243,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                  0.5, 0.5/priorsigma, priormu[1], priormu[2],
                                  priorbeta[1], priorbeta[2], !myquiet,
-                                 myoffset, mhcontrol, gammaprior, correct.latent.draws,
+                                 myoffset, mhcontrol*t(chol(cov.svsample)), gammaprior, correct.latent.draws,
                                  parameterization)
   })
 

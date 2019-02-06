@@ -51,7 +51,8 @@ void update_svl (
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
-    const double stdev,
+    const arma::mat& proposal_chol,
+    const arma::mat& proposal_chol_inv,
     const bool gammaprior,
     const bool correct,
     const arma::ivec& strategy);
