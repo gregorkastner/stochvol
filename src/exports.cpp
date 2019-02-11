@@ -99,7 +99,7 @@ RcppExport SEXP _stochvol_RcppExport_registerCCallable() {
 
 static const R_CallMethodDef CallEntries[] = {
     {"_stochvol_svsample_cpp", (DL_FUNC) &_stochvol_svsample_cpp, 27},
-    {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 26},
+    {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 25},
     {"_stochvol_RcppExport_registerCCallable", (DL_FUNC) &_stochvol_RcppExport_registerCCallable, 0},
     {NULL, NULL, 0}
 };

@@ -4,6 +4,8 @@
 #include "theta-utils.h"
 #include "parameterization.h"
 
+extern int count_phi_accept;  // TODO remove!
+
 void draw_theta_rwMH(
     double& phi,
     double& rho,
@@ -29,6 +31,7 @@ void draw_theta_rwMH(
     theta_log_likelihood(phi, rho, sigma2, mu, y, h, ht, centering)) -
     (prop_new_logdens - prop_old_logdens);
   if (log_acceptance > 0 || exp(log_acceptance) > R::runif(0, 1)) {
+    count_phi_accept++;
     phi = phi_prop;
     rho = rho_prop;
     sigma2 = sigma2_prop;

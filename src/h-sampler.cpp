@@ -7,6 +7,8 @@
 #include "auxmix.h"
 #include "parameterization.h"
 
+extern int count_h_accept;  // TODO remove!
+
 using namespace Rcpp;
 
 arma::vec draw_latent(
@@ -97,6 +99,7 @@ arma::vec correct_latent_auxiliaryMH(
   const double log_acceptance = hlp1-hlp2-(halp1-halp2);
   arma::vec result;
   if (log_acceptance > 0 || exp(log_acceptance) > R::runif(0, 1)) {
+    count_h_accept++;
     result = proposed;
   } else {
     result = h;

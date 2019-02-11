@@ -1125,7 +1125,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
       stop("Argument 'expert' must be a named list with nonempty names.")
     if (length(unique(expertnames)) != length(expertnames))
       stop("No duplicate elements allowed in argument 'expert'.")
-    allowednames <- c("parameterization", "mhcontrol", "gammaprior", "init.with.svsample", "correct.latent.draws")
+    allowednames <- c("parameterization", "mhcontrol", "gammaprior", "init.with.svsample", "correct.latent.draws", "var.rho")
     exist <- pmatch(expertnames, allowednames)
     if (any(is.na(exist)))
       stop(paste("Illegal element '", paste(expertnames[is.na(exist)], collapse="' and '"), "' in argument 'expert'.", sep=''))
