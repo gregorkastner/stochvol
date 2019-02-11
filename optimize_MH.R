@@ -6,14 +6,14 @@ library(stochvol, lib.loc = paste0(Sys.getenv("HOME"), "/R/under_development"))
 dat <- readRDS("dat.RDS")
 
 version <- "1"
-iTaskID <- as.integer(Sys.getenv("SGE_TASK_ID", 1))
+iTaskID <- as.integer(Sys.getenv("SGE_TASK_ID", 2204))
 cat("Task ID: ", iTaskID, "\n")
 
 vDataIdx <- seq_along(dat)
 vMhgrid <- exp(seq(log(0.001), log(1), length.out=10L))
 vRgrid <- exp(seq(log(0.001), log(2), length.out=10L))
 vCentering <- c("centered", "noncentered")
-dfGrid <- expand.grid(iDataIdx = vDataIdx, 
+dfGrid <- expand.grid(iDataIdx = vDataIdx,
                       dMhgrid = vMhgrid,
                       dRgrid = vRgrid,
                       sCentering = vCentering,
@@ -34,14 +34,14 @@ sDataName <- names(dat)[iDataIdx]
 # set parameters
 dSigma2Prior <- 1
 dMuMean <- -10
-dMuSigma <- sqrt(10)
+dMuSigma <- 10
 dPhiA <- 20
 dPhiB <- 1.5
 dRhoA <- 4
 dRhoB <- 4
-iNsim <- 10000L
-iBurnin <- 15000L
-iSvburnin <- 5000L
+iNsim <- 20000L
+iBurnin <- 20000L
+iSvburnin <- 10000L
 
 # get random seed
 rng <- file("/dev/urandom","rb") # open connection
@@ -65,8 +65,8 @@ lToSave <- list(data.ts = dData,
                 post.summary = summary(lResult),
                 runtime = lResult$runtime,
                 seed = iSeed,
-                accept.rate.param = lResult$accept.phi,
-                accept.rate.latent = lResult$accept.h)
+                accept.rate.param = lResult$accept.phi/iNsim,
+                accept.rate.latent = lResult$accept.h/iNsim)
 
 new.folder <- paste0("results", version, "/", iTaskID)
 dir.create(new.folder, recursive = TRUE, showWarnings = FALSE)
