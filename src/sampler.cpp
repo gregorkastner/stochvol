@@ -217,9 +217,6 @@ List svsample_cpp(
   return cleanUp(mu, phi, sqrt(1/sigma2inv), hstore, h0store, nustore, taustore, betastore);
 }
 
-int count_phi_accept = 0;  // TODO remove! global variable!!
-int count_h_accept = 0;  // TODO remove! global variable!!
-
 List svlsample_cpp (
     const arma::vec& y_in,
     const int draws,
@@ -303,15 +300,7 @@ List svlsample_cpp (
   // "show" holds the number of iterations per progress sign
   const int show = verbose ? progressbar_init(N) : 0;
 
-  count_phi_accept = 0;
-  count_h_accept = 0;
-
   for (int i = -burnin+1; i < draws+1; i++) {
-    if (i < 0) {  // TODO delete
-      count_phi_accept = 0;
-      count_h_accept = 0;
-    }
-
     R_CheckUserInterrupt();
 
     const bool thinpara_round = (thinpara > 1) && (i % thinpara != 0);  // is this a parameter thinning round?
@@ -385,8 +374,6 @@ List svlsample_cpp (
   if (verbose) progressbar_finish(N);  // finalize progress bar
 
   return List::create(
-      _["accept.phi"] = count_phi_accept,
-      _["accept.h"] = count_h_accept,
       _["para"] = params,
       _["latent"] = latent,
       _["beta"] = betas);
