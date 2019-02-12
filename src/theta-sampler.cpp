@@ -17,9 +17,10 @@ void draw_theta_rwMH(
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
     const Parameterization centering,
-    const double stdev,
+    const arma::mat& proposal_chol,
+    const arma::mat& proposal_chol_inv,
     const bool gammaprior) {
-  const arma::vec proposed = theta_propose(phi, rho, sigma2, mu, y, h, ht, stdev);
+  const arma::vec proposed = theta_propose(phi, rho, sigma2, mu, y, h, ht, proposal_chol, proposal_chol_inv);
   const double phi_prop = proposed[0], rho_prop = proposed[1], sigma2_prop = proposed[2],
     mu_prop = proposed[3], prop_old_logdens = proposed[4], prop_new_logdens = proposed[5];
   const double log_acceptance = (theta_log_prior(phi_prop, rho_prop, sigma2_prop, mu_prop, prior_phi, prior_rho, prior_sigma2, prior_mu, gammaprior) +

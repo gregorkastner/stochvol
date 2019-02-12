@@ -20,15 +20,15 @@ namespace stochvol {
         }
     }
 
-    inline void update_svl(const arma::vec& y, const arma::vec& y_star, const arma::ivec& d, double& phi, double& rho, double& sigma2, double& mu, arma::vec& h, arma::vec& ht, const arma::vec& prior_phi, const arma::vec& prior_rho, const arma::vec& prior_sigma2, const arma::vec& prior_mu, const double stdev, const bool gammaprior, const bool correct, const arma::ivec& strategy) {
-        typedef void(*Update_svl)(const arma::vec&, const arma::vec&, const arma::ivec&, double&, double&, double&, double&, arma::vec&, arma::vec&, const arma::vec&, const arma::vec&, const arma::vec&, const arma::vec&, const double, const bool, const bool, const arma::ivec&);
+    inline void update_svl(const arma::vec& y, const arma::vec& y_star, const arma::ivec& d, double& phi, double& rho, double& sigma2, double& mu, arma::vec& h, arma::vec& ht, const arma::vec& prior_phi, const arma::vec& prior_rho, const arma::vec& prior_sigma2, const arma::vec& prior_mu, const arma::mat& proposal_chol, const arma::mat& proposal_chol_inv, const bool gammaprior, const bool correct, const arma::ivec& strategy) {
+        typedef void(*Update_svl)(const arma::vec&, const arma::vec&, const arma::ivec&, double&, double&, double&, double&, arma::vec&, arma::vec&, const arma::vec&, const arma::vec&, const arma::vec&, const arma::vec&, const arma::mat&, const arma::mat&, const bool, const bool, const arma::ivec&);
         static Update_svl p_update_svl = NULL;
         if (p_update_svl == NULL) {
-            //validateSignature("void(*update_svl)(const arma::vec&,const arma::vec&,const arma::ivec&,double&,double&,double&,double&,arma::vec&,arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const double,const bool,const bool,const arma::ivec&)");
+            //validateSignature("void(*update_svl)(const arma::vec&,const arma::vec&,const arma::ivec&,double&,double&,double&,double&,arma::vec&,arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::mat&, const arma::mat&,const bool,const bool,const arma::ivec&)");
             p_update_svl = (Update_svl)R_GetCCallable("stochvol", "update_svl");
         }
         {
-            p_update_svl(y, y_star, d, phi, rho, sigma2, mu, h, ht, prior_phi, prior_rho, prior_sigma2, prior_mu, stdev, gammaprior, correct, strategy);
+            p_update_svl(y, y_star, d, phi, rho, sigma2, mu, h, ht, prior_phi, prior_rho, prior_sigma2, prior_mu, proposal_chol, proposal_chol_inv, gammaprior, correct, strategy);
         }
     }
 

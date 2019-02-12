@@ -17,7 +17,8 @@ void draw_theta_rwMH(
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
     const Parameterization centering,
-    const double stdev,
+    const arma::mat& proposal_chol,
+    const arma::mat& proposal_chol_inv,
     const bool gammaprior);
 
 #endif  // THETA_SAMPLER_H

@@ -810,11 +810,6 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' equivalent to \code{rep(c("centered", "noncentered"), X)}.
 #' Defaults to \code{"asis5"}.
 #' 
-#' \code{mhcontrol}: Single numeric value controlling the proposal density of a
-#' Metropolis-Hastings (MH) update step when jointly sampling \code{mu}, \code{phi},
-#' \code{sigma}, and \code{rho}. It controls the stepsize of a log-random-walk
-#' proposal. Defaults to \code{0.1}.
-#' 
 #' \code{gammaprior}: Single logical value indicating whether a Gamma prior for
 #' \code{sigma^2} should be used. If set to \code{FALSE}, a moment-matched Inverse Gamma
 #' prior is employed. Defaults to \code{TRUE}.
@@ -823,6 +818,21 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' the computationally much more efficient \code{\link{svsample}}. This run helps
 #' in finding good initial values for the latent states, giving \code{svlsample}
 #' a considerable initial boost for convergence. Defaults to \code{1000L}.
+#' 
+#' \code{mhcontrol}: Either a single numeric value specifying the diagonal elements of
+#' a diagonal covariance matrix, or a list with two elements, both single numeric values
+#' (explained later), or a 4x4 covariance matrix. Argument \code{mhcontrol} controls the
+#' proposal density of a Metropolis-Hastings (MH) update step when jointly sampling \code{mu},
+#' \code{phi}, \code{sigma}, and \code{rho}. It specifies the covariance matrix of a
+#' log-random-walk proposal. In case \code{mhcontrol} is a list of length two, its elements
+#' have to be \code{scale} and \code{rho.var}. In this case, the covariance matrix is calculated
+#' from the pre-burnin step with \code{\link{svsample}}, which gives an approximate
+#' posterior structure of the second moment for \code{mu}, \code{phi}, and \code{sigma}.
+#' This covariance matrix is then extended with \code{mhcontrol$rho.var}, specifying the
+#' variance for \code{rho}. The off-diagonal elements belonging to \code{rho} are set
+#' to 0. Finally, the whole covariance matrix is scaled by \code{mhcontrol$scale}. For
+#' this case to work, \code{init.with.svsample} has to be positive.
+#' Defaults to \code{list(scale=0.35, rho.var=0.02)}.
 #' 
 #' \code{correct.latent.draws}: Single logical value indicating whether to correct
 #' the draws obtained from the auxiliary model of Omori, et al. (2007). Defaults
@@ -1109,7 +1119,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   # Some error checking for expert
   strategies <- c("centered", "noncentered")
   expertdefault <- list(parameterization = rep(strategies, 5),  # default: ASISx5
-                        mhcontrol = 0.1,
+                        mhcontrol = list(scale=0.35, rho.var=0.02),
                         gammaprior = TRUE,
                         init.with.svsample = 1000L,
                         correct.latent.draws = TRUE)
@@ -1150,11 +1160,16 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
       parameterization <- expertdefault$parameterization
     }
 
-    # Remark: mhcontrol > 0 controls stepsize of log-random-walk proposal
     if (exists("mhcontrol", expertenv)) {
       mhcontrol <- expert[["mhcontrol"]]
-      if (!is.numeric(mhcontrol) || length(mhcontrol) != 1 || mhcontrol <= 0)
-        stop("Argument 'mhcontrol' must be a single positive number.")
+      if (!(is.numeric(mhcontrol) &&
+          ((length(mhcontrol) == 1 && mhcontrol > 0) ||
+           (is.matrix(mhcontrol) && NROW(mhcontrol) == 4 && NCOL(mhcontrol) == 4))) ||
+          !(is.list(mhcontrol) && length(mhcontrol) == 2 &&
+            all(sort(c("row.var", "scale")) == sort(names(mhcontrol))) &&
+            is.numeric(mhcontrol$row.var) && mhcontrol$row.var > 0 &&
+            is.numeric(mhcontrol$scale) && mhcontrol$scale > 0))
+        stop("Argument 'mhcontrol' must be a single positive number, a list of two of positive numbers with names 'scale' and 'row.var', or a 4x4 covariance matrix.")
     } else {
       mhcontrol <- expertdefault$mhcontrol
     }
@@ -1170,6 +1185,8 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
       init.with.svsample <- expert[["init.with.svsample"]]
       if (!is.numeric(init.with.svsample) || length(init.with.svsample) != 1 || init.with.svsample < 0)
         stop("Argument 'init.with.svsample' must be a single non-negative number.")
+      if (length(mhcontrol) == 2 && init.with.svsample == 0)
+        stop("In case argument 'init.with.svsample' is set to 0, 'mhcontrol' cannot be of length 2.")
       init.with.svsample <- as.integer(init.with.svsample)
     } else {
       init.with.svsample <- expertdefault$init.with.svsample
@@ -1216,6 +1233,21 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     startlatent <- as.numeric(apply(init.res$latent, 2, median))
   }
 
+  if (length(mhcontrol) == 1) {
+    cov.mh <- diag(mhcontrol, nrow = 4, ncol = 4)
+  } else if (length(mhcontrol) == 2) {  # in this case init.with.svsample > 0
+      # calculate proposal covariance matrix (in the order of svlsample)
+      phi.t <- 0.5*log(2/(1-init.res$para[, "phi"])-1)
+      #rho.t we don't have
+      sigma2.t <- 2*log(init.res$para[, "sigma"])
+      mu.t <- init.res$para[, "mu"]
+      cov.mh <- cov(cbind(phi.t, rho.t = 0, sigma2.t, mu.t))
+      cov.mh[2, 2] <- mhcontrol$rho.var
+      cov.mh <- mhcontrol$scale*cov.mh
+  } else {  # mhcontrol is a covariance matrix already
+    cov.mh <- mhcontrol
+  }
+
   renameparam <- c("centered" = "C", "noncentered" = "NC")
   if (!quiet) {
     cat(paste("\nCalling ", asisprint(renameparam[parameterization], renameparam), " MCMC sampler with ", draws+burnin, " iter. Series length is ", length(y), ".\n",sep=""), file=stderr())
@@ -1230,7 +1262,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                  0.5, 0.5/priorsigma, priormu[1], priormu[2],
                                  priorbeta[1], priorbeta[2], !myquiet,
-                                 myoffset, mhcontrol, gammaprior, correct.latent.draws,
+                                 myoffset, t(chol(cov.mh)), gammaprior, correct.latent.draws,
                                  parameterization)
   })
 
@@ -1374,7 +1406,8 @@ svlsample2 <- function(y, draws = 1, burnin = 0,
                                priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                0.5, 0.5/priorsigma, priormu[1], priormu[2],
                                0, 1, !quiet,
-                               0, 0.1, TRUE, TRUE, rep(c("centered", "noncentered"), 5))
+                               0, diag(0.1, nrow = 4, ncol = 4), TRUE,
+                               TRUE, rep(c("centered", "noncentered"), 5))
 
   res$para <- t(res$para)
   res$latent <- t(res$latent)

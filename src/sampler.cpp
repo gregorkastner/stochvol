@@ -239,7 +239,7 @@ List svlsample_cpp (
     const double prior_beta_sigma,
     const bool verbose,
     const double offset,
-    const double stdev,
+    const arma::mat& proposal_chol,
     const bool gammaprior,
     const bool correct,
     const CharacterVector& strategy_rcpp) {
@@ -269,6 +269,9 @@ List svlsample_cpp (
   const arma::vec prior_rho = {prior_rho_a, prior_rho_b};
   const arma::vec prior_sigma2 = {prior_sigma2_shape, prior_sigma2_rate};
   const arma::vec prior_mu = {prior_mu_mu, prior_mu_sigma};
+
+  // inverse of the Cholesky factor of the covariance matrix
+  const arma::mat proposal_chol_inv = arma::inv(trimatl(proposal_chol));
 
   // don't use strings or RcppCharacterVector
   arma::ivec strategy(strategy_rcpp.length());
@@ -318,7 +321,9 @@ List svlsample_cpp (
       h, ht,
       prior_phi, prior_rho,
       prior_sigma2, prior_mu,
-      stdev, gammaprior, correct,
+      proposal_chol,
+      proposal_chol_inv,
+      gammaprior, correct,
       strategy);
 
     // update beta

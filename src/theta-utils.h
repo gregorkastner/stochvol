@@ -49,16 +49,6 @@ double theta_transform_inv_log_det_jac(
     const double sigma2,
     const double mu);
 
-arma::vec theta_proposal_stdev(
-    const double phi,
-    const double rho,
-    const double sigma2,
-    const double mu,
-    const arma::vec& y,
-    const arma::vec& h,
-    const arma::vec& ht,
-    const double stdev);
-
 arma::vec theta_propose(
     const double phi,
     const double rho,
@@ -67,7 +57,8 @@ arma::vec theta_propose(
     const arma::vec& y,
     const arma::vec& h,
     const arma::vec& ht,
-    const double stdev);
+    const arma::mat& proposal_chol,
+    const arma::mat& proposal_chol_inv);
 
 double theta_log_likelihood_c(
     const double phi,
