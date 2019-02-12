@@ -1,5 +1,7 @@
 Changes in Version 2.0.1:
   - Introduced a minimalistic 'plot.svpredict' / 'plot.svlpredict'
+  - More fine-grained control over the covariance matrix in 'svlsample',
+    the default employs an approximate covariance matrix coming from 'svsample'
 
 Changes in Version 2.0.0:
   - New collaborator: Darjus Hosszejni
