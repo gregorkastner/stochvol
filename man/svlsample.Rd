@@ -103,11 +103,6 @@ vector of the form \code{"asisX"}, where \code{X} is an integer, which is
 equivalent to \code{rep(c("centered", "noncentered"), X)}.
 Defaults to \code{"asis5"}.
 
-\code{mhcontrol}: Single numeric value controlling the proposal density of a
-Metropolis-Hastings (MH) update step when jointly sampling \code{mu}, \code{phi},
-\code{sigma}, and \code{rho}. It controls the stepsize of a log-random-walk
-proposal. Defaults to \code{0.1}.
-
 \code{gammaprior}: Single logical value indicating whether a Gamma prior for
 \code{sigma^2} should be used. If set to \code{FALSE}, a moment-matched Inverse Gamma
 prior is employed. Defaults to \code{TRUE}.
@@ -116,6 +111,21 @@ prior is employed. Defaults to \code{TRUE}.
 the computationally much more efficient \code{\link{svsample}}. This run helps
 in finding good initial values for the latent states, giving \code{svlsample}
 a considerable initial boost for convergence. Defaults to \code{1000L}.
+
+\code{mhcontrol}: Either a single numeric value specifying the diagonal elements of
+a diagonal covariance matrix, or a list with two elements, both single numeric values
+(explained later), or a 4x4 covariance matrix. Argument \code{mhcontrol} controls the
+proposal density of a Metropolis-Hastings (MH) update step when jointly sampling \code{mu},
+\code{phi}, \code{sigma}, and \code{rho}. It specifies the covariance matrix of a
+log-random-walk proposal. In case \code{mhcontrol} is a list of length two, its elements
+have to be \code{scale} and \code{rho.var}. In this case, the covariance matrix is calculated
+from the pre-burnin step with \code{\link{svsample}}, which gives an approximate
+posterior structure of the second moment for \code{mu}, \code{phi}, and \code{sigma}.
+This covariance matrix is then extended with \code{mhcontrol$rho.var}, specifying the
+variance for \code{rho}. The off-diagonal elements belonging to \code{rho} are set
+to 0. Finally, the whole covariance matrix is scaled by \code{mhcontrol$scale}. For
+this case to work, \code{init.with.svsample} has to be positive.
+Defaults to \code{list(scale=0.35, rho.var=0.02)}.
 
 \code{correct.latent.draws}: Single logical value indicating whether to correct
 the draws obtained from the auxiliary model of Omori, et al. (2007). Defaults
