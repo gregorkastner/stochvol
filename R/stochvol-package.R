@@ -84,7 +84,7 @@ NULL
 #' @useDynLib stochvol, .registration = TRUE
 #' @importFrom utils tail head flush.console
 #' @importFrom graphics plot par hist mtext lines title matplot points abline layout plot.default axis boxplot
-#' @importFrom stats rt rnorm sd IQR density time lowess dnorm dbeta dgamma dunif qnorm qt ppoints ts.plot median quantile predict plot.ts qqline qqnorm qqplot
+#' @importFrom stats cov rt rnorm sd IQR density time lowess dnorm dbeta dgamma dunif qnorm qt ppoints ts.plot median quantile predict plot.ts qqline qqnorm qqplot
 #' @importFrom coda mcmc nvar niter varnames traceplot mcmc.list nvar nchain effectiveSize mcpar
 #' @importFrom Rcpp sourceCpp
 #' @note This package is currently in active development. Your comments,
