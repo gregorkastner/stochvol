@@ -433,9 +433,9 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
 
   volpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*resilast*standardizer + sqrt(1-rho^2)*rnorm(len))
   if (steps > 1) {
-    resi <- rt(len, df=nu)  # either rho == 0 or nu == Inf
-    incr <- rho*resi*standardizer + sqrt(1-rho^2)*rnorm(len)
     for (i in seq.int(from=2, to=steps)) {
+      resi <- rt(len, df=nu)  # either rho == 0 or nu == Inf
+      incr <- rho*resi*standardizer + sqrt(1-rho^2)*rnorm(len)
       ypred[,i-1+arorder] <- rowSums(regressors(ypred, newdata, i-1) * betacoeff) + exp(volpred[,i-1]/2)*resi
       volpred[,i] <- mu + phi*(volpred[,i-1] - mu) + sigma*incr
     }
