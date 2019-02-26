@@ -313,7 +313,8 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' fore <- predict(draws, 10)
 #' 
 #' ## Check out the results
-#' summary(fore)
+#' summary(fore$h)
+#' summary(fore$y)
 #' plot(draws, forecast = fore)
 #' 
 #' 
@@ -334,9 +335,8 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' forear <- predict(drawsar, 7)
 #' 
 #' ## Check out the results
-#' summary(forear)
+#' plot(forear)
 #' plot(drawsar, forecast = forear)
-#' 
 #' 
 #' \dontrun{
 #' # Example 3
@@ -358,8 +358,10 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' forereg <- predict(drawsreg, predlen, predregressors)
 #' 
 #' ## Check out the results
-#' summary(forereg)
-#'   plot(drawsreg, forecast = forereg)
+#' summary(forereg$h)
+#' summary(forereg$y)
+#' plot(forereg)
+#' plot(drawsreg, forecast = forereg)
 #' }
 #' @export
 predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {

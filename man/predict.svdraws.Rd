@@ -51,7 +51,8 @@ draws <- svsample(sim$y, draws = 5000, burnin = 100,
 fore <- predict(draws, 10)
 
 ## Check out the results
-summary(fore)
+summary(fore$h)
+summary(fore$y)
 plot(draws, forecast = fore)
 
 
@@ -72,9 +73,8 @@ drawsar <- svsample(simar$y, draws = 7000, burnin = 300,
 forear <- predict(drawsar, 7)
 
 ## Check out the results
-summary(forear)
+plot(forear)
 plot(drawsar, forecast = forear)
-
 
 \dontrun{
 # Example 3
@@ -96,8 +96,10 @@ predregressors <- cbind(rep_len(1, predlen), rgamma(predlen, 0.5, 0.25))
 forereg <- predict(drawsreg, predlen, predregressors)
 
 ## Check out the results
-summary(forereg)
-  plot(drawsreg, forecast = forereg)
+summary(forereg$h)
+summary(forereg$y)
+plot(forereg)
+plot(drawsreg, forecast = forereg)
 }
 }
 \seealso{
