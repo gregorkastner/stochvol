@@ -1,3 +1,6 @@
+Changes in Version 2.0.2:
+  - Bugfix in 'predict.svdraws'
+
 Changes in Version 2.0.1:
   - Introduced a minimalistic 'plot.svpredict' / 'plot.svlpredict'
   - More fine-grained control over the covariance matrix in 'svlsample',

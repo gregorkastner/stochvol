@@ -249,12 +249,14 @@ residuals.svdraws <- function(object, type = "mean", ...) {
 
   if (object$thinning$time != 1) warning("Not every point in time has been stored ('thintime' was set to a value unequal to 1 during sampling), thus only some residuals have been extracted.")
 
+  y <- as.vector(object$y)
+
   if (type == "mean") {
-    res <- rowMeans(as.numeric(object$y)[seq(1, length(object$y), by=object$thinning$time)] / exp(t(object$latent)/2))
+    res <- rowMeans(y[seq(1, length(y), by=object$thinning$time)] / exp(t(object$latent)/2))
   }
 
   if (type == "median") {
-    res <- apply(as.numeric(object$y)[seq(1, length(object$y), by=object$thinning$time)] / exp(t(object$latent)/2), 1, median)
+    res <- apply(y[seq(1, length(y), by=object$thinning$time)] / exp(t(object$latent)/2), 1, median)
   }
 
   names(res) <- sub("h", "r", colnames(object$latent))
@@ -410,14 +412,14 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   phi <- object$para[,"phi"][usepara]
   sigma <- object$para[,"sigma"][usepara]
   hlast <- object$latent[,dim(object$latent)[2]][uselatent]
-  ylast <- tail(object$y, 1)
+  ylast <- as.vector(tail(object$y, 1))
 
   mythin <- max(thinpara, thinlatent)
   len <- length(sigma)
   volpred <- matrix(as.numeric(NA), nrow=len, ncol=steps)
   ypred <- matrix(as.numeric(NA), nrow=len, ncol=steps+arorder)
 
-  ypred[,seq_len(arorder)] <- matrix(tail(object$y, arorder), nrow=len, ncol=arorder, byrow=TRUE)  # AR(x) helper columns
+  ypred[,seq_len(arorder)] <- matrix(as.vector(tail(object$y, arorder)), nrow=len, ncol=arorder, byrow=TRUE)  # AR(x) helper columns
 
   rho <- if ("rho" %in% colnames(object$para)) object$para[, "rho"][usepara] else 0
   nu <- if ("nu" %in% colnames(object$para)) object$para[, "nu"][usepara] else Inf

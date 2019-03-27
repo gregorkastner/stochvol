@@ -273,6 +273,9 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   if (length(y) < 2) stop("Argument 'y' (data vector) must contain at least two elements.")
 
+  y_orig <- y
+  y <- as.vector(y)
+
   if (any(is.na(designmatrix)) && any(y^2 == 0)) {
     myoffset <- sd(y)/10000
     warning(paste("Argument 'y' (data vector) contains zeros. I am adding an offset constant of size ", myoffset, " to do the auxiliary mixture sampling. If you want to avoid this, you might consider de-meaning the returns before calling this function.", sep=""))
@@ -546,7 +549,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   # store results:
   # remark: +1, because C-sampler also returns the first value
-  res$y <- y
+  res$y <- y_orig
   res$para <- mcmc(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
   res$latent <- mcmc(t(res$latent), burnin+thinlatent, burnin+draws, thinlatent)
   attr(res$latent, "dimnames") <- list(NULL, paste('h_', seq(1, length(y), by=thintime), sep=''))
@@ -985,6 +988,9 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
   if (!is.numeric(y)) stop("Argument 'y' (data vector) must be numeric.")
   if (length(y) < 2) stop("Argument 'y' (data vector) must contain at least two elements.")
+
+  y_orig <- y
+  y <- as.vector(y)
   
   myoffset <- if (any(is.na(designmatrix)) && any(y^2 == 0)) 1.0e-8 else 0
   if (myoffset > 0) {
@@ -1280,7 +1286,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   colnames(res$latent) <- paste0('h_', seq(1, length(y), by=thintime))
   # create svldraws class
   res$runtime <- runtime
-  res$y <- y
+  res$y <- y_orig
   res$para <- coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)
   res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
   res$thinning <- list(para = thinpara, latent = thinlatent, time = thintime)
@@ -1419,5 +1425,5 @@ svlsample2 <- function(y, draws = 1, burnin = 0,
 
 .svsample <- function (...) {
   .Deprecated("svsample2")
-  svsample(...)
+  svsample2(...)
 }
