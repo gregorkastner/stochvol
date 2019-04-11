@@ -55,6 +55,7 @@ void update_svl (
     const arma::mat& proposal_chol_inv,
     const bool gammaprior,
     const bool correct,
-    const arma::ivec& strategy);
+    const arma::ivec& strategy,
+    const bool dontupdatemu);
 
 #endif  // UPDATE_FUNCTIONS_H

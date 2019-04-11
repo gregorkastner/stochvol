@@ -242,7 +242,8 @@ List svlsample_cpp (
     const arma::mat& proposal_chol,
     const bool gammaprior,
     const bool correct,
-    const CharacterVector& strategy_rcpp) {
+    const CharacterVector& strategy_rcpp,
+    const bool dontupdatemu) {
 
   const int N = burnin + draws;
   const bool regression = !ISNA(X.at(0,0));
@@ -324,7 +325,7 @@ List svlsample_cpp (
       proposal_chol,
       proposal_chol_inv,
       gammaprior, correct,
-      strategy);
+      strategy, dontupdatemu);
 
     // update beta
     if (regression) {

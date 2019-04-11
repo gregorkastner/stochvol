@@ -205,7 +205,8 @@ void update_svl (
     const arma::mat& proposal_chol_inv,
     const bool gammaprior,
     const bool correct,
-    const arma::ivec& strategy) {
+    const arma::ivec& strategy,
+    const bool dontupdatemu) {
 
   // only centered
   h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1], correct);
@@ -213,9 +214,18 @@ void update_svl (
 
   for (int ipar : strategy) {
     const Parameterization par = Parameterization(ipar);
-    switch (par) {
-      case Parameterization::CENTERED:
-        draw_theta_rwMH(
+    if (dontupdatemu) {
+        draw_thetamu_rwMH(
+            phi, rho, sigma2, mu, y, h, ht,
+            prior_phi,
+            prior_rho,
+            prior_sigma2,
+            par,
+            proposal_chol.submat(0, 0, 2, 2),
+            proposal_chol_inv.submat(0, 0, 2, 2),
+            gammaprior);
+    } else {
+      draw_theta_rwMH(
             phi, rho, sigma2, mu, y, h, ht,
             prior_phi,
             prior_rho,
@@ -225,19 +235,6 @@ void update_svl (
             proposal_chol,
             proposal_chol_inv,
             gammaprior);
-        break;
-      case Parameterization::NONCENTERED:
-        draw_theta_rwMH(
-            phi, rho, sigma2, mu, y, h, ht,
-            prior_phi,
-            prior_rho,
-            prior_sigma2,
-            prior_mu,
-            par,
-            proposal_chol,
-            proposal_chol_inv,
-            gammaprior);
-        break;
     }
 
     switch (par) {

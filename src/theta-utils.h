@@ -25,6 +25,15 @@ double theta_log_prior(
     const arma::vec& prior_mu,
     const bool gammaprior);
 
+double thetamu_log_prior(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const arma::vec& prior_phi,
+    const arma::vec& prior_rho,
+    const arma::vec& prior_sigma2,
+    const bool gammaprior);
+
 arma::vec theta_transform(
     const double f,
     const double r,
@@ -54,6 +63,16 @@ arma::vec theta_propose(
     const double rho,
     const double sigma2,
     const double mu,
+    const arma::vec& y,
+    const arma::vec& h,
+    const arma::vec& ht,
+    const arma::mat& proposal_chol,
+    const arma::mat& proposal_chol_inv);
+
+arma::vec thetamu_propose(
+    const double phi,
+    const double rho,
+    const double sigma2,
     const arma::vec& y,
     const arma::vec& h,
     const arma::vec& ht,

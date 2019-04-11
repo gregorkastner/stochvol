@@ -44,8 +44,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // svlsample_cpp
-Rcpp::List svlsample_cpp(const arma::vec& y, const int draws, const int burnin, const arma::mat& X, const int thinpara, const int thinlatent, const int thintime, const Rcpp::List& theta_init, const arma::vec& h_init, const double prior_phi_a, const double prior_phi_b, const double prior_rho_a, const double prior_rho_b, const double prior_sigma2_shape, const double prior_sigma2_rate, const double prior_mu_mu, const double prior_mu_sigma, const double prior_beta_mu, const double prior_beta_sigma, const bool verbose, const double offset, const arma::mat& proposal_chol, const bool gammaprior, const bool correct, const Rcpp::CharacterVector& strategy);
-RcppExport SEXP _stochvol_svlsample_cpp(SEXP ySEXP, SEXP drawsSEXP, SEXP burninSEXP, SEXP XSEXP, SEXP thinparaSEXP, SEXP thinlatentSEXP, SEXP thintimeSEXP, SEXP theta_initSEXP, SEXP h_initSEXP, SEXP prior_phi_aSEXP, SEXP prior_phi_bSEXP, SEXP prior_rho_aSEXP, SEXP prior_rho_bSEXP, SEXP prior_sigma2_shapeSEXP, SEXP prior_sigma2_rateSEXP, SEXP prior_mu_muSEXP, SEXP prior_mu_sigmaSEXP, SEXP prior_beta_muSEXP, SEXP prior_beta_sigmaSEXP, SEXP verboseSEXP, SEXP offsetSEXP, SEXP proposal_cholSEXP, SEXP gammapriorSEXP, SEXP correctSEXP, SEXP strategySEXP) {
+Rcpp::List svlsample_cpp(const arma::vec& y, const int draws, const int burnin, const arma::mat& X, const int thinpara, const int thinlatent, const int thintime, const Rcpp::List& theta_init, const arma::vec& h_init, const double prior_phi_a, const double prior_phi_b, const double prior_rho_a, const double prior_rho_b, const double prior_sigma2_shape, const double prior_sigma2_rate, const double prior_mu_mu, const double prior_mu_sigma, const double prior_beta_mu, const double prior_beta_sigma, const bool verbose, const double offset, const arma::mat& proposal_chol, const bool gammaprior, const bool correct, const Rcpp::CharacterVector& strategy, const bool dontupdatemu);
+RcppExport SEXP _stochvol_svlsample_cpp(SEXP ySEXP, SEXP drawsSEXP, SEXP burninSEXP, SEXP XSEXP, SEXP thinparaSEXP, SEXP thinlatentSEXP, SEXP thintimeSEXP, SEXP theta_initSEXP, SEXP h_initSEXP, SEXP prior_phi_aSEXP, SEXP prior_phi_bSEXP, SEXP prior_rho_aSEXP, SEXP prior_rho_bSEXP, SEXP prior_sigma2_shapeSEXP, SEXP prior_sigma2_rateSEXP, SEXP prior_mu_muSEXP, SEXP prior_mu_sigmaSEXP, SEXP prior_beta_muSEXP, SEXP prior_beta_sigmaSEXP, SEXP verboseSEXP, SEXP offsetSEXP, SEXP proposal_cholSEXP, SEXP gammapriorSEXP, SEXP correctSEXP, SEXP strategySEXP, SEXP dontupdatemuSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -74,7 +74,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type gammaprior(gammapriorSEXP);
     Rcpp::traits::input_parameter< const bool >::type correct(correctSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type strategy(strategySEXP);
-    rcpp_result_gen = Rcpp::wrap(svlsample_cpp(y, draws, burnin, X, thinpara, thinlatent, thintime, theta_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, prior_beta_mu, prior_beta_sigma, verbose, offset, proposal_chol, gammaprior, correct, strategy));
+    Rcpp::traits::input_parameter< const bool >::type dontupdatemu(dontupdatemuSEXP);
+    rcpp_result_gen = Rcpp::wrap(svlsample_cpp(y, draws, burnin, X, thinpara, thinlatent, thintime, theta_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, prior_beta_mu, prior_beta_sigma, verbose, offset, proposal_chol, gammaprior, correct, strategy, dontupdatemu));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -84,7 +85,7 @@ static int _stochvol_RcppExport_validate(const char* sig) {
     static std::set<std::string> signatures;
     if (signatures.empty()) {
         signatures.insert("void(*update_sv)(const arma::vec&,arma::vec&,arma::vec&,double&,arma::vec&,arma::ivec&,const bool,const double,const double,const double,const double,const double,const double,const double,const double,const double,const bool,const bool,const double,const int,const int,const bool,const double)");
-        signatures.insert("void(*update_svl)(const arma::vec&,const arma::vec&,const arma::ivec&,double&,double&,double&,double&,arma::vec&,arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const double,const bool,const bool,const arma::ivec&)");
+        signatures.insert("void(*update_svl)(const arma::vec&,const arma::vec&,const arma::ivec&,double&,double&,double&,double&,arma::vec&,arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const double,const bool,const bool,const arma::ivec&,const bool)");
     }
     return signatures.find(sig) != signatures.end();
 }
@@ -99,7 +100,7 @@ RcppExport SEXP _stochvol_RcppExport_registerCCallable() {
 
 static const R_CallMethodDef CallEntries[] = {
     {"_stochvol_svsample_cpp", (DL_FUNC) &_stochvol_svsample_cpp, 27},
-    {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 25},
+    {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 26},
     {"_stochvol_RcppExport_registerCCallable", (DL_FUNC) &_stochvol_RcppExport_registerCCallable, 0},
     {NULL, NULL, 0}
 };

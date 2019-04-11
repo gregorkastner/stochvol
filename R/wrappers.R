@@ -980,7 +980,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                        priorrho = c(4, 4), priorbeta = c(0, 10000),
                        thinpara = 1, thinlatent = 1, thintime = 1,
-                       quiet = FALSE, startpara, startlatent, expert, ...) {
+                       quiet = FALSE, startpara, startlatent, expert, dontupdatemu = FALSE, ...) {
   # Some error checking for y
   if (inherits(y, "svsim")) {
     y <- y[["y"]]
@@ -1234,22 +1234,22 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
       cat(paste0("Initial values: time taken by 'svsample': ", round(init.runtime["elapsed"], 3), " seconds.\n"), file=stderr())
     }
 
-    startpara[c("mu", "phi", "sigma")] <-
-      as.list(apply(init.res$para, 2, median))
+    #startpara[c("mu", "phi", "sigma")] <-
+      #as.list(apply(init.res$para, 2, median))
     startlatent <- as.numeric(apply(init.res$latent, 2, median))
   }
 
   if (length(mhcontrol) == 1) {
     cov.mh <- diag(mhcontrol, nrow = 4, ncol = 4)
   } else if (length(mhcontrol) == 2) {  # in this case init.with.svsample > 0
-      # calculate proposal covariance matrix (in the order of svlsample)
-      phi.t <- 0.5*log(2/(1-init.res$para[, "phi"])-1)
-      #rho.t we don't have
-      sigma2.t <- 2*log(init.res$para[, "sigma"])
-      mu.t <- init.res$para[, "mu"]
-      cov.mh <- cov(cbind(phi.t, rho.t = 0, sigma2.t, mu.t))
-      cov.mh[2, 2] <- mhcontrol$rho.var
-      cov.mh <- mhcontrol$scale*cov.mh
+    # calculate proposal covariance matrix (in the order of svlsample)
+    phi.t <- 0.5*log(2/(1-init.res$para[, "phi"])-1)
+    #rho.t we don't have
+    sigma2.t <- 2*log(init.res$para[, "sigma"])
+    mu.t <- init.res$para[, "mu"]
+    cov.mh <- cov(cbind(phi.t, rho.t = 0, sigma2.t, mu.t))
+    cov.mh[2, 2] <- mhcontrol$rho.var
+    cov.mh <- mhcontrol$scale*cov.mh
   } else {  # mhcontrol is a covariance matrix already
     cov.mh <- mhcontrol
   }
@@ -1269,7 +1269,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  0.5, 0.5/priorsigma, priormu[1], priormu[2],
                                  priorbeta[1], priorbeta[2], !myquiet,
                                  myoffset, t(chol(cov.mh)), gammaprior, correct.latent.draws,
-                                 parameterization)
+                                 parameterization, dontupdatemu)
   })
 
   if (any(is.na(res))) stop("Sampler returned NA. This is most likely due to bad input checks and shouldn't happen. Please report to package maintainer.")

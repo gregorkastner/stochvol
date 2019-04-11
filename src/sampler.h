@@ -57,7 +57,8 @@ Rcpp::List svlsample_cpp (
     const arma::mat& proposal_chol,
     const bool gammaprior,
     const bool correct,
-    const Rcpp::CharacterVector& strategy);
+    const Rcpp::CharacterVector& strategy,
+    const bool dontupdatemu);
 
 #endif  // _SAMPLER_H_
 
