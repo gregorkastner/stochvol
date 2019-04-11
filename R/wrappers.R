@@ -980,7 +980,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                        priorrho = c(4, 4), priorbeta = c(0, 10000),
                        thinpara = 1, thinlatent = 1, thintime = 1,
-                       quiet = FALSE, startpara, startlatent, expert, dontupdatemu = FALSE, ...) {
+                       quiet = FALSE, startpara, startlatent, expert, ...) {
   # Some error checking for y
   if (inherits(y, "svsim")) {
     y <- y[["y"]]
@@ -1234,8 +1234,8 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
       cat(paste0("Initial values: time taken by 'svsample': ", round(init.runtime["elapsed"], 3), " seconds.\n"), file=stderr())
     }
 
-    #startpara[c("mu", "phi", "sigma")] <-
-      #as.list(apply(init.res$para, 2, median))
+    startpara[c("mu", "phi", "sigma")] <-
+      as.list(apply(init.res$para, 2, median))
     startlatent <- as.numeric(apply(init.res$latent, 2, median))
   }
 
@@ -1269,7 +1269,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  0.5, 0.5/priorsigma, priormu[1], priormu[2],
                                  priorbeta[1], priorbeta[2], !myquiet,
                                  myoffset, t(chol(cov.mh)), gammaprior, correct.latent.draws,
-                                 parameterization, dontupdatemu)
+                                 parameterization, FALSE)
   })
 
   if (any(is.na(res))) stop("Sampler returned NA. This is most likely due to bad input checks and shouldn't happen. Please report to package maintainer.")
@@ -1413,7 +1413,7 @@ svlsample2 <- function(y, draws = 1, burnin = 0,
                                0.5, 0.5/priorsigma, priormu[1], priormu[2],
                                0, 1, !quiet,
                                0, diag(0.1, nrow = 4, ncol = 4), TRUE,
-                               TRUE, rep(c("centered", "noncentered"), 5))
+                               TRUE, rep(c("centered", "noncentered"), 5), FALSE)
 
   res$para <- t(res$para)
   res$latent <- t(res$latent)
