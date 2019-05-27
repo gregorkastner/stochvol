@@ -553,7 +553,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$y <- y_orig
   res$para <- mcmc(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
   res$latent <- mcmc(t(res$latent), burnin+thinlatent, burnin+draws, thinlatent)
-  if (keeptime == "all") attr(res$latent, "dimnames") <- list(NULL, paste0('h_', seq_along(y))) else if (keeptime == "last") attr(res$latent, "dimnames") <- list(NULL, paste0('h_', length(y)))
+  if (!exists("arorder")) arorder <- 0L
+  if (keeptime == "all") attr(res$latent, "dimnames") <- list(NULL, paste0('h_', arorder + seq_along(y))) else if (keeptime == "last") attr(res$latent, "dimnames") <- list(NULL, paste0('h_', length(y)))
   res$latent0 <- mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
   if (!any(is.na(designmatrix))) {
     res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
@@ -576,7 +577,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   if (keeptau) {
     res$tau <- mcmc(t(res$tau), burnin+thinlatent, burnin+draws, thinlatent)
-    if (keeptime == "all") attr(res$tau, "dimnames") <- list(NULL, paste0('tau_', seq_along(y))) else if (keeptime == "last") attr(res$tau, "dimnames") <- list(NULL, paste0('tau_', length(y)))
+    if (keeptime == "all") attr(res$tau, "dimnames") <- list(NULL, paste0('tau_', arorder + seq_along(y))) else if (keeptime == "last") attr(res$tau, "dimnames") <- list(NULL, paste0('tau_', length(y)))
   }
 
   res$runtime <- runtime
@@ -1279,7 +1280,8 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
   
   colnames(res$para) <- c("mu", "phi", "sigma", "rho")
-  if (keeptime == "all") colnames(res$latent) <- paste0('h_', seq_along(y)) else if (keeptime == "last") colnames(res$latent) <- paste0('h_', length(y))
+  if (!exists("arorder")) arorder <- 0L
+  if (keeptime == "all") colnames(res$latent) <- paste0('h_', arorder + seq_along(y)) else if (keeptime == "last") colnames(res$latent) <- paste0('h_', length(y))
   # create svldraws class
   res$runtime <- runtime
   res$y <- y_orig

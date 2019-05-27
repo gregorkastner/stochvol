@@ -282,7 +282,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
   if (inherits(forecast, "svpredict") || (is.numeric(forecast) && length(forecast) == 1 && all(forecast != 0))) { # also draw future values
     lasth <- as.integer(gsub("h_", "", dimnames(x$latent)[[2]][dim(x$latent)[2]]))
     if (length(x$y) > lasth) {  # should never happen
-      stop("For some weird reason, h_n has not been stored during sampling. Aborting.")
+      stop("The last log variance, h_n, has not been stored during sampling. Aborting.")
     }
 
     if(is.numeric(forecast) && length(forecast) == 1 && all(forecast >= 1)) {
