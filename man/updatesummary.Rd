@@ -37,7 +37,7 @@ containing the parameter values of the prior distribution, i.e. the
 arguments \code{priormu}, \code{priorphi}, \code{priorsigma} (and
 potentially \code{nu}).} \item{thinning}{\code{list} containing the thinning
 parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
-\code{thintime}.} \item{summary}{\code{list} containing a collection of
+\code{keeptime}.} \item{summary}{\code{list} containing a collection of
 summary statistics of the posterior draws for \code{para}, \code{latent},
 and \code{latent0}.}
 
@@ -73,7 +73,7 @@ See the examples below for more details.
 sim <- svsim(51)
 
 ## Draw from the posterior (but save only every fifth point in time):
-res <- svsample(sim$y, draws = 7000, thintime = 5, priorphi = c(10, 1.5))
+res <- svsample(sim$y, draws = 7000, priorphi = c(10, 1.5))
 
 ## Check out the results:
 summary(res)
