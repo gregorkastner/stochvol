@@ -8,7 +8,7 @@ Model}
 svsample(y, draws = 10000, burnin = 1000, designmatrix = NA,
   priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
   priornu = NA, priorbeta = c(0, 10000), priorlatent0 = "stationary",
-  thinpara = 1, thinlatent = 1, thintime = 1, keeptau = FALSE,
+  thinpara = 1, thinlatent = 1, keeptime = "all", keeptau = FALSE,
   quiet = FALSE, startpara, startlatent, expert, ...)
 }
 \arguments{
@@ -82,7 +82,7 @@ Every \code{thinlatent}th latent variable draw is kept and returned. The
 default value is 1, corresponding to no thinning of the latent variable
 draws, i.e. every draw is kept.}
 
-\item{thintime}{\emph{deprecated}}
+\item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent}
 
 \item{keeptau}{logical value indicating whether the 'variance inflation
 factors' should be stored (used for the sampler with conditional t
@@ -172,7 +172,7 @@ values of the prior distribution, i.e. the arguments \code{priormu},
 \code{priorbeta}.}
 \item{thinning}{\code{list} containing the thinning
 parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
-\code{thintime}.}
+\code{keeptime}.}
 \item{summary}{\code{list} containing a collection of
 summary statistics of the posterior draws for \code{para}, \code{latent},
 and \code{latent0}.}

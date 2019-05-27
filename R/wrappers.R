@@ -1,7 +1,6 @@
 # R wrapper function for the main MCMC loop
 
 
-
 #' Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility (SV)
 #' Model
 #' 
@@ -72,7 +71,8 @@
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
-#' @param thintime \emph{deprecated}
+#' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
+#  volatility draws should be stored.
 #' @param keeptau logical value indicating whether the 'variance inflation
 #' factors' should be stored (used for the sampler with conditional t
 #' innovations only). This may be useful to check at what point(s) in time the
@@ -154,7 +154,7 @@
 #' \code{priorbeta}.}
 #' \item{thinning}{\code{list} containing the thinning
 #' parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
-#' \code{thintime}.}
+#' \code{keeptime}.}
 #' \item{summary}{\code{list} containing a collection of
 #' summary statistics of the posterior draws for \code{para}, \code{latent},
 #' and \code{latent0}.}
@@ -261,7 +261,7 @@
 svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                      priornu = NA, priorbeta = c(0, 10000), priorlatent0 = "stationary",
-                     thinpara = 1, thinlatent = 1, thintime = 1,
+                     thinpara = 1, thinlatent = 1, keeptime = "all",
                      keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...) {
 
   # Some error checking for y
@@ -368,10 +368,11 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     thinlatent <- as.integer(thinlatent)
   }
 
-  # thintime deprecated
-  if (!(identical(thintime, 1L) || identical(thintime, 1.0))) {
-    thintime <- 1L
-    warning("Parameter 'thintime' is deprecated. Setting 'thintime' to 1.")
+  # Some error checking for keeptime
+  if (length(keeptime) != 1L || !is.character(keeptime) || !(keeptime %in% c("all", "last"))) {
+    stop("Parameter 'keeptime' must be either 'all' or 'last'.")
+  } else {
+    if (keeptime == "all") thintime <- 1L else if (keeptime == "last") thintime <- length(y)
   }
 
   # Some error checking for expert
@@ -552,7 +553,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$y <- y_orig
   res$para <- mcmc(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
   res$latent <- mcmc(t(res$latent), burnin+thinlatent, burnin+draws, thinlatent)
-  attr(res$latent, "dimnames") <- list(NULL, paste('h_', seq(1, length(y), by=thintime), sep=''))
+  if (keeptime == "all") attr(res$latent, "dimnames") <- list(NULL, paste0('h_', seq_along(y))) else if (keeptime == "last") attr(res$latent, "dimnames") <- list(NULL, paste0('h_', length(y)))
   res$latent0 <- mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
   if (!any(is.na(designmatrix))) {
     res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
@@ -575,11 +576,11 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   if (keeptau) {
     res$tau <- mcmc(t(res$tau), burnin+thinlatent, burnin+draws, thinlatent)
-    attr(res$tau, "dimnames") <- list(NULL, paste('tau_', seq(1, length(y), by=thintime), sep=''))
+    if (keeptime == "all") attr(res$tau, "dimnames") <- list(NULL, paste0('tau_', seq_along(y))) else if (keeptime == "last") attr(res$tau, "dimnames") <- list(NULL, paste0('tau_', length(y)))
   }
 
   res$runtime <- runtime
-  res$thinning <- list(para = thinpara, latent = thinlatent, time = thintime)
+  res$thinning <- list(para = thinpara, latent = thinlatent, time = keeptime)
   class(res) <- "svdraws"
 
   if (!quiet) {
@@ -654,11 +655,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
-#' @param thintime single number greater or equal to 1, coercible to integer.
-#' If \code{thintime} is different from 1, only every \code{thintime}th latent
-#' log-volatility is being monitored. If, e.g., \code{thintime = 3}, the latent
-#' log-volatilities \code{h_1,h_4,h_7,...} will be kept. The default value is
-#' 1, meaning that all latent variables \code{h_1,h_2,h_3,...} are stored.
+#' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
+#  volatility draws should be stored.
 #' @param keeptau logical value indicating whether the 'variance inflation
 #' factors' should be stored (used for the sampler with conditional t
 #' innovations only). This may be useful to check at what point(s) in time the
@@ -702,15 +700,11 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #'                    startpara = list(phi = 0.95, mu = -10, sigma = 0.2, rho = -0.1),
 #'                    startlatent = rep_len(-10, length(aud.price) - 1))
 #' @export
-svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priornu = NA, priorlatent0 = "stationary", thinpara = 1, thinlatent = 1, thintime = 1, keeptau = FALSE, quiet = TRUE, startpara, startlatent) {
+svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priornu = NA, priorlatent0 = "stationary", thinpara = 1, thinlatent = 1, keeptime = "all", keeptau = FALSE, quiet = TRUE, startpara, startlatent) {
 
  if (priorlatent0 == "stationary") priorlatent0 <- -1L
-
-  # thintime deprecated
-  if (!(identical(thintime, 1L) || identical(thintime, 1.0))) {
-    thintime <- 1L
-    warning("Parameter 'thintime' is deprecated. Setting 'thintime' to 1.")
-  }
+ 
+ if (keeptime == "all") thintime <- 1L else if (keeptime == "last") thintime <- length(y) else stop("Parameter 'keeptime' must be either 'all' or 'last'.")
 
  res <- svsample_cpp(y, draws, burnin, matrix(NA), priormu[1], priormu[2]^2,
 	      priorphi[1], priorphi[2], priorsigma, thinlatent,
@@ -789,7 +783,8 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
-#' @param thintime \emph{deprecated}
+#' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
+#  volatility draws should be stored.
 #' @param quiet logical value indicating whether the progress bar and other
 #' informative output during sampling should be omitted. The default value is
 #' \code{FALSE}, implying verbose output.
@@ -860,7 +855,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' \code{priorbeta}.}
 #' \item{thinning}{\code{list} containing the thinning
 #' parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
-#' \code{thintime}.}
+#' \code{keeptime}.}
 #' \item{summary}{\code{list} containing a collection of
 #' summary statistics of the posterior draws for \code{para}, and \code{latent}.}
 #' \item{meanmodel}{\code{character} containing information about how \code{designmatrix}
@@ -979,7 +974,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                        priorrho = c(4, 4), priorbeta = c(0, 10000),
-                       thinpara = 1, thinlatent = 1, thintime = 1,
+                       thinpara = 1, thinlatent = 1, keeptime = "all",
                        quiet = FALSE, startpara, startlatent, expert, ...) {
   # Some error checking for y
   if (inherits(y, "svsim")) {
@@ -1075,10 +1070,11 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     thinlatent <- as.integer(thinlatent)
   }
 
-  # thintime deprecated
-  if (!(identical(thintime, 1L) || identical(thintime, 1.0))) {
-    thintime <- 1L
-    warning("Parameter 'thintime' is deprecated. Setting 'thintime' to 1.")
+  # Some error checking for keeptime
+  if (length(keeptime) != 1L || !is.character(keeptime) || !(keeptime %in% c("all", "last"))) {
+    stop("Parameter 'keeptime' must be either 'all' or 'last'.")
+  } else {
+    if (keeptime == "all") thintime <- 1L else if (keeptime == "last") thintime <- length(y)
   }
 
   # Some input checking for startpara
@@ -1220,7 +1216,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                            priorphi = priorphi, priorsigma = priorsigma,
                            priornu = NA, priorbeta = priorbeta,
                            priorlatent0 = "stationary",
-                           thinpara = 1L, thinlatent = 1L, thintime = 1L,
+                           thinpara = 1L, thinlatent = 1L, keeptime = "all",
                            keeptau = FALSE, quiet = TRUE,
                            startpara = startpara[c("phi", "mu", "sigma")],
                            startlatent = startlatent,
@@ -1283,13 +1279,13 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
   
   colnames(res$para) <- c("mu", "phi", "sigma", "rho")
-  colnames(res$latent) <- paste0('h_', seq(1, length(y), by=thintime))
+  if (keeptime == "all") colnames(res$latent) <- paste0('h_', seq_along(y)) else if (keeptime == "last") colnames(res$latent) <- paste0('h_', length(y))
   # create svldraws class
   res$runtime <- runtime
   res$y <- y_orig
   res$para <- coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)
   res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
-  res$thinning <- list(para = thinpara, latent = thinlatent, time = thintime)
+  res$thinning <- list(para = thinpara, latent = thinlatent, time = keeptime)
   res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, rho = priorrho, gammaprior = gammaprior)
   if (!any(is.na(designmatrix))) {
     res$beta <- coda::mcmc(res$beta, burnin+thinpara, burnin+draws, thinpara)
@@ -1364,7 +1360,8 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
-#' @param thintime \emph{deprecated}
+#' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
+#  volatility draws should be stored.
 #' @param quiet logical value indicating whether the progress bar and other
 #' informative output during sampling should be omitted. The default value is
 #' \code{TRUE}.
@@ -1398,14 +1395,10 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' @export
 svlsample2 <- function(y, draws = 1, burnin = 0,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(4, 4),
-                       thinpara = 1, thinlatent = 1, thintime = 1,
+                       thinpara = 1, thinlatent = 1, keeptime = "all",
                        quiet = TRUE, startpara, startlatent) {
 
-  # thintime deprecated
-  if (!(identical(thintime, 1L) || identical(thintime, 1.0))) {
-    thintime <- 1L
-    warning("Parameter 'thintime' is deprecated. Setting 'thintime' to 1.")
-  }
+  if (keeptime == "all") thintime <- 1L else if (keeptime == "last") thintime <- length(y) else stop("Parameter 'keeptime' must be either 'all' or 'last'.")
 
   res <- svlsample_cpp(y, draws, burnin, matrix(NA), thinpara, thinlatent, thintime,
                                startpara, startlatent,

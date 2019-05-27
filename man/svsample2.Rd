@@ -7,7 +7,7 @@
 svsample2(y, draws = 1, burnin = 0, priormu = c(0, 100),
   priorphi = c(5, 1.5), priorsigma = 1, priornu = NA,
   priorlatent0 = "stationary", thinpara = 1, thinlatent = 1,
-  thintime = 1, keeptau = FALSE, quiet = TRUE, startpara,
+  keeptime = "all", keeptau = FALSE, quiet = TRUE, startpara,
   startlatent)
 }
 \arguments{
@@ -66,11 +66,7 @@ Every \code{thinlatent}th latent variable draw is kept and returned. The
 default value is 1, corresponding to no thinning of the latent variable
 draws, i.e. every draw is kept.}
 
-\item{thintime}{single number greater or equal to 1, coercible to integer.
-If \code{thintime} is different from 1, only every \code{thintime}th latent
-log-volatility is being monitored. If, e.g., \code{thintime = 3}, the latent
-log-volatilities \code{h_1,h_4,h_7,...} will be kept. The default value is
-1, meaning that all latent variables \code{h_1,h_2,h_3,...} are stored.}
+\item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent}
 
 \item{keeptau}{logical value indicating whether the 'variance inflation
 factors' should be stored (used for the sampler with conditional t
