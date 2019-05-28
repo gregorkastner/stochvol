@@ -369,7 +369,9 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     thinlatent <- as.integer(thinlatent)
   }
   
-  if (exists("thintime")) stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
+  # Check whether 'thintime' was used
+  if ("thintime" %in% names(unlist(lapply(sys.call()[-1], as.character))))
+    stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   # Some error checking for keeptime
   if (length(keeptime) != 1L || !is.character(keeptime) || !(keeptime %in% c("all", "last"))) {
@@ -1076,7 +1078,9 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     thinlatent <- as.integer(thinlatent)
   }
   
-  if (exists("thintime")) stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
+  # Check whether 'thintime' was used
+  if ("thintime" %in% names(unlist(lapply(sys.call()[-1], as.character))))
+    stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   # Some error checking for keeptime
   if (length(keeptime) != 1L || !is.character(keeptime) || !(keeptime %in% c("all", "last"))) {
