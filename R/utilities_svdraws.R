@@ -97,7 +97,7 @@ runtime <- function(x) {
 #' arguments \code{priormu}, \code{priorphi}, \code{priorsigma} (and
 #' potentially \code{nu}).} \item{thinning}{\code{list} containing the thinning
 #' parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
-#' \code{thintime}.} \item{summary}{\code{list} containing a collection of
+#' \code{keeptime}.} \item{summary}{\code{list} containing a collection of
 #' summary statistics of the posterior draws for \code{para}, \code{latent},
 #' and \code{latent0}.}
 #' 
@@ -122,7 +122,7 @@ runtime <- function(x) {
 #' sim <- svsim(51)
 #' 
 #' ## Draw from the posterior (but save only every fifth point in time):
-#' res <- svsample(sim$y, draws = 7000, thintime = 5, priorphi = c(10, 1.5))
+#' res <- svsample(sim$y, draws = 7000, priorphi = c(10, 1.5))
 #' 
 #' ## Check out the results:
 #' summary(res)
@@ -247,16 +247,16 @@ residuals.svdraws <- function(object, type = "mean", ...) {
   if (!inherits(object, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (!type %in% c("mean", "median")) stop("Argument 'type' must currently be either 'mean' or 'median'.")
 
-  if (object$thinning$time != 1) warning("Not every point in time has been stored ('thintime' was set to a value unequal to 1 during sampling), thus only some residuals have been extracted.")
+  if (object$thinning$time != 'all') stop("Not every point in time has been stored ('keeptime' was not set to 'all' during sampling), thus residuals cannot be extracted.")
 
   y <- as.vector(object$y)
 
   if (type == "mean") {
-    res <- rowMeans(y[seq(1, length(y), by=object$thinning$time)] / exp(t(object$latent)/2))
+    res <- rowMeans(y[seq(1, length(y))] / exp(t(object$latent)/2))
   }
 
   if (type == "median") {
-    res <- apply(y[seq(1, length(y), by=object$thinning$time)] / exp(t(object$latent)/2), 1, median)
+    res <- apply(y[seq(1, length(y))] / exp(t(object$latent)/2), 1, median)
   }
 
   names(res) <- sub("h", "r", colnames(object$latent))

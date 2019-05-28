@@ -19,7 +19,7 @@ List svsample_cpp(
     const double b0,
     const double Bsigma,
     const int thin,
-    const int timethin,
+    const int thintime,
     const List& startpara,
     const arma::vec& startvol,
     const bool keeptau,
@@ -105,7 +105,7 @@ List svsample_cpp(
 
   arma::ivec r(T);  // mixture indicators
 
-  int hstorelength = (T-1)/timethin+1;
+  int hstorelength = T/thintime;  // thintime must either be 1 or T
   arma::mat hstore(hstorelength, draws/thin);
   arma::vec h0store(draws/thin);
 
@@ -194,14 +194,14 @@ List svsample_cpp(
     // storage:
     if (!((i+1) % thin)) if (i >= burnin) {  // this means we should store h
       if (centered_baseline) {
-        for (int j = 0; j < hstorelength; j++) hstore.at(j, (i-burnin)/thin) = h[timethin*j];
+        for (int j = 0; j < hstorelength; j++) hstore.at(j, (i-burnin)/thin) = h[thintime * (j + 1) - 1];
         h0store[(i-burnin)/thin] = h0;
       } else {
-        for (int j = 0; j < hstorelength; j++) hstore.at(j, (i-burnin)/thin) = curpara[0] + curpara[2]*h[timethin*j];
+        for (int j = 0; j < hstorelength; j++) hstore.at(j, (i-burnin)/thin) = curpara[0] + curpara[2]*h[thintime * (j + 1) - 1];
         h0store[(i-burnin)/thin] = curpara[0] + curpara[2]*h0;
       }
       if (keeptau && terr) {
-        for (int j = 0; j < hstorelength; j++) taustore.at(j, (i-burnin)/thin) = tau[timethin*j];
+        for (int j = 0; j < hstorelength; j++) taustore.at(j, (i-burnin)/thin) = tau[thintime * (j + 1) - 1];
       }
     }
     mu[i+1] = curpara[0];
@@ -263,7 +263,9 @@ List svlsample_cpp (
 
   arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
   arma::mat params(draws/thinpara, 4);
-  arma::mat latent(draws/thinlatent, T/thintime);
+
+  const int hstorelength = T/thintime;  // thintime must either be 1 or T
+  arma::mat latent(draws/thinlatent, hstorelength);
 
   // priors in objects
   const arma::vec prior_phi = {prior_phi_a, prior_phi_b};
@@ -366,8 +368,8 @@ List svlsample_cpp (
       }
     }
     if ((i >= 1) && !thinlatent_round) {
-      for (int volind = 0, thincol = thintime-1; thincol < int(h.size()); volind++, thincol += thintime) {
-        latent.at(i/thinlatent-1, volind) = h[thincol];
+      for (int volind = 0, thincol = 0; thincol < hstorelength; volind++, thincol++) {
+        latent.at(i/thinlatent-1, volind) = h[thintime * (thincol + 1) - 1];
       }
     }
   }
