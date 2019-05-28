@@ -298,10 +298,10 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   # Some error checking for designmatrix and save the mode of mean modelling
   meanmodel <- "matrix"
+  arorder <- 0L
   if (any(is.na(designmatrix))) {
     designmatrix <- matrix(NA)
     meanmodel <- "none"
-    arorder <- 0L
   } else {
     if (any(grep("ar[0-9]+$", as.character(designmatrix)[1]))) {
       arorder <- as.integer(gsub("ar", "", as.character(designmatrix)))
@@ -1024,10 +1024,10 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   # Some error checking for designmatrix
   meanmodel <- "matrix"
+  arorder <- 0L
   if (any(is.na(designmatrix))) {
     designmatrix <- matrix(NA)
     meanmodel <- "none"
-    arorder <- 0L
   } else {
     if (any(grep("ar[0-9]+$", as.character(designmatrix)[1]))) {
       arorder <- as.integer(gsub("ar", "", as.character(designmatrix)))
