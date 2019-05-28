@@ -134,6 +134,8 @@ to \code{TRUE}.}
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
 for the posterior draws.}
+
+\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
 }
 \value{
 The value returned is a list object of class \code{svldraws} holding

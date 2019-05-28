@@ -89,6 +89,8 @@ t-innovations).}
 
 \item{startlatent}{\emph{compulsory} vector of length \code{length(x$y)},
 containing the starting values for the latent log-volatility draws.}
+
+\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
 }
 \value{
 A list with three components:

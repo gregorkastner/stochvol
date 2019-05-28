@@ -71,6 +71,7 @@
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
+#' @param thintime \emph{Deprecated.} Use 'keeptime' instead.
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #  volatility draws should be stored.
 #' @param keeptau logical value indicating whether the 'variance inflation
@@ -367,6 +368,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   } else {
     thinlatent <- as.integer(thinlatent)
   }
+  
+  if (exists("thintime")) stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   # Some error checking for keeptime
   if (length(keeptime) != 1L || !is.character(keeptime) || !(keeptime %in% c("all", "last"))) {
@@ -656,6 +659,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
+#' @param thintime \emph{Deprecated.} Use 'keeptime' instead.
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #  volatility draws should be stored.
 #' @param keeptau logical value indicating whether the 'variance inflation
@@ -784,6 +788,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
+#' @param thintime \emph{Deprecated.} Use 'keeptime' instead.
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #  volatility draws should be stored.
 #' @param quiet logical value indicating whether the progress bar and other
@@ -1070,6 +1075,8 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   } else {
     thinlatent <- as.integer(thinlatent)
   }
+  
+  if (exists("thintime")) stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   # Some error checking for keeptime
   if (length(keeptime) != 1L || !is.character(keeptime) || !(keeptime %in% c("all", "last"))) {
@@ -1362,6 +1369,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
+#' @param thintime \emph{Deprecated.} Use 'keeptime' instead.
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #  volatility draws should be stored.
 #' @param quiet logical value indicating whether the progress bar and other
