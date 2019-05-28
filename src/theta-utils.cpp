@@ -199,12 +199,12 @@ arma::vec thetamu_propose(
     const arma::mat& proposal_chol,
     const arma::mat& proposal_chol_inv) {
   const double mu = 0;
-  const arma::vec theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
+  const arma::vec theta_old_t = theta_transform_inv(phi, rho, sigma2, mu).head(3);
   
-  const arma::vec &proposal_mean_old = theta_old_t.head(3);
+  const arma::vec &proposal_mean_old = theta_old_t;
   const arma::vec theta_new_t_standardized = rnorm3_arma();
   const arma::vec theta_new_t = proposal_chol*theta_new_t_standardized + proposal_mean_old;
-  const arma::vec theta_new = theta_transform(theta_new_t[0], theta_new_t[1], theta_new_t[2], mu);
+  const arma::vec theta_new = theta_transform(theta_new_t[0], theta_new_t[1], theta_new_t[2], mu).head(3);
   const double phi_new = theta_new[0], rho_new = theta_new[1], sigma2_new = theta_new[2];
   double theta_density_new = theta_transform_inv_log_det_jac(phi_new, rho_new, sigma2_new, mu);
   for (int i = 0; i < 3; i++) {
