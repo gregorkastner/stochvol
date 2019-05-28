@@ -121,7 +121,7 @@ runtime <- function(x) {
 #' ## Simulate an SV time series of length 51 with default parameters:
 #' sim <- svsim(51)
 #' 
-#' ## Draw from the posterior (but save only every fifth point in time):
+#' ## Draw from the posterior:
 #' res <- svsample(sim$y, draws = 7000, priorphi = c(10, 1.5))
 #' 
 #' ## Check out the results:

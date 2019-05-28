@@ -2,8 +2,8 @@ Changes in Version 2.0.3:
   - The exported C++ function 'update_svl' can draw posterior values
     with a fixed 'mu'.
   - Controlling the amount of latent variable draws to be stored can now be
-    controlled through the 'keeptime' argument to svsample, svsample2, and
-    svlsample.
+    controlled through the 'keeptime' argument to svsample, svsample2,
+    svlsample, and svlsample2.
 
 Changes in Version 2.0.2:
   - Bugfix in 'predict.svdraws'

@@ -262,7 +262,7 @@
 svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                      priornu = NA, priorbeta = c(0, 10000), priorlatent0 = "stationary",
-                     thinpara = 1, thinlatent = 1, keeptime = "all",
+                     thinpara = 1, thinlatent = 1, keeptime = "all", thintime = NULL,
                      keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...) {
 
   # Some error checking for y
@@ -301,6 +301,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   if (any(is.na(designmatrix))) {
     designmatrix <- matrix(NA)
     meanmodel <- "none"
+    arorder <- 0L
   } else {
     if (any(grep("ar[0-9]+$", as.character(designmatrix)[1]))) {
       arorder <- as.integer(gsub("ar", "", as.character(designmatrix)))
@@ -370,7 +371,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
   
   # Check whether 'thintime' was used
-  if ("thintime" %in% names(unlist(lapply(sys.call()[-1], as.character))))
+  if (!is.null(thintime))
     stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   # Some error checking for keeptime
@@ -558,7 +559,6 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$y <- y_orig
   res$para <- mcmc(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
   res$latent <- mcmc(t(res$latent), burnin+thinlatent, burnin+draws, thinlatent)
-  if (!exists("arorder")) arorder <- 0L
   if (keeptime == "all") attr(res$latent, "dimnames") <- list(NULL, paste0('h_', arorder + seq_along(y))) else if (keeptime == "last") attr(res$latent, "dimnames") <- list(NULL, paste0('h_', arorder + length(y)))
   res$latent0 <- mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
   if (!any(is.na(designmatrix))) {
@@ -707,26 +707,34 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #'                    startpara = list(phi = 0.95, mu = -10, sigma = 0.2, rho = -0.1),
 #'                    startlatent = rep_len(-10, length(aud.price) - 1))
 #' @export
-svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priornu = NA, priorlatent0 = "stationary", thinpara = 1, thinlatent = 1, keeptime = "all", keeptau = FALSE, quiet = TRUE, startpara, startlatent) {
+svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
+                      priorphi = c(5, 1.5), priorsigma = 1, priornu = NA,
+                      priorlatent0 = "stationary", thinpara = 1, thinlatent = 1,
+                      thintime = NULL, keeptime = "all", keeptau = FALSE,
+                      quiet = TRUE, startpara, startlatent) {
 
- if (priorlatent0 == "stationary") priorlatent0 <- -1L
- 
- if (keeptime == "all") thintime <- 1L else if (keeptime == "last") thintime <- length(y) else stop("Parameter 'keeptime' must be either 'all' or 'last'.")
+  if (priorlatent0 == "stationary") priorlatent0 <- -1L
 
- res <- svsample_cpp(y, draws, burnin, matrix(NA), priormu[1], priormu[2]^2,
-	      priorphi[1], priorphi[2], priorsigma, thinlatent,
-	      thintime, startpara, startlatent, keeptau, quiet, 3L, 2L, 10^8,
-	      10^12, -1, TRUE, FALSE, 0, FALSE, priornu, c(NA, NA), priorlatent0)
+  # Check whether 'thintime' was used
+  if (!is.null(thintime))
+    stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
- res$para <- t(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE])
- if (nrow(res$para) == 3) {
-  rownames(res$para) <- names(res$para) <- c("mu", "phi", "sigma")
- } else {
-  rownames(res$para) <- names(res$para) <- c("mu", "phi", "sigma", "nu")
- }
- res.meanmodel <- "none"
+  if (keeptime == "all") thintime <- 1L else if (keeptime == "last") thintime <- length(y) else stop("Parameter 'keeptime' must be either 'all' or 'last'.")
 
- res
+  res <- svsample_cpp(y, draws, burnin, matrix(NA), priormu[1], priormu[2]^2,
+                      priorphi[1], priorphi[2], priorsigma, thinlatent,
+                      thintime, startpara, startlatent, keeptau, quiet, 3L, 2L, 10^8,
+                      10^12, -1, TRUE, FALSE, 0, FALSE, priornu, c(NA, NA), priorlatent0)
+
+  res$para <- t(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE])
+  if (nrow(res$para) == 3) {
+    rownames(res$para) <- names(res$para) <- c("mu", "phi", "sigma")
+  } else {
+    rownames(res$para) <- names(res$para) <- c("mu", "phi", "sigma", "nu")
+  }
+  res.meanmodel <- "none"
+
+  res
 }
 
 #' Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility
@@ -982,7 +990,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100), priorphi = 
 svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                        priorrho = c(4, 4), priorbeta = c(0, 10000),
-                       thinpara = 1, thinlatent = 1, keeptime = "all",
+                       thinpara = 1, thinlatent = 1, thintime = NULL, keeptime = "all",
                        quiet = FALSE, startpara, startlatent, expert, ...) {
   # Some error checking for y
   if (inherits(y, "svsim")) {
@@ -1019,6 +1027,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   if (any(is.na(designmatrix))) {
     designmatrix <- matrix(NA)
     meanmodel <- "none"
+    arorder <- 0L
   } else {
     if (any(grep("ar[0-9]+$", as.character(designmatrix)[1]))) {
       arorder <- as.integer(gsub("ar", "", as.character(designmatrix)))
@@ -1077,9 +1086,9 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   } else {
     thinlatent <- as.integer(thinlatent)
   }
-  
+
   # Check whether 'thintime' was used
-  if ("thintime" %in% names(unlist(lapply(sys.call()[-1], as.character))))
+  if (!is.null(thintime))
     stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   # Some error checking for keeptime
@@ -1291,7 +1300,6 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
   
   colnames(res$para) <- c("mu", "phi", "sigma", "rho")
-  if (!exists("arorder")) arorder <- 0L
   if (keeptime == "all") colnames(res$latent) <- paste0('h_', arorder + seq_along(y)) else if (keeptime == "last") colnames(res$latent) <- paste0('h_', arorder + length(y))
   # create svldraws class
   res$runtime <- runtime
@@ -1409,8 +1417,12 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' @export
 svlsample2 <- function(y, draws = 1, burnin = 0,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(4, 4),
-                       thinpara = 1, thinlatent = 1, keeptime = "all",
+                       thinpara = 1, thinlatent = 1, thintime = NULL, keeptime = "all",
                        quiet = TRUE, startpara, startlatent) {
+
+  # Check whether 'thintime' was used
+  if (!is.null(thintime))
+    stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   if (keeptime == "all") thintime <- 1L else if (keeptime == "last") thintime <- length(y) else stop("Parameter 'keeptime' must be either 'all' or 'last'.")
 
@@ -1431,6 +1443,6 @@ svlsample2 <- function(y, draws = 1, burnin = 0,
 
 
 .svsample <- function (...) {
-  .Deprecated("svsample2")
-  svsample2(...)
+  .Defunct(new = "svsample2")
 }
+

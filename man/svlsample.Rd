@@ -8,8 +8,8 @@ Model with Leverage (SVL)}
 svlsample(y, draws = 10000, burnin = 1000, designmatrix = NA,
   priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
   priorrho = c(4, 4), priorbeta = c(0, 10000), thinpara = 1,
-  thinlatent = 1, keeptime = "all", quiet = FALSE, startpara,
-  startlatent, expert, ...)
+  thinlatent = 1, thintime = NULL, keeptime = "all", quiet = FALSE,
+  startpara, startlatent, expert, ...)
 }
 \arguments{
 \item{y}{numeric vector containing the data (usually log-returns), which
@@ -75,6 +75,8 @@ Every \code{thinlatent}th latent variable draw is kept and returned. The
 default value is 1, corresponding to no thinning of the latent variable
 draws, i.e. every draw is kept.}
 
+\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
+
 \item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent}
 
 \item{quiet}{logical value indicating whether the progress bar and other
@@ -134,8 +136,6 @@ to \code{TRUE}.}
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
 for the posterior draws.}
-
-\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
 }
 \value{
 The value returned is a list object of class \code{svldraws} holding

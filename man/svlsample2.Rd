@@ -6,8 +6,8 @@
 \usage{
 svlsample2(y, draws = 1, burnin = 0, priormu = c(0, 100),
   priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(4, 4),
-  thinpara = 1, thinlatent = 1, keeptime = "all", quiet = TRUE,
-  startpara, startlatent)
+  thinpara = 1, thinlatent = 1, thintime = NULL, keeptime = "all",
+  quiet = TRUE, startpara, startlatent)
 }
 \arguments{
 \item{y}{numeric vector containing the data (usually log-returns), which
@@ -59,6 +59,8 @@ Every \code{thinlatent}th latent variable draw is kept and returned. The
 default value is 1, corresponding to no thinning of the latent variable
 draws, i.e. every draw is kept.}
 
+\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
+
 \item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent}
 
 \item{quiet}{logical value indicating whether the progress bar and other
@@ -74,8 +76,6 @@ a real number between \code{-1} and \code{1}.}
 
 \item{startlatent}{\emph{compulsory} vector of length \code{length(y)},
 containing the starting values for the latent log-volatility draws.}
-
-\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
 }
 \value{
 The value returned is a list object holding

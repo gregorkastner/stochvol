@@ -177,7 +177,7 @@ paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simo
   for (i in 1:ncol(x$para)) {
     parastring <- colnames(x$para)[i]
     mytraceplot(x$para[,parastring], xlab="", mgp = mgp,
-                main=paste("Trace of ", paranames[parastring], " (thinning = ", x$thinning$para,")", sep=''), ...)
+                main=paste("Trace of ", paranames[parastring], " (thin = ", x$thinning$para,")", sep=''), ...)
     if (sim && parastring %in% names(simobj$para)) {
       abline(h = simobj$para[[parastring]], col = 3, lty = 2)
     }
@@ -466,14 +466,18 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
 			 mar = c(1.9, 1.9, 1.7, .5), mgp = c(2, .6, 0),
 			 simobj = NULL, newdata = NULL, ...) {
   oldpar <- par(mfrow=c(1,1))
-  if (ncol(x$para) == 4) {
-    layout(matrix(c(1, 1, 1, 1, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10), 4, byrow = TRUE))
-  } else {
-    layout(matrix(c(1, 1, 1, 2, 3, 4, 5, 6, 7), 3, byrow = TRUE))
+  if (x$thinning$time == "all") {
+    if (ncol(x$para) == 4) {
+      layout(matrix(c(1, 1, 1, 1, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10), 4, byrow = TRUE))
+    } else {
+      layout(matrix(c(1, 1, 1, 2, 3, 4, 5, 6, 7), 3, byrow = TRUE))
+    }
+    volplot(x, dates = dates, show0 = show0, forecast = forecast,
+            forecastlty = forecastlty, col = col, tcl = tcl, mar = mar,
+            mgp = mgp, simobj = simobj, newdata = newdata, ...)
+  } else {  # don't plot volatility
+    layout(matrix(c(1, 2, 3, 4, 5, 6), 2, byrow = TRUE))
   }
-  volplot(x, dates = dates, show0 = show0, forecast = forecast,
-          forecastlty = forecastlty, col = col, tcl = tcl, mar = mar,
-          mgp = mgp, simobj = simobj, newdata = newdata, ...)
   paratraceplot(x, mar = mar, mgp = mgp, simobj = simobj, ...)
   paradensplot(x, showobs = showobs, showprior = showprior,
                showxlab = FALSE, mar = mar, mgp = mgp, simobj = simobj, ...)
@@ -489,10 +493,14 @@ plot.svldraws <- function (x, forecast = NULL, dates = NULL,
 			 mar = c(1.9, 1.9, 1.7, .5), mgp = c(2, .6, 0),
 			 simobj = NULL, newdata = NULL, ...) {
   oldpar <- par(mfrow=c(1,1))
-  layout(matrix(c(1, 1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9), ncol=4, byrow = TRUE))
-  volplot(x, dates = dates, show0 = show0, forecast = forecast,
-          forecastlty = forecastlty, col = col, tcl = tcl, mar = mar,
-          mgp = mgp, simobj = simobj, newdata = newdata, ...)
+  if (x$thinning$time == "all") {
+    layout(matrix(c(1, 1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9), ncol=4, byrow = TRUE))
+    volplot(x, dates = dates, show0 = show0, forecast = forecast,
+            forecastlty = forecastlty, col = col, tcl = tcl, mar = mar,
+            mgp = mgp, simobj = simobj, newdata = newdata, ...)
+  } else {  # don't plot volatility
+    layout(matrix(c(1, 2, 3, 4, 5, 6, 7, 8), 2, byrow = TRUE))
+  }
   paratraceplot(x, mar = mar, mgp = mgp, simobj = simobj, ...)
   paradensplot(x, showobs = showobs, showprior = showprior,
                showxlab = FALSE, mar = mar, mgp = mgp, simobj = simobj, ...)

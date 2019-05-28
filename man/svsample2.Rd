@@ -7,8 +7,8 @@
 svsample2(y, draws = 1, burnin = 0, priormu = c(0, 100),
   priorphi = c(5, 1.5), priorsigma = 1, priornu = NA,
   priorlatent0 = "stationary", thinpara = 1, thinlatent = 1,
-  keeptime = "all", keeptau = FALSE, quiet = TRUE, startpara,
-  startlatent)
+  thintime = NULL, keeptime = "all", keeptau = FALSE, quiet = TRUE,
+  startpara, startlatent)
 }
 \arguments{
 \item{y}{numeric vector containing the data (usually log-returns), which
@@ -66,6 +66,8 @@ Every \code{thinlatent}th latent variable draw is kept and returned. The
 default value is 1, corresponding to no thinning of the latent variable
 draws, i.e. every draw is kept.}
 
+\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
+
 \item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent}
 
 \item{keeptau}{logical value indicating whether the 'variance inflation
@@ -89,8 +91,6 @@ t-innovations).}
 
 \item{startlatent}{\emph{compulsory} vector of length \code{length(x$y)},
 containing the starting values for the latent log-volatility draws.}
-
-\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
 }
 \value{
 A list with three components:

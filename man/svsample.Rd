@@ -8,8 +8,8 @@ Model}
 svsample(y, draws = 10000, burnin = 1000, designmatrix = NA,
   priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
   priornu = NA, priorbeta = c(0, 10000), priorlatent0 = "stationary",
-  thinpara = 1, thinlatent = 1, keeptime = "all", keeptau = FALSE,
-  quiet = FALSE, startpara, startlatent, expert, ...)
+  thinpara = 1, thinlatent = 1, keeptime = "all", thintime = NULL,
+  keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...)
 }
 \arguments{
 \item{y}{numeric vector containing the data (usually log-returns), which
@@ -84,6 +84,8 @@ draws, i.e. every draw is kept.}
 
 \item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent}
 
+\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
+
 \item{keeptau}{logical value indicating whether the 'variance inflation
 factors' should be stored (used for the sampler with conditional t
 innovations only). This may be useful to check at what point(s) in time the
@@ -148,8 +150,6 @@ conditional prior variance of \code{sigma*theta} in the ridge
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
 for the posterior draws.}
-
-\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
 }
 \value{
 The value returned is a list object of class \code{svdraws} holding
