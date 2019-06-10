@@ -1,3 +1,6 @@
+Changes in Version 2.0.4:
+  - Bugfix in svlpredict when an inverse gamma prior is used.
+
 Changes in Version 2.0.3:
   - The exported C++ function 'update_svl' can draw posterior values
     with a fixed 'mu'.
