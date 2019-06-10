@@ -114,7 +114,7 @@ double thetamu_log_prior(
     (-log(2.)) + R::dbeta((rho+1)/2, prior_rho[0], prior_rho[1], true) +
     (gammaprior ?
       R::dgamma(sigma2, prior_sigma2[0], 1/prior_sigma2[1], true) :  // Gamma(shape, scale)
-      1/R::dgamma(sigma2, prior_sigma2[0]+2, prior_sigma2[1]/(prior_sigma2[0]*(prior_sigma2[0]+1)), true));  // moment matched InvGamma
+      (-2*log(sigma2)+R::dgamma(1/sigma2, prior_sigma2[0]+2, prior_sigma2[1]/(prior_sigma2[0]*(prior_sigma2[0]+1)), true)));  // moment matched InvGamma
 }
 
 arma::vec theta_transform(
