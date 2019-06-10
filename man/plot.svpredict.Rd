@@ -8,7 +8,8 @@
 \method{plot}{svpredict}(x, quantiles = c(0.05, 0.25, 0.5, 0.75, 0.95),
   ...)
 
-\method{plot}{svlpredict}(x, ...)
+\method{plot}{svlpredict}(x, quantiles = c(0.05, 0.25, 0.5, 0.75, 0.95),
+  ...)
 }
 \arguments{
 \item{x}{\code{svpredict} or \code{svlpredict} object.}

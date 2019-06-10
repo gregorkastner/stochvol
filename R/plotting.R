@@ -59,8 +59,8 @@ plot.svpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
 
 #' @rdname plot.svpredict
 #' @export
-plot.svlpredict <- function(x, ...) {
-  plot.svpredict(x, ...)
+plot.svlpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
+  plot.svpredict(x, quantiles, ...)
 }
 
 #' Probability Density Function Plot for the Parameter Posteriors
