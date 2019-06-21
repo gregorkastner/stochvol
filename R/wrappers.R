@@ -1,4 +1,4 @@
-# R wrapper function for the main MCMC loop
+# R wrapper functions for the main MCMC loop
 
 
 #' Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility (SV)
@@ -602,6 +602,21 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 # This function does not check input nor converts the result to coda objects!
 
 
+#' @rdname svsample
+#' @export
+svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
+                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
+                      priornu = c(2, 50), priorbeta = c(0, 10000), priorlatent0 = "stationary",
+                      thinpara = 1, thinlatent = 1, keeptime = "all", thintime = NULL,
+                      keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...) {
+  svsample(y, draws = draws, burnin = burnin, designmatrix = designmatrix,
+           priormu = priormu, priorphi = priorphi, priorsigma = priorsigma,
+           priornu = priornu, priorbeta = priorbeta, priorlatent0 = priorlatent0,
+           thinpara = thinpara, thinlatent = thinlatent, keeptime = keeptime, thintime = thintime,
+           keeptau = keeptau, quiet = quiet, startpara = startpara, startlatent = startlatent,
+           expert = expert, ...)
+}
+
 
 #' Minimal overhead version of \code{\link{svsample}}.
 #' 
@@ -736,6 +751,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
 
   res
 }
+
 
 #' Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility
 #' Model with Leverage (SVL)

@@ -1,5 +1,7 @@
 Changes in Version 2.0.4:
   - Bugfix in svlpredict when an inverse gamma prior is used.
+  - Function 'svtpredict' introduced for convenience when estimating
+    SV with heavy tails.
 
 Changes in Version 2.0.3:
   - The exported C++ function 'update_svl' can draw posterior values

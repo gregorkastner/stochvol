@@ -2,6 +2,7 @@
 % Please edit documentation in R/wrappers.R
 \name{svsample}
 \alias{svsample}
+\alias{svtsample}
 \title{Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility (SV)
 Model}
 \usage{
@@ -10,6 +11,13 @@ svsample(y, draws = 10000, burnin = 1000, designmatrix = NA,
   priornu = NA, priorbeta = c(0, 10000), priorlatent0 = "stationary",
   thinpara = 1, thinlatent = 1, keeptime = "all", thintime = NULL,
   keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...)
+
+svtsample(y, draws = 10000, burnin = 1000, designmatrix = NA,
+  priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
+  priornu = c(2, 50), priorbeta = c(0, 10000),
+  priorlatent0 = "stationary", thinpara = 1, thinlatent = 1,
+  keeptime = "all", thintime = NULL, keeptau = FALSE,
+  quiet = FALSE, startpara, startlatent, expert, ...)
 }
 \arguments{
 \item{y}{numeric vector containing the data (usually log-returns), which
