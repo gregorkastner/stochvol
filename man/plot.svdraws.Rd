@@ -110,11 +110,15 @@ plot(draws, forecast = 20, showobs = FALSE, col = seq(along = newquants),
 
 }
 \seealso{
-\code{\link{updatesummary}}, \code{\link{volplot}},
-\code{\link{paratraceplot}}, \code{\link{paradensplot}},
-\code{\link{predict.svdraws}}.
+\code{\link{updatesummary}}, \code{\link{predict.svdraws}}
+
+Other plotting: \code{\link{paradensplot}},
+  \code{\link{paratraceplot.svdraws}},
+  \code{\link{paratraceplot}},
+  \code{\link{plot.svpredict}}, \code{\link{volplot}}
 }
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}
 }
+\concept{plotting}
 \keyword{hplot}

@@ -53,9 +53,13 @@ plot(draws, forecast = pred)
 
 }
 \seealso{
-\code{\link{plot.svdraws}}, \code{\link{predict.svdraws}}.
+Other plotting: \code{\link{paradensplot}},
+  \code{\link{paratraceplot.svdraws}},
+  \code{\link{paratraceplot}}, \code{\link{plot.svdraws}},
+  \code{\link{volplot}}
 }
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}
 }
+\concept{plotting}
 \keyword{hplot}
