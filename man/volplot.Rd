@@ -90,12 +90,16 @@ volplot(draws, forecast = 10)
 
 }
 \seealso{
-\code{\link{updatesummary}}, \code{\link{paratraceplot}},
-\code{\link{paradensplot}}, \code{\link{plot.svdraws}},
-\code{\link{predict.svdraws}}.
+\code{\link{updatesummary}}, \code{\link{predict.svdraws}}
+
+Other plotting: \code{\link{paradensplot}},
+  \code{\link{paratraceplot.svdraws}},
+  \code{\link{paratraceplot}}, \code{\link{plot.svdraws}},
+  \code{\link{plot.svpredict}}
 }
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}
 }
+\concept{plotting}
 \keyword{hplot}
 \keyword{ts}

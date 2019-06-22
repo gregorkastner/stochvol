@@ -15,7 +15,7 @@
 #' visualization. See the examples in \code{\link{predict.svdraws}} and
 #' those below for use cases.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
-#' @seealso \code{\link{plot.svdraws}}, \code{\link{predict.svdraws}}.
+#' @family plotting
 #' @keywords hplot
 #' @examples
 #' 
@@ -98,8 +98,7 @@ plot.svlpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
 #' @note You can call this function directly, but it is more commonly called by
 #' the \code{\link{plot.svdraws}} method.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
-#' @seealso \code{\link{paratraceplot}}, \code{\link{volplot}},
-#' \code{\link{plot.svdraws}}
+#' @family plotting
 #' @keywords hplot
 #' @export
 paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
@@ -162,11 +161,10 @@ paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
 #' @note You can call this function directly, but it is more commonly called by
 #' the \code{\link{plot.svdraws}} method.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
-#' @seealso \code{\link{paradensplot}}, \code{\link{volplot}},
-#' \code{\link{plot.svdraws}}
+#' @family plotting
 #' @keywords hplot
 #' @export
-paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
+paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
   if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (!is.null(simobj)) {
     if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
@@ -233,10 +231,9 @@ paratraceplot <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simo
 #' \code{\link{updatesummary}} on the \code{svdraws} object first. An example
 #' of doing so is given below.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
-#' @seealso \code{\link{updatesummary}}, \code{\link{paratraceplot}},
-#' \code{\link{paradensplot}}, \code{\link{plot.svdraws}},
-#' \code{\link{predict.svdraws}}.
+#' @seealso \code{\link{updatesummary}}, \code{\link{predict.svdraws}}
 #' @keywords hplot ts
+#' @family plotting
 #' @examples
 #' 
 #' ## Simulate a short and highly persistent SV process 
@@ -379,7 +376,6 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 }
 
 
-
 #' Graphical Summary of the Posterior Distribution
 #' 
 #' \code{plot.svdraws} and \code{plot.svldraws} generate some plots visualizing the posterior
@@ -436,9 +432,8 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 #' \code{\link{updatesummary}} on the \code{svdraws} object first. An example
 #' of doing so is given in the Examples section.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
-#' @seealso \code{\link{updatesummary}}, \code{\link{volplot}},
-#' \code{\link{paratraceplot}}, \code{\link{paradensplot}},
-#' \code{\link{predict.svdraws}}.
+#' @seealso \code{\link{updatesummary}}, \code{\link{predict.svdraws}}
+#' @family plotting
 #' @keywords hplot
 #' @examples
 #' 
@@ -653,4 +648,3 @@ plot.svresid <- function(x, origdata = NA,
   par(oldpar)
   invisible(x)
 }
-

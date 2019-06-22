@@ -56,10 +56,12 @@ You can call this function directly, but it is more commonly called by
 the \code{\link{plot.svdraws}} method.
 }
 \seealso{
-\code{\link{paratraceplot}}, \code{\link{volplot}},
-\code{\link{plot.svdraws}}
+Other plotting: \code{\link{paratraceplot.svdraws}},
+  \code{\link{paratraceplot}}, \code{\link{plot.svdraws}},
+  \code{\link{plot.svpredict}}, \code{\link{volplot}}
 }
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}
 }
+\concept{plotting}
 \keyword{hplot}

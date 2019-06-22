@@ -3,7 +3,7 @@
 \name{logret}
 \alias{logret}
 \alias{logret.default}
-\title{Computes the log returns of a time series}
+\title{Computes the Log Returns of a Time Series}
 \usage{
 logret(dat, demean = FALSE, standardize = FALSE, ...)
 
