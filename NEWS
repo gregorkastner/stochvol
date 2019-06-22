@@ -2,7 +2,8 @@ Changes in Version 2.0.4:
   - Bugfix in svlpredict when an inverse gamma prior is used.
   - Function 'svtpredict' introduced for convenience when estimating
     SV with heavy tails.
-  - New generic: logret; old logret is now logret.default
+  - New generic: logret; old logret function is now logret.default
+    (this change shouldn't bother the end user))
 
 Changes in Version 2.0.3:
   - The exported C++ function 'update_svl' can draw posterior values
