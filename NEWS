@@ -3,7 +3,7 @@ Changes in Version 2.0.4:
   - Function 'svtpredict' introduced for convenience when estimating
     SV with heavy tails.
   - New generic: logret; old logret function is now logret.default
-    (this change shouldn't bother the end user)).
+    (this change shouldn't bother the end user).
   - New generic: paratraceplot; old paratraceplot function is now
     paratraceplot.svdraws (this change shouldn't bother the end user).
 
