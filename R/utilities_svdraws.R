@@ -353,7 +353,7 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   arorder <- 0  # AR(0) means either a constant mean or a no mean model here
   if (object$meanmodel == "none") {
     if (!is.null(newdata)) warning("No regression coefficients were used when estimating the model. Omitting 'newdata'.")
-    regressors <- function (y, newdata, stepind) matrix(0)
+    regressors <- function (y, newdata, stepind) 0
   } else if (object$meanmodel == "matrix") {
     if (is.null(newdata)) stop("Regressors needed for prediction. Please provide regressors through parameter 'newdata'.")
     newdata <- as.matrix(newdata)
@@ -362,7 +362,7 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
     regressors <- function (y, newdata, stepind) matrix(newdata[stepind, ], nrow = NROW(y), ncol = NCOL(newdata), byrow = TRUE)  # matches the format in the ar* case
   } else if (object$meanmodel == "constant") {
     if (!is.null(newdata)) warning("Constant mean was assumed when estimating the model. Omitting 'newdata'.")
-    regressors <- function (y, newdata, stepind) matrix(1)
+    regressors <- function (y, newdata, stepind) 1
   } else if (any(grep("ar[1-9][0-9]*", object$meanmodel))) {
     arorder <- as.integer(gsub("ar", "", object$meanmodel))
     if (!is.null(newdata)) warning(paste0("An AR(", arorder, ") mean was assumed when estimating the model. Omitting 'newdata'."))
