@@ -297,7 +297,7 @@ res <- updatesummary(res, quantiles = c(0.01, 0.1, 0.5, 0.9, 0.99))
 volplot(res, forecast = 100, dates = exrates$date[-1])
 @
 
-\begin{figure}[!htp]
+\begin{figure}[t]
 \begin{center}
  \includegraphics[width=\textwidth]{article-usd4}
  \caption{As above, now with medians (black line) and 1\%/10\%/90\%/99\% quantiles (gray lines). This behavior can be achieved through a preceding call of \code{updatesummary}.}
