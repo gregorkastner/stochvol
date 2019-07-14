@@ -1,0 +1,3 @@
+[submodule "vignettes/factor-stochvol-vignette"]
+	path = vignettes/factor-stochvol-vignette
+	url = https://github.com/hdarjus/factor-stochvol-vignette
