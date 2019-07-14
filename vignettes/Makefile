@@ -21,7 +21,8 @@ paper.pdf: paper.tex
 	pdflatex paper
 
 clean:
-	rm -rfv ./*.{aux,bbl,blg,fdb_latexmk,fls,log,out,tex}
+	rm -rfv ./*.{aux,bbl,blg,fdb_latexmk,fls,log,out}
+	rm -rfv article.tex heavytails.tex paper.tex
 
 distclean: clean
 	rm -rfv Figures
