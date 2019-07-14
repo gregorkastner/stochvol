@@ -6,6 +6,7 @@ year <- sub("-.*", "", meta$Packaged)
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(bibtype = "Article",
+  header       = "To cite stochvol in publications use:",
   title        = "Dealing with Stochastic Volatility in Time Series Using the {R} Package {stochvol}",
   author       = person(given = "Gregor",
                         family = "Kastner",
@@ -16,13 +17,31 @@ bibentry(bibtype = "Article",
   number       = "5",
   pages        = "1--30",
   doi          = "10.18637/jss.v069.i05",
-
-  header       = "To cite stochvol in publications use:",
   textVersion  =
   paste("Gregor Kastner (2016).",
         "Dealing with Stochastic Volatility in Time Series Using the R Package stochvol.",
         "Journal of Statistical Software, 69(5), 1-30.",
         "doi:10.18637/jss.v069.i05")
+)
+
+bibentry(bibtype = "Article",
+  header       = "When using the sampler that allows for leverage (svlsample) please cite:",
+  title        = "Modeling Univariate and Multivariate Stochastic Volatility in {R} with {stochvol} and {factorstochvol}",
+  author       = personList(
+                   person(given = "Darjus",
+                          family = "Hosszejni",
+                          email = "darjus.hosszejni@wu.ac.at"),
+                   person(given = "Gregor",
+                          family = "Kastner",
+                          email = "gregor.kastner@wu.ac.at")),
+  journal      = "R package vignette",
+  year         = "2019",
+  url          = "https://CRAN.R-project.org/package=stochvol/vignettes/paper.pdf",
+  textVersion  =
+  paste("Hosszejni, Darjus and Gregor Kastner (2019).",
+        "Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol.",
+        "R package vignette.",
+        "URL: https://CRAN.R-project.org/package=stochvol/vignettes/paper.pdf")
 )
 
 citEntry(header = "To refer to the current version of the package you could use:",
