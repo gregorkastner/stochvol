@@ -1,6 +1,6 @@
 all: pdf
 
-pdf: article.pdf heavytails.pdf
+pdf: article.pdf heavytails.pdf paper.pdf
 
 article.pdf: article.tex
 	pdflatex article
@@ -14,5 +14,16 @@ heavytails.pdf: heavytails.tex
 	pdflatex heavytails
 	pdflatex heavytails
 
+paper.pdf: paper.tex
+	pdflatex paper
+	bibtex paper
+	pdflatex paper
+	pdflatex paper
+
 clean:
-	rm -rf article.tex article.aux article.bbl article.blg article.log article.out article-*.pdf heavytails.tex heavytails.aux heavytails.bbl heavytails.blg heavytails.log heavytails.out heavytails-*.pdf
+	rm -rfv ./*.{aux,bbl,blg,fdb_latexmk,fls,log,out,tex}
+
+distclean: clean
+	rm -rfv Figures
+	rm -fv paper.Rnw
+	rm -fv ref.bib
