@@ -6,8 +6,13 @@
 #include "simulation-smoother.h"
 #include "auxmix.h"
 #include "parameterization.h"
+#include <chrono>
 
 using namespace Rcpp;
+
+namespace stochvol {
+  extern std::chrono::steady_clock::duration measure;
+}
 
 arma::vec draw_latent(
     const arma::vec& y,
@@ -24,7 +29,10 @@ arma::vec draw_latent(
     const bool correct) {
   // Draw h from AUX
   const arma::vec s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
+  const auto time_start = std::chrono::steady_clock::now();
   const arma::vec proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
+  const auto time_end = std::chrono::steady_clock::now();
+  stochvol::measure += time_end-time_start;
 
   if (correct) {
     return correct_latent_auxiliaryMH(y, y_star, d, h, ht, proposed, phi, rho, sigma2, mu);
@@ -44,10 +52,57 @@ arma::vec draw_h_auxiliary(
     const double priormu_mu,
     const double priormu_sigma,
     const Parameterization centering) {
-  arma::vec mixing_a(s.size()); std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
-  arma::vec mixing_b(s.size()); std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
-  arma::vec mixing_m(s.size()); std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
-  arma::vec mixing_v(s.size()); std::transform(s.cbegin(), s.cend(), mixing_v.begin(), [](const int selem) -> double {return sqrt(mix_var[selem]);});
+  static arma::vec mixing_a, mixing_b, mixing_m, mixing_v;
+  mixing_a.resize(s.size()), mixing_b.resize(s.size()), mixing_m.resize(s.size()), mixing_v.resize(s.size());
+  std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
+  std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
+  std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
+  std::transform(s.cbegin(), s.cend(), mixing_v.begin(), [](const int selem) -> double {return sqrt(mix_var[selem]);});
+  
+  const List filter_result = aug_kalman_filter(phi, rho, sigma2, mixing_a, mixing_b, mixing_m, mixing_v, d, y_star, priormu_mu, pow(priormu_sigma, 2), centering);
+  
+  const List smoothing_result = simulation_smoother(mu, filter_result, centering);
+  const arma::vec eta = smoothing_result["eta"];
+  const double eta0 = as<NumericVector>(smoothing_result["eta0"])[0];
+
+  const int n = as<NumericVector>(filter_result["D"]).size();
+  arma::vec h(n, arma::fill::zeros);
+  arma::vec dt;
+  switch (centering) {
+    case Parameterization::CENTERED:
+    h[0] = mu + eta0;
+    dt = mu*(1-phi) + rho*sqrt(sigma2)*(d%mixing_a%exp(mixing_m/2));
+    break;
+    case Parameterization::NONCENTERED:
+    h[0] = eta0;
+    dt = rho*(d%mixing_a%exp(mixing_m/2));
+    break;
+  }
+
+  for (int i = 0; i < n-1; i++) {
+    h[i+1] = dt[i] + phi*h[i] + eta[i];
+  }
+
+  return h;
+}
+ 
+arma::vec draw_h_auxiliary_awol(
+    const arma::vec& y_star,
+    const arma::ivec& d,
+    const arma::vec& s,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const double priormu_mu,
+    const double priormu_sigma,
+    const Parameterization centering) {
+  static arma::vec mixing_a, mixing_b, mixing_m, mixing_v;
+  mixing_a.resize(s.size()), mixing_b.resize(s.size()), mixing_m.resize(s.size()), mixing_v.resize(s.size());
+  std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
+  std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
+  std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
+  std::transform(s.cbegin(), s.cend(), mixing_v.begin(), [](const int selem) -> double {return sqrt(mix_var[selem]);});
   
   const List filter_result = aug_kalman_filter(phi, rho, sigma2, mixing_a, mixing_b, mixing_m, mixing_v, d, y_star, priormu_mu, pow(priormu_sigma, 2), centering);
   

@@ -376,6 +376,8 @@ List svlsample_cpp (
 
   if (verbose) progressbar_finish(N);  // finalize progress bar
 
+  Rcout << stochvol::measure.count() << std::endl;
+
   return List::create(
       _["para"] = params,
       _["latent"] = latent,

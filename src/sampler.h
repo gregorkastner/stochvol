@@ -2,6 +2,11 @@
 #define _SAMPLER_H_
 
 #include <RcppArmadillo.h>
+#include <chrono>
+
+namespace stochvol {
+  auto measure = std::chrono::steady_clock::duration::zero();
+}
 
 Rcpp::List svsample_cpp(
     const arma::vec& y_in,
