@@ -1,6 +1,7 @@
 Changes in Version 2.0.5:
   - Bugfix in predict when a constant mean model is used for prediction
   - Test suite added
+  - Updated CITATION file
 
 Changes in Version 2.0.4:
   - Bugfix in svlpredict when an inverse gamma prior is used.

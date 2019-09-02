@@ -44,20 +44,20 @@ bibentry(bibtype = "Article",
         "URL: https://CRAN.R-project.org/package=stochvol/vignettes/paper.pdf")
 )
 
-citEntry(header = "To refer to the current version of the package you could use:",
-         entry = "manual",
-         title = "{stochvol}: Efficient Bayesian Inference for Stochastic Volatility ({SV}) Models",
-         author = personList(as.person("Gregor Kastner"), as.person("Darjus Hosszejni")),
-         year = year,
-         note = note,
-         url = "https://CRAN.R-project.org/package=stochvol",
-         textVersion =
-         paste("Gregor Kastner, Darjus Hosszejni",
-   	       sprintf("(%s).", year),	 
-               "stochvol: Efficient Bayesian inference for stochastic volatility (SV) models.",
-	       paste(note, ".", sep = ""),
-               "URL: https://CRAN.R-project.org/package=stochvol")
-)
+#citEntry(header = "To refer to the current version of the package you could use:",
+#         entry = "manual",
+#         title = "{stochvol}: Efficient Bayesian Inference for Stochastic Volatility ({SV}) Models",
+#         author = personList(as.person("Gregor Kastner"), as.person("Darjus Hosszejni")),
+#         year = year,
+#         note = note,
+#         url = "https://CRAN.R-project.org/package=stochvol",
+#         textVersion =
+#         paste("Gregor Kastner, Darjus Hosszejni",
+#   	       sprintf("(%s).", year),	 
+#               "stochvol: Efficient Bayesian inference for stochastic volatility (SV) models.",
+#	       paste(note, ".", sep = ""),
+#               "URL: https://CRAN.R-project.org/package=stochvol")
+#)
 
 citEntry(header = "To refer to the sampling methodology used by the svsample function please cite:",
          entry = "article",
