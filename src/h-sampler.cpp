@@ -7,6 +7,7 @@
 #include "auxmix.h"
 #include "parameterization.h"
 #include <chrono>
+#include <cmath>
 
 using namespace Rcpp;
 
@@ -97,35 +98,24 @@ arma::vec draw_h_auxiliary_awol(
     const double priormu_mu,
     const double priormu_sigma,
     const Parameterization centering) {
+  const int n = s.size();
+  const int mix_count = sizeof(mix_prob)/sizeof(mix_prob[0]);
+
   static arma::vec mixing_a, mixing_b, mixing_m, mixing_v;
-  mixing_a.resize(s.size()), mixing_b.resize(s.size()), mixing_m.resize(s.size()), mixing_v.resize(s.size());
+  mixing_a.resize(n), mixing_b.resize(n), mixing_m.resize(n), mixing_v.resize(n);
   std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
   std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
   std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
   std::transform(s.cbegin(), s.cend(), mixing_v.begin(), [](const int selem) -> double {return sqrt(mix_var[selem]);});
   
-  const List filter_result = aug_kalman_filter(phi, rho, sigma2, mixing_a, mixing_b, mixing_m, mixing_v, d, y_star, priormu_mu, pow(priormu_sigma, 2), centering);
-  
-  const List smoothing_result = simulation_smoother(mu, filter_result, centering);
-  const arma::vec eta = smoothing_result["eta"];
-  const double eta0 = as<NumericVector>(smoothing_result["eta0"])[0];
-
-  const int n = as<NumericVector>(filter_result["D"]).size();
   arma::vec h(n, arma::fill::zeros);
-  arma::vec dt;
-  switch (centering) {
-    case Parameterization::CENTERED:
-    h[0] = mu + eta0;
-    dt = mu*(1-phi) + rho*sqrt(sigma2)*(d%mixing_a%exp(mixing_m/2));
-    break;
-    case Parameterization::NONCENTERED:
-    h[0] = eta0;
-    dt = rho*(d%mixing_a%exp(mixing_m/2));
-    break;
-  }
-
-  for (int i = 0; i < n-1; i++) {
-    h[i+1] = dt[i] + phi*h[i] + eta[i];
+  arma::vec omega_diag(n, arma::fill::zeros);
+  arma::vec omega_offdiag(n-1, arma::fill::zeros);
+  arma::vec e_12m(mix_count, arma::fill::zeros);
+  for (int i = 0; i < mix_count; i++) {
+    e_12m[i] = std::exp(.5*mix_mean[i]);
+    // TODO implement awol based on McCausland and the Mathematica notebook on the wu cloud
+    // run devtools::load_all() and then svlsample(exrates[, "CHF"]) to do measurements using the manual timing here
   }
 
   return h;
