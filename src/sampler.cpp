@@ -1,6 +1,8 @@
 #include <RcppArmadillo.h>
 #include "sampler.h"
 #include "update_functions.h"
+#include "h-sampler.h"
+#include "h-utils.h"
 #include "auxmix.h"
 #include "progutils.h"
 #include "regression.h"
@@ -245,10 +247,10 @@ List svlsample_cpp (
     const CharacterVector& strategy_rcpp,
     const bool dontupdatemu) {
 
-  const int N = burnin + draws;
-  const bool regression = !ISNA(X.at(0,0));
+  const int N = draws;
+//  const bool regression = !ISNA(X.at(0,0));
   const int T = y_in.size();
-  const int p = X.n_cols;
+//  const int p = X.n_cols;
 
   arma::vec y = y_in;
   arma::vec y_star = log(y%y + offset);
@@ -259,22 +261,22 @@ List svlsample_cpp (
   double sigma2 = pow(as<double>(theta_init["sigma"]), 2);
   double mu = theta_init["mu"];
   arma::vec h = h_init, ht = (h_init-mu)/sqrt(sigma2);
-  arma::vec beta(p); beta.fill(0.0);
-
-  arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
-  arma::mat params(draws/thinpara, 4);
-
-  const int hstorelength = T/thintime;  // thintime must either be 1 or T
-  arma::mat latent(draws/thinlatent, hstorelength);
+//  arma::vec beta(p); beta.fill(0.0);
+//
+//  arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
+//  arma::mat params(draws/thinpara, 4);
+//
+//  const int hstorelength = T/thintime;  // thintime must either be 1 or T
+//  arma::mat latent(draws/thinlatent, hstorelength);
 
   // priors in objects
-  const arma::vec prior_phi = {prior_phi_a, prior_phi_b};
-  const arma::vec prior_rho = {prior_rho_a, prior_rho_b};
-  const arma::vec prior_sigma2 = {prior_sigma2_shape, prior_sigma2_rate};
-  const arma::vec prior_mu = {prior_mu_mu, prior_mu_sigma};
+//  const arma::vec prior_phi = {prior_phi_a, prior_phi_b};
+//  const arma::vec prior_rho = {prior_rho_a, prior_rho_b};
+//  const arma::vec prior_sigma2 = {prior_sigma2_shape, prior_sigma2_rate};
+//  const arma::vec prior_mu = {prior_mu_mu, prior_mu_sigma};
 
   // inverse of the Cholesky factor of the covariance matrix
-  const arma::mat proposal_chol_inv = arma::inv(trimatl(proposal_chol));
+//  const arma::mat proposal_chol_inv = arma::inv(trimatl(proposal_chol));
 
   // don't use strings or RcppCharacterVector
   arma::ivec strategy(strategy_rcpp.length());
@@ -287,31 +289,48 @@ List svlsample_cpp (
 
   // some stuff for the regression part
   // prior mean and precision matrix for the regression part (currently fixed)
-  const arma::vec y_in_arma(y_in.begin(), T);
-  const arma::vec priorbetamean = arma::ones(p) * prior_beta_mu;
-  const arma::mat priorbetaprec = arma::eye(p, p) / pow(prior_beta_sigma, 2);
-  arma::vec normalizer(T);
-  arma::mat X_reg(T, p);
-  arma::vec y_reg(T);
-  arma::mat postprecchol(p, p);
-  arma::mat postpreccholinv(p, p);
-  arma::mat postcov(p, p);
-  arma::vec postmean(p);
-  arma::vec armadraw(p);
+//  const arma::vec y_in_arma(y_in.begin(), T);
+//  const arma::vec priorbetamean = arma::ones(p) * prior_beta_mu;
+//  const arma::mat priorbetaprec = arma::eye(p, p) / pow(prior_beta_sigma, 2);
+//  arma::vec normalizer(T);
+//  arma::mat X_reg(T, p);
+//  arma::vec y_reg(T);
+//  arma::mat postprecchol(p, p);
+//  arma::mat postpreccholinv(p, p);
+//  arma::mat postcov(p, p);
+//  arma::vec postmean(p);
+//  arma::vec armadraw(p);
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
   const int show = verbose ? progressbar_init(N) : 0;
 
-  for (int i = -burnin+1; i < draws+1; i++) {
     R_CheckUserInterrupt();
 
-    const bool thinpara_round = (thinpara > 1) && (i % thinpara != 0);  // is this a parameter thinning round?
-    const bool thinlatent_round = (thinlatent > 1) && (i % thinlatent != 0);  // is this a latent thinning round?
+    const int n_ex = draws;
+    const int n_aux = burnin;
+    arma::vec r_aux_samples(n_aux);
+    arma::vec h_new(h);
+    arma::vec r_mean(n_ex), r_var(n_ex);
+    for (int i_ex = 0; i_ex < n_ex; i_ex++) {
+      // print a progress sign every "show" iterations
+      if (verbose && (i_ex % show == 0)) progressbar_print();
+      h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu_mu, prior_mu_sigma, true);
+      ht = (h-mu)/sqrt(sigma2);
+      for (int i_aux = 0; i_aux < n_aux; i_aux++) {
+        h_new = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu_mu, prior_mu_sigma, true);
+        const double hlp1 = h_log_posterior(h_new, y, phi, rho, sigma2, mu);
+        const double hlp2 = h_log_posterior(h, y, phi, rho, sigma2, mu);
+        const double halp1 = h_aux_log_posterior(h_new, y_star, d, phi, rho, sigma2, mu);
+        const double halp2 = h_aux_log_posterior(h, y_star, d, phi, rho, sigma2, mu);
+        const double log_acceptance = hlp1-hlp2-(halp1-halp2);
+        r_aux_samples(i_aux) = (log_acceptance > 0) ? 1. : exp(log_acceptance);
+      }
+      r_mean(i_ex) = arma::mean(r_aux_samples);
+      r_var(i_ex) = arma::var(r_aux_samples);
+    }
 
-    // print a progress sign every "show" iterations
-    if (verbose && (i % show == 0)) progressbar_print();
-
+    /*
     if (regression) {
       y = y_in_arma - X*beta;
       y_star = arma::log(arma::square(y));
@@ -372,13 +391,11 @@ List svlsample_cpp (
         latent.at(i/thinlatent-1, volind) = h[thintime * (thincol + 1) - 1];
       }
     }
-  }
-
+    */
   if (verbose) progressbar_finish(N);  // finalize progress bar
 
   return List::create(
-      _["para"] = params,
-      _["latent"] = latent,
-      _["beta"] = betas);
+      _["mean"] = r_mean,
+      _["var"] = r_var);
 }
 

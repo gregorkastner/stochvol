@@ -212,6 +212,7 @@ void update_svl (
   h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1], correct);
   ht = (h-mu)/sqrt(sigma2);
 
+  /*
   for (int ipar : strategy) {
     const Parameterization par = Parameterization(ipar);
     if (dontupdatemu) {
@@ -246,6 +247,7 @@ void update_svl (
         break;
     }
   }
+  */
   return;
 }
 

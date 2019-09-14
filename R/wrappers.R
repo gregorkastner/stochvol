@@ -1450,10 +1450,6 @@ svlsample2 <- function(y, draws = 1, burnin = 0,
                                0, diag(0.1, nrow = 4, ncol = 4), TRUE,
                                TRUE, rep(c("centered", "noncentered"), 5), FALSE)
 
-  res$para <- t(res$para)
-  res$latent <- t(res$latent)
-  res$meanmodel <- "none"
-  rownames(res$para) <- c("mu", "phi", "sigma", "rho")
   res
 }
 
