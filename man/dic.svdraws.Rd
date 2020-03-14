@@ -4,7 +4,7 @@
 \alias{dic.svdraws}
 \title{Deviance information criterion for stochastic volatility models}
 \usage{
-\method{dic}{svdraws}(x)
+dic.svdraws(x)
 }
 \description{
 Deviance information criterion for stochastic volatility models
@@ -19,6 +19,6 @@ draws <- svsample(sim, draws = 5000, burnin = 100,
 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
 
 ## Calculate DIC
-dic(draws)
+dic.svdraws(draws)
 }
 \keyword{dic}

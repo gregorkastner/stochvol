@@ -38,12 +38,6 @@ loglik_sv <- function (y, h, theta) {
   sum(dnorm(y, 0, exp(.5*h), TRUE))
 }
 
-#' Deviance information criterion
-#' @export
-dic <- function (x, ...) {
-  UseMethod("dic", x)
-}
-
 #' Deviance information criterion for stochastic volatility models
 #' @keywords dic
 #' @examples
@@ -56,8 +50,7 @@ dic <- function (x, ...) {
 #' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
 #' 
 #' ## Calculate DIC
-#' dic(draws)
-#' @method dic svdraws
+#' dic.svdraws(draws)
 #' @export
 dic.svdraws <- function (x) {
   if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' object.")
