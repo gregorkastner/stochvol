@@ -194,7 +194,7 @@ through parameter \code{expert}.
 ## Simulate a short SVL process
 sim <- svsim(200, mu = -10, phi = 0.95, sigma = 0.2, rho = -0.4)
 
-## Obtain 5000 draws from the sampler (that's not a lot)
+## Obtain 10000 draws from the sampler (that's not a lot)
 draws <- svlsample(sim$y)
 
 ## Check out the results

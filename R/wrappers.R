@@ -599,9 +599,6 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   res
 }
 
-# This function does not check input nor converts the result to coda objects!
-
-
 #' @rdname svsample
 #' @export
 svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
@@ -931,7 +928,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
 #' ## Simulate a short SVL process
 #' sim <- svsim(200, mu = -10, phi = 0.95, sigma = 0.2, rho = -0.4)
 #' 
-#' ## Obtain 5000 draws from the sampler (that's not a lot)
+#' ## Obtain 10000 draws from the sampler (that's not a lot)
 #' draws <- svlsample(sim$y)
 #' 
 #' ## Check out the results
