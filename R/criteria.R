@@ -45,7 +45,20 @@ dic <- function (x, ...) {
 }
 
 #' Deviance information criterion for stochastic volatility models
+#' @keywords dic
+#' @examples
+#' # Example 1
+#' ## Simulate a short and highly persistent SV process 
+#' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
+#' 
+#' ## Obtain 5000 draws from the sampler (that's not a lot)
+#' draws <- svsample(sim, draws = 5000, burnin = 100,
+#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
+#' 
+#' ## Calculate DIC
+#' dic(draws)
 #' @method dic svdraws
+#' @export
 dic.svdraws <- function (x) {
   if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' object.")
   fnlik <- if (NCOL(para(x)) == 3) {
