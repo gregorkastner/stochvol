@@ -4,4 +4,5 @@ jsslogo.jpg
 vignettes/factor-stochvol-vignette/.git
 vignettes/factor-stochvol-vignette/figure
 vignettes/factor-stochvol-vignette/cache
-README.md
+^README.md$
+^.*.RDS$

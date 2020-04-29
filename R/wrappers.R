@@ -1161,20 +1161,24 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                         mhcontrol = list(scale=0.35, rho.var=0.02),
                         gammaprior = TRUE,
                         init.with.svsample = 1000L,
-                        correct.latent.draws = TRUE)
+                        correct.latent.draws = TRUE,
+                        use.mala = FALSE,
+                        stdev.mala = 0.2)
   if (missing(expert)) {
     parameterization <- expertdefault$parameterization
     mhcontrol <- expertdefault$mhcontrol
     gammaprior <- expertdefault$gammaprior
     init.with.svsample <- expertdefault$init.with.svsample
     correct.latent.draws <- expertdefault$correct.latent.draws
+    use.mala <- expertdefault$use.mala
+    stdev.mala <- expertdefault$stdev.mala
   } else {
     expertnames <- names(expert)
     if (!is.list(expert) || is.null(expertnames) || any(expertnames == ""))
       stop("Argument 'expert' must be a named list with nonempty names.")
     if (length(unique(expertnames)) != length(expertnames))
       stop("No duplicate elements allowed in argument 'expert'.")
-    allowednames <- c("parameterization", "mhcontrol", "gammaprior", "init.with.svsample", "correct.latent.draws")
+    allowednames <- c("parameterization", "mhcontrol", "gammaprior", "init.with.svsample", "correct.latent.draws", "use.mala", "stdev.mala")
     exist <- pmatch(expertnames, allowednames)
     if (any(is.na(exist)))
       stop(paste("Illegal element '", paste(expertnames[is.na(exist)], collapse="' and '"), "' in argument 'expert'.", sep=''))
@@ -1236,6 +1240,20 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
       if (!is.logical(correct.latent.draws)) stop("Argument 'correct.latent.draws' must be TRUE or FALSE.")
     } else {
       correct.latent.draws <- expertdefault$correct.latent.draws
+    }
+
+    if (exists("use.mala", expertenv)) {
+      use.mala <- expert[["use.mala"]]
+      if (!is.logical(use.mala)) stop("Argument 'use.mala' must be TRUE or FALSE.")
+    } else {
+      use.mala <- expertdefault$use.mala
+    }
+
+    if (exists("stdev.mala", expertenv)) {
+      stdev.mala <- expert[["stdev.mala"]]
+      if (!is.numeric(stdev.mala) || length(stdev.mala) != 1 || any(stdev.mala <= 0)) stop("Argument 'stdev.mala' must be a positive number.")
+    } else {
+      stdev.mala <- expertdefault$stdev.mala
     }
   }
   
@@ -1301,7 +1319,8 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                  0.5, 0.5/priorsigma, priormu[1], priormu[2],
                                  priorbeta[1], priorbeta[2], !myquiet,
-                                 myoffset, t(chol(cov.mh)), gammaprior, correct.latent.draws,
+                                 myoffset, t(chol(cov.mh)), use.mala, stdev.mala,
+                                 gammaprior, correct.latent.draws,
                                  parameterization, FALSE)
   })
 

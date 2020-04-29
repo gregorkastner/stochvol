@@ -2,7 +2,7 @@ Encoding: UTF-8
 Package: stochvol
 Type: Package
 Title: Efficient Bayesian Inference for Stochastic Volatility (SV) Models
-Version: 2.0.5
+Version: 2.0.5-1
 Authors@R: c(
 	person("Gregor", "Kastner", role = c("aut"), email = "gregor.kastner@wu.ac.at", comment = c(ORCID = "0000-0002-8237-8271")),
 	person("Darjus", "Hosszejni", role = c("aut", "cre"), email = "darjus.hosszejni@wu.ac.at", comment = c(ORCID = "0000-0002-3803-691X")))

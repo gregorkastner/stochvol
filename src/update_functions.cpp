@@ -203,10 +203,13 @@ void update_svl (
     const arma::vec& prior_mu,
     const arma::mat& proposal_chol,
     const arma::mat& proposal_chol_inv,
+    const bool use_mala,
+    const double stdev_mala,
     const bool gammaprior,
     const bool correct,
     const arma::ivec& strategy,
     const bool dontupdatemu) {
+  const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;
 
   // only centered
   h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1], correct);
@@ -225,7 +228,7 @@ void update_svl (
             proposal_chol_inv.submat(0, 0, 2, 2),
             gammaprior);
     } else {
-      draw_theta_rwMH(
+      draw_theta(
             phi, rho, sigma2, mu, y, h, ht,
             prior_phi,
             prior_rho,
@@ -234,7 +237,9 @@ void update_svl (
             par,
             proposal_chol,
             proposal_chol_inv,
-            gammaprior);
+            gammaprior,
+            proposal,
+            stdev_mala);
     }
 
     switch (par) {

@@ -53,6 +53,8 @@ void update_svl (
     const arma::vec& prior_mu,
     const arma::mat& proposal_chol,
     const arma::mat& proposal_chol_inv,
+    const bool use_mala,
+    const double stdev_mala,
     const bool gammaprior,
     const bool correct,
     const arma::ivec& strategy,

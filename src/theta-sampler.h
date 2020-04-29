@@ -4,7 +4,7 @@
 #include <RcppArmadillo.h>
 #include "parameterization.h"
 
-void draw_theta_rwMH(
+void draw_theta(
     double& phi,
     double& rho,
     double& sigma2,
@@ -19,7 +19,9 @@ void draw_theta_rwMH(
     const Parameterization centering,
     const arma::mat& proposal_chol,
     const arma::mat& proposal_chol_inv,
-    const bool gammaprior);
+    const bool gammaprior,
+    const Proposal sampler,
+    const double stdev);
 
 void draw_thetamu_rwMH(
     double& phi,

@@ -55,6 +55,8 @@ Rcpp::List svlsample_cpp (
     const bool verbose,
     const double offset,
     const arma::mat& proposal_chol,
+    const bool use_mala,
+    const double stdev_mala,
     const bool gammaprior,
     const bool correct,
     const Rcpp::CharacterVector& strategy,

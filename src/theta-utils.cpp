@@ -153,7 +153,7 @@ arma::vec rnorm4_arma() {
   return {R::rnorm(0, 1), R::rnorm(0, 1), R::rnorm(0, 1), R::rnorm(0, 1)};
 }
 
-arma::vec theta_propose(
+arma::vec theta_propose_rwmh(
     const double phi,
     const double rho,
     const double sigma2,
@@ -167,7 +167,7 @@ arma::vec theta_propose(
   
   const arma::vec &proposal_mean_old = theta_old_t;
   const arma::vec theta_new_t_standardized = rnorm4_arma();
-  const arma::vec theta_new_t = proposal_chol*theta_new_t_standardized + proposal_mean_old;
+  const arma::vec theta_new_t = proposal_chol * theta_new_t_standardized + proposal_mean_old;
   const arma::vec theta_new = theta_transform(theta_new_t[0], theta_new_t[1], theta_new_t[2], theta_new_t[3]);
   const double phi_new = theta_new[0], rho_new = theta_new[1], sigma2_new = theta_new[2], mu_new = theta_new[3];
   double theta_density_new = theta_transform_inv_log_det_jac(phi_new, rho_new, sigma2_new, mu_new);
@@ -180,6 +180,44 @@ arma::vec theta_propose(
   double theta_density_old = theta_transform_inv_log_det_jac(phi, rho, sigma2, mu);
   for (int i = 0; i < 4; i++) {
     theta_density_old += R::dnorm(theta_old_t_standardized[i], 0., 1., true);
+  }
+  
+  return {phi_new, rho_new, sigma2_new, mu_new, theta_density_old, theta_density_new};
+}
+
+arma::vec6 theta_propose_mala(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const arma::vec& y,
+    const arma::vec& h,
+    const arma::vec2& prior_phi,
+    const arma::vec2& prior_rho,
+    const arma::vec2& prior_sigma2,
+    const arma::vec2& prior_mu,
+    const arma::mat& proposal_chol,
+    const arma::mat& proposal_chol_inv,
+    const double stdev) {
+  const arma::vec4 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
+  
+  const arma::vec4 grad_old = grad_theta_log_posterior(phi, rho, sigma2, mu, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu);
+  const arma::vec4 proposal_mean_old = theta_old_t + std::pow(stdev, 2) * grad_old % arma::vec4({1-phi*phi, 1-rho*rho, sigma2, 1});  // correction for being in the transformed space
+  const arma::vec4 theta_new_t_standardized = rnorm4_arma();
+  const arma::vec4 theta_new_t = proposal_chol * theta_new_t_standardized + proposal_mean_old;
+  const arma::vec4 theta_new = theta_transform(theta_new_t(0), theta_new_t(1), theta_new_t(2), theta_new_t(3));
+  const double phi_new = theta_new(0), rho_new = theta_new(1), sigma2_new = theta_new(2), mu_new = theta_new(3);
+  double theta_density_new = theta_transform_inv_log_det_jac(phi_new, rho_new, sigma2_new, mu_new);
+  for (int i = 0; i < 4; i++) {
+    theta_density_new += R::dnorm(theta_new_t_standardized(i), 0., 1., true);
+  }
+  
+  const arma::vec4 grad_new = grad_theta_log_posterior(phi_new, rho_new, sigma2_new, mu_new, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu);
+  const arma::vec4 proposal_mean_new = theta_new_t + std::pow(stdev, 2) * grad_new % arma::vec4({1-phi_new*phi_new, 1-rho_new*rho_new, sigma2_new, 1});
+  const arma::vec4 theta_old_t_standardized = proposal_chol_inv * (theta_old_t-proposal_mean_new);
+  double theta_density_old = theta_transform_inv_log_det_jac(phi, rho, sigma2, mu);
+  for (int i = 0; i < 4; i++) {
+    theta_density_old += R::dnorm(theta_old_t_standardized(i), 0., 1., true);
   }
   
   return {phi_new, rho_new, sigma2_new, mu_new, theta_density_old, theta_density_new};
@@ -219,5 +257,43 @@ arma::vec thetamu_propose(
   }
   
   return {phi_new, rho_new, sigma2_new, theta_density_old, theta_density_new};
+}
+
+arma::vec4 grad_theta_log_posterior(const double phi,
+                                    const double rho,
+                                    const double sigma2,
+                                    const double mu,
+                                    const arma::vec& y,
+                                    const arma::vec& h,
+                                    const arma::vec2& prior_phi,
+                                    const arma::vec2& prior_rho,
+                                    const arma::vec2& prior_sigma2,
+                                    const arma::vec2& prior_mu) {
+  const int n = y.n_elem;
+  const double sigma = sqrt(sigma2);
+  double h_tilde = (h(0)-mu)/sigma;
+  // Grad of log likelihood
+  double d_phi = phi*(h_tilde*h_tilde-1/(1-phi*phi));
+  double d_rho = 0;
+  double d_sigma2 = .5/sigma2*((1-phi*phi)*h_tilde*h_tilde-1);
+  double d_mu = (1-phi*phi)*h_tilde/sigma;
+  const double rho_const = 1/(1-rho*rho);
+  for (int t = 0; t < n-1; t++) {
+    const double y_h_const = y(t)*exp(-h(t)/2);
+    h_tilde = (h(t)-mu)/sigma;
+    const double Delta = (h(t+1)-mu)/sigma - phi*h_tilde;
+    const double dryh_const = Delta-rho*y_h_const;
+    d_phi += rho_const*h_tilde*dryh_const;
+    d_rho += rho_const*(rho-rho_const*rho*(y_h_const*y_h_const-2*rho*y_h_const*Delta+Delta*Delta)+y_h_const*Delta);
+    d_sigma2 += .5/sigma2*(rho_const*Delta*dryh_const-1);
+    d_mu += rho_const/sigma*(1-phi)*dryh_const;
+  }
+  // Grad of log prior
+  const double phi_beta = (phi+1)/2, rho_beta = (rho+1)/2;
+  d_phi += 0.5*((prior_phi(0)-1)/phi_beta - (prior_phi(1)-1)/(1-phi_beta));
+  d_rho += 0.5*((prior_rho(0)-1)/rho_beta - (prior_rho(1)-1)/(1-rho_beta));
+  d_sigma2 += (prior_sigma2(0)-1)/sigma2 - prior_sigma2(1);
+  d_mu += -(mu-prior_mu(0))/pow(prior_mu(1), 2);
+  return {d_phi, d_rho, d_sigma2, d_mu};
 }
 

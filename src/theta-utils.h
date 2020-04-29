@@ -58,7 +58,7 @@ double theta_transform_inv_log_det_jac(
     const double sigma2,
     const double mu);
 
-arma::vec theta_propose(
+arma::vec theta_propose_rwmh(
     const double phi,
     const double rho,
     const double sigma2,
@@ -68,6 +68,21 @@ arma::vec theta_propose(
     const arma::vec& ht,
     const arma::mat& proposal_chol,
     const arma::mat& proposal_chol_inv);
+
+arma::vec6 theta_propose_mala(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const arma::vec& y,
+    const arma::vec& h,
+    const arma::vec2& prior_phi,
+    const arma::vec2& prior_rho,
+    const arma::vec2& prior_sigma2,
+    const arma::vec2& prior_mu,
+    const arma::mat& proposal_chol,
+    const arma::mat& proposal_chol_inv,
+    const double stdev);
 
 arma::vec thetamu_propose(
     const double phi,
@@ -94,5 +109,17 @@ double theta_log_likelihood_nc(
     const double mu,
     const arma::vec& y,
     const arma::vec& h);
+
+arma::vec4 grad_theta_log_posterior(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const arma::vec& y,
+    const arma::vec& h,
+    const arma::vec2& prior_phi,
+    const arma::vec2& prior_rho,
+    const arma::vec2& prior_sigma2,
+    const arma::vec2& prior_mu);
 
 #endif  // THETA_UTILS_H

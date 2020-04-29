@@ -240,6 +240,8 @@ List svlsample_cpp (
     const bool verbose,
     const double offset,
     const arma::mat& proposal_chol,
+    const bool use_mala,
+    const double stdev_mala,
     const bool gammaprior,
     const bool correct,
     const CharacterVector& strategy_rcpp,
@@ -326,6 +328,7 @@ List svlsample_cpp (
       prior_sigma2, prior_mu,
       proposal_chol,
       proposal_chol_inv,
+      use_mala, stdev_mala,
       gammaprior, correct,
       strategy, dontupdatemu);
 
