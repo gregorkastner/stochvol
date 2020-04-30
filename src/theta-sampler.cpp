@@ -28,7 +28,7 @@ void draw_theta(
       proposed = theta_propose_rwmh(phi, rho, sigma2, mu, y, h, ht, proposal_chol, proposal_chol_inv);
       break;
     case Proposal::MALA:
-      proposed = theta_propose_mala(phi, rho, sigma2, mu, y, h, prior_phi, prior_rho, prior_sigma2, proposal_chol, proposal_chol_inv, prior_mu, stdev);
+      proposed = theta_propose_mala(phi, rho, sigma2, mu, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu, proposal_chol, proposal_chol_inv, stdev);
       break;
     default:
       Rcpp::stop("Unknown proposal method");

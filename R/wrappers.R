@@ -1209,10 +1209,10 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
            ((length(mhcontrol) == 1 && mhcontrol > 0) ||
             (is.matrix(mhcontrol) && NROW(mhcontrol) == 4 && NCOL(mhcontrol) == 4))) ||
             (is.list(mhcontrol) && length(mhcontrol) == 2 &&
-            all(sort(c("row.var", "scale")) == sort(names(mhcontrol))) &&
-            is.numeric(mhcontrol$row.var) && mhcontrol$row.var > 0 &&
+            all(sort(c("rho.var", "scale")) == sort(names(mhcontrol))) &&
+            is.numeric(mhcontrol$rho.var) && mhcontrol$rho.var > 0 &&
             is.numeric(mhcontrol$scale) && mhcontrol$scale > 0)))
-        stop("Argument 'mhcontrol' must be a single positive number, a list of two of positive numbers with names 'scale' and 'row.var', or a 4x4 covariance matrix.")
+        stop("Argument 'mhcontrol' must be a single positive number, a list of two of positive numbers with names 'scale' and 'rho.var', or a 4x4 covariance matrix.")
     } else {
       mhcontrol <- expertdefault$mhcontrol
     }
