@@ -2,11 +2,9 @@
 #define stochvol_H_
 
 #include <RcppArmadillo.h>
-#include <Rcpp.h>
+#include "adaptation.hpp"
 
 namespace stochvol {
-
-    using namespace Rcpp;
 
     inline void update_sv(const arma::vec& data, arma::vec& curpara, arma::vec& h, double& h0, arma::vec& mixprob, arma::ivec& r, const bool centered_baseline, const double C0, const double cT, const double Bsigma, const double a0, const double b0, const double bmu, const double Bmu, const double B011inv, const double B022inv, const bool Gammaprior, const bool truncnormal, const double MHcontrol, const int MHsteps, const int parameterization, const bool dontupdatemu, const double priorlatent0) {
         typedef void(*Update_sv)(const arma::vec&, arma::vec&, arma::vec&, double&, arma::vec&, arma::ivec&, const bool, const double, const double, const double, const double, const double, const double, const double, const double, const double, const bool, const bool, const double, const int, const int, const bool, const double);

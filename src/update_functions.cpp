@@ -6,6 +6,7 @@
 #include "regression.h"
 #include "h-sampler.h"
 #include "theta-sampler.h"
+#include "theta-utils.h"
 
 using namespace Rcpp;
 
@@ -197,6 +198,7 @@ void update_svl (
     double& mu,
     arma::vec& h,
     arma::vec& ht,
+    stochvol::Adaptation<4, 100>& adaptation,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
@@ -215,6 +217,7 @@ void update_svl (
   h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1], correct);
   ht = (h-mu)/sqrt(sigma2);
 
+  const auto adapted_proposal = adaptation.get_proposal();
   for (int ipar : strategy) {
     const Parameterization par = Parameterization(ipar);
     if (dontupdatemu) {
@@ -235,11 +238,11 @@ void update_svl (
             prior_sigma2,
             prior_mu,
             par,
-            proposal_chol,
-            proposal_chol_inv,
+            adapted_proposal.scale * adapted_proposal.Covariance_chol,  // TODO redesign scaling; it should fit both mala and rwmh
+            1 / adapted_proposal.scale * adapted_proposal.Covariance_chol_inv,
             gammaprior,
             proposal,
-            stdev_mala);
+            adapted_proposal.scale);
     }
 
     switch (par) {
@@ -251,6 +254,8 @@ void update_svl (
         break;
     }
   }
+  adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu));
+
   return;
 }
 

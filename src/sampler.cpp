@@ -1,4 +1,5 @@
 #include <RcppArmadillo.h>
+#include <adaptation.hpp>
 #include "sampler.h"
 #include "update_functions.h"
 #include "auxmix.h"
@@ -301,6 +302,9 @@ List svlsample_cpp (
   arma::vec postmean(p);
   arma::vec armadraw(p);
 
+  // adaptive MH
+  stochvol::Adaptation<4, 100> adaptation;
+
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
   const int show = verbose ? progressbar_init(N) : 0;
@@ -324,6 +328,7 @@ List svlsample_cpp (
     update_svl (y, y_star, d,
       phi, rho, sigma2, mu,
       h, ht,
+      adaptation,
       prior_phi, prior_rho,
       prior_sigma2, prior_mu,
       proposal_chol,

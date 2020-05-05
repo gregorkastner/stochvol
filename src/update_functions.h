@@ -2,6 +2,7 @@
 #define UPDATE_FUNCTIONS_H
 
 #include <RcppArmadillo.h>
+#include <adaptation.hpp>
 
 // a single MCMC update (normal errors):
 void update_sv(
@@ -47,6 +48,7 @@ void update_svl (
     double& mu,
     arma::vec& h,
     arma::vec& ht,
+    stochvol::Adaptation<4, 100>& adaptation,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
