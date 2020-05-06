@@ -2,6 +2,7 @@
 #define THETA_UTILS_H
 
 #include <RcppArmadillo.h>
+#include <adaptation.hpp>
 #include "parameterization.h"
 
 double theta_log_likelihood(
@@ -58,7 +59,7 @@ double theta_transform_inv_log_det_jac(
     const double sigma2,
     const double mu);
 
-arma::vec theta_propose_rwmh(
+arma::vec6 theta_propose_rwmh(
     const double phi,
     const double rho,
     const double sigma2,
@@ -66,8 +67,7 @@ arma::vec theta_propose_rwmh(
     const arma::vec& y,
     const arma::vec& h,
     const arma::vec& ht,
-    const arma::mat& proposal_chol,
-    const arma::mat& proposal_chol_inv);
+    const stochvol::Adaptation<4>::Result& adaptation_proposal);
 
 arma::vec6 theta_propose_mala(
     const double phi,
@@ -80,9 +80,7 @@ arma::vec6 theta_propose_mala(
     const arma::vec2& prior_rho,
     const arma::vec2& prior_sigma2,
     const arma::vec2& prior_mu,
-    const arma::mat& proposal_chol,
-    const arma::mat& proposal_chol_inv,
-    const double stdev);
+    const stochvol::Adaptation<4>::Result& adaptation_proposal);
 
 arma::vec thetamu_propose(
     const double phi,

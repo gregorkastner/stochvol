@@ -203,14 +203,10 @@ void update_svl (
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
-    const arma::mat& proposal_chol,
-    const arma::mat& proposal_chol_inv,
     const bool use_mala,
-    const double stdev_mala,
     const bool gammaprior,
     const bool correct,
-    const arma::ivec& strategy,
-    const bool dontupdatemu) {
+    const arma::ivec& strategy) {
   const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;
 
   // only centered
@@ -220,17 +216,17 @@ void update_svl (
   const auto adapted_proposal = adaptation.get_proposal();
   for (int ipar : strategy) {
     const Parameterization par = Parameterization(ipar);
-    if (dontupdatemu) {
-        draw_thetamu_rwMH(
-            phi, rho, sigma2, mu, y, h, ht,
-            prior_phi,
-            prior_rho,
-            prior_sigma2,
-            par,
-            proposal_chol.submat(0, 0, 2, 2),
-            proposal_chol_inv.submat(0, 0, 2, 2),
-            gammaprior);
-    } else {
+  //  if (dontupdatemu) {
+  //      draw_thetamu_rwMH(
+  //          phi, rho, sigma2, mu, y, h, ht,
+  //          prior_phi,
+  //          prior_rho,
+  //          prior_sigma2,
+  //          par,
+  //          proposal_chol.submat(0, 0, 2, 2),
+  //          proposal_chol_inv.submat(0, 0, 2, 2),
+  //          gammaprior);
+  //  } else {
       draw_theta(
             phi, rho, sigma2, mu, y, h, ht,
             prior_phi,
@@ -238,12 +234,10 @@ void update_svl (
             prior_sigma2,
             prior_mu,
             par,
-            std::sqrt(adapted_proposal.scale) * adapted_proposal.covariance_chol,  // TODO redesign scaling; it should fit both mala and rwmh
-            1 / std::sqrt(adapted_proposal.scale) * adapted_proposal.covariance_chol_inv,
+            adapted_proposal,
             gammaprior,
-            proposal,
-            adapted_proposal.scale);
-    }
+            proposal);
+  //  }
 
     switch (par) {
       case Parameterization::CENTERED:

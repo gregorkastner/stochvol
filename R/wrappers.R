@@ -1158,27 +1158,21 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   # Some error checking for expert
   strategies <- c("centered", "noncentered")
   expertdefault <- list(parameterization = rep(strategies, 5),  # default: ASISx5
-                        mhcontrol = list(scale=0.35, rho.var=0.02),
+                        mhcontrol = list(use.mala = FALSE),
                         gammaprior = TRUE,
-                        init.with.svsample = 1000L,
-                        correct.latent.draws = TRUE,
-                        use.mala = FALSE,
-                        stdev.mala = 0.2)
+                        correct.latent.draws = TRUE)
   if (missing(expert)) {
     parameterization <- expertdefault$parameterization
     mhcontrol <- expertdefault$mhcontrol
     gammaprior <- expertdefault$gammaprior
-    init.with.svsample <- expertdefault$init.with.svsample
     correct.latent.draws <- expertdefault$correct.latent.draws
-    use.mala <- expertdefault$use.mala
-    stdev.mala <- expertdefault$stdev.mala
   } else {
     expertnames <- names(expert)
     if (!is.list(expert) || is.null(expertnames) || any(expertnames == ""))
       stop("Argument 'expert' must be a named list with nonempty names.")
     if (length(unique(expertnames)) != length(expertnames))
       stop("No duplicate elements allowed in argument 'expert'.")
-    allowednames <- c("parameterization", "mhcontrol", "gammaprior", "init.with.svsample", "correct.latent.draws", "use.mala", "stdev.mala")
+    allowednames <- c("parameterization", "mhcontrol", "gammaprior", "correct.latent.draws")
     exist <- pmatch(expertnames, allowednames)
     if (any(is.na(exist)))
       stop(paste("Illegal element '", paste(expertnames[is.na(exist)], collapse="' and '"), "' in argument 'expert'.", sep=''))
@@ -1205,16 +1199,14 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 
     if (exists("mhcontrol", expertenv)) {
       mhcontrol <- expert[["mhcontrol"]]
-      if (!((is.numeric(mhcontrol) &&
-           ((length(mhcontrol) == 1 && mhcontrol > 0) ||
-            (is.matrix(mhcontrol) && NROW(mhcontrol) == 4 && NCOL(mhcontrol) == 4))) ||
-            (is.list(mhcontrol) && length(mhcontrol) == 2 &&
-            all(sort(c("rho.var", "scale")) == sort(names(mhcontrol))) &&
-            is.numeric(mhcontrol$rho.var) && mhcontrol$rho.var > 0 &&
-            is.numeric(mhcontrol$scale) && mhcontrol$scale > 0)))
-        stop("Argument 'mhcontrol' must be a single positive number, a list of two of positive numbers with names 'scale' and 'rho.var', or a 4x4 covariance matrix.")
+      if (!is.list(mhcontrol))  # TODO write proper validation
+        stop("Argument 'mhcontrol' must be a list.")
     } else {
       mhcontrol <- expertdefault$mhcontrol
+    }
+    use.mala <- mhcontrol$use.mala
+    if (is.null(use.mala)) {
+      use.mala <- FALSE
     }
 
     if (exists("gammaprior", expertenv)) {
@@ -1224,85 +1216,12 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
       gammaprior <- expertdefault$gammaprior
     }
 
-    if (exists("init.with.svsample", expertenv)) {
-      init.with.svsample <- expert[["init.with.svsample"]]
-      if (!is.numeric(init.with.svsample) || length(init.with.svsample) != 1 || init.with.svsample < 0)
-        stop("Argument 'init.with.svsample' must be a single non-negative number.")
-      if (length(mhcontrol) == 2 && init.with.svsample == 0)
-        stop("In case argument 'init.with.svsample' is set to 0, 'mhcontrol' cannot be of length 2.")
-      init.with.svsample <- as.integer(init.with.svsample)
-    } else {
-      init.with.svsample <- expertdefault$init.with.svsample
-    }
-
     if (exists("correct.latent.draws", expertenv)) {
       correct.latent.draws <- expert[["correct.latent.draws"]]
       if (!is.logical(correct.latent.draws)) stop("Argument 'correct.latent.draws' must be TRUE or FALSE.")
     } else {
       correct.latent.draws <- expertdefault$correct.latent.draws
     }
-
-    if (exists("use.mala", expertenv)) {
-      use.mala <- expert[["use.mala"]]
-      if (!is.logical(use.mala)) stop("Argument 'use.mala' must be TRUE or FALSE.")
-    } else {
-      use.mala <- expertdefault$use.mala
-    }
-
-    if (exists("stdev.mala", expertenv)) {
-      stdev.mala <- expert[["stdev.mala"]]
-      if (!is.numeric(stdev.mala) || length(stdev.mala) != 1 || any(stdev.mala <= 0)) stop("Argument 'stdev.mala' must be a positive number.")
-    } else {
-      stdev.mala <- expertdefault$stdev.mala
-    }
-  }
-  
-  if (init.with.svsample > 0L) {
-    if (!quiet) {
-      cat(paste0("\nInitial values: calling 'svsample' with ", init.with.svsample, " iter. Series length is ", length(y), ".\n"), file=stderr())
-      flush.console()
-    }
-
-    init.runtime <- system.time({
-      init.res <- svsample(y,  # not svsample2 because of 'designmatrix'
-                           draws = as.integer(init.with.svsample/2),
-                           burnin = as.integer(init.with.svsample/2),
-                           designmatrix = designmatrix, priormu = priormu,
-                           priorphi = priorphi, priorsigma = priorsigma,
-                           priornu = NA, priorbeta = priorbeta,
-                           priorlatent0 = "stationary",
-                           thinpara = 1L, thinlatent = 1L, keeptime = "all",
-                           keeptau = FALSE, quiet = TRUE,
-                           startpara = startpara[c("phi", "mu", "sigma")],
-                           startlatent = startlatent,
-                           expert = list(gammaprior = gammaprior,
-                                         parameterization = "GIS_C"),
-                           quantiles = .5, esspara = FALSE,  # fast updatesummary
-                           esslatent = FALSE)
-    })
-
-    if (!quiet) {
-      cat(paste0("Initial values: time taken by 'svsample': ", round(init.runtime["elapsed"], 3), " seconds.\n"), file=stderr())
-    }
-
-    startpara[c("mu", "phi", "sigma")] <-
-      as.list(apply(init.res$para, 2, median))
-    startlatent <- as.numeric(apply(init.res$latent, 2, median))
-  }
-
-  if (length(mhcontrol) == 1) {
-    cov.mh <- diag(mhcontrol, nrow = 4, ncol = 4)
-  } else if (length(mhcontrol) == 2) {  # in this case init.with.svsample > 0
-    # calculate proposal covariance matrix (in the order of svlsample)
-    phi.t <- 0.5*log(2/(1-init.res$para[, "phi"])-1)
-    #rho.t we don't have
-    sigma2.t <- 2*log(init.res$para[, "sigma"])
-    mu.t <- init.res$para[, "mu"]
-    cov.mh <- cov(cbind(phi.t, rho.t = 0, sigma2.t, mu.t))
-    cov.mh[2, 2] <- mhcontrol$rho.var
-    cov.mh <- mhcontrol$scale*cov.mh
-  } else {  # mhcontrol is a covariance matrix already
-    cov.mh <- mhcontrol
   }
 
   renameparam <- c("centered" = "C", "noncentered" = "NC")
@@ -1319,7 +1238,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  priorphi[1], priorphi[2], priorrho[1], priorrho[2],
                                  0.5, 0.5/priorsigma, priormu[1], priormu[2],
                                  priorbeta[1], priorbeta[2], !myquiet,
-                                 myoffset, t(chol(cov.mh)), use.mala, stdev.mala,
+                                 myoffset, use.mala,
                                  gammaprior, correct.latent.draws,
                                  parameterization, FALSE)
   })

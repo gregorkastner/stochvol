@@ -17,18 +17,16 @@ void draw_theta(
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
     const Parameterization centering,
-    const arma::mat& proposal_chol,
-    const arma::mat& proposal_chol_inv,
+    const stochvol::Adaptation<4>::Result& adaptation_proposal,
     const bool gammaprior,
-    const Proposal sampler,
-    const double stdev) {
+    const Proposal sampler) {
   arma::vec proposed;
   switch (sampler) {
     case Proposal::RWMH:
-      proposed = theta_propose_rwmh(phi, rho, sigma2, mu, y, h, ht, proposal_chol, proposal_chol_inv);
+      proposed = theta_propose_rwmh(phi, rho, sigma2, mu, y, h, ht, adaptation_proposal);
       break;
     case Proposal::MALA:
-      proposed = theta_propose_mala(phi, rho, sigma2, mu, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu, proposal_chol, proposal_chol_inv, stdev);
+      proposed = theta_propose_mala(phi, rho, sigma2, mu, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu, adaptation_proposal);
       break;
     default:
       Rcpp::stop("Unknown proposal method");

@@ -38,7 +38,7 @@ void update_terr(
     const double lower,
     const double upper);
 
-void update_svl (
+void update_svl(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,
@@ -53,13 +53,9 @@ void update_svl (
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
-    const arma::mat& proposal_chol,
-    const arma::mat& proposal_chol_inv,
     const bool use_mala,
-    const double stdev_mala,
     const bool gammaprior,
     const bool correct,
-    const arma::ivec& strategy,
-    const bool dontupdatemu);
+    const arma::ivec& strategy);
 
 #endif  // UPDATE_FUNCTIONS_H

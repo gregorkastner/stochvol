@@ -240,9 +240,7 @@ List svlsample_cpp (
     const double prior_beta_sigma,
     const bool verbose,
     const double offset,
-    const arma::mat& proposal_chol,
     const bool use_mala,
-    const double stdev_mala,
     const bool gammaprior,
     const bool correct,
     const CharacterVector& strategy_rcpp,
@@ -276,9 +274,6 @@ List svlsample_cpp (
   const arma::vec prior_sigma2 = {prior_sigma2_shape, prior_sigma2_rate};
   const arma::vec prior_mu = {prior_mu_mu, prior_mu_sigma};
 
-  // inverse of the Cholesky factor of the covariance matrix
-  const arma::mat proposal_chol_inv = arma::inv(trimatl(proposal_chol));
-
   // don't use strings or RcppCharacterVector
   arma::ivec strategy(strategy_rcpp.length());
   std::transform(strategy_rcpp.cbegin(), strategy_rcpp.cend(), strategy.begin(),
@@ -303,7 +298,12 @@ List svlsample_cpp (
   arma::vec armadraw(p);
 
   // adaptive MH
-  stochvol::Adaptation<4> adaptation(draws + burnin, 100, 0.234, 0.05);
+  stochvol::Adaptation<4> adaptation(
+      draws + burnin,
+      use_mala ? 100 : 100,
+      use_mala ? 0.574 : 0.234,
+      0.05,
+      use_mala ? 0.001 : 0.1);
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
@@ -325,17 +325,17 @@ List svlsample_cpp (
     }
 
     // update theta and h
+    // TODO implement dontupdatemu
     update_svl (y, y_star, d,
       phi, rho, sigma2, mu,
       h, ht,
       adaptation,
       prior_phi, prior_rho,
       prior_sigma2, prior_mu,
-      proposal_chol,
-      proposal_chol_inv,
-      use_mala, stdev_mala,
-      gammaprior, correct,
-      strategy, dontupdatemu);
+      use_mala,
+      gammaprior,
+      correct,
+      strategy);
 
     // update beta
     if (regression) {

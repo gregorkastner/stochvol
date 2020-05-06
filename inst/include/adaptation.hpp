@@ -52,10 +52,14 @@ namespace stochvol {
         const int _memory_size,
         const int _batch_size = 100,
         const double _target_acceptance = 0.234,
-        const double _lambda = 0.1)
+        const double _lambda = 0.1,
+        const double _scale = 0.1,
+        const double _C = 0.99)
       : lambda{_lambda},
         target_acceptance{_target_acceptance},
         alpha{calculate_alpha(_lambda)},
+        scale{_scale},
+        C{_C},
         state(_batch_size),
         cache_result(scale, arma::mat(dim, dim, arma::fill::eye)),
         draws_batch(dim, _batch_size) {
@@ -176,9 +180,9 @@ namespace stochvol {
     const double target_acceptance;
     const double lambda;  // controls the speed of adaptation
     const double alpha;  // log-speed of adaptation, derived from lambda
-    const double C = 0.99;  // constant factor in the speed of adaptation
+    const double C;  // constant factor in the speed of adaptation
     double gamma = C;  // initialize gamma
-    double scale = .1;
+    double scale;
     int count_acceptance = 0;
 
     State state;
