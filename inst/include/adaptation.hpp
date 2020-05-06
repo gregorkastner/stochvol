@@ -2,6 +2,7 @@
 #define ADAPTATION_H
 
 #include <RcppArmadillo.h>
+#include <vector>
 
 namespace stochvol {
   // Encapsulate adaptation logic
@@ -19,11 +20,19 @@ namespace stochvol {
       const arma::mat::fixed<dim, dim> Covariance_chol_inv;
     };
 
-    Adaptation (const double _lambda)
-      : lambda{_lambda}, alpha{calculate_alpha(lambda)} { }
+    struct Storage {
+      const double gamma;
+      const double scale;
+      const double rate_acceptance;
+    };
 
-    Adaptation ()
-      : Adaptation(0.1) { }
+    Adaptation (const int _memory_size, const double _target_acceptance = 0.234, const double _lambda = 0.1)
+      : lambda{_lambda}, target_acceptance{_target_acceptance}, alpha{calculate_alpha(_lambda)} {
+      if (target_acceptance <= 0.1 || target_acceptance >= 0.8) {
+        Rcpp::warning("Target acceptance rate should be between 10\% and 80\%");
+      }
+      memory.reserve(_memory_size);
+    }
 
     inline
     double step_gamma (const double gamma_previous) const {
@@ -35,11 +44,47 @@ namespace stochvol {
     void register_sample (const arma::vec::fixed<dim>& sample) {
       const int i = state.get_i_batch();
       draws_batch.col(i) = sample;
-      if (i == batch_size - 1) {
-        state.update_covariance(draws_batch, gamma);
-        gamma = step_gamma(gamma);
-        updated_proposal = true;
+      if (i >= 1) {
+        count_acceptance += 1e-8 < arma::sum(arma::square((draws_batch.col(i - 1) - sample) / (arma::abs(draws_batch.col(i - 1)) + 1e-8)));
       }
+      if (i == batch_size - 1) {
+        if (count_acceptance > 1) {  // 1 acceptance seems still too few
+          // TODO P(scale changes) -> 0
+          const double rate_acceptance = count_acceptance / (batch_size - 1.);
+          if (rate_acceptance < 0.05) {
+            // no update_covariance
+            scale *= .1;
+          } else if (rate_acceptance > 0.95) {
+            // no update_covariance
+            scale *= 10.;
+          } else {
+            updated_proposal = state.update_covariance(draws_batch, gamma);
+            if (rate_acceptance < 0.1) {  // [0.05, 0.1]
+              scale *= .75;
+            } else if (rate_acceptance < target_acceptance) {  // [0.1, target_acceptance]
+              scale *= 0.95;
+            } else if (rate_acceptance < 0.8) {  // [target_acceptance, 0.8]
+              scale *= 1.05;
+            } else {  // [0.8, 0.95]
+              scale *= 1.5;
+            }
+          }
+        } else if (gamma > C / 1024.) {  // no such updates after a point
+          scale *= .01;
+        }
+        store_statistics();
+        gamma = step_gamma(gamma);
+        count_acceptance = 0;
+      }
+    }
+
+    inline
+    arma::mat get_storage () const {
+      arma::mat storage(memory.size(), 3);
+      for (int i = 0; i < storage.n_rows; i++) {
+        storage.row(i) = arma::rowvec({memory[i].gamma, memory[i].scale, memory[i].rate_acceptance});
+      }
+      return storage;
     }
 
     inline
@@ -69,10 +114,11 @@ namespace stochvol {
 
       // overwrites draws
       inline
-      void update_covariance(arma::mat::fixed<dim, batch_size> draws, const double gamma) {
+      bool update_covariance(arma::mat::fixed<dim, batch_size> draws, const double gamma) {
         draws.each_col() -= mu;
         mu += gamma * (arma::sum(draws, 1) / batch_size - mu);
         Sigma += gamma * (draws * draws.t() / (batch_size - 1) - Sigma);
+        return true;
       }
 
       inline
@@ -90,11 +136,20 @@ namespace stochvol {
     arma::mat::fixed<dim, batch_size> draws_batch;
     bool updated_proposal = false;
 
+    std::vector<Storage> memory;
+
+    const double target_acceptance;
     const double lambda;  // controls the speed of adaptation
     const double alpha;  // log-speed of adaptation, derived from lambda
-    const double C = 0.50;  // constant factor in the speed of adaptation
+    const double C = 0.99;  // constant factor in the speed of adaptation
     double gamma = C;  // initialize gamma
-    double scale = 0.3;
+    double scale = 1.;
+    int count_acceptance = 0;
+
+    inline
+    void store_statistics () {
+      memory.push_back({gamma, scale, count_acceptance / (batch_size - 1.)});
+    }
 
     inline
     static double calculate_alpha (const double l) {
