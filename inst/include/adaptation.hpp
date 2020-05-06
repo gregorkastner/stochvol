@@ -129,6 +129,8 @@ namespace stochvol {
       if (updated_proposal) {
         updated_proposal = false;
         cache_result.set_result(scale, state.get_covariance());
+      } else {
+        cache_result.scale = scale;
       }
       return cache_result;
     }
