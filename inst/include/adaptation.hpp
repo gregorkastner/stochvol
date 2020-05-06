@@ -85,10 +85,9 @@ namespace stochvol {
         store_statistics();
         if (count_acceptance > 1) {  // 1 acceptance seems still too few
           const auto randomize_1_or = [] (const double value, const double probability_of_value) -> double {
-            //return (probability_of_value >= 1. || R::unif_rand() < probability_of_value) ? value : 1.;
-            return value;
+            return (probability_of_value >= 1. || R::unif_rand() < probability_of_value) ? value : 1.;
           };
-          const double probability_of_change = 1000. * gamma / C;
+          const double probability_of_change = 100. * gamma / C;
           const double rate_acceptance = count_acceptance / (state.batch_size - 1.);
           if (rate_acceptance < 0.05) {
             // no update_covariance
