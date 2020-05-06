@@ -198,7 +198,7 @@ void update_svl (
     double& mu,
     arma::vec& h,
     arma::vec& ht,
-    stochvol::Adaptation<4, 100>& adaptation,
+    stochvol::Adaptation<4>& adaptation,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
@@ -238,8 +238,8 @@ void update_svl (
             prior_sigma2,
             prior_mu,
             par,
-            adapted_proposal.scale * adapted_proposal.Covariance_chol,  // TODO redesign scaling; it should fit both mala and rwmh
-            1 / adapted_proposal.scale * adapted_proposal.Covariance_chol_inv,
+            std::sqrt(adapted_proposal.scale) * adapted_proposal.covariance_chol,  // TODO redesign scaling; it should fit both mala and rwmh
+            1 / std::sqrt(adapted_proposal.scale) * adapted_proposal.covariance_chol_inv,
             gammaprior,
             proposal,
             adapted_proposal.scale);

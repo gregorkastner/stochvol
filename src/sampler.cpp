@@ -303,7 +303,7 @@ List svlsample_cpp (
   arma::vec armadraw(p);
 
   // adaptive MH
-  stochvol::Adaptation<4, 100> adaptation(draws + burnin, 0.234, 0.1);
+  stochvol::Adaptation<4> adaptation(draws + burnin, 100, 0.234, 0.05);
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign

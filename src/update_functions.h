@@ -48,7 +48,7 @@ void update_svl (
     double& mu,
     arma::vec& h,
     arma::vec& ht,
-    stochvol::Adaptation<4, 100>& adaptation,
+    stochvol::Adaptation<4>& adaptation,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
