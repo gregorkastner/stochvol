@@ -4,7 +4,7 @@
 #include <RcppArmadillo.h>
 #include "parameterization.h"
 
-arma::vec draw_s_auxiliary(
+arma::uvec draw_s_auxiliary(
     const arma::vec& y_star,
     const arma::ivec& d,
     const arma::vec& h,

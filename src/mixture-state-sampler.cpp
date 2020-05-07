@@ -15,7 +15,7 @@ arma::mat mixture_state_post_dist(
     const Parameterization centering) {
   
   const int n = eps_star.size();
-  const int mix_count = sizeof(mix_prob)/sizeof(mix_prob[0]);
+  static const int mix_count = sizeof(mix_prob)/sizeof(mix_prob[0]);
   const double sigma2_used = centering == Parameterization::CENTERED ? sigma2 : 1.0;
   arma::mat result(mix_count, n);
   
@@ -46,7 +46,7 @@ arma::mat mixture_state_post_dist(
   return result;
 }
 
-arma::vec draw_s_auxiliary(
+arma::uvec draw_s_auxiliary(
     const arma::vec& y_star,
     const arma::ivec& d,
     const arma::vec& h,
@@ -62,7 +62,7 @@ arma::vec draw_s_auxiliary(
   arma::vec eta;
   arma::mat post_dist;
   arma::vec unif_vec;
-  arma::vec new_states(n);
+  arma::uvec new_states(n);
   
   switch (centering) {
     case Parameterization::CENTERED:
@@ -78,9 +78,10 @@ arma::vec draw_s_auxiliary(
 
   for (int r = 0; r < n; r++) {
     const arma::vec post_dist_col_r = post_dist.unsafe_col(r);
-    auto binary_search_result = std::lower_bound(post_dist_col_r.cbegin(), post_dist_col_r.cend(), R::runif(0, 1));
+    auto binary_search_result = std::lower_bound(post_dist_col_r.cbegin(), post_dist_col_r.cend(), R::unif_rand());
     new_states[r] = std::distance(post_dist_col_r.cbegin(), binary_search_result);
   }
   
   return new_states;
 }
+
