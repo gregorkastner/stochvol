@@ -23,7 +23,6 @@ arma::vec draw_latent(
   // Draw h from AUX
   // TODO optimize draw_s_auxiliary
   const arma::uvec s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
-  Rcpp::Rcout << "run draw_latent" << std::endl;
   const arma::vec proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
 
   if (correct) {
@@ -116,8 +115,6 @@ arma::vec draw_h_auxiliary(
     Lambda_inv[t] = 1 / std::sqrt(Omega_tt);
     help_Omega_Lambda[t] = Omega_t_tp1 * Lambda_inv[t];
     m[t] = c_t * std::pow(Lambda_inv[t], 2);
-
-    Rcpp::Rcout << Omega_tt << ' ';
   }
 
   for (int t = 1; t < n - 1; t++) {
@@ -150,8 +147,6 @@ arma::vec draw_h_auxiliary(
     Lambda_inv[t] = 1 / std::sqrt(Omega_tt - std::pow(help_Omega_Lambda[t - 1], 2));
     help_Omega_Lambda[t] = Omega_t_tp1 * Lambda_inv[t];
     m[t] = (c_t - Omega_tm1_t * m[t - 1]) * std::pow(Lambda_inv[t], 2);
-
-    Rcpp::Rcout << Omega_tt << ' ';
   }
 
   {
@@ -182,12 +177,7 @@ arma::vec draw_h_auxiliary(
 
     Lambda_inv[t] = 1 / std::sqrt(Omega_tt - std::pow(help_Omega_Lambda[t - 1], 2));
     m[t] = (c_t - Omega_tm1_t * m[t - 1]) * std::pow(Lambda_inv[t], 2);
-
-    Rcpp::Rcout << Omega_tt << std::endl;
   }
-
-  Rcpp::Rcout << Lambda_inv.t() << std::endl <<
-    m.t() << std::endl << std::endl;
 
   // McCausland smoothing
   {
@@ -199,52 +189,8 @@ arma::vec draw_h_auxiliary(
     alpha[t] = m[t] + (R::norm_rand() - help_Omega_Lambda[t] * alpha[t + 1]) * Lambda_inv[t];
   }
 
-  Rcpp::Rcout << alpha.t() << std::endl << std::endl << std::endl;
   return alpha;
 }
- 
-//arma::vec draw_h_auxiliary_old(
-//    const arma::vec& y_star,
-//    const arma::ivec& d,
-//    const arma::vec& s,
-//    const double phi,
-//    const double rho,
-//    const double sigma2,
-//    const double mu,
-//    const double priormu_mu,
-//    const double priormu_sigma,
-//    const Parameterization centering) {
-//  arma::vec mixing_a(s.size()); std::transform(s.cbegin(), s.cend(), mixing_a.begin(), [](const int selem) -> double {return mix_a[selem];});
-//  arma::vec mixing_b(s.size()); std::transform(s.cbegin(), s.cend(), mixing_b.begin(), [](const int selem) -> double {return mix_b[selem];});
-//  arma::vec mixing_m(s.size()); std::transform(s.cbegin(), s.cend(), mixing_m.begin(), [](const int selem) -> double {return mix_mean[selem];});
-//  arma::vec mixing_v(s.size()); std::transform(s.cbegin(), s.cend(), mixing_v.begin(), [](const int selem) -> double {return sqrt(mix_var[selem]);});
-//  
-//  const List filter_result = aug_kalman_filter(phi, rho, sigma2, mixing_a, mixing_b, mixing_m, mixing_v, d, y_star, priormu_mu, pow(priormu_sigma, 2), centering);
-//  
-//  const List smoothing_result = simulation_smoother(mu, filter_result, centering);
-//  const arma::vec eta = smoothing_result["eta"];
-//  const double eta0 = as<NumericVector>(smoothing_result["eta0"])[0];
-//
-//  const int n = as<NumericVector>(filter_result["D"]).size();
-//  arma::vec h(n, arma::fill::zeros);
-//  arma::vec dt;
-//  switch (centering) {
-//    case Parameterization::CENTERED:
-//    h[0] = mu + eta0;
-//    dt = mu*(1-phi) + rho*sqrt(sigma2)*(d%mixing_a%exp(mixing_m/2));
-//    break;
-//    case Parameterization::NONCENTERED:
-//    h[0] = eta0;
-//    dt = rho*(d%mixing_a%exp(mixing_m/2));
-//    break;
-//  }
-//
-//  for (int i = 0; i < n-1; i++) {
-//    h[i+1] = dt[i] + phi*h[i] + eta[i];
-//  }
-//
-//  return h;
-//}
 
 arma::vec correct_latent_auxiliaryMH(
     const arma::vec& y,
