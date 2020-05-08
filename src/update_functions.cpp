@@ -211,7 +211,6 @@ void update_svl (
   h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1], correct);
   ht = (h-mu)/sqrt(sigma2);
 
-  /*
   const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;
   const auto adapted_proposal = adaptation.get_proposal();
   for (int ipar : strategy) {
@@ -249,7 +248,6 @@ void update_svl (
     }
   }
   adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu));
-  */
 
   return;
 }
