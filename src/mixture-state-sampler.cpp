@@ -15,7 +15,7 @@ arma::mat mixture_state_post_dist(
     const Parameterization centering) {
   
   const int n = eps_star.size();
-  static const int mix_count = sizeof(mix_prob)/sizeof(mix_prob[0]);
+  static const int mix_count = mix_a.n_elem;
   const double sigma2_used = centering == Parameterization::CENTERED ? sigma2 : 1.0;
   arma::mat result(mix_count, n);
   

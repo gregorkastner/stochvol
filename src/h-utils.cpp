@@ -32,7 +32,7 @@ double h_aux_log_posterior(
     const double sigma2,
     const double mu) {
   const int n = y_star.size();
-  const int mix_count = sizeof(mix_prob)/sizeof(mix_prob[0]);
+  static const int mix_count = mix_a.n_elem;
   const double sigma = sqrt(sigma2);
 
   double result = R::dnorm(h[0], mu, sigma/sqrt(1-phi*phi), true);  // log p(h_1 | theta)
