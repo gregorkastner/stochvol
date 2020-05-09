@@ -21,7 +21,6 @@ arma::vec draw_latent(
     const double priormu_sigma,
     const bool correct) {
   // Draw h from AUX
-  // TODO optimize draw_s_auxiliary
   const arma::uvec s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
   const arma::vec proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
 

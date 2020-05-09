@@ -21,7 +21,7 @@ arma::vec draw_latent(
 arma::vec draw_h_auxiliary(
     const arma::vec& y_star,
     const arma::ivec& d,
-    const arma::uvec& s,
+    const arma::uvec& z,
     const double phi,
     const double rho,
     const double sigma2,
