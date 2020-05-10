@@ -48,7 +48,6 @@ double theta_log_likelihood(
     const arma::vec& h,
     const arma::vec& ht,
     const arma::vec& exp_h_half,
-    const arma::vec& exp_h_half_tilde,
     const Parameterization centering) {
   double result = 0;
   switch (centering) {
@@ -56,7 +55,7 @@ double theta_log_likelihood(
     result = theta_log_likelihood_c(phi, rho, sigma2, mu, y, h, exp_h_half);
     break;
     case Parameterization::NONCENTERED:
-    result = theta_log_likelihood_nc(phi, rho, sigma2, mu, y, ht, exp_h_half_tilde);
+    result = theta_log_likelihood_nc(phi, rho, sigma2, mu, y, ht, exp_h_half);
     break;
   }
   return result;
@@ -71,19 +70,20 @@ double theta_log_likelihood_c(
     const arma::vec& h,
     const arma::vec& exp_h_half) {
   const int n = y.size();
-  const double sigma = sqrt(sigma2);
+  const double sigma = std::sqrt(sigma2);
+  const double h_sd_t = sigma * std::sqrt(1 - rho * rho);
   double log_lik = 0;
   for (int i = 0; i < n; i++) {
     double h_mean, h_sd, y_mean, y_sd;
     if (i == 0) {
       h_mean = mu;
-      h_sd = sigma/sqrt(1-phi*phi);
+      h_sd = sigma / std::sqrt(1 - phi * phi);
     } else {
-      h_mean = mu+phi*(h[i-1]-mu) + rho*sigma*exp(-h[i-1]/2)*y[i-1];
-      h_sd = sigma*sqrt(1-rho*rho);
+      h_mean = mu + phi * (h[i-1] - mu) + rho * sigma / exp_h_half[i-1] * y[i-1];
+      h_sd = h_sd_t;
     }
     y_mean = 0;
-    y_sd = exp(h[i]/2);
+    y_sd = exp_h_half[i];
     log_lik += R::dnorm(y[i], y_mean, y_sd, true) + R::dnorm(h[i], h_mean, h_sd, true);
   }
 
@@ -97,25 +97,25 @@ double theta_log_likelihood_nc(
     const double mu,
     const arma::vec& y,
     const arma::vec& ht,
-    const arma::vec& exp_h_half_tilde) {
+    const arma::vec& exp_h_half) {
   const int n = y.size();
-  const double sigma = sqrt(sigma2);
+  const double rho_const = std::sqrt(1 - rho * rho);
   double log_lik = 0;
   for (int i = 0; i < n; i++) {
     double h_mean, h_sd, y_mean, y_sd;
     if (i == 0) {
       h_mean = 0;
-      h_sd = 1/sqrt(1-phi*phi);
+      h_sd = 1 / std::sqrt(1 - phi * phi);
     } else {
-      h_mean = phi*ht[i-1];
+      h_mean = phi * ht[i-1];
       h_sd = 1;
     }
     if (i < n-1) {
-      y_mean = exp((sigma*ht[i]+mu)/2)*rho*(ht[i+1]-phi*ht[i]);
-      y_sd = exp((sigma*ht[i]+mu)/2)*sqrt(1-rho*rho);
+      y_mean = exp_h_half[i] * rho * (ht[i+1] - phi * ht[i]);
+      y_sd = exp_h_half[i] * rho_const;
     } else {
       y_mean = 0;
-      y_sd = exp((sigma*ht[i] + mu)/2);
+      y_sd = exp_h_half[i];
     }
     log_lik += R::dnorm(y[i], y_mean, y_sd, true) + R::dnorm(ht[i], h_mean, h_sd, true);
   }

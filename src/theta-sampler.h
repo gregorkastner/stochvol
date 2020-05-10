@@ -14,7 +14,7 @@ bool draw_theta(
     const arma::vec& h,
     const arma::vec& ht,
     const arma::vec& exp_h_half,
-    const arma::vec& exp_h_half_tilde,
+    arma::vec& exp_h_half_proposal_nc,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,

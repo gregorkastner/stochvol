@@ -13,7 +13,7 @@ bool draw_theta(
     const arma::vec& h,
     const arma::vec& ht,
     const arma::vec& exp_h_half,
-    const arma::vec& exp_h_half_tilde,
+    arma::vec& exp_h_half_proposal_nc,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
@@ -33,12 +33,16 @@ bool draw_theta(
   }
   const double phi_prop = proposed[0], rho_prop = proposed[1], sigma2_prop = proposed[2],
     mu_prop = proposed[3], prop_old_logdens = proposed[4], prop_new_logdens = proposed[5];
+  if (centering == Parameterization::NONCENTERED) {
+    exp_h_half_proposal_nc = arma::exp(.5 * (std::sqrt(sigma2_prop) * ht + mu_prop));
+  }
+  const arma::vec& exp_h_half_proposal = centering == Parameterization::CENTERED ? exp_h_half : exp_h_half_proposal_nc;
 
   const double log_acceptance =
     (theta_log_prior(phi_prop, rho_prop, sigma2_prop, mu_prop, prior_phi, prior_rho, prior_sigma2, prior_mu, gammaprior) +
-     theta_log_likelihood(phi_prop, rho_prop, sigma2_prop, mu_prop, y, h, ht, exp_h_half, exp_h_half_tilde, centering)) -
+     theta_log_likelihood(phi_prop, rho_prop, sigma2_prop, mu_prop, y, h, ht, exp_h_half_proposal, centering)) -
     (theta_log_prior(phi, rho, sigma2, mu, prior_phi, prior_rho, prior_sigma2, prior_mu, gammaprior) +
-     theta_log_likelihood(phi, rho, sigma2, mu, y, h, ht, exp_h_half, exp_h_half_tilde, centering)) -
+     theta_log_likelihood(phi, rho, sigma2, mu, y, h, ht, exp_h_half, centering)) -
     (prop_new_logdens - prop_old_logdens);
 
   const bool accepted = log_acceptance > 0 || std::exp(log_acceptance) > R::runif(0, 1);

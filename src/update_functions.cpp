@@ -211,7 +211,7 @@ void update_svl (
   h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1], correct);
   ht = (h - mu) / std::sqrt(sigma2);
   arma::vec exp_h_half = arma::exp(.5 * h);  // cache exp() calculations
-  arma::vec exp_h_half_tilde = arma::exp(.5 * (std::sqrt(sigma2) * ht + mu));
+  arma::vec exp_h_half_proposal_nc;
 
   const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;
   const auto adapted_proposal = adaptation.get_proposal();
@@ -230,7 +230,7 @@ void update_svl (
   //  } else {
     const bool theta_updated = draw_theta(
           phi, rho, sigma2, mu,
-          y, h, ht, exp_h_half, exp_h_half_tilde,
+          y, h, ht, exp_h_half, exp_h_half_proposal_nc,
           prior_phi,
           prior_rho,
           prior_sigma2,
@@ -244,12 +244,11 @@ void update_svl (
     if (theta_updated) {
       switch (par) {
         case Parameterization::CENTERED:
-          ht = (h - mu)/ std::sqrt(sigma2);
-          exp_h_half_tilde = arma::exp(.5 * (std::sqrt(sigma2) * ht + mu));
+          ht = (h - mu) / std::sqrt(sigma2);
           break;
         case Parameterization::NONCENTERED:
           h = std::sqrt(sigma2) * ht + mu;
-          exp_h_half = arma::exp(.5 * h);
+          exp_h_half = std::move(exp_h_half_proposal_nc);
           break;
       }
     }
