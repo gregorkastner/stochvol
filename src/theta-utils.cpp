@@ -61,6 +61,15 @@ double theta_log_likelihood(
   return result;
 }
 
+double dnorm_log(
+    const double x,
+    const double mu,
+    const double sd,
+    const double log_sd) {
+  const double z = (x - mu) / sd;
+  return -.5 * z * z - log_sd;
+}
+
 double theta_log_likelihood_c(
     const double phi,
     const double rho,
@@ -72,19 +81,23 @@ double theta_log_likelihood_c(
   const int n = y.size();
   const double sigma = std::sqrt(sigma2);
   const double h_sd_t = sigma * std::sqrt(1 - rho * rho);
+  const double log_h_sd_t = std::log(h_sd_t);
   double log_lik = 0;
   for (int i = 0; i < n; i++) {
-    double h_mean, h_sd, y_mean, y_sd;
+    double h_mean, h_sd, y_mean, y_sd, log_h_sd, log_y_sd;
     if (i == 0) {
       h_mean = mu;
       h_sd = sigma / std::sqrt(1 - phi * phi);
+      log_h_sd = std::log(h_sd);
     } else {
       h_mean = mu + phi * (h[i-1] - mu) + rho * sigma / exp_h_half[i-1] * y[i-1];
       h_sd = h_sd_t;
+      log_h_sd = log_h_sd_t;
     }
     y_mean = 0;
     y_sd = exp_h_half[i];
-    log_lik += R::dnorm(y[i], y_mean, y_sd, true) + R::dnorm(h[i], h_mean, h_sd, true);
+    log_y_sd = .5 * h[i];
+    log_lik += dnorm_log(y[i], y_mean, y_sd, log_y_sd) + dnorm_log(h[i], h_mean, h_sd, log_h_sd);
   }
 
   return log_lik;
@@ -99,25 +112,31 @@ double theta_log_likelihood_nc(
     const arma::vec& ht,
     const arma::vec& exp_h_half) {
   const int n = y.size();
+  const double sigma = std::sqrt(sigma2);
   const double rho_const = std::sqrt(1 - rho * rho);
+  const double log_rho_const = .5 * std::log(1 - rho * rho);
   double log_lik = 0;
   for (int i = 0; i < n; i++) {
-    double h_mean, h_sd, y_mean, y_sd;
+    double h_mean, h_sd, y_mean, y_sd, log_h_sd, log_y_sd;
     if (i == 0) {
       h_mean = 0;
       h_sd = 1 / std::sqrt(1 - phi * phi);
+      log_h_sd = -.5 * std::log(1 - phi * phi);
     } else {
       h_mean = phi * ht[i-1];
       h_sd = 1;
+      log_h_sd = 0;
     }
     if (i < n-1) {
       y_mean = exp_h_half[i] * rho * (ht[i+1] - phi * ht[i]);
       y_sd = exp_h_half[i] * rho_const;
+      log_y_sd = .5 * (sigma * ht[i] + mu) + log_rho_const;
     } else {
       y_mean = 0;
       y_sd = exp_h_half[i];
+      log_y_sd = .5 * (sigma * ht[i] + mu);
     }
-    log_lik += R::dnorm(y[i], y_mean, y_sd, true) + R::dnorm(ht[i], h_mean, h_sd, true);
+    log_lik += dnorm_log(y[i], y_mean, y_sd, log_y_sd) + dnorm_log(ht[i], h_mean, h_sd, log_h_sd);
   }
 
   return log_lik;
