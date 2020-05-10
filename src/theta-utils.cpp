@@ -123,6 +123,22 @@ double theta_log_likelihood_nc(
   return log_lik;
 }
 
+double dlogpriornorm(const double x, const double mean, const double stdev) {  // only necessary terms are added
+  return -.5 * std::pow((x - mean) / stdev, 2);
+}
+
+double dlogpriorbeta(const double x, const double alpha, const double beta) {
+  return (alpha - 1.) * std::log(x) + (beta - 1.) * std::log(1. - x);
+}
+
+double dlogpriorgamma(const double x, const double alpha, const double beta) {
+  return (alpha - 1.) * std::log(x) - beta * x;
+}
+
+double dlogpriorinvgamma(const double x, const double alpha, const double beta) {
+  return -(alpha - 1.) * std::log(x) - beta / x;
+}
+
 double theta_log_prior(
     const double phi,
     const double rho,
@@ -133,7 +149,7 @@ double theta_log_prior(
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
     const bool gammaprior) {
-  return R::dnorm(mu, prior_mu[0], prior_mu[1], true) +
+  return dlogpriornorm(mu, prior_mu[0], prior_mu[1]) +
     thetamu_log_prior(phi, rho, sigma2, prior_phi, prior_rho, prior_sigma2, gammaprior);
 }
 
@@ -150,11 +166,12 @@ double thetamu_log_prior(
   //const double gammascale = 1/gammarate;
   //const double invgammascale = gammarate;
   // Wikipedia notation: prior_sigma2(1) is beta in both the case of Gamma and of InvGamma
-  return (-log(2.)) + R::dbeta((phi+1)/2, prior_phi[0], prior_phi[1], true) +
-    (-log(2.)) + R::dbeta((rho+1)/2, prior_rho[0], prior_rho[1], true) +
+  return dlogpriorbeta(.5 * (phi + 1.), prior_phi[0], prior_phi[1]) +
+    dlogpriorbeta(.5 * (rho + 1.), prior_rho[0], prior_rho[1]) +
     (gammaprior ?
-      R::dgamma(sigma2, prior_sigma2[0], 1/prior_sigma2[1], true) :  // Gamma(shape, scale)
-      (-2*log(sigma2)+R::dgamma(1/sigma2, prior_sigma2[0]+2, prior_sigma2[1]/(prior_sigma2[0]*(prior_sigma2[0]+1)), true)));  // moment matched InvGamma
+      dlogpriorgamma(sigma2, prior_sigma2[0], prior_sigma2[1]) :
+      // moment matched InvGamma
+      (-2. * std::log(sigma2) + dlogpriorinvgamma(1 / sigma2, prior_sigma2[0] + 2, prior_sigma2[1] / (prior_sigma2[0] * (prior_sigma2[0] + 1.)))));
 }
 
 arma::vec4 theta_transform(
