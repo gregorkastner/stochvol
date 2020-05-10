@@ -231,7 +231,7 @@ arma::vec6 theta_propose_rwmh(
   const double phi_new = theta_new[0], rho_new = theta_new[1], sigma2_new = theta_new[2], mu_new = theta_new[3];
   double theta_density_new = theta_transform_inv_log_det_jac(phi_new, rho_new, sigma2_new, mu_new);
   for (int i = 0; i < 4; i++) {
-    theta_density_new += R::dnorm(theta_new_t_standardized[i], 0., 1., true);
+    theta_density_new += -.5 * std::pow(theta_new_t_standardized[i], 2);  // dnorm(x, 0, 1, true)
   }
   
   const arma::vec4 &proposal_mean_new = theta_new_t;
@@ -240,7 +240,7 @@ arma::vec6 theta_propose_rwmh(
     (theta_old_t - proposal_mean_new);
   double theta_density_old = theta_transform_inv_log_det_jac(phi, rho, sigma2, mu);
   for (int i = 0; i < 4; i++) {
-    theta_density_old += R::dnorm(theta_old_t_standardized[i], 0., 1., true);
+    theta_density_old += -.5 * std::pow(theta_old_t_standardized[i], 2);  // dnorm(x, 0, 1, true)
   }
   
   return {phi_new, rho_new, sigma2_new, mu_new, theta_density_old, theta_density_new};
