@@ -42,4 +42,15 @@ arma::vec correct_latent_auxiliaryMH(
     const double sigma2,
     const double mu);
 
+arma::uvec draw_s_auxiliary(
+    const arma::vec& y_star,
+    const arma::ivec& d,
+    const arma::vec& h,
+    const arma::vec& ht,
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const Parameterization centering);
+
 #endif  // H_SAMPLER_H
