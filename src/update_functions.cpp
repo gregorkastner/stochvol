@@ -209,7 +209,9 @@ void update_svl (
     const arma::ivec& strategy) {
   // only centered
   h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1], correct);
-  ht = (h-mu)/sqrt(sigma2);
+  ht = (h - mu) / std::sqrt(sigma2);
+  arma::vec exp_h_half = arma::exp(.5 * h);  // cache exp() calculations
+  arma::vec exp_h_half_tilde = arma::exp(.5 * (std::sqrt(sigma2) * ht + mu));
 
   const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;
   const auto adapted_proposal = adaptation.get_proposal();
@@ -226,25 +228,30 @@ void update_svl (
   //          proposal_chol_inv.submat(0, 0, 2, 2),
   //          gammaprior);
   //  } else {
-      draw_theta(
-            phi, rho, sigma2, mu, y, h, ht,
-            prior_phi,
-            prior_rho,
-            prior_sigma2,
-            prior_mu,
-            par,
-            adapted_proposal,
-            gammaprior,
-            proposal);
-  //  }
+    const bool theta_updated = draw_theta(
+          phi, rho, sigma2, mu,
+          y, h, ht, exp_h_half, exp_h_half_tilde,
+          prior_phi,
+          prior_rho,
+          prior_sigma2,
+          prior_mu,
+          par,
+          adapted_proposal,
+          gammaprior,
+          proposal);
+//  }
 
-    switch (par) {
-      case Parameterization::CENTERED:
-        ht = (h-mu)/sqrt(sigma2);
-        break;
-      case Parameterization::NONCENTERED:
-        h = sqrt(sigma2)*ht+mu;
-        break;
+    if (theta_updated) {
+      switch (par) {
+        case Parameterization::CENTERED:
+          ht = (h - mu)/ std::sqrt(sigma2);
+          exp_h_half_tilde = arma::exp(.5 * (std::sqrt(sigma2) * ht + mu));
+          break;
+        case Parameterization::NONCENTERED:
+          h = std::sqrt(sigma2) * ht + mu;
+          exp_h_half = arma::exp(.5 * h);
+          break;
+      }
     }
   }
   adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu));

@@ -5,7 +5,7 @@
 #include <adaptation.hpp>
 #include "parameterization.h"
 
-void draw_theta(
+bool draw_theta(
     double& phi,
     double& rho,
     double& sigma2,
@@ -13,6 +13,8 @@ void draw_theta(
     const arma::vec& y,
     const arma::vec& h,
     const arma::vec& ht,
+    const arma::vec& exp_h_half,
+    const arma::vec& exp_h_half_tilde,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,

@@ -5,6 +5,40 @@
 
 using namespace Rcpp;
 
+// Helper declarations
+
+double theta_log_likelihood_c(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const arma::vec& y,
+    const arma::vec& h,
+    const arma::vec& exp_h_half);
+
+double theta_log_likelihood_nc(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const arma::vec& y,
+    const arma::vec& ht,
+    const arma::vec& exp_h_half_tilde);
+
+arma::vec4 grad_theta_log_posterior(
+    const double phi,
+    const double rho,
+    const double sigma2,
+    const double mu,
+    const arma::vec& y,
+    const arma::vec& h,
+    const arma::vec2& prior_phi,
+    const arma::vec2& prior_rho,
+    const arma::vec2& prior_sigma2,
+    const arma::vec2& prior_mu);
+
+// Definitions
+
 double theta_log_likelihood(
     const double phi,
     const double rho,
@@ -13,14 +47,16 @@ double theta_log_likelihood(
     const arma::vec& y,
     const arma::vec& h,
     const arma::vec& ht,
+    const arma::vec& exp_h_half,
+    const arma::vec& exp_h_half_tilde,
     const Parameterization centering) {
   double result = 0;
   switch (centering) {
     case Parameterization::CENTERED:
-    result = theta_log_likelihood_c(phi, rho, sigma2, mu, y, h);
+    result = theta_log_likelihood_c(phi, rho, sigma2, mu, y, h, exp_h_half);
     break;
     case Parameterization::NONCENTERED:
-    result = theta_log_likelihood_nc(phi, rho, sigma2, mu, y, ht);
+    result = theta_log_likelihood_nc(phi, rho, sigma2, mu, y, ht, exp_h_half_tilde);
     break;
   }
   return result;
@@ -32,7 +68,8 @@ double theta_log_likelihood_c(
     const double sigma2,
     const double mu,
     const arma::vec& y,
-    const arma::vec& h) {
+    const arma::vec& h,
+    const arma::vec& exp_h_half) {
   const int n = y.size();
   const double sigma = sqrt(sigma2);
   double log_lik = 0;
@@ -49,6 +86,7 @@ double theta_log_likelihood_c(
     y_sd = exp(h[i]/2);
     log_lik += R::dnorm(y[i], y_mean, y_sd, true) + R::dnorm(h[i], h_mean, h_sd, true);
   }
+
   return log_lik;
 }
 
@@ -58,7 +96,8 @@ double theta_log_likelihood_nc(
     const double sigma2,
     const double mu,
     const arma::vec& y,
-    const arma::vec& ht) {
+    const arma::vec& ht,
+    const arma::vec& exp_h_half_tilde) {
   const int n = y.size();
   const double sigma = sqrt(sigma2);
   double log_lik = 0;
@@ -80,6 +119,7 @@ double theta_log_likelihood_nc(
     }
     log_lik += R::dnorm(y[i], y_mean, y_sd, true) + R::dnorm(ht[i], h_mean, h_sd, true);
   }
+
   return log_lik;
 }
 
@@ -117,7 +157,7 @@ double thetamu_log_prior(
       (-2*log(sigma2)+R::dgamma(1/sigma2, prior_sigma2[0]+2, prior_sigma2[1]/(prior_sigma2[0]*(prior_sigma2[0]+1)), true)));  // moment matched InvGamma
 }
 
-arma::vec theta_transform(
+arma::vec4 theta_transform(
     const double f,
     const double r,
     const double s,
@@ -125,7 +165,7 @@ arma::vec theta_transform(
   return {1-2/(exp(2*f)+1), 1-2/(exp(2*r)+1), exp(s), m};
 }
 
-arma::vec theta_transform_inv(
+arma::vec4 theta_transform_inv(
     const double phi,
     const double rho,
     const double sigma2,
