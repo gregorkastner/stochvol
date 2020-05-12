@@ -4,6 +4,7 @@
 #include "progutils.h"
 #include "densities.h"
 #include "regression.h"
+#include "parameterization.h"
 #include "h-sampler.h"
 #include "theta-sampler.h"
 #include "theta-utils.h"
@@ -198,7 +199,7 @@ void update_svl (
     double& mu,
     arma::vec& h,
     arma::vec& ht,
-    stochvol::Adaptation<4>& adaptation,
+    stochvol::Adaptation& adaptation,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
@@ -206,7 +207,8 @@ void update_svl (
     const bool use_mala,
     const bool gammaprior,
     const bool correct,
-    const arma::ivec& strategy) {
+    const arma::ivec& strategy,
+    const bool dontupdatemu) {
   // only centered
   h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1], correct);
   ht = (h - mu) / std::sqrt(sigma2);
@@ -217,18 +219,19 @@ void update_svl (
   const auto adapted_proposal = adaptation.get_proposal();
   for (int ipar : strategy) {
     const Parameterization par = Parameterization(ipar);
-  //  if (dontupdatemu) {
-  //      draw_thetamu_rwMH(
-  //          phi, rho, sigma2, mu, y, h, ht,
-  //          prior_phi,
-  //          prior_rho,
-  //          prior_sigma2,
-  //          par,
-  //          proposal_chol.submat(0, 0, 2, 2),
-  //          proposal_chol_inv.submat(0, 0, 2, 2),
-  //          gammaprior);
-  //  } else {
-    const bool theta_updated = draw_theta(
+    bool theta_updated = false;
+    if (dontupdatemu) {
+      theta_updated = draw_thetamu_rwMH(
+          phi, rho, sigma2, mu,
+          y, h, ht, exp_h_half, exp_h_half_proposal_nc,
+          prior_phi,
+          prior_rho,
+          prior_sigma2,
+          par,
+          adapted_proposal,
+          gammaprior);
+    } else {
+      theta_updated = draw_theta(
           phi, rho, sigma2, mu,
           y, h, ht, exp_h_half, exp_h_half_proposal_nc,
           prior_phi,
@@ -239,7 +242,7 @@ void update_svl (
           adapted_proposal,
           gammaprior,
           proposal);
-//  }
+    }
 
     if (theta_updated) {
       switch (par) {
@@ -253,7 +256,11 @@ void update_svl (
       }
     }
   }
-  adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu));
+  if (dontupdatemu) {
+    adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu).head(3));
+  } else {
+    adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu));
+  }
 
   return;
 }

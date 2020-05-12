@@ -214,7 +214,7 @@ arma::vec6 theta_propose_rwmh(
     const arma::vec& y,
     const arma::vec& h,
     const arma::vec& ht,
-    const stochvol::Adaptation<4>::Result& adaptation_proposal) {
+    const stochvol::Adaptation::Result& adaptation_proposal) {
   const arma::vec4 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
   
   const arma::vec4 &proposal_mean_old = theta_old_t;
@@ -275,7 +275,7 @@ arma::vec6 theta_propose_mala(
     const arma::vec2& prior_rho,
     const arma::vec2& prior_sigma2,
     const arma::vec2& prior_mu,
-    const stochvol::Adaptation<4>::Result& adaptation_proposal) {
+    const stochvol::Adaptation::Result& adaptation_proposal) {
   const arma::vec4 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
   
   const arma::vec4 grad_old = grad_theta_log_posterior(phi, rho, sigma2, mu, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu) %
@@ -303,7 +303,7 @@ arma::vec6 theta_propose_mala(
   return {phi_new, rho_new, sigma2_new, mu_new, theta_density_old, theta_density_new};
 }
 
-arma::vec rnorm3_arma() {
+arma::vec3 rnorm3_arma() {
   return {R::rnorm(0, 1), R::rnorm(0, 1), R::rnorm(0, 1)};
 }
 
@@ -314,26 +314,29 @@ arma::vec thetamu_propose(
     const arma::vec& y,
     const arma::vec& h,
     const arma::vec& ht,
-    const arma::mat& proposal_chol,
-    const arma::mat& proposal_chol_inv) {
+    const stochvol::Adaptation::Result& adaptation_proposal) {
   const double mu = 0;
-  const arma::vec theta_old_t = theta_transform_inv(phi, rho, sigma2, mu).head(3);
+  const arma::vec3 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu).head(3);
   
-  const arma::vec &proposal_mean_old = theta_old_t;
-  const arma::vec theta_new_t_standardized = rnorm3_arma();
-  const arma::vec theta_new_t = proposal_chol*theta_new_t_standardized + proposal_mean_old;
-  const arma::vec theta_new = theta_transform(theta_new_t[0], theta_new_t[1], theta_new_t[2], mu).head(3);
+  const arma::vec3 &proposal_mean_old = theta_old_t;
+  const arma::vec3 theta_new_t_standardized = rnorm3_arma();
+  const arma::vec3 theta_new_t =
+    std::sqrt(adaptation_proposal.scale) * adaptation_proposal.covariance_chol * theta_new_t_standardized +
+    proposal_mean_old;
+  const arma::vec3 theta_new = theta_transform(theta_new_t[0], theta_new_t[1], theta_new_t[2], mu).head(3);
   const double phi_new = theta_new[0], rho_new = theta_new[1], sigma2_new = theta_new[2];
   double theta_density_new = theta_transform_inv_log_det_jac(phi_new, rho_new, sigma2_new, mu);
   for (int i = 0; i < 3; i++) {
-    theta_density_new += R::dnorm(theta_new_t_standardized[i], 0., 1., true);
+    theta_density_new += -.5 * std::pow(theta_new_t_standardized[i], 2);  // dnorm(x, 0, 1, true)
   }
   
   const arma::vec &proposal_mean_new = theta_new_t;
-  const arma::vec theta_old_t_standardized = proposal_chol_inv*(theta_old_t-proposal_mean_new);
+  const arma::vec theta_old_t_standardized =
+    1 / std::sqrt(adaptation_proposal.scale) * adaptation_proposal.covariance_chol_inv *
+    (theta_old_t - proposal_mean_new);
   double theta_density_old = theta_transform_inv_log_det_jac(phi, rho, sigma2, mu);
   for (int i = 0; i < 3; i++) {
-    theta_density_old += R::dnorm(theta_old_t_standardized[i], 0., 1., true);
+    theta_density_old += -.5 * std::pow(theta_old_t_standardized[i], 2);  // dnorm(x, 0, 1, true)
   }
   
   return {phi_new, rho_new, sigma2_new, theta_density_old, theta_density_new};

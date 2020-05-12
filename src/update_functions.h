@@ -48,7 +48,7 @@ void update_svl(
     double& mu,
     arma::vec& h,
     arma::vec& ht,
-    stochvol::Adaptation<4>& adaptation,
+    stochvol::Adaptation& adaptation,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
@@ -56,6 +56,7 @@ void update_svl(
     const bool use_mala,
     const bool gammaprior,
     const bool correct,
-    const arma::ivec& strategy);
+    const arma::ivec& strategy,
+    const bool dontupdatemu);
 
 #endif  // UPDATE_FUNCTIONS_H

@@ -95,7 +95,7 @@ List svsample_cpp(
   }
 
   // initialize the variables:
-  arma::vec sigma2inv = arma::ones(N+1) * pow(as<double>(startpara["sigma"]), -2);
+  arma::vec sigma2inv = arma::ones(N+1) * std::pow(as<double>(startpara["sigma"]), -2);
   arma::vec phi = arma::ones(N+1) * as<double>(startpara["phi"]);
   arma::vec mu = arma::ones(N+1) * as<double>(startpara["mu"]);
 
@@ -257,7 +257,7 @@ List svlsample_cpp (
 
   double phi = theta_init["phi"];
   double rho = theta_init["rho"];
-  double sigma2 = pow(as<double>(theta_init["sigma"]), 2);
+  double sigma2 = std::pow(as<double>(theta_init["sigma"]), 2);
   double mu = theta_init["mu"];
   arma::vec h = h_init, ht = (h_init-mu)/sqrt(sigma2);
   arma::vec beta(p); beta.fill(0.0);
@@ -287,7 +287,7 @@ List svlsample_cpp (
   // prior mean and precision matrix for the regression part (currently fixed)
   const arma::vec y_in_arma(y_in.begin(), T);
   const arma::vec priorbetamean = arma::ones(p) * prior_beta_mu;
-  const arma::mat priorbetaprec = arma::eye(p, p) / pow(prior_beta_sigma, 2);
+  const arma::mat priorbetaprec = arma::eye(p, p) / std::pow(prior_beta_sigma, 2);
   arma::vec normalizer(T);
   arma::mat X_reg(T, p);
   arma::vec y_reg(T);
@@ -298,7 +298,8 @@ List svlsample_cpp (
   arma::vec armadraw(p);
 
   // adaptive MH
-  stochvol::Adaptation<4> adaptation(
+  stochvol::Adaptation adaptation(
+      4,
       draws + burnin,
       use_mala ? 100 : 100,
       use_mala ? 0.574 : 0.234,
@@ -325,17 +326,18 @@ List svlsample_cpp (
     }
 
     // update theta and h
-    // TODO implement dontupdatemu
-    update_svl (y, y_star, d,
-      phi, rho, sigma2, mu,
-      h, ht,
-      adaptation,
-      prior_phi, prior_rho,
-      prior_sigma2, prior_mu,
-      use_mala,
-      gammaprior,
-      correct,
-      strategy);
+    update_svl(
+        y, y_star, d,
+        phi, rho, sigma2, mu,
+        h, ht,
+        adaptation,
+        prior_phi, prior_rho,
+        prior_sigma2, prior_mu,
+        use_mala,
+        gammaprior,
+        correct,
+        strategy,
+        dontupdatemu);
 
     // update beta
     if (regression) {
@@ -343,7 +345,7 @@ List svlsample_cpp (
       y_reg.head(T-1) -= rho * (arma::exp(h.head(T-1)/2) % (ht.tail(T-1) - phi*ht.head(T-1)));
 
       normalizer = arma::exp(-h/2);
-      normalizer.head(T-1) /= sqrt(1-pow(rho, 2));
+      normalizer.head(T-1) /= std::sqrt(1 - std::pow(rho, 2));
       // X has already been copied to X_reg
       std::copy(X.cbegin(), X.cend(), X_reg.begin());  // important!
       X_reg.each_col() %= normalizer;

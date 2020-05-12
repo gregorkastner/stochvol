@@ -9,21 +9,20 @@ namespace stochvol {
   // Adaptation happens after every batch_size draws.
   //
   // Notation from DOI 10.1007/s11222-008-9110-y
-  template<int dim>
   class Adaptation {
   public:
     // Useful structs
     struct Result {
       Result (
           const double _scale,
-          const arma::mat::fixed<dim, dim>& _covariance) {
+          const arma::mat& _covariance) {
         set_result(_scale, _covariance);
       }
 
       inline
       void set_result (
           const double _scale,
-          const arma::mat::fixed<dim, dim>& _covariance) {
+          const arma::mat& _covariance) {
         scale = _scale;
         covariance = _covariance;
         bool success = arma::inv_sympd(precision, _covariance) &&
@@ -35,10 +34,10 @@ namespace stochvol {
       }
       
       double scale;
-      arma::mat::fixed<dim, dim> covariance;
-      arma::mat::fixed<dim, dim> precision;  // Covariance_inv
-      arma::mat::fixed<dim, dim> covariance_chol;
-      arma::mat::fixed<dim, dim> covariance_chol_inv;
+      arma::mat covariance;
+      arma::mat precision;  // Covariance_inv
+      arma::mat covariance_chol;
+      arma::mat covariance_chol_inv;
     };
 
     struct Storage {
@@ -49,20 +48,22 @@ namespace stochvol {
 
     // Constructor
     Adaptation (
+        const int _dim,
         const int _memory_size,
         const int _batch_size = 100,
         const double _target_acceptance = 0.234,
         const double _lambda = 0.1,
         const double _scale = 0.1,
         const double _C = 0.99)
-      : lambda{_lambda},
+      : dim{_dim},
         target_acceptance{_target_acceptance},
+        lambda{_lambda},
         alpha{calculate_alpha(_lambda)},
-        scale{_scale},
         C{_C},
-        state(_batch_size),
-        cache_result(scale, arma::mat(dim, dim, arma::fill::eye)),
-        draws_batch(dim, _batch_size) {
+        scale{_scale},
+        state(_dim, _batch_size),
+        draws_batch(dim, _batch_size),
+        cache_result(scale, arma::mat(_dim, _dim, arma::fill::eye)) {
       if (target_acceptance <= 0.1 || target_acceptance >= 0.8) {
         Rcpp::warning("Target acceptance rate should be between 10\% and 80\%");
       }
@@ -79,7 +80,7 @@ namespace stochvol {
     // Store new samples in the batch state
     // Do all kinds of adaptation logic
     inline
-    void register_sample (const arma::vec::fixed<dim>& sample) {
+    void register_sample (const arma::vec& sample) {
       const int i = state.get_i_batch();
       draws_batch.col(i) = sample;
       if (i >= 1) {
@@ -143,11 +144,12 @@ namespace stochvol {
     class State {
     public:
       const int batch_size;
+      const int dim;
 
-      State (const int _batch_size)
-        : batch_size{_batch_size} {
-        mu.fill(0);
-        Sigma = arma::eye(arma::size(Sigma));
+      State (const int _dim, const int _batch_size)
+        : batch_size{_batch_size}, dim{_dim} {
+        mu.zeros(dim);
+        Sigma.zeros(dim, dim);
       }
 
       inline
@@ -167,16 +169,17 @@ namespace stochvol {
       }
 
       inline
-      const arma::mat::fixed<dim, dim> get_covariance () const {
+      const arma::mat get_covariance () const {
         return Sigma;
       }
 
     private:
       int i_batch = 0;  // use get_i_batch() to access i_batch
-      arma::vec::fixed<dim> mu;
-      arma::mat::fixed<dim, dim> Sigma;
+      arma::vec mu;
+      arma::mat Sigma;
     };
 
+    const int dim;
     const double target_acceptance;
     const double lambda;  // controls the speed of adaptation
     const double alpha;  // log-speed of adaptation, derived from lambda

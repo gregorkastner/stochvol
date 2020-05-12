@@ -68,7 +68,7 @@ arma::vec6 theta_propose_rwmh(
     const arma::vec& y,
     const arma::vec& h,
     const arma::vec& ht,
-    const stochvol::Adaptation<4>::Result& adaptation_proposal);
+    const stochvol::Adaptation::Result& adaptation_proposal);
 
 arma::vec6 theta_propose_mala(
     const double phi,
@@ -81,7 +81,7 @@ arma::vec6 theta_propose_mala(
     const arma::vec2& prior_rho,
     const arma::vec2& prior_sigma2,
     const arma::vec2& prior_mu,
-    const stochvol::Adaptation<4>::Result& adaptation_proposal);
+    const stochvol::Adaptation::Result& adaptation_proposal);
 
 arma::vec thetamu_propose(
     const double phi,
@@ -90,8 +90,7 @@ arma::vec thetamu_propose(
     const arma::vec& y,
     const arma::vec& h,
     const arma::vec& ht,
-    const arma::mat& proposal_chol,
-    const arma::mat& proposal_chol_inv);
+    const stochvol::Adaptation::Result& adaptation_proposal);
 
 #endif  // THETA_UTILS_H
 
