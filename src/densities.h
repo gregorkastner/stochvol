@@ -14,6 +14,42 @@ inline double logdnorm(
  return -log(sigma)-((x-mu)*(x-mu)/(2*sigma*sigma));
 }
 
+// non-normalized log-density for N(mu, sigma^2)
+// with log_sd as input
+inline double logdnorm2(
+    const double x,
+    const double mu,
+    const double sigma,
+    const double log_sigma) {
+  const double z = (x - mu) / sigma;
+  return -.5 * z * z - log_sigma;
+}
+
+// non-normalized log-density for N(mu, sigma^2)
+// without log(sigma)
+inline double logdnorm3(
+    const double x,
+    const double mu,
+    const double sigma) {
+  return logdnorm2(x, mu, sigma, 0);
+}
+
+// non-normalized density of the gamma distribution
+inline double logdgamma(
+    const double x,
+    const double alpha,
+    const double beta) {
+  return (alpha - 1.) * std::log(x) - beta * x;
+}
+
+// non-normalized density of the inverse gamma distribution
+inline double logdinvgamma(
+    const double x,
+    const double alpha,
+    const double beta) {
+  return -(alpha - 1.) * std::log(x) - beta / x;
+}
+
 // non-normalized log-density for Beta(a, b)
 inline double logdbeta(
     double x,

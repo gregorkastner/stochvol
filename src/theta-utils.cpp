@@ -2,6 +2,7 @@
 #include <cmath>
 #include "theta-utils.h"
 #include "parameterization.h"
+#include "densities.h"
 
 using namespace Rcpp;
 
@@ -61,15 +62,6 @@ double theta_log_likelihood(
   return result;
 }
 
-double dnorm_log(
-    const double x,
-    const double mu,
-    const double sd,
-    const double log_sd) {
-  const double z = (x - mu) / sd;
-  return -.5 * z * z - log_sd;
-}
-
 double theta_log_likelihood_c(
     const double phi,
     const double rho,
@@ -97,7 +89,7 @@ double theta_log_likelihood_c(
     y_mean = 0;
     y_sd = exp_h_half[i];
     log_y_sd = .5 * h[i];
-    log_lik += dnorm_log(y[i], y_mean, y_sd, log_y_sd) + dnorm_log(h[i], h_mean, h_sd, log_h_sd);
+    log_lik += logdnorm2(y[i], y_mean, y_sd, log_y_sd) + logdnorm2(h[i], h_mean, h_sd, log_h_sd);
   }
 
   return log_lik;
@@ -136,26 +128,10 @@ double theta_log_likelihood_nc(
       y_sd = exp_h_half[i];
       log_y_sd = .5 * (sigma * ht[i] + mu);
     }
-    log_lik += dnorm_log(y[i], y_mean, y_sd, log_y_sd) + dnorm_log(ht[i], h_mean, h_sd, log_h_sd);
+    log_lik += logdnorm2(y[i], y_mean, y_sd, log_y_sd) + logdnorm2(ht[i], h_mean, h_sd, log_h_sd);
   }
 
   return log_lik;
-}
-
-double dlogpriornorm(const double x, const double mean, const double stdev) {  // only necessary terms are added
-  return -.5 * std::pow((x - mean) / stdev, 2);
-}
-
-double dlogpriorbeta(const double x, const double alpha, const double beta) {
-  return (alpha - 1.) * std::log(x) + (beta - 1.) * std::log(1. - x);
-}
-
-double dlogpriorgamma(const double x, const double alpha, const double beta) {
-  return (alpha - 1.) * std::log(x) - beta * x;
-}
-
-double dlogpriorinvgamma(const double x, const double alpha, const double beta) {
-  return -(alpha - 1.) * std::log(x) - beta / x;
 }
 
 double theta_log_prior(
@@ -168,7 +144,7 @@ double theta_log_prior(
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
     const bool gammaprior) {
-  return dlogpriornorm(mu, prior_mu[0], prior_mu[1]) +
+  return logdnorm3(mu, prior_mu[0], prior_mu[1]) +
     thetamu_log_prior(phi, rho, sigma2, prior_phi, prior_rho, prior_sigma2, gammaprior);
 }
 
@@ -185,12 +161,12 @@ double thetamu_log_prior(
   //const double gammascale = 1/gammarate;
   //const double invgammascale = gammarate;
   // Wikipedia notation: prior_sigma2(1) is beta in both the case of Gamma and of InvGamma
-  return dlogpriorbeta(.5 * (phi + 1.), prior_phi[0], prior_phi[1]) +
-    dlogpriorbeta(.5 * (rho + 1.), prior_rho[0], prior_rho[1]) +
+  return logdbeta(.5 * (phi + 1.), prior_phi[0], prior_phi[1]) +
+    logdbeta(.5 * (rho + 1.), prior_rho[0], prior_rho[1]) +
     (gammaprior ?
-      dlogpriorgamma(sigma2, prior_sigma2[0], prior_sigma2[1]) :
+      logdgamma(sigma2, prior_sigma2[0], prior_sigma2[1]) :
       // moment matched InvGamma
-      (-2. * std::log(sigma2) + dlogpriorinvgamma(1 / sigma2, prior_sigma2[0] + 2, prior_sigma2[1] / (prior_sigma2[0] * (prior_sigma2[0] + 1.)))));
+      (-2. * std::log(sigma2) + logdinvgamma(1 / sigma2, prior_sigma2[0] + 2, prior_sigma2[1] / (prior_sigma2[0] * (prior_sigma2[0] + 1.)))));
 }
 
 arma::vec4 theta_transform(
