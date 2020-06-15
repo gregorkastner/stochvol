@@ -69,6 +69,18 @@ namespace stochvol {
       }
       memory.reserve(_memory_size);
     }
+    Adaptation (const Adaptation& other)
+      : dim{other.dim},
+        target_acceptance{other.target_acceptance},
+        lambda{other.lambda},
+        alpha{other.alpha},
+        C{other.C},
+        scale{other.scale},
+        state(other.state.dim, other.state.batch_size),
+        draws_batch(arma::size(other.draws_batch)),
+        cache_result(other.scale, arma::mat(arma::size(other.cache_result.covariance), arma::fill::eye)) {
+      memory.reserve(other.memory.capacity());
+    }
 
     // Calculate next gamma based on the current one
     inline
@@ -205,6 +217,23 @@ namespace stochvol {
       const double lambda_reciprocal_value = 1 / (1 + l);
       return lambda_reciprocal_value + (1 - lambda_reciprocal_value) / 64;
     }
+  };
+
+  // Convenience class
+  struct AdaptationCollection {
+    Adaptation centered;
+    Adaptation noncentered;
+
+    AdaptationCollection (
+        const int _dim,
+        const int _memory_size,
+        const int _batch_size = 100,
+        const double _target_acceptance = 0.234,
+        const double _lambda = 0.1,
+        const double _scale = 0.1,
+        const double _C = 0.99)
+      : centered(_dim, _memory_size, _batch_size, _target_acceptance, _lambda, _scale, _C),
+        noncentered(centered) { }
   };
 }
 

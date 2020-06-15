@@ -199,7 +199,7 @@ void update_svl (
     double& mu,
     arma::vec& h,
     arma::vec& ht,
-    stochvol::Adaptation& adaptation,
+    stochvol::AdaptationCollection& adaptation_collection,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
@@ -216,9 +216,10 @@ void update_svl (
   arma::vec exp_h_half_proposal_nc;
 
   const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;
-  const auto adapted_proposal = adaptation.get_proposal();
   for (int ipar : strategy) {
     const Parameterization par = Parameterization(ipar);
+    stochvol::Adaptation& adaptation = par == Parameterization::CENTERED ? adaptation_collection.centered : adaptation_collection.noncentered;
+    const auto adapted_proposal = adaptation.get_proposal();
     bool theta_updated = false;
     if (dontupdatemu) {
       theta_updated = draw_thetamu_rwMH(
@@ -230,6 +231,7 @@ void update_svl (
           par,
           adapted_proposal,
           gammaprior);
+      adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu).head(3));
     } else {
       theta_updated = draw_theta(
           phi, rho, sigma2, mu,
@@ -242,6 +244,7 @@ void update_svl (
           adapted_proposal,
           gammaprior,
           proposal);
+      adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu));
     }
 
     if (theta_updated) {
@@ -255,11 +258,6 @@ void update_svl (
           break;
       }
     }
-  }
-  if (dontupdatemu) {
-    adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu).head(3));
-  } else {
-    adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu));
   }
 
   return;

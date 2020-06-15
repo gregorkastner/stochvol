@@ -298,7 +298,7 @@ List svlsample_cpp (
   arma::vec armadraw(p);
 
   // adaptive MH
-  stochvol::Adaptation adaptation(
+  stochvol::AdaptationCollection adaptation_collection(
       4,
       draws + burnin,
       use_mala ? 100 : 100,
@@ -330,7 +330,7 @@ List svlsample_cpp (
         y, y_star, d,
         phi, rho, sigma2, mu,
         h, ht,
-        adaptation,
+        adaptation_collection,
         prior_phi, prior_rho,
         prior_sigma2, prior_mu,
         use_mala,
@@ -388,7 +388,8 @@ List svlsample_cpp (
 
   return List::create(
       _["para"] = params,
-      _["adaptation"] = Rcpp::wrap(adaptation.get_storage()),
+      _["adaptation_centered"] = Rcpp::wrap(adaptation_collection.centered.get_storage()),
+      _["adaptation_noncentered"] = Rcpp::wrap(adaptation_collection.noncentered.get_storage()),
       _["latent"] = latent,
       _["beta"] = betas);
 }
