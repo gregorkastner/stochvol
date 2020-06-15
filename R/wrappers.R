@@ -1164,6 +1164,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   if (missing(expert)) {
     parameterization <- expertdefault$parameterization
     mhcontrol <- expertdefault$mhcontrol
+    use.mala <- mhcontrol$use.mala
     gammaprior <- expertdefault$gammaprior
     correct.latent.draws <- expertdefault$correct.latent.draws
   } else {
@@ -1205,7 +1206,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
       mhcontrol <- expertdefault$mhcontrol
     }
     use.mala <- mhcontrol$use.mala
-    if (is.null(use.mala)) {
+    if (!isTRUE(use.mala)) {
       use.mala <- FALSE
     }
 
