@@ -300,11 +300,11 @@ List svlsample_cpp (
   // adaptive MH
   stochvol::AdaptationCollection adaptation_collection(
       4,
-      draws + burnin,
-      use_mala ? 100 : 100,
-      use_mala ? 0.574 : 0.234,
-      0.05,
-      use_mala ? 0.001 : 0.1);
+      (draws + burnin) / 200 + 1,
+      200,
+      use_mala ? 0.35 : 0.16,  //0.574 : 0.234,
+      0.10,  // between 0 and 1: the larger the value the stronger and longer the adaptation
+      0.001);
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
