@@ -66,7 +66,7 @@ arma::vec draw_h_auxiliary(
 
   // A as the function of z
   const double A_z_22 = 1 / (sigma2 * (1 - std::pow(rho, 2)));
-  const arma::vec::fixed<10> A_z_11 = 2 * mix_2varinv - rho_sigma * b2_exp_m * A_z_22,
+  const arma::vec::fixed<10> A_z_11 = mix_varinv - rho_sigma * b2_exp_m * A_z_22,
                              A_z_12 = rho_sigma * b_exp_m2 * A_z_22;  // must be multiplied by d_t
   //const arma::vec::fixed<10>& A_z_21 = A_z_12;
 
@@ -170,8 +170,8 @@ arma::vec draw_h_auxiliary(
     X_t__beta = X_z__beta[z_t];
     W_t__beta = help_mu_phi + d_t * help_W_z[z_t];
 
-    Omega_tt = 2 * mix_2varinv[z_t] + A_tm1_22;
-    c_t = 2 * mix_2varinv[z_t] * (y_star[t] - X_t__beta) - A_tm1_12 * (y_star[t - 1] - X_tm1__beta) + A_tm1_22 * W_tm1__beta;
+    Omega_tt = mix_varinv[z_t] + A_tm1_22;
+    c_t = mix_varinv[z_t] * (y_star[t] - X_t__beta) - A_tm1_12 * (y_star[t - 1] - X_tm1__beta) + A_tm1_22 * W_tm1__beta;
 
     Lambda_inv[t] = 1 / std::sqrt(Omega_tt - std::pow(help_Omega_Lambda[t - 1], 2));
     m[t] = (c_t - Omega_tm1_t * m[t - 1]) * std::pow(Lambda_inv[t], 2);
