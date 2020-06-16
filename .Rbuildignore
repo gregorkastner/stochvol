@@ -6,3 +6,6 @@ vignettes/factor-stochvol-vignette/figure
 vignettes/factor-stochvol-vignette/cache
 ^README.md$
 ^.*.RDS$
+speedtest.R
+speedtest_sessioninfo.txt
+
