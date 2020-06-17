@@ -1,6 +1,6 @@
 #include <RcppArmadillo.h>
 #include <cmath>
-#include "theta-utils.h"
+#include "utils_parameters.h"
 #include "parameterization.h"
 #include "densities.h"
 

@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include "sampling_time_indep.h"
-#include "theta-utils.h"
+#include "utils_parameters.h"
 #include "parameterization.h"
 
 bool draw_theta(

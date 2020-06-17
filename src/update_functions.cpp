@@ -7,7 +7,7 @@
 #include "parameterization.h"
 #include "sampling_latent_states.h"
 #include "sampling_time_indep.h"
-#include "theta-utils.h"
+#include "utils_parameters.h"
 
 using namespace Rcpp;
 
