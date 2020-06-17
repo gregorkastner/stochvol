@@ -1,6 +1,6 @@
 #include <RcppArmadillo.h>
 #include <cmath>
-#include "sampling_time_indep.h"
+#include "sampling_parameters.h"
 #include "utils_parameters.h"
 #include "parameterization.h"
 
