@@ -6,7 +6,7 @@
 #include "regression.h"
 #include "parameterization.h"
 #include "sampling_latent_states.h"
-#include "theta-sampler.h"
+#include "sampling_time_indep.h"
 #include "theta-utils.h"
 
 using namespace Rcpp;

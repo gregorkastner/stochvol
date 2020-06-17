@@ -1,6 +1,6 @@
 #include <RcppArmadillo.h>
 #include <cmath>
-#include "theta-sampler.h"
+#include "sampling_time_indep.h"
 #include "theta-utils.h"
 #include "parameterization.h"
 
