@@ -5,7 +5,7 @@
 #include "densities.h"
 #include "regression.h"
 #include "parameterization.h"
-#include "h-sampler.h"
+#include "sampling_latent_states.h"
 #include "theta-sampler.h"
 #include "theta-utils.h"
 
