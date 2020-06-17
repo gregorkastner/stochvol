@@ -1,6 +1,6 @@
 #include <RcppArmadillo.h>
 #include "sampling_latent_states.h"
-#include "sampling_latent_states_utils.h"
+#include "utils_latent_states.h"
 #include "auxmix.h"
 #include "parameterization.h"
 
