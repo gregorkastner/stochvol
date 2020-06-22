@@ -1,5 +1,5 @@
-#ifndef _SAMPLER_H_
-#define _SAMPLER_H_
+#ifndef _SAMPLING_MAIN_H_
+#define _SAMPLING_MAIN_H_
 
 #include <RcppArmadillo.h>
 
@@ -60,5 +60,5 @@ Rcpp::List svlsample_cpp (
     const Rcpp::CharacterVector& strategy,
     const bool dontupdatemu);
 
-#endif  // _SAMPLER_H_
+#endif  // _SAMPLING_MAIN_H_
 
