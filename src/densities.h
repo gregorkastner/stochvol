@@ -22,19 +22,9 @@ double logdnorm2(
     const double x,
     const double mu,
     const double sigma,
-    const double log_sigma) {
+    const double log_sigma = 0) {
   const double z = (x - mu) / sigma;
   return -.5 * z * z - log_sigma;
-}
-
-// non-normalized log-density for N(mu, sigma^2)
-// without log(sigma)
-inline
-double logdnorm3(
-    const double x,
-    const double mu,
-    const double sigma) {
-  return logdnorm2(x, mu, sigma, 0);
 }
 
 // non-normalized density of the gamma distribution

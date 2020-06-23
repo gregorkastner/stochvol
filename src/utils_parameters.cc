@@ -144,7 +144,7 @@ double theta_log_prior(
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
     const bool gammaprior) {
-  return logdnorm3(mu, prior_mu[0], prior_mu[1]) +
+  return logdnorm2(mu, prior_mu[0], prior_mu[1]) +
     thetamu_log_prior(phi, rho, sigma2, prior_phi, prior_rho, prior_sigma2, gammaprior);
 }
 
