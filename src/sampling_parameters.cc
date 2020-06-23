@@ -2,7 +2,7 @@
 #include <cmath>
 #include "sampling_parameters.h"
 #include "utils_parameters.h"
-#include "parameterization.h"
+#include "type_definitions.h"
 
 bool draw_theta(
     double& phi,

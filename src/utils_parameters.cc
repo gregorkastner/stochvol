@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include "utils_parameters.h"
-#include "parameterization.h"
+#include "type_definitions.h"
 #include "densities.h"
 
 using namespace Rcpp;

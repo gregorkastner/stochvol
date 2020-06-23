@@ -2,7 +2,7 @@
 #define _SAMPLING_LATENT_STATES_H_
 
 #include <RcppArmadillo.h>
-#include "parameterization.h"
+#include "type_definitions.h"
 
 arma::vec draw_latent(
     const arma::vec& y,

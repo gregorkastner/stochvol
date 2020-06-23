@@ -5,7 +5,7 @@
 #include "auxmix.h"
 #include "progutils.h"
 #include "regression.h"
-#include "parameterization.h"
+#include "type_definitions.h"
 
 using namespace Rcpp;
 

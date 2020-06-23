@@ -3,7 +3,7 @@
 
 #include <RcppArmadillo.h>
 #include <adaptation.hpp>
-#include "parameterization.h"
+#include "type_definitions.h"
 
 double theta_log_likelihood(
     const double phi,
