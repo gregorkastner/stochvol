@@ -1,7 +1,46 @@
 #include <RcppArmadillo.h>
 #include "utils_latent_states.h"
-#include "auxmix.h"
 #include <cmath>
+
+void findMixprobs(
+    arma::vec& mixprob,
+    const arma::vec& datanorm)  {
+  int T = datanorm.size();
+  int tmp; 
+  for (int c = 0; c < T; c++) {  // TODO slow (10*T calls to exp)!
+    tmp = 10*c;
+    for (int r = 0; r < 10; r++) {
+      mixprob[tmp+r] = exp(mix_pre[r]-(datanorm[c]-mix_mean[r])*(datanorm[c]-mix_mean[r])*mix_2varinv[r]);
+    }
+  }
+}
+
+void colCumsums(
+    arma::vec& x,
+    int const nrow,
+    int const ncol) {
+  int tmp;
+  for (int c = 0; c < ncol; c++) {
+    tmp = c*nrow;
+    for (int r = 1; r < nrow; r++) {
+      x[tmp+r] = x[tmp+r-1] + x[tmp+r];
+    }
+  }
+}
+
+void findMixCDF(
+    arma::vec& mixprob,
+    const arma::vec& datanorm)  {
+  int T = datanorm.size();
+  int tmp; 
+  for (int c = 0; c < T; c++) {  // TODO slow (10*T calls to exp)!
+    tmp = 10*c;
+    mixprob[tmp] = exp(mix_pre[0]-(datanorm[c]-mix_mean[0])*(datanorm[c]-mix_mean[0])*mix_2varinv[0]);
+    for (int r = 1; r < 10; r++) {
+      mixprob[tmp+r] = mixprob[tmp+r-1] + exp(mix_pre[r]-(datanorm[c]-mix_mean[r])*(datanorm[c]-mix_mean[r])*mix_2varinv[r]);
+    }
+  }
+}
 
 double h_log_posterior(
     const arma::vec& h,  // centered

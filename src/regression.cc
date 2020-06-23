@@ -1,6 +1,6 @@
 #include <RcppArmadillo.h>
 #include "regression.h"
-#include "auxmix.h"
+#include "utils_latent_states.h"
 #include "densities.h"
 
 using namespace Rcpp;

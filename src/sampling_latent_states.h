@@ -1,6 +1,11 @@
 #ifndef _SAMPLING_LATENT_STATES_H_
 #define _SAMPLING_LATENT_STATES_H_
 
+// Constants and functions related to the sampling of the latent states.
+// This includes the all-without-a-loop (AWOL, McCausland et al., 2011)
+// sampling of the latent vector in the auxiliary model from Omori et al. (2007)
+// and the corresponding correction step thereafter
+
 #include <RcppArmadillo.h>
 #include "type_definitions.h"
 
@@ -53,4 +58,5 @@ arma::uvec draw_s_auxiliary(
     const double mu,
     const Parameterization centering);
 
-#endif  // H_SAMPLER_H
+#endif  // _SAMPLING_LATENT_STATES_H_
+

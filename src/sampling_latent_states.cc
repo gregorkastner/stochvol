@@ -1,7 +1,6 @@
 #include <RcppArmadillo.h>
 #include "sampling_latent_states.h"
 #include "utils_latent_states.h"
-#include "auxmix.h"
 #include "type_definitions.h"
 
 using namespace Rcpp;
@@ -58,21 +57,21 @@ arma::vec draw_h_auxiliary(
   // Runtime constants
   const int n = y_star.n_elem;
   const double sigma = std::sqrt(sigma2),
-               phi2 = std::pow(phi, 2),
-               rho_sigma = rho * sigma,
-               help_mu_phi = mu * (1 - phi),
-               a_1 = mu,
-               P_1_inv = (1 - phi2) / sigma2;
+        phi2 = std::pow(phi, 2),
+        rho_sigma = rho * sigma,
+        help_mu_phi = mu * (1 - phi),
+        a_1 = mu,
+        P_1_inv = (1 - phi2) / sigma2;
 
   // A as the function of z
   const double A_z_22 = 1 / (sigma2 * (1 - std::pow(rho, 2)));
   const arma::vec::fixed<10> A_z_11 = mix_varinv - rho_sigma * b2_exp_m * A_z_22,
-                             A_z_12 = rho_sigma * b_exp_m2 * A_z_22;  // must be multiplied by d_t
+        A_z_12 = rho_sigma * b_exp_m2 * A_z_22;  // must be multiplied by d_t
   //const arma::vec::fixed<10>& A_z_21 = A_z_12;
 
   // X.beta and W.beta as the function of z
   const arma::vec::fixed<10>& X_z__beta = mix_mean,
-                             help_W_z = rho_sigma * mix_a % exp_m2;
+        help_W_z = rho_sigma * mix_a % exp_m2;
 
   // Partial calculations
   double A_tm1_11, A_t_11,
@@ -86,8 +85,8 @@ arma::vec draw_h_auxiliary(
 
   // Stored partial calculations
   arma::vec Lambda_inv(n),
-            m(n),
-            help_Omega_Lambda(n - 1);
+    m(n),
+    help_Omega_Lambda(n - 1);
 
   // Result object
   arma::vec alpha(n);
@@ -201,7 +200,7 @@ arma::vec correct_latent_auxiliaryMH(
     const double rho,
     const double sigma2,
     const double mu) {
-    //const CharacterVector centering,
+  //const CharacterVector centering,
 
   // Calculate MH acceptance ratio
   const double hlp1 = h_log_posterior(proposed, y, phi, rho, sigma2, mu);
@@ -236,18 +235,18 @@ arma::uvec draw_s_auxiliary(
   arma::vec eta;
   arma::vec unif_vec;
   arma::uvec new_states(n);
-  
+
   switch (centering) {
     case Parameterization::CENTERED:
-    eps_star = y_star - h;
-    eta = (h.tail(n-1) - mu) - phi*(h.head(n-1) - mu);
-    break;
+      eps_star = y_star - h;
+      eta = (h.tail(n-1) - mu) - phi*(h.head(n-1) - mu);
+      break;
     case Parameterization::NONCENTERED:
-    eps_star = y_star - mu - sqrt(sigma2)*ht;
-    eta = ht.tail(n-1) - phi*ht.head(n-1);
-    break;
+      eps_star = y_star - mu - sqrt(sigma2)*ht;
+      eta = ht.tail(n-1) - phi*ht.head(n-1);
+      break;
   }
-  
+
   static const arma::vec::fixed<10> mix_log_prob = arma::log(mix_prob);
   static const arma::vec::fixed<10> likelihood_normalizer = 0.5 * arma::log(2 * arma::datum::pi * mix_var);
   static const arma::vec::fixed<10> help_eta_mean = rho * std::sqrt(sigma2_used) * arma::exp(0.5 * mix_mean);
@@ -261,7 +260,7 @@ arma::uvec draw_s_auxiliary(
       const double m = mix_mean[c];
       const double v2 = mix_var[c];
       const double log_prior = mix_log_prob[c];
-      
+
       double log_eps_star_lik = -0.5 * std::pow((eps_star[r] - m), 2) / v2 - likelihood_normalizer[c];
       double log_eta_lik;
       if (r < n - 1) {
@@ -278,7 +277,7 @@ arma::uvec draw_s_auxiliary(
     auto binary_search_result = std::lower_bound(post_dist.cbegin(), post_dist.cend(), R::unif_rand());
     new_states[r] = std::distance(post_dist.cbegin(), binary_search_result);
   }
-  
+
   return new_states;
 }
 
