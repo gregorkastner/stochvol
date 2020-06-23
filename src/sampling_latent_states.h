@@ -1,7 +1,7 @@
 #ifndef _SAMPLING_LATENT_STATES_H_
 #define _SAMPLING_LATENT_STATES_H_
 
-// Constants and functions related to the sampling of the latent states.
+// Functions related to the sampling of the latent states.
 // This includes the all-without-a-loop (AWOL, McCausland et al., 2011)
 // sampling of the latent vector in the auxiliary model from Omori et al. (2007)
 // and the corresponding correction step thereafter

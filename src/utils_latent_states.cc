@@ -2,6 +2,85 @@
 #include "utils_latent_states.h"
 #include <cmath>
 
+void cholTridiag(
+    const arma::vec& omega_diag,
+    double omega_offdiag,
+    arma::vec& chol_diag,
+    arma::vec& chol_offdiag) {
+  chol_diag[0] = sqrt(omega_diag[0]);  // maybe speed up via iterators?
+  for (int j = 1; j < int(omega_diag.size()); j++) {
+    chol_offdiag[j-1] = omega_offdiag/chol_diag[j-1];
+    chol_diag[j] = sqrt(omega_diag[j]-chol_offdiag[j-1]*chol_offdiag[j-1]);
+  }
+}
+
+void forwardAlg(
+    const arma::vec& chol_diag,
+    const arma::vec& chol_offdiag,
+    const arma::vec& covector,
+    arma::vec& htmp) {
+  htmp[0] = covector[0]/chol_diag[0];
+  for (int j = 1; j < int(chol_diag.size()); j++) {
+    htmp[j] = (covector[j] - chol_offdiag[j-1]*htmp[j-1])/chol_diag[j];
+  }
+}
+
+void backwardAlg(
+    const arma::vec& chol_diag,
+    const arma::vec& chol_offdiag,
+    const arma::vec& htmp,
+    arma::vec& h) {
+  int T = chol_diag.size();
+  h[T-1] = htmp[T-1]/chol_diag[T-1];
+  for (int j = T-2; j >= 0; j--) {
+    h[j] = (htmp[j] - chol_offdiag[j]*h[j+1])/chol_diag[j];
+  }
+}
+
+void invTransformSampling(
+    const arma::vec& mixprob,
+    arma::ivec& r,
+    int T) {
+  int index;
+  arma::vec innov = Rcpp::runif(T); 
+  double temp;
+  bool larger, smaller;
+  for (int j = 0; j < T; j++) {
+    index = (10-1)/2;  // start searching in the middle
+    temp = innov[j]*mixprob[9 + 10*j];  // current (non-normalized) value
+    larger = false;  // indicates that we already went up
+    smaller = false; // indicates that we already went down
+    while(true) {
+      if (temp > mixprob[index +  10*j]) {
+        if (smaller == true) {
+          index++;
+          break;
+        }
+        else {
+          index++;
+          larger = true;
+        }
+      }
+      else {
+        if (larger == true) {
+          break;
+        }
+        else {
+          if (index == 0) {
+            break;
+          }
+          else {
+            index--;
+            smaller = true;
+          }
+        } 
+      }
+    }
+    r[j] = index;
+  }
+}
+
+
 void findMixprobs(
     arma::vec& mixprob,
     const arma::vec& datanorm)  {

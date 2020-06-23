@@ -2,8 +2,8 @@
 #include <adaptation.hpp>
 #include "sampling_main.h"
 #include "single_update.h"
-#include "progutils.h"
 #include "type_definitions.h"
+#include "utils_main.h"
 
 using namespace Rcpp;
 

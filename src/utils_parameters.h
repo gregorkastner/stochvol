@@ -5,6 +5,16 @@
 #include <adaptation.hpp>
 #include "type_definitions.h"
 
+// find the root of a function (Newton-Raphson)
+double newtonRaphson(
+    double startval,
+    double sumtau,
+    int n,
+    double lower = R_NegInf,
+    double upper = R_PosInf,
+    double tol = 1e-03,
+    int maxiter = 50);
+
 double theta_log_likelihood(
     const double phi,
     const double rho,
