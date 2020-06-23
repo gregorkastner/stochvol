@@ -2,11 +2,10 @@
 #include "single_update.h"
 #include "progutils.h"
 #include "densities.h"
-#include "regression.h"
 #include "type_definitions.h"
 #include "sampling_latent_states.h"
-#include "utils_latent_states.h"
 #include "sampling_parameters.h"
+#include "utils_latent_states.h"
 #include "utils_parameters.h"
 
 using namespace Rcpp;
