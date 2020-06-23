@@ -1,5 +1,5 @@
 #include <RcppArmadillo.h>
-#include "update_functions.h"
+#include "single_update.h"
 #include "auxmix.h"
 #include "progutils.h"
 #include "densities.h"

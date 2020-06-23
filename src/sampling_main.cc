@@ -1,7 +1,7 @@
 #include <RcppArmadillo.h>
 #include <adaptation.hpp>
 #include "sampling_main.h"
-#include "update_functions.h"
+#include "single_update.h"
 #include "auxmix.h"
 #include "progutils.h"
 #include "regression.h"

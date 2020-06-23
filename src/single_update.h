@@ -1,5 +1,5 @@
-#ifndef UPDATE_FUNCTIONS_H
-#define UPDATE_FUNCTIONS_H
+#ifndef _SINGLE_UPDATES_H_
+#define _SINGLE_UPDATES_H_
 
 #include <RcppArmadillo.h>
 #include <adaptation.hpp>
@@ -59,4 +59,4 @@ void update_svl(
     const arma::ivec& strategy,
     const bool dontupdatemu);
 
-#endif  // UPDATE_FUNCTIONS_H
+#endif  // _SINGLE_UPDATES_H_

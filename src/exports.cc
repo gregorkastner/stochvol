@@ -1,6 +1,5 @@
-#include "update_functions.h"
+#include "single_update.h"
 #include <RcppArmadillo.h>
-#include <Rcpp.h>
 #include <string>
 #include <set>
 
