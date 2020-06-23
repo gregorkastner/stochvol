@@ -1,5 +1,5 @@
-#ifndef THETA_SAMPLER_H
-#define THETA_SAMPLER_H
+#ifndef _SAMPLING_PARAMETERS_H_
+#define _SAMPLING_PARAMETERS_H_
 
 #include <RcppArmadillo.h>
 #include <adaptation.hpp>

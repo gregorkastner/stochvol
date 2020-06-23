@@ -1,5 +1,5 @@
-#ifndef H_SAMPLER_H
-#define H_SAMPLER_H
+#ifndef _SAMPLING_LATENT_STATES_H_
+#define _SAMPLING_LATENT_STATES_H_
 
 #include <RcppArmadillo.h>
 #include "parameterization.h"

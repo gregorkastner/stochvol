@@ -1,5 +1,5 @@
-#ifndef THETA_UTILS_H
-#define THETA_UTILS_H
+#ifndef _UTILS_PARAMETERS_H_
+#define _UTILS_PARAMETERS_H_
 
 #include <RcppArmadillo.h>
 #include <adaptation.hpp>

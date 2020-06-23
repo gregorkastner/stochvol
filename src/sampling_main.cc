@@ -1,6 +1,6 @@
 #include <RcppArmadillo.h>
 #include <adaptation.hpp>
-#include "sampler.h"
+#include "sampling_main.h"
 #include "update_functions.h"
 #include "auxmix.h"
 #include "progutils.h"

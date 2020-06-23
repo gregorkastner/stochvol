@@ -1,5 +1,5 @@
-#ifndef H_UTILS_H
-#define H_UTILS_H
+#ifndef _UTILS_LATENT_STATES_H_
+#define _UTILS_LATENT_STATES_H_
 
 #include <RcppArmadillo.h>
 
