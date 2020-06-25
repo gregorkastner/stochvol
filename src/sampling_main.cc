@@ -40,8 +40,8 @@ List svsample_cpp(
 
   arma::mat X(X_in);
 
-  int T = y.size();
-  int p = X.n_cols;
+  const int T = y.size();
+  const int p = X.n_cols;
 
   // should we model the mean as well?
   bool regression;
@@ -213,7 +213,7 @@ List svsample_cpp(
   if (verbose) progressbar_finish(N);  // finalize progress bar
 
   // Prepare return value and return
-  return cleanUp(mu, phi, sqrt(1/sigma2inv), hstore, h0store, nustore, taustore, betastore);
+  return cleanup(mu, phi, sqrt(1/sigma2inv), hstore, h0store, nustore, taustore, betastore);
 }
 
 List svlsample_cpp (

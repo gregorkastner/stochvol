@@ -32,7 +32,7 @@ void update_terr(
 
   // **** STEP 2: Update nu ****
 
-  double numean = newtonRaphson(nu, sumtau, T, lower, upper);
+  double numean = newton_raphson(nu, sumtau, T, lower, upper);
   double auxsd = sqrt(-1/ddlogdnu(numean, T)); 
   double nuprop = R::rnorm(numean, auxsd);
   double logR = logdnu(nuprop, sumtau, T) - logdnu(nu, sumtau, T) +
@@ -66,7 +66,7 @@ void update_sv(
     const int parameterization,
     const bool dontupdatemu,
     const double priorlatent0) {
-  int T = data.size();
+  const int T = data.size();
 
   if (dontupdatemu) curpara[0] = 0; // just to be sure
 
@@ -90,11 +90,11 @@ void update_sv(
 
   // calculate non-normalized CDF of posterior indicator probs
 
-  if (centered_baseline) findMixCDF(mixprob, data-h);
-  else findMixCDF(mixprob, data-mu-curpara[2]*h); 
+  if (centered_baseline) find_mixture_indicator_cdf(mixprob, data-h);
+  else find_mixture_indicator_cdf(mixprob, data-mu-curpara[2]*h); 
 
   // find correct indicators (currently by inversion method)
-  invTransformSampling(mixprob, r, T);
+  inverse_transform_sampling(mixprob, r, T);
 
   /*
    * Step (a): sample the latent volatilities h:
@@ -133,15 +133,16 @@ void update_sv(
   } 
 
   // Cholesky decomposition
-  cholTridiag(omega_diag, omega_offdiag, chol_diag, chol_offdiag);
+  cholesky_tridiagonal(omega_diag, omega_offdiag, chol_diag, chol_offdiag);
 
   // Solution of Chol*x = covector ("forward algorithm")
-  forwardAlg(chol_diag, chol_offdiag, covector, htmp);
+  forward_algorithm(chol_diag, chol_offdiag, covector, htmp);
 
   htmp += as<arma::vec>(rnorm(T+1));
+  //htmp.transform( [](double h_elem) -> double { return h_elem + R::norm_rand(); });
 
   // Solution of (Chol')*x = htmp ("backward algorithm")
-  backwardAlg(chol_diag, chol_offdiag, htmp, hnew);
+  backward_algorithm(chol_diag, chol_offdiag, htmp, hnew);
 
   h = hnew.tail(T);
   h0 = hnew[0];
@@ -151,7 +152,7 @@ void update_sv(
    */
 
   if (centered_baseline) {  // this means we have C as base
-    curpara = regressionCentered(h0, h, mu, phi, curpara[2],
+    curpara = regression_centered(h0, h, mu, phi, curpara[2],
         C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv,
         B022inv, Gammaprior, truncnormal, MHcontrol, MHsteps, dontupdatemu, priorlatent0);
 
@@ -159,7 +160,7 @@ void update_sv(
       double h0_alter;
       htmp = (h-curpara[0])/curpara[2];
       h0_alter = (h0-curpara[0])/curpara[2];
-      curpara = regressionNoncentered(data, h0_alter, htmp, r,
+      curpara = regression_noncentered(data, h0_alter, htmp, r,
           curpara[0], curpara[1], curpara[2], Bsigma, a0, b0, bmu, Bmu,
           truncnormal, MHsteps, dontupdatemu, priorlatent0);
       h = curpara[0] + curpara[2]*htmp;
@@ -169,7 +170,7 @@ void update_sv(
 
   } else {  // NC as base
 
-    curpara = regressionNoncentered(data, h0, h, r, mu, phi, curpara[2],
+    curpara = regression_noncentered(data, h0, h, r, mu, phi, curpara[2],
         Bsigma, a0, b0, bmu, Bmu, truncnormal, MHsteps,
         dontupdatemu, priorlatent0);
 
@@ -177,7 +178,7 @@ void update_sv(
       double h0_alter;
       htmp = curpara[0] + curpara[2]*h;
       h0_alter = curpara[0] + curpara[2]*h0;
-      curpara = regressionCentered(h0_alter, htmp, curpara[0], curpara[1], curpara[2],
+      curpara = regression_centered(h0_alter, htmp, curpara[0], curpara[1], curpara[2],
           C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv, B022inv,
           Gammaprior, truncnormal, MHcontrol, MHsteps,
           dontupdatemu, priorlatent0);

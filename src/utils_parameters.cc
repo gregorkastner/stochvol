@@ -6,14 +6,14 @@
 
 using namespace Rcpp;
 
-double newtonRaphson(
-    double startval,
-    double sumtau,
-    int n,
-    double lower,
-    double upper,
-    double tol,
-    int maxiter) {
+double newton_raphson(
+    const double startval,
+    const double sumtau,
+    const int n,
+    const double lower,
+    const double upper,
+    const double tol,
+    const int maxiter) {
   double x = startval;
   double error = R_PosInf;
   double xnew;

@@ -8,25 +8,25 @@
 
 using namespace Rcpp;
 
-arma::vec regressionCentered(
-    double h0,
+arma::vec regression_centered(
+    const double h0,
     const arma::vec& h,
     double mu,
     double phi,
     double sigma,
-    double C0,
-    double cT,
-    double Bsigma,
-    double a0,
-    double b0,
-    double bmu,
-    double Bmu,
-    double B011inv,
-    double B022inv,
-    bool Gammaprior,
-    bool truncnormal,
-    double MHcontrol,
-    int MHsteps,
+    const double C0,
+    const double cT,
+    const double Bsigma,
+    const double a0,
+    const double b0,
+    const double bmu,
+    const double Bmu,
+    const double B011inv,
+    const double B022inv,
+    const bool Gammaprior,
+    const bool truncnormal,
+    const double MHcontrol,
+    const int MHsteps,
     const bool dontupdatemu,
     const double priorlatent0) {
 
@@ -35,7 +35,7 @@ arma::vec regressionCentered(
 
   if (dontupdatemu) mu = 0;
 
-  int T = h.size();
+  const int T = h.size();
   double z, CT, sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, tmp1,
          BT11, BT12, BT22, bT1 = 0, bT2 = 0, chol11, chol12, chol22, phi_prop,
          gamma_prop, tmpR, tmpR2, logR;
@@ -162,8 +162,7 @@ arma::vec regressionCentered(
       innov[0] = R::rnorm(0, 1);
       phi_prop = bT1 + chol11*innov[0];
       if ((phi_prop >= 1) || (phi_prop <= -1)) { // outside the unit sphere
-        arma::vec ret = NumericVector::create(mu, phi, sigma);
-        return ret;
+        return {mu, phi, sigma};
       }
       else gamma_prop = bT2 + chol12*innov[0] + chol22*R::rnorm(0, 1);
     }
@@ -204,30 +203,29 @@ arma::vec regressionCentered(
     }
   }
 
-  arma::vec ret = NumericVector::create(mu, phi, sigma);
-  return ret;
+  return {mu, phi, sigma};
 }
 
-arma::vec regressionNoncentered(
+arma::vec regression_noncentered(
     const arma::vec& data,
-    double h0,
+    const double h0,
     const arma::vec& h,
     const arma::ivec& r,
     double mu,
     double phi,
     double sigma,
-    double Bsigma,
-    double a0,
-    double b0,
-    double bmu,
-    double Bmu,
-    bool truncnormal,
-    int MHsteps,
+    const double Bsigma,
+    const double a0,
+    const double b0,
+    const double bmu,
+    const double Bmu,
+    const bool truncnormal,
+    const int MHsteps,
     const bool dontupdatemu,
     const double priorlatent0) {
   if (dontupdatemu) mu = 0;
 
-  int T = h.size();
+  const int T = h.size();
   double sumtmp1, sumtmp2, expR, phi_prop, BT11, BT12, BT22, bT1, bT2, tmp1,
          tmp2, tmp3, tmp, chol11, chol12, chol22, tmpmean, tmpsd;
   arma::vec innov(2);

@@ -48,45 +48,34 @@ const arma::vec::fixed<10> mix_pre {
 -7.7642143280080739842219372803810983896255493164062500000};
 
 // Cholesky factor for a tridiagonal matrix with constant off-diagonal
-void cholTridiag(
+void cholesky_tridiagonal(
     const arma::vec& omega_diag,
     double omega_offdiag,
     arma::vec& chol_diag,
     arma::vec& chol_offdiag);
 
 // Solves Chol*x = covector ("forward algorithm")
-void forwardAlg(
+void forward_algorithm(
     const arma::vec& chol_diag,
     const arma::vec& chol_offdiag,
     const arma::vec& covector,
     arma::vec& htmp);
 
 // Solves (Chol')*x = htmp ("backward algorithm")
-void backwardAlg(
+void backward_algorithm(
     const arma::vec& chol_diag,
     const arma::vec& chol_offdiag,
     const arma::vec& htmp,
     arma::vec& h);
 
 // Draws length(r) RVs, expects the non-normalized CDF mixprob
-void invTransformSampling(
+void inverse_transform_sampling(
     const arma::vec& mixprob,
     arma::ivec& r,
     int T);
 
-// Non-normalized posterior probabilities
-void findMixprobs(
-    arma::vec& mixprob,
-    const arma::vec& datanorm);
-
-// Cumulative sum over columns of a matrix
-void colCumsums(
-    arma::vec& x,
-    int const nrow,
-    int const ncol);
-
-// Combines findMixprobs() and colCumsums() (see above) into one function
-void findMixCDF(
+// Computes the CDF of the mixture indicators
+void find_mixture_indicator_cdf(
     arma::vec& mixprob,
     const arma::vec& datanorm);
 

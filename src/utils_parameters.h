@@ -6,14 +6,14 @@
 #include "type_definitions.h"
 
 // find the root of a function (Newton-Raphson)
-double newtonRaphson(
-    double startval,
-    double sumtau,
-    int n,
-    double lower = R_NegInf,
-    double upper = R_PosInf,
-    double tol = 1e-03,
-    int maxiter = 50);
+double newton_raphson(
+    const double startval,
+    const double sumtau,
+    const int n,
+    const double lower = R_NegInf,
+    const double upper = R_PosInf,
+    const double tol = 1e-03,
+    const int maxiter = 50);
 
 double theta_log_likelihood(
     const double phi,

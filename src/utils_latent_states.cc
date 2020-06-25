@@ -2,7 +2,7 @@
 #include "utils_latent_states.h"
 #include <cmath>
 
-void cholTridiag(
+void cholesky_tridiagonal(
     const arma::vec& omega_diag,
     double omega_offdiag,
     arma::vec& chol_diag,
@@ -14,7 +14,7 @@ void cholTridiag(
   }
 }
 
-void forwardAlg(
+void forward_algorithm(
     const arma::vec& chol_diag,
     const arma::vec& chol_offdiag,
     const arma::vec& covector,
@@ -25,7 +25,7 @@ void forwardAlg(
   }
 }
 
-void backwardAlg(
+void backward_algorithm(
     const arma::vec& chol_diag,
     const arma::vec& chol_offdiag,
     const arma::vec& htmp,
@@ -37,7 +37,7 @@ void backwardAlg(
   }
 }
 
-void invTransformSampling(
+void inverse_transform_sampling(
     const arma::vec& mixprob,
     arma::ivec& r,
     int T) {
@@ -80,34 +80,7 @@ void invTransformSampling(
   }
 }
 
-
-void findMixprobs(
-    arma::vec& mixprob,
-    const arma::vec& datanorm)  {
-  int T = datanorm.size();
-  int tmp; 
-  for (int c = 0; c < T; c++) {  // TODO slow (10*T calls to exp)!
-    tmp = 10*c;
-    for (int r = 0; r < 10; r++) {
-      mixprob[tmp+r] = exp(mix_pre[r]-(datanorm[c]-mix_mean[r])*(datanorm[c]-mix_mean[r])*mix_2varinv[r]);
-    }
-  }
-}
-
-void colCumsums(
-    arma::vec& x,
-    int const nrow,
-    int const ncol) {
-  int tmp;
-  for (int c = 0; c < ncol; c++) {
-    tmp = c*nrow;
-    for (int r = 1; r < nrow; r++) {
-      x[tmp+r] = x[tmp+r-1] + x[tmp+r];
-    }
-  }
-}
-
-void findMixCDF(
+void find_mixture_indicator_cdf(
     arma::vec& mixprob,
     const arma::vec& datanorm)  {
   int T = datanorm.size();

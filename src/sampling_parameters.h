@@ -8,44 +8,44 @@
 #include "type_definitions.h"
 
 // Step (b): sample mu, phi, sigma - __CENTERED__ version:
-arma::vec regressionCentered(
-    double h0,
+arma::vec regression_centered(
+    const double h0,
     const arma::vec &h,
     double mu,
     double phi,
     double sigma,
-    double C0,
-    double cT,
-    double Bsigma,
-    double a0,
-    double b0,
-    double bmu,
-    double Bmu,
-    double B011inv,
-    double B022inv,
-    bool gammaprior,
-    bool truncnormal,
-    double MHcontrol,
-    int MHsteps,
+    const double C0,
+    const double cT,
+    const double Bsigma,
+    const double a0,
+    const double b0,
+    const double bmu,
+    const double Bmu,
+    const double B011inv,
+    const double B022inv,
+    const bool gammaprior,
+    const bool truncnormal,
+    const double MHcontrol,
+    const int MHsteps,
     const bool dontupdatemu,
     const double priorlatent0);
 
 // Step (b): sample mu, phi, sigma - __NONCENTERED__ version:
-arma::vec regressionNoncentered(
+arma::vec regression_noncentered(
     const arma::vec& data,
-    double h0,
+    const double h0,
     const arma::vec& h,
     const arma::ivec& r,
     double mu,
     double phi,
     double sigma,
-    double Bsigma,
-    double a0,
-    double b0,
-    double bmu,
-    double Bmu,
-    bool truncnormal,
-    int MHsteps,
+    const double Bsigma,
+    const double a0,
+    const double b0,
+    const double bmu,
+    const double Bmu,
+    const bool truncnormal,
+    const int MHsteps,
     const bool dontupdatemu,
     const double priorlatent0);
 
