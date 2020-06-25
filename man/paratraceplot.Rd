@@ -20,10 +20,12 @@ A detailed help for the method implemented in \pkg{stochvol} can be found in
 \code{\link{paratraceplot.svdraws}}.
 }
 \seealso{
-Other plotting: \code{\link{paradensplot}},
-  \code{\link{paratraceplot.svdraws}},
-  \code{\link{plot.svdraws}}, \code{\link{plot.svpredict}},
-  \code{\link{volplot}}
+Other plotting: 
+\code{\link{paradensplot}()},
+\code{\link{paratraceplot.svdraws}()},
+\code{\link{plot.svdraws}()},
+\code{\link{plot.svpredict}()},
+\code{\link{volplot}()}
 }
 \concept{plotting}
 \keyword{hplot}

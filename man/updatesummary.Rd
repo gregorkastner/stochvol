@@ -4,8 +4,12 @@
 \alias{updatesummary}
 \title{Updating the Summary of MCMC Draws}
 \usage{
-updatesummary(x, quantiles = c(0.05, 0.5, 0.95), esspara = TRUE,
-  esslatent = FALSE)
+updatesummary(
+  x,
+  quantiles = c(0.05, 0.5, 0.95),
+  esspara = TRUE,
+  esslatent = FALSE
+)
 }
 \arguments{
 \item{x}{\code{svdraws} object.}

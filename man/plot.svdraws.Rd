@@ -5,15 +5,39 @@
 \alias{plot.svldraws}
 \title{Graphical Summary of the Posterior Distribution}
 \usage{
-\method{plot}{svdraws}(x, forecast = NULL, dates = NULL,
-  show0 = FALSE, showobs = TRUE, showprior = TRUE, col = NULL,
-  forecastlty = NULL, tcl = -0.4, mar = c(1.9, 1.9, 1.7, 0.5),
-  mgp = c(2, 0.6, 0), simobj = NULL, newdata = NULL, ...)
+\method{plot}{svdraws}(
+  x,
+  forecast = NULL,
+  dates = NULL,
+  show0 = FALSE,
+  showobs = TRUE,
+  showprior = TRUE,
+  col = NULL,
+  forecastlty = NULL,
+  tcl = -0.4,
+  mar = c(1.9, 1.9, 1.7, 0.5),
+  mgp = c(2, 0.6, 0),
+  simobj = NULL,
+  newdata = NULL,
+  ...
+)
 
-\method{plot}{svldraws}(x, forecast = NULL, dates = NULL,
-  show0 = FALSE, showobs = TRUE, showprior = TRUE, col = NULL,
-  forecastlty = NULL, tcl = -0.4, mar = c(1.9, 1.9, 1.7, 0.5),
-  mgp = c(2, 0.6, 0), simobj = NULL, newdata = NULL, ...)
+\method{plot}{svldraws}(
+  x,
+  forecast = NULL,
+  dates = NULL,
+  show0 = FALSE,
+  showobs = TRUE,
+  showprior = TRUE,
+  col = NULL,
+  forecastlty = NULL,
+  tcl = -0.4,
+  mar = c(1.9, 1.9, 1.7, 0.5),
+  mgp = c(2, 0.6, 0),
+  simobj = NULL,
+  newdata = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{\code{svdraws} or \code{svldraws} object.}
@@ -112,10 +136,12 @@ plot(draws, forecast = 20, showobs = FALSE, col = seq(along = newquants),
 \seealso{
 \code{\link{updatesummary}}, \code{\link{predict.svdraws}}
 
-Other plotting: \code{\link{paradensplot}},
-  \code{\link{paratraceplot.svdraws}},
-  \code{\link{paratraceplot}},
-  \code{\link{plot.svpredict}}, \code{\link{volplot}}
+Other plotting: 
+\code{\link{paradensplot}()},
+\code{\link{paratraceplot.svdraws}()},
+\code{\link{paratraceplot}()},
+\code{\link{plot.svpredict}()},
+\code{\link{volplot}()}
 }
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}

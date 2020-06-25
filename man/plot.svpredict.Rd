@@ -5,11 +5,9 @@
 \alias{plot.svlpredict}
 \title{Graphical Summary of the Posterior Predictive Distribution}
 \usage{
-\method{plot}{svpredict}(x, quantiles = c(0.05, 0.25, 0.5, 0.75, 0.95),
-  ...)
+\method{plot}{svpredict}(x, quantiles = c(0.05, 0.25, 0.5, 0.75, 0.95), ...)
 
-\method{plot}{svlpredict}(x, quantiles = c(0.05, 0.25, 0.5, 0.75, 0.95),
-  ...)
+\method{plot}{svlpredict}(x, quantiles = c(0.05, 0.25, 0.5, 0.75, 0.95), ...)
 }
 \arguments{
 \item{x}{\code{svpredict} or \code{svlpredict} object.}
@@ -53,10 +51,12 @@ plot(draws, forecast = pred)
 
 }
 \seealso{
-Other plotting: \code{\link{paradensplot}},
-  \code{\link{paratraceplot.svdraws}},
-  \code{\link{paratraceplot}}, \code{\link{plot.svdraws}},
-  \code{\link{volplot}}
+Other plotting: 
+\code{\link{paradensplot}()},
+\code{\link{paratraceplot.svdraws}()},
+\code{\link{paratraceplot}()},
+\code{\link{plot.svdraws}()},
+\code{\link{volplot}()}
 }
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}

@@ -5,11 +5,26 @@
 \title{Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility
 Model with Leverage (SVL)}
 \usage{
-svlsample(y, draws = 10000, burnin = 1000, designmatrix = NA,
-  priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
-  priorrho = c(4, 4), priorbeta = c(0, 10000), thinpara = 1,
-  thinlatent = 1, thintime = NULL, keeptime = "all", quiet = FALSE,
-  startpara, startlatent, expert, ...)
+svlsample(
+  y,
+  draws = 10000,
+  burnin = 1000,
+  designmatrix = NA,
+  priormu = c(0, 100),
+  priorphi = c(5, 1.5),
+  priorsigma = 1,
+  priorrho = c(4, 4),
+  priorbeta = c(0, 10000),
+  thinpara = 1,
+  thinlatent = 1,
+  thintime = NULL,
+  keeptime = "all",
+  quiet = FALSE,
+  startpara,
+  startlatent,
+  expert,
+  ...
+)
 }
 \arguments{
 \item{y}{numeric vector containing the data (usually log-returns), which

@@ -4,9 +4,20 @@
 \alias{volplot}
 \title{Plotting Quantiles of the Latent Volatilities}
 \usage{
-volplot(x, forecast = 0, dates = NULL, show0 = FALSE, col = NULL,
-  forecastlty = NULL, tcl = -0.4, mar = c(1.9, 1.9, 1.9, 0.5),
-  mgp = c(2, 0.6, 0), simobj = NULL, newdata = NULL, ...)
+volplot(
+  x,
+  forecast = 0,
+  dates = NULL,
+  show0 = FALSE,
+  col = NULL,
+  forecastlty = NULL,
+  tcl = -0.4,
+  mar = c(1.9, 1.9, 1.9, 0.5),
+  mgp = c(2, 0.6, 0),
+  simobj = NULL,
+  newdata = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{\code{svdraws} or \code{svldraws} object.}
@@ -92,10 +103,12 @@ volplot(draws, forecast = 10)
 \seealso{
 \code{\link{updatesummary}}, \code{\link{predict.svdraws}}
 
-Other plotting: \code{\link{paradensplot}},
-  \code{\link{paratraceplot.svdraws}},
-  \code{\link{paratraceplot}}, \code{\link{plot.svdraws}},
-  \code{\link{plot.svpredict}}
+Other plotting: 
+\code{\link{paradensplot}()},
+\code{\link{paratraceplot.svdraws}()},
+\code{\link{paratraceplot}()},
+\code{\link{plot.svdraws}()},
+\code{\link{plot.svpredict}()}
 }
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}

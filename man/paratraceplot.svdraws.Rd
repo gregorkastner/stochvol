@@ -4,8 +4,13 @@
 \alias{paratraceplot.svdraws}
 \title{Trace Plot of MCMC Draws from the Parameter Posteriors}
 \usage{
-\method{paratraceplot}{svdraws}(x, mar = c(1.9, 1.9, 1.9, 0.5),
-  mgp = c(2, 0.6, 0), simobj = NULL, ...)
+\method{paratraceplot}{svdraws}(
+  x,
+  mar = c(1.9, 1.9, 1.9, 0.5),
+  mgp = c(2, 0.6, 0),
+  simobj = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{\code{svdraws} or \code{svldraws} object.}
@@ -42,9 +47,12 @@ You can call this function directly, but it is more commonly called by
 the \code{\link{plot.svdraws}} method.
 }
 \seealso{
-Other plotting: \code{\link{paradensplot}},
-  \code{\link{paratraceplot}}, \code{\link{plot.svdraws}},
-  \code{\link{plot.svpredict}}, \code{\link{volplot}}
+Other plotting: 
+\code{\link{paradensplot}()},
+\code{\link{paratraceplot}()},
+\code{\link{plot.svdraws}()},
+\code{\link{plot.svpredict}()},
+\code{\link{volplot}()}
 }
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}

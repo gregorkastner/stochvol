@@ -4,10 +4,22 @@
 \alias{svlsample2}
 \title{Minimal overhead version of \code{\link{svlsample}}.}
 \usage{
-svlsample2(y, draws = 1, burnin = 0, priormu = c(0, 100),
-  priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(4, 4),
-  thinpara = 1, thinlatent = 1, thintime = NULL, keeptime = "all",
-  quiet = TRUE, startpara, startlatent)
+svlsample2(
+  y,
+  draws = 1,
+  burnin = 0,
+  priormu = c(0, 100),
+  priorphi = c(5, 1.5),
+  priorsigma = 1,
+  priorrho = c(4, 4),
+  thinpara = 1,
+  thinlatent = 1,
+  thintime = NULL,
+  keeptime = "all",
+  quiet = TRUE,
+  startpara,
+  startlatent
+)
 }
 \arguments{
 \item{y}{numeric vector containing the data (usually log-returns), which
