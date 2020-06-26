@@ -126,7 +126,7 @@ paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
         else lines(vals, 2*vals^(-3)*dgamma(1/vals^2, 3, 3), col=8, lty=2)
       }
       else if (parastring == "rho") lines(vals, .5*dbeta((vals+1)/2, paras[1], paras[2]), col=8, lty=2)
-      else if (parastring == "nu") lines(vals, dunif(vals, paras[1], paras[2]), col = 8, lty = 2)
+      else if (parastring == "nu") lines(vals, dexp(vals - 2, rate = paras), col = 8, lty = 2)
       if (sim && parastring %in% names(simobj$para)) {
         points(simobj$para[[parastring]], 0, col = 3, cex = 2, pch = 16)
       }

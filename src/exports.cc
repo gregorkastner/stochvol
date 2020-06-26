@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // svsample_cpp
-Rcpp::List svsample_cpp(const arma::vec& y_in, const int draws, const int burnin, const arma::mat& X_in, const double bmu, const double Bmu, const double a0, const double b0, const double Bsigma, const int thin, const int timethin, const Rcpp::List& startpara_in, const arma::vec& startvol_in, const bool keeptau, const bool quiet, const int para, const int MHsteps, const double B011, const double B022, const double mhcontrol, const bool gammaprior, const bool truncnormal, const double offset, const bool dontupdatemu, const arma::vec& priordf_in, const arma::vec& priorbeta_in, const double priorlatent0);
-RcppExport SEXP _stochvol_svsample_cpp(SEXP y_inSEXP, SEXP drawsSEXP, SEXP burninSEXP, SEXP X_inSEXP, SEXP bmuSEXP, SEXP BmuSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP BsigmaSEXP, SEXP thinSEXP, SEXP timethinSEXP, SEXP startpara_inSEXP, SEXP startvol_inSEXP, SEXP keeptauSEXP, SEXP quietSEXP, SEXP paraSEXP, SEXP MHstepsSEXP, SEXP B011SEXP, SEXP B022SEXP, SEXP mhcontrolSEXP, SEXP gammapriorSEXP, SEXP truncnormalSEXP, SEXP offsetSEXP, SEXP dontupdatemuSEXP, SEXP priordf_inSEXP, SEXP priorbeta_inSEXP, SEXP priorlatent0SEXP) {
+Rcpp::List svsample_cpp(const arma::vec& y_in, const int draws, const int burnin, const arma::mat& X_in, const double bmu, const double Bmu, const double a0, const double b0, const double Bsigma, const int thin, const int timethin, const Rcpp::List& startpara_in, const arma::vec& startvol_in, const bool keeptau, const bool quiet, const int para, const int MHsteps, const double B011, const double B022, const double mhcontrol, const bool gammaprior, const bool truncnormal, const double offset, const bool dontupdatemu, const double priordf, const arma::vec& priorbeta_in, const double priorlatent0);
+RcppExport SEXP _stochvol_svsample_cpp(SEXP y_inSEXP, SEXP drawsSEXP, SEXP burninSEXP, SEXP X_inSEXP, SEXP bmuSEXP, SEXP BmuSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP BsigmaSEXP, SEXP thinSEXP, SEXP timethinSEXP, SEXP startpara_inSEXP, SEXP startvol_inSEXP, SEXP keeptauSEXP, SEXP quietSEXP, SEXP paraSEXP, SEXP MHstepsSEXP, SEXP B011SEXP, SEXP B022SEXP, SEXP mhcontrolSEXP, SEXP gammapriorSEXP, SEXP truncnormalSEXP, SEXP offsetSEXP, SEXP dontupdatemuSEXP, SEXP priordfSEXP, SEXP priorbeta_inSEXP, SEXP priorlatent0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -35,10 +35,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type truncnormal(truncnormalSEXP);
     Rcpp::traits::input_parameter< const double >::type offset(offsetSEXP);
     Rcpp::traits::input_parameter< const bool >::type dontupdatemu(dontupdatemuSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type priordf_in(priordf_inSEXP);
+    Rcpp::traits::input_parameter< const double >::type priordf(priordfSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type priorbeta_in(priorbeta_inSEXP);
     Rcpp::traits::input_parameter< const double >::type priorlatent0(priorlatent0SEXP);
-    rcpp_result_gen = Rcpp::wrap(svsample_cpp(y_in, draws, burnin, X_in, bmu, Bmu, a0, b0, Bsigma, thin, timethin, startpara_in, startvol_in, keeptau, quiet, para, MHsteps, B011, B022, mhcontrol, gammaprior, truncnormal, offset, dontupdatemu, priordf_in, priorbeta_in, priorlatent0));
+    rcpp_result_gen = Rcpp::wrap(svsample_cpp(y_in, draws, burnin, X_in, bmu, Bmu, a0, b0, Bsigma, thin, timethin, startpara_in, startvol_in, keeptau, quiet, para, MHsteps, B011, B022, mhcontrol, gammaprior, truncnormal, offset, dontupdatemu, priordf, priorbeta_in, priorlatent0));
     return rcpp_result_gen;
 END_RCPP
 }

@@ -35,8 +35,7 @@ void update_terr(
     const arma::vec& data,
     arma::vec& tau,
     double& nu,
-    const double lower,
-    const double upper);
+    const double lambda);
 
 void update_svl(
     const arma::vec& y,

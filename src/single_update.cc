@@ -14,31 +14,35 @@ void update_terr(
     const arma::vec& data, 
     arma::vec& tau,
     double &nu,
-    const double lower,
-    const double upper) {
+    const double lambda) {
 
-  int T = data.size();
+  const int T = data.size();
 
   // **** STEP 1: Update tau ****
 
-  double sumtau = 0.;
-
-  for (int i = 0; i < T; i++) {
-    // Watch out, R::rgamma(shape, scale), not Rf_rgamma(shape, rate)
-    tau[i] = 1./R::rgamma((nu + 1.) / 2., 2. / (nu + exp(data[i])));
-    sumtau += log(tau[i]) + 1/tau[i];
-  }
-
+  // Watch out, R::rgamma(shape, scale), not Rf_rgamma(shape, rate)
+  std::transform(
+      data.cbegin(), data.cend(),
+      tau.begin(),
+      [nu](const double data_i) -> double { return 1./R::rgamma((nu + 1.) / 2., 2. / (nu + exp(data_i))); });
+  // TODO since C++17 this can be done with transform_reduce (in parallel)
+  const double sumtau = std::accumulate(
+      tau.cbegin(), tau.cend(),
+      0.,
+      [](const double partial_sum, const double tau_i) -> double { return partial_sum + std::log(tau_i) + 1. / tau_i;});
 
   // **** STEP 2: Update nu ****
 
-  double numean = newton_raphson(nu, sumtau, T, lower, upper);
-  double auxsd = sqrt(-1/ddlogdnu(numean, T)); 
-  double nuprop = R::rnorm(numean, auxsd);
-  double logR = logdnu(nuprop, sumtau, T) - logdnu(nu, sumtau, T) +
-    logdnorm(nu, numean, auxsd) - logdnorm(nuprop, numean, auxsd);
+  const double numean = newton_raphson(nu, sumtau, T, lambda);
+  const double auxsd = sqrt(-1/ddlogdnu(numean, T)); 
+  const double nuprop = R::rnorm(numean, auxsd);
+  const double logR =
+    logdnu(nuprop, sumtau, lambda, T) - logdnorm(nuprop, numean, auxsd) -
+    (logdnu(nu, sumtau, lambda, T) - logdnorm(nu, numean, auxsd));
 
-  if (log(R::runif(0.,1.)) < logR && nuprop < upper && nuprop > lower) nu = nuprop;
+  if (logR >= 1. || std::log(R::unif_rand()) < logR) {
+    nu = nuprop;
+  }
 }
 
 // update performs one MCMC sampling step (normal errors):

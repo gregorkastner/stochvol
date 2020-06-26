@@ -14,7 +14,7 @@ svsample(
   priormu = c(0, 100),
   priorphi = c(5, 1.5),
   priorsigma = 1,
-  priornu = NA,
+  priornu = 0,
   priorbeta = c(0, 10000),
   priorlatent0 = "stationary",
   thinpara = 1,
@@ -37,7 +37,7 @@ svtsample(
   priormu = c(0, 100),
   priorphi = c(5, 1.5),
   priorsigma = 1,
-  priornu = c(2, 50),
+  priornu = 0.1,
   priorbeta = c(0, 10000),
   priorlatent0 = "stationary",
   thinpara = 1,
@@ -94,10 +94,10 @@ chisq(df = 1)}. The default value is \code{1}, which constitutes a
 reasonably vague prior for many common exchange rate datasets, stock returns
 and the like.}
 
-\item{priornu}{numeric vector of length 2 (or \code{NA}), indicating the
-lower and upper bounds for the uniform prior distribution of the parameter
+\item{priornu}{single non-negative number, indicating the rate parameter
+for the exponential prior distribution of the parameter
 \code{nu}, the degrees-of-freedom parameter of the conditional innovations
-t-distribution. The default value is \code{NA}, fixing the
+t-distribution. The default value is \code{0}, fixing the
 degrees-of-freedom to infinity. This corresponds to conditional standard
 normal innovations, the pre-1.1.0 behavior of \pkg{stochvol}.}
 
@@ -142,7 +142,7 @@ for the parameter draws. If supplied, \code{startpara} must contain three
 elements named \code{mu}, \code{phi}, and \code{sigma}, where \code{mu} is
 an arbitrary numerical value, \code{phi} is a real number between \code{-1}
 and \code{1}, and \code{sigma} is a positive real number. Moreover, if
-\code{priornu} is not \code{NA}, \code{startpara} must also contain an
+\code{priornu} is not \code{0}, \code{startpara} must also contain an
 element named \code{nu} (the degrees of freedom parameter for the
 t-innovations). The default value is equal to the prior mean.}
 

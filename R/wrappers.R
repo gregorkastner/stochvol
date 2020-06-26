@@ -47,10 +47,10 @@
 #' chisq(df = 1)}. The default value is \code{1}, which constitutes a
 #' reasonably vague prior for many common exchange rate datasets, stock returns
 #' and the like.
-#' @param priornu numeric vector of length 2 (or \code{NA}), indicating the
-#' lower and upper bounds for the uniform prior distribution of the parameter
+#' @param priornu single non-negative number, indicating the rate parameter
+#' for the exponential prior distribution of the parameter
 #' \code{nu}, the degrees-of-freedom parameter of the conditional innovations
-#' t-distribution. The default value is \code{NA}, fixing the
+#' t-distribution. The default value is \code{0}, fixing the
 #' degrees-of-freedom to infinity. This corresponds to conditional standard
 #' normal innovations, the pre-1.1.0 behavior of \pkg{stochvol}.
 #' @param priorbeta numeric vector of length 2, indicating the mean and
@@ -87,7 +87,7 @@
 #' elements named \code{mu}, \code{phi}, and \code{sigma}, where \code{mu} is
 #' an arbitrary numerical value, \code{phi} is a real number between \code{-1}
 #' and \code{1}, and \code{sigma} is a positive real number. Moreover, if
-#' \code{priornu} is not \code{NA}, \code{startpara} must also contain an
+#' \code{priornu} is not \code{0}, \code{startpara} must also contain an
 #' element named \code{nu} (the degrees of freedom parameter for the
 #' t-innovations). The default value is equal to the prior mean. 
 #' @param startlatent \emph{optional} vector of length \code{length(y)},
@@ -261,7 +261,7 @@
 #' @export
 svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
-                     priornu = NA, priorbeta = c(0, 10000), priorlatent0 = "stationary",
+                     priornu = 0, priorbeta = c(0, 10000), priorlatent0 = "stationary",
                      thinpara = 1, thinlatent = 1, keeptime = "all", thintime = NULL,
                      keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...) {
 
@@ -339,12 +339,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     stop("Argument 'priorsigma' (scaling of the chi-squared(df = 1) prior for sigma^2) must be a single number > 0.")
   }
 
-  if (any(is.na(priornu))) {
-    priornu <- NA
-  } else {
-    if (!is.numeric(priornu) || length(priornu) != 2 || priornu[1] >= priornu[2] || priornu[1] < 0) {
-      stop("If not NA, argument 'priornu' (lower and upper bounds for the uniform prior for the df) must be numeric and of length 2. Moreover, 0 <= priornu[1] < priornu[2].")
-    }
+  if (!is.numeric(priornu) | length(priornu) != 1 | priornu < 0) {
+    stop("Argument 'priornu' (rate parameter for the exponential prior for the df) must be a single number >= 0.")
   }
 
   if (!is.numeric(priorbeta) || length(priorbeta) != 2) {
@@ -477,7 +473,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   # Some input checking for startpara
   if (missing(startpara)) {
-    if (any(is.na(priornu))) {
+    if (priornu <= 0) {
       startpara <- list(mu = priormu[1],
                         phi = 2 * (priorphi[1] / sum(priorphi)) - 1,
                         sigma = priorsigma)
@@ -485,11 +481,11 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
       startpara <- list(mu = priormu[1],
                         phi = 2 * (priorphi[1] / sum(priorphi)) - 1,
                         sigma = priorsigma,
-                        nu = mean(priornu))
+                        nu = 2 + 1 / priornu)
     }
   } else {
     if (!is.list(startpara))
-      stop("Argument 'startpara' must be a list. Its elements must be named 'mu', 'phi', 'sigma'. Moreover, if !is.na(priornu), an element named 'nu' must exist.")
+      stop("Argument 'startpara' must be a list. Its elements must be named 'mu', 'phi', 'sigma'. Moreover, if priornu > 0, an element named 'nu' must exist.")
 
     if (!is.numeric(startpara[["mu"]]))
       stop('Argument \'startpara[["mu"]]\' must exist and be numeric.')
@@ -506,11 +502,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     if (startpara[["sigma"]] <= 0)
       stop('Argument \'startpara[["sigma"]]\' must be positive.')
 
-    if (!any(is.na(priornu)) && !is.numeric(startpara[["nu"]]))
+    if (priornu > 0 && !is.numeric(startpara[["nu"]]))
       stop('Argument \'startpara[["nu"]]\' must exist and be numeric.')
-
-    if (!any(is.na(priornu)) && (startpara[["nu"]] > priornu[2] || startpara[["nu"]] < priornu[1]))
-      stop('Argument \'startpara[["nu"]]\' must be within range(priornu).')
   }
 
   # Some input checking for startlatent
@@ -525,8 +518,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     stop("Argument 'keeptau' must be TRUE or FALSE.")
   }
 
-  if (any(is.na(priornu)) && keeptau) {
-    warning("Setting argument 'keeptau' to FALSE, as 'priornu' is NA.")
+  if (priornu <= 0 && keeptau) {
+    warning("Setting argument 'keeptau' to FALSE, as 'priornu' is non-positive.")
     keeptau <- FALSE
   }
 
@@ -539,7 +532,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   runtime <- system.time(res <-
     svsample_cpp(y, draws, burnin, designmatrix,
-          priormu[1], priormu[2]^2, priorphi[1], priorphi[2], priorsigma, 
+          priormu[1], priormu[2]^2, priorphi[1], priorphi[2], priorsigma,
           thinlatent, thintime, startpara, startlatent, keeptau, myquiet, para,
           mhsteps, B011, B022, mhcontrol, gammaprior, truncnormal,
           myoffset, FALSE, priornu, priorbeta, priorlatent0))
@@ -606,7 +599,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' @export
 svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                       priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
-                      priornu = c(2, 50), priorbeta = c(0, 10000), priorlatent0 = "stationary",
+                      priornu = 0.1, priorbeta = c(0, 10000), priorlatent0 = "stationary",
                       thinpara = 1, thinlatent = 1, keeptime = "all", thintime = NULL,
                       keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...) {
   svsample(y, draws = draws, burnin = burnin, designmatrix = designmatrix,
@@ -656,10 +649,10 @@ svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' chisq(df = 1)}. The default value is \code{1}, which constitutes a
 #' reasonably vague prior for many common exchange rate datasets, stock returns
 #' and the like.
-#' @param priornu numeric vector of length 2 (or \code{NA}), indicating the
-#' lower and upper bounds for the uniform prior distribution of the parameter
+#' @param priornu single non-negative number, indicating the rate parameter
+#' for the exponential prior distribution of the parameter
 #' \code{nu}, the degrees-of-freedom parameter of the conditional innovations
-#' t-distribution. The default value is \code{NA}, fixing the
+#' t-distribution. The default value is \code{0}, fixing the
 #' degrees-of-freedom to infinity. This corresponds to conditional standard
 #' normal innovations, the pre-1.1.0 behavior of \pkg{stochvol}.
 #' @param priorlatent0 either a single non-negative number or the string
@@ -692,7 +685,7 @@ svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' named \code{mu}, \code{phi}, and \code{sigma}, where \code{mu} is an
 #' arbitrary numerical value, \code{phi} is a real number between \code{-1} and
 #' \code{1}, and \code{sigma} is a positive real number. Moreover, if
-#' \code{priornu} is not \code{NA}, \code{startpara} must also contain an
+#' \code{priornu} is not \code{0}, \code{startpara} must also contain an
 #' element named \code{nu} (the degrees of freedom parameter for the
 #' t-innovations).
 #' @param startlatent \emph{compulsory} vector of length \code{length(x$y)},
@@ -700,7 +693,7 @@ svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' @return A list with three components:
 #' \item{para}{\code{3} times
 #' \code{draws} matrix containing the parameter draws. If \code{priornu} is not
-#' \code{NA}, this is a \code{4} times \code{draws} matrix.}
+#' \code{0}, this is a \code{4} times \code{draws} matrix.}
 #' \item{latent}{\code{length(y)} times \code{draws} matrix containing draws of
 #' the latent variables \code{h_1, \dots{}, h_n}.}
 #' \item{latent0}{Vector of
@@ -723,7 +716,7 @@ svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #'                    startlatent = rep_len(-10, length(aud.price) - 1))
 #' @export
 svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
-                      priorphi = c(5, 1.5), priorsigma = 1, priornu = NA,
+                      priorphi = c(5, 1.5), priorsigma = 1, priornu = 0,
                       priorlatent0 = "stationary", thinpara = 1, thinlatent = 1,
                       thintime = NULL, keeptime = "all", keeptau = FALSE,
                       quiet = TRUE, startpara, startlatent) {

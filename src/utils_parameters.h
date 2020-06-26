@@ -10,8 +10,7 @@ double newton_raphson(
     const double startval,
     const double sumtau,
     const int n,
-    const double lower = R_NegInf,
-    const double upper = R_PosInf,
+    const double lambda,
     const double tol = 1e-03,
     const int maxiter = 50);
 

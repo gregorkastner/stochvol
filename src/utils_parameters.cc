@@ -10,23 +10,18 @@ double newton_raphson(
     const double startval,
     const double sumtau,
     const int n,
-    const double lower,
-    const double upper,
+    const double lambda,
     const double tol,
     const int maxiter) {
   double x = startval;
   double error = R_PosInf;
   double xnew;
   bool converged = false;
-  for (int i = 0; i < maxiter; i++) {
-    xnew = x - dlogdnu(x, sumtau, n)/ddlogdnu(x, n);
-    if (xnew > upper) xnew = upper; else if (xnew < lower) xnew = lower;
-    error = fabs(xnew - x);
+  for (int i = 0; !converged && i < maxiter; i++) {
+    xnew = x - dlogdnu(x, sumtau, lambda, n) / ddlogdnu(x, n);
+    error = std::abs(xnew - x);
     x = xnew;
-    if (error < tol) {
-      converged = true;
-      break;
-    }
+    converged = error < tol;
   }
   if (!converged) x = NA_REAL;
   return x;

@@ -32,7 +32,7 @@ List svsample_cpp(
     const bool truncnormal,
     const double offset,
     const bool dontupdatemu,
-    const arma::vec& priordf_in,
+    const double priordf,
     const arma::vec& priorbeta_in,
     const double priorlatent0) {
 
@@ -68,10 +68,7 @@ List svsample_cpp(
   bool centered_baseline = parameterization % 2; // 0 for C, 1 for NC baseline
 
   // t-errors:
-  bool terr;
-  arma::vec priordf(priordf_in);
-
-  if (ISNA(priordf[0])) terr = false; else terr = true;
+  const bool terr = priordf > 0;
 
   // moment-matched IG-prior
   double c0 = 2.5;
@@ -156,8 +153,8 @@ List svsample_cpp(
     }
 
     if (terr) {
-      if (centered_baseline) update_terr(data - h, tau, nu, priordf[0], priordf[1]);
-      else update_terr(data - curpara[0] - curpara[2] * h, tau, nu, priordf[0], priordf[1]);
+      if (centered_baseline) update_terr(data - h, tau, nu, priordf);
+      else update_terr(data - curpara[0] - curpara[2] * h, tau, nu, priordf);
 
       datastand = data - log(tau);
     }

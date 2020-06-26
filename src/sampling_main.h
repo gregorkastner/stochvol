@@ -28,7 +28,7 @@ Rcpp::List svsample_cpp(
     const bool truncnormal,
     const double offset,
     const bool dontupdatemu,
-    const arma::vec& priordf_in,
+    const double priordf,
     const arma::vec& priorbeta_in,
     const double priorlatent0);
 
