@@ -144,7 +144,7 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
   res$latent <- cbind(res$latent, "sd(exp(h_t/2))" = apply(vol, 2, sd))
 
   if (!is.null(x$latent0))
-    res$latent0 <- c(summaryfunction(x$latent0, ess = esslatent), "mean(exp(h_0/2))" = mean(exp(x$latent0/2)), "sd(exp(h_0/2))" = sd(exp(x$latent0/2)))
+    res$latent0 <- c(summaryfunction(x$latent0, ess = esslatent), "mean(exp(h_t/2))" = mean(exp(x$latent0/2)), "sd(exp(h_t/2))" = sd(exp(x$latent0/2)))
 
   if (terr && x$thinning$para == x$thinning$latent) {
     vol <- sqrt((exp(x$latent) * x$para[,"nu"]) / (x$para[,"nu"] - 2))
