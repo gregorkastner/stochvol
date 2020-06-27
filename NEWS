@@ -1,6 +1,8 @@
-Changes in Version 2.0.6:
+Changes in Version *:
+  - The prior distribution for the degrees of freedom parameter (nu)
+    is an exponential distribution.
   - 'svlsample' and the exported C++ function 'update_svl' use
-    adaptive Metropolis-Hastings for sampling mu, phi, sigma, and mu
+    adaptive Metropolis-Hastings for sampling mu, phi, sigma, and rho
 
 Changes in Version 2.0.5:
   - Bugfix in predict when a constant mean model is used for prediction
