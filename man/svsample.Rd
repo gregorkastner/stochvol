@@ -256,11 +256,25 @@ draws <- svsample(sim$y, draws = 5000, burnin = 100,
 
 ## Check out the results
 summary(draws)
-plot(draws)
+plot(draws, simobj = sim)
+
+
+# Example 2
+## Simulate a short and conditionally heavy-tailed SV process
+sim <- svsim(100, mu = -10, phi = 0.96, sigma = 0.3, nu = 2.5)
+
+## Obtain 5000 draws from the sampler
+tdraws <- svtsample(sim$y, draws = 5000, burnin = 100,
+		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.5,
+     priornu = 0.2)
+
+## Check out the results
+summary(tdraws)
+plot(tdraws, simobj = sim)
 
 
 \dontrun{
-# Example 2
+# Example 3
 ## AR(1) structure for the mean
 data(exrates)
 len <- 3000
@@ -288,7 +302,7 @@ lines((length(y)+1):(length(y)+ahead), expost,
       col = 2)
 
 
-# Example 3
+# Example 4
 ## Predicting USD based on JPY and GBP in the mean
 data(exrates)
 len <- 3000
