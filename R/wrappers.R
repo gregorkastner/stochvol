@@ -873,7 +873,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
 #' 
 #' \code{correct.latent.draws}: Single logical value indicating whether to correct
 #' the draws obtained from the auxiliary model of Omori, et al. (2007). Defaults
-#' to \code{TRUE}.
+#' to \code{FALSE}.
 #' @param \dots Any extra arguments will be forwarded to
 #' \code{\link{updatesummary}}, controlling the type of statistics calculated
 #' for the posterior draws.
@@ -1167,7 +1167,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   expertdefault <- list(parameterization = rep(strategies, 5),  # default: ASISx5
                         mhcontrol = list(use.mala = FALSE),
                         gammaprior = TRUE,
-                        correct.latent.draws = TRUE)
+                        correct.latent.draws = FALSE)
   if (missing(expert)) {
     parameterization <- expertdefault$parameterization
     mhcontrol <- expertdefault$mhcontrol

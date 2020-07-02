@@ -146,7 +146,7 @@ Defaults to \code{list(scale=0.35, rho.var=0.02)}.
 
 \code{correct.latent.draws}: Single logical value indicating whether to correct
 the draws obtained from the auxiliary model of Omori, et al. (2007). Defaults
-to \code{TRUE}.}
+to \code{FALSE}.}
 
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
