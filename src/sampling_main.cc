@@ -171,11 +171,14 @@ List svsample_cpp(
       Xnew.each_col() %= normalizer;
       ynew = y % normalizer;
 
+      bool success = true;
       // cholesky factor of posterior precision matrix
-      postprecchol = arma::chol(Xnew.t() * Xnew + priorbetaprec);  // TODO handle exceptions the R way
-
+      success = success && arma::chol(postprecchol, Xnew.t() * Xnew + priorbetaprec);
       // inverse cholesky factor of posterior precision matrix 
-      postpreccholinv = arma::solve(arma::trimatu(postprecchol), arma::eye<arma::mat>(p, p));
+      success = success && arma::inv(postpreccholinv, arma::trimatu(postprecchol));
+      if (!success) {
+        Rcpp::stop("Cholesky or its inverse failed");
+      }
 
       // posterior covariance matrix and posterior mean vector
       postcov = postpreccholinv * postpreccholinv.t();
@@ -346,11 +349,14 @@ List svlsample_cpp (
       X_reg.each_col() %= normalizer;
       y_reg %= normalizer;
 
+      bool success = true;
       // cholesky factor of posterior precision matrix
-      postprecchol = arma::chol(X_reg.t() * X_reg + priorbetaprec);
-
+      success = success && arma::chol(postprecchol, X_reg.t() * X_reg + priorbetaprec);
       // inverse cholesky factor of posterior precision matrix 
-      postpreccholinv = arma::inv(arma::trimatu(postprecchol));
+      success = success && arma::inv(postpreccholinv, arma::trimatu(postprecchol));
+      if (!success) {
+        Rcpp::stop("Cholesky or its inverse failed");
+      }
 
       // posterior covariance matrix and posterior mean vector
       postcov = postpreccholinv * postpreccholinv.t();
