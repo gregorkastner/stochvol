@@ -15,12 +15,10 @@ arma::vec draw_latent(
     const double rho,
     const double sigma2,
     const double mu,
-    const double priormu_mu,
-    const double priormu_sigma,
     const bool correct) {
   // Draw h from AUX
   const arma::uvec s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
-  const arma::vec proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, priormu_mu, priormu_sigma, Parameterization::CENTERED);
+  const arma::vec proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, Parameterization::CENTERED);
 
   if (correct) {
     return correct_latent_auxiliaryMH(y, y_star, d, h, ht, proposed, phi, rho, sigma2, mu);
@@ -37,8 +35,6 @@ arma::vec draw_h_auxiliary(
     const double rho,
     const double sigma2,
     const double mu,
-    const double priormu_mu,
-    const double priormu_sigma,
     const Parameterization centering) {
   // arrays for
   //   A_z_{+; -}, X_z.beta, W_z_{+; -}.beta

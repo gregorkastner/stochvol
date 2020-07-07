@@ -213,7 +213,7 @@ void update_svl (
     const arma::ivec& strategy,
     const bool dontupdatemu) {
   // only centered
-  h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, prior_mu[0], prior_mu[1], correct);
+  h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, correct);
   ht = (h - mu) / std::sqrt(sigma2);
   arma::vec exp_h_half = arma::exp(.5 * h);  // cache exp() calculations
   arma::vec exp_h_half_proposal_nc;

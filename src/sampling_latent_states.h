@@ -19,8 +19,6 @@ arma::vec draw_latent(
     const double rho,
     const double sigma2,
     const double mu,
-    const double priormu_mu,
-    const double priormu_sigma,
     const bool correct);
 
 arma::vec draw_h_auxiliary(
@@ -31,8 +29,6 @@ arma::vec draw_h_auxiliary(
     const double rho,
     const double sigma2,
     const double mu,
-    const double priormu_mu,
-    const double priormu_sigma,
     const Parameterization centering);
 
 arma::vec correct_latent_auxiliaryMH(
