@@ -159,6 +159,8 @@ the posterior distribution.}
 \item{latent}{\code{mcmc} object containing the
 \emph{latent instantaneous log-volatility} draws from the posterior
 distribution.}
+\item{latent0}{\code{mcmc} object containing the \emph{latent
+initial log-volatility} draws from the posterior distribution.}
 \item{beta}{\code{mcmc} object containing the \emph{regression coefficient}
 draws from the posterior distribution \emph{(optional)}.}
 \item{y}{the argument \code{y}.}
@@ -172,7 +174,7 @@ values of the prior distribution, i.e. the arguments \code{priormu},
 parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
 \code{keeptime}.}
 \item{summary}{\code{list} containing a collection of
-summary statistics of the posterior draws for \code{para}, and \code{latent}.}
+summary statistics of the posterior draws for \code{para}, \code{latent}, and \code{latent0}.}
 \item{meanmodel}{\code{character} containing information about how \code{designmatrix}
 was used.}
 

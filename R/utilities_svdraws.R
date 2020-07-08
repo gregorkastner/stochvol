@@ -143,8 +143,7 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
   res$latent <- cbind(res$latent, "mean(exp(h_t/2))" = colMeans(vol))
   res$latent <- cbind(res$latent, "sd(exp(h_t/2))" = apply(vol, 2, sd))
 
-  if (!is.null(x$latent0))
-    res$latent0 <- c(summaryfunction(x$latent0, ess = esslatent), "mean(exp(h_t/2))" = mean(exp(x$latent0/2)), "sd(exp(h_t/2))" = sd(exp(x$latent0/2)))
+  res$latent0 <- c(summaryfunction(x$latent0, ess = esslatent), "mean(exp(h_t/2))" = mean(exp(x$latent0/2)), "sd(exp(h_t/2))" = sd(exp(x$latent0/2)))
 
   if (terr && x$thinning$para == x$thinning$latent) {
     vol <- sqrt((exp(x$latent) * x$para[,"nu"]) / (x$para[,"nu"] - 2))
@@ -159,22 +158,26 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
 }
 
 #' @export
-summary.svldraws <- function(object, showpara = TRUE, showlatent = TRUE, ...) {
+summary.svdraws <- function (object, showpara = TRUE, showlatent = TRUE, ...) {
   ret <- vector("list")
-  class(ret) <- c("summary.svldraws", "summary.svdraws")
+  class(ret) <- "summary.svdraws"
   ret$mcp <- mcpar(para(object))
   ret$mcl <- mcpar(latent(object))
   ret$priors <- priors(object)
-  if (isTRUE(showpara)) ret$para <- para(object$summary)
-  if (isTRUE(showlatent)) ret$latent <- latent(object$summary)
+  if (isTRUE(showpara)) {
+    ret$para <- para(object$summary)
+  }
+  if (isTRUE(showlatent)) {
+    ret$latent <- latent(object$summary)
+    ret$latent <- rbind("h_0" = latent0(object$summary), ret$latent)
+  }
   ret
 }
 
 #' @export
-summary.svdraws <- function (object, showpara = TRUE, showlatent = TRUE, ...) {
-  ret <- summary.svldraws(object, showpara = showpara, showlatent = showlatent)
-  class(ret) <- "summary.svdraws"
-  if (isTRUE(showlatent)) ret$latent <- rbind("h_0" = latent0(object$summary), ret$latent)
+summary.svldraws <- function(object, showpara = TRUE, showlatent = TRUE, ...) {
+  ret <- summary.svdraws(object, showpara = showpara, showlatent = showlatent)
+  class(ret) <- c("summary.svldraws", class(ret))
   ret
 }
 
@@ -210,10 +213,8 @@ print.svdraws <- function(x, showpara = TRUE, showlatent = TRUE, ...) {
   }
 
   if (isTRUE(showlatent)) {
-    if (!is.null(latent0(x))) {
-      cat("\n*** Posterior draws of initial latent variable h_0 ***\n")
-      print(latent0(x), ...)
-    }
+    cat("\n*** Posterior draws of initial latent variable h_0 ***\n")
+    print(latent0(x), ...)
     cat("\n*** Posterior draws of contemporaneous latent variables h_t ***\n")
     print(latent(x), ...)
   }

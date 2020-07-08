@@ -5,10 +5,11 @@
 
 using namespace Rcpp;
 
-arma::vec draw_latent(
+LatentVector draw_latent(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,
+    const double h0_old,
     const arma::vec& h,
     const arma::vec& ht,
     const double phi,
@@ -16,14 +17,22 @@ arma::vec draw_latent(
     const double sigma2,
     const double mu,
     const bool correct) {
+  // Draw h0 | h1, mu, phi, sigma
+  const double phi2 = std::pow(phi, 2),
+               B02 = sigma2 / (1 - phi2),  // stationary
+               h1 = h[0],
+               mean = mu * sigma2 + phi * B02 * (h1 - mu * (1 - phi)),
+               var = sigma2 * B02 / (B02 * phi2 + sigma2);
+  const double h0 = R::rnorm(mean, std::sqrt(var));
+
   // Draw h from AUX
   const arma::uvec s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
-  const arma::vec proposed = draw_h_auxiliary(y_star, d, s, phi, rho, sigma2, mu, Parameterization::CENTERED);
+  const arma::vec proposed = draw_h_auxiliary(y_star, d, s, h0, phi, rho, sigma2, mu, Parameterization::CENTERED);
 
   if (correct) {
-    return correct_latent_auxiliaryMH(y, y_star, d, h, ht, proposed, phi, rho, sigma2, mu);
+    return {h0, correct_latent_auxiliaryMH(y, y_star, d, h0, h, ht, proposed, phi, rho, sigma2, mu)};
   } else {
-    return proposed;
+    return {h0, proposed};
   }
 }
 
@@ -31,6 +40,7 @@ arma::vec draw_h_auxiliary(
     const arma::vec& y_star,
     const arma::ivec& d,
     const arma::uvec& z,
+    const double h0,
     const double phi,
     const double rho,
     const double sigma2,
@@ -56,8 +66,8 @@ arma::vec draw_h_auxiliary(
         phi2 = std::pow(phi, 2),
         rho_sigma = rho * sigma,
         help_mu_phi = mu * (1 - phi),
-        a_1 = mu,
-        P_1_inv = (1 - phi2) / sigma2;
+        a_1 = help_mu_phi + phi * h0,
+        P_1_inv = 1 / sigma2;
 
   // A as the function of z
   const double A_z_22 = 1 / (sigma2 * (1 - std::pow(rho, 2)));
@@ -189,6 +199,7 @@ arma::vec correct_latent_auxiliaryMH(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,
+    const double h0,
     const arma::vec& h,
     const arma::vec& ht,
     const arma::vec& proposed,
@@ -199,10 +210,10 @@ arma::vec correct_latent_auxiliaryMH(
   //const CharacterVector centering,
 
   // Calculate MH acceptance ratio
-  const double hlp1 = h_log_posterior(proposed, y, phi, rho, sigma2, mu);
-  const double hlp2 = h_log_posterior(h, y, phi, rho, sigma2, mu);
-  const double halp1 = h_aux_log_posterior(proposed, y_star, d, phi, rho, sigma2, mu);
-  const double halp2 = h_aux_log_posterior(h, y_star, d, phi, rho, sigma2, mu);
+  const double hlp1 = h_log_posterior(proposed, y, phi, rho, sigma2, mu, h0);
+  const double hlp2 = h_log_posterior(h, y, phi, rho, sigma2, mu, h0);
+  const double halp1 = h_aux_log_posterior(proposed, y_star, d, phi, rho, sigma2, mu, h0);
+  const double halp2 = h_aux_log_posterior(h, y_star, d, phi, rho, sigma2, mu, h0);
   const double log_acceptance = hlp1-hlp2-(halp1-halp2);
   arma::vec result;
   if (log_acceptance > 0 || exp(log_acceptance) > R::runif(0, 1)) {

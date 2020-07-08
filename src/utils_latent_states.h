@@ -85,7 +85,8 @@ double h_log_posterior(
     const double phi,
     const double rho,
     const double sigma2,
-    const double mu);
+    const double mu,
+    const double h0);
 
 double h_aux_log_posterior(
     const arma::vec& h,
@@ -94,6 +95,7 @@ double h_aux_log_posterior(
     const double phi,
     const double rho,
     const double sigma2,
-    const double mu);
+    const double mu,
+    const double h0);
 
 #endif  // H_UTILS_H

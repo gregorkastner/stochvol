@@ -9,10 +9,16 @@
 #include <RcppArmadillo.h>
 #include "type_definitions.h"
 
-arma::vec draw_latent(
+struct LatentVector {
+  double h0;
+  arma::vec h;
+};
+
+LatentVector draw_latent(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,
+    const double h0,
     const arma::vec& h,
     const arma::vec& ht,
     const double phi,
@@ -25,6 +31,7 @@ arma::vec draw_h_auxiliary(
     const arma::vec& y_star,
     const arma::ivec& d,
     const arma::uvec& z,
+    const double h0,
     const double phi,
     const double rho,
     const double sigma2,
@@ -35,6 +42,7 @@ arma::vec correct_latent_auxiliaryMH(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,
+    const double h0,
     const arma::vec& h,
     const arma::vec& ht,
     const arma::vec& proposed,

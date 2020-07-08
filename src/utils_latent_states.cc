@@ -1,5 +1,6 @@
 #include <RcppArmadillo.h>
 #include "utils_latent_states.h"
+#include "densities.h"
 #include <cmath>
 
 void cholesky_tridiagonal(
@@ -100,18 +101,18 @@ double h_log_posterior(
     const double phi,
     const double rho,
     const double sigma2,
-    const double mu) {
+    const double mu,
+    const double h0) {
   const double sigma = std::sqrt(sigma2);
-  const double sigma2_inv = 1 / sigma2;
   const double rho_const = std::sqrt(1 - rho * rho);
   const int n = y.size();
-  const arma::vec exp_h_half = arma::exp(0.5 * h);
-  double result = -.5 * std::pow(h[0] - mu, 2) * sigma2_inv * (1 - phi * phi);  // log p(h_1 | theta)
-  for (int t = 0; t < n - 1; t++) {
-    result += -.5 * std::pow(h[t + 1] - (mu + phi * (h[t] - mu)), 2) * sigma2_inv;
-    result += -.5 * std::pow((y[t] - (exp_h_half[t] * rho * (h[t + 1] - mu - phi * (h[t] - mu)) / sigma)) / (exp_h_half[t] * rho_const), 2) - .5 * h[t];
+  const arma::vec exp_h_half = arma::exp(0.5 * h);  // TODO cached?
+  double result = logdnorm2(h[0], mu + phi * (h0 - mu), sigma);  // log p(h_1 | theta)
+  for (int t = 0; t < n - 1; t++) {  // TODO parallel?
+    result += logdnorm2(h[t + 1], mu + phi * (h[t] - mu), sigma);
+    result += logdnorm2(y[t], exp_h_half[t] * rho * (h[t + 1] - mu - phi * (h[t] - mu)) / sigma, exp_h_half[t] * rho_const) - .5 * h[t];
   }
-  result += -.5 * std::pow(y[n - 1] / exp_h_half[n - 1], 2) - .5 * h[n - 1];
+  result += logdnorm2(y[n - 1], 0, exp_h_half[n - 1]) - .5 * h[n - 1];
   return result;
 }
 
@@ -122,15 +123,16 @@ double h_aux_log_posterior(
     const double phi,
     const double rho,
     const double sigma2,
-    const double mu) {
+    const double mu,
+    const double h0) {
   const int n = y_star.size();
   static const int mix_count = mix_a.n_elem;
   const double sigma = std::sqrt(sigma2);
   static const arma::vec::fixed<10> exp_m_half = arma::exp(mix_mean * .5);
   const arma::vec C = rho * sigma * exp_m_half;  // re-used constant
 
-  double result = -.5 * std::pow(h[0] - mu, 2) / sigma2 * (1 - phi * phi);  // log p(h_1 | theta)
-  for (int t = 0; t < n; t++) {
+  double result = logdnorm2(h[0], mu + phi * (h0 - mu), sigma);  // log p(h_1 | theta)
+  for (int t = 0; t < n; t++) {  // TODO parallel?
     double subresult = 0;
     if (t < n - 1) {
       for (int j = 0; j < mix_count; j++) {

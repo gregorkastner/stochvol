@@ -45,6 +45,7 @@ void update_svl(
     double& rho,
     double& sigma2,
     double& mu,
+    double& h0,
     arma::vec& h,
     arma::vec& ht,
     stochvol::AdaptationCollection& adaptation,

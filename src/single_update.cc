@@ -200,6 +200,7 @@ void update_svl (
     double& rho,
     double& sigma2,
     double& mu,
+    double& h0,
     arma::vec& h,
     arma::vec& ht,
     stochvol::AdaptationCollection& adaptation_collection,
@@ -213,7 +214,11 @@ void update_svl (
     const arma::ivec& strategy,
     const bool dontupdatemu) {
   // only centered
-  h = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, correct);
+  {
+    const LatentVector h_full = draw_latent(y, y_star, d, h0, h, ht, phi, rho, sigma2, mu, correct);
+    h0 = h_full.h0;
+    h = h_full.h;  // std::move(h_full.h); ?
+  }
   ht = (h - mu) / std::sqrt(sigma2);
   arma::vec exp_h_half = arma::exp(.5 * h);  // cache exp() calculations
   arma::vec exp_h_half_proposal_nc;

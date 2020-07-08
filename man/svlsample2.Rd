@@ -96,6 +96,9 @@ the \emph{parameter} draws from the posterior distribution.}
 \item{latent}{matrix of dimension \code{length(y) x draws} containing the
 \emph{latent instantaneous log-volatility} draws from the posterior
 distribution.}
+\item{latent0}{Vector of
+length \code{draws} containing the draw(s) of the initial latent variable
+\code{h_0}.}
 \item{meanmodel}{always equals \code{"none"}}
 }
 \description{

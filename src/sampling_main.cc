@@ -250,13 +250,14 @@ List svlsample_cpp (
   const int p = X.n_cols;
 
   arma::vec y = y_in;
-  arma::vec y_star = log(y%y + offset);
+  arma::vec y_star = arma::log(y%y + offset);
   arma::ivec d(T); std::transform(y_in.cbegin(), y_in.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
 
   double phi = theta_init["phi"];
   double rho = theta_init["rho"];
-  double sigma2 = std::pow(as<double>(theta_init["sigma"]), 2);
+  double sigma2 = std::pow(Rcpp::as<double>(theta_init["sigma"]), 2);
   double mu = theta_init["mu"];
+  double h0 = std::numeric_limits<double>::quiet_NaN();
   arma::vec h = h_init, ht = (h_init-mu)/sqrt(sigma2);
   arma::vec beta(p); beta.fill(0.0);
 
@@ -264,6 +265,7 @@ List svlsample_cpp (
   arma::mat params(draws/thinpara, 4);
 
   const int hstorelength = T/thintime;  // thintime must either be 1 or T
+  arma::vec latent0(draws/thinlatent);
   arma::mat latent(draws/thinlatent, hstorelength);
 
   // priors in objects
@@ -327,7 +329,7 @@ List svlsample_cpp (
     update_svl(
         y, y_star, d,
         phi, rho, sigma2, mu,
-        h, ht,
+        h0, h, ht,
         adaptation_collection,
         prior_phi, prior_rho,
         prior_sigma2, prior_mu,
@@ -379,6 +381,7 @@ List svlsample_cpp (
       }
     }
     if ((i >= 1) && !thinlatent_round) {
+      latent0[i/thinlatent-1] = h0;
       for (int volind = 0, thincol = 0; thincol < hstorelength; volind++, thincol++) {
         latent.at(i/thinlatent-1, volind) = h[thintime * (thincol + 1) - 1];
       }
@@ -392,6 +395,7 @@ List svlsample_cpp (
       _["adaptation_centered"] = Rcpp::wrap(adaptation_collection.centered.get_storage()),
       _["adaptation_noncentered"] = Rcpp::wrap(adaptation_collection.noncentered.get_storage()),
       _["latent"] = latent,
+      _["latent0"] = latent0,
       _["beta"] = betas);
 }
 

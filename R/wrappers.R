@@ -883,6 +883,8 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
 #' \item{latent}{\code{mcmc} object containing the
 #' \emph{latent instantaneous log-volatility} draws from the posterior
 #' distribution.}
+#' \item{latent0}{\code{mcmc} object containing the \emph{latent
+#' initial log-volatility} draws from the posterior distribution.}
 #' \item{beta}{\code{mcmc} object containing the \emph{regression coefficient}
 #' draws from the posterior distribution \emph{(optional)}.}
 #' \item{y}{the argument \code{y}.}
@@ -896,7 +898,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
 #' parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
 #' \code{keeptime}.}
 #' \item{summary}{\code{list} containing a collection of
-#' summary statistics of the posterior draws for \code{para}, and \code{latent}.}
+#' summary statistics of the posterior draws for \code{para}, \code{latent}, and \code{latent0}.}
 #' \item{meanmodel}{\code{character} containing information about how \code{designmatrix}
 #' was used.}
 #' 
@@ -1268,6 +1270,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$y <- y_orig
   res$para <- coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)
   res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
+  res$latent0 <- coda::mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
   res$thinning <- list(para = thinpara, latent = thinlatent, time = keeptime)
   res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, rho = priorrho, gammaprior = gammaprior)
   if (!any(is.na(designmatrix))) {
@@ -1363,6 +1366,9 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' \item{latent}{matrix of dimension \code{length(y) x draws} containing the
 #' \emph{latent instantaneous log-volatility} draws from the posterior
 #' distribution.}
+#' \item{latent0}{Vector of
+#' length \code{draws} containing the draw(s) of the initial latent variable
+#' \code{h_0}.}
 #' \item{meanmodel}{always equals \code{"none"}}
 #' @author Darjus Hosszejni \email{darjus.hosszejni@@wu.ac.at}
 #' @seealso \code{\link{svlsample}}

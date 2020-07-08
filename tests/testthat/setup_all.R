@@ -26,6 +26,8 @@ for (dm in designmatrix_values) {
         svtsample(y, draws = draws, burnin = burnin, designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, quiet = TRUE)
       ))
       res_svl <- c(res_svl, list(  # non-default values
+        devtools::load_all()
+        set.seed(100); svlsample(svsim(200, rho = -0.2)$y, designmatrix = "ar0", keeptime = "all", thinpara = 1, thinlatent = 1, quiet = FALSE)
         svlsample(y, draws = draws, burnin = burnin, designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, quiet = TRUE)
       ))
       res_svl_corrected <- c(res_svl_corrected, list(  # non-default values
