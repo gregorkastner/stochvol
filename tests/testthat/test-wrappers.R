@@ -1,6 +1,6 @@
-context("Sampling functions")
+context("Wrapper functions")
 
-test_that("svsample works", {
+test_that("svsample executes", {
   res_sv <- expect_warning(svsample(y, draws = draws, burnin = burnin, quiet = TRUE), NA) %>%
     expect_is("svdraws")
   for (dm in designmatrix_values) {
@@ -13,7 +13,7 @@ test_that("svsample works", {
   }
 })
 
-test_that("svtsample works", {
+test_that("svtsample executes", {
   res_sv <- expect_warning(svtsample(y, draws = draws, burnin = burnin, quiet = TRUE), NA) %>%
     expect_is("svdraws")
   for (dm in designmatrix_values) {
@@ -26,7 +26,7 @@ test_that("svtsample works", {
   }
 })
 
-test_that("svlsample works", {
+test_that("svlsample executes", {
   res_sv <- expect_warning(svlsample(y, draws = draws, burnin = burnin, quiet = TRUE), NA) %>%
     expect_is("svldraws")
   for (dm in designmatrix_values) {
