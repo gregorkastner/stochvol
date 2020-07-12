@@ -1,8 +1,8 @@
 # Create input for the samplers
-y <- c(0.01, -0.01, 0.1, -0.09, -0.01, 0.001, -0.001, 0.01, -0.009, -0.001)
+y <- c(-0.0182701422, 0.0252489979, 0.0101752056, -0.0104168165, 0.0752031678, -0.0011413418, -0.0043460116, 0.0003154819, -0.0024914169, -0.0016655409)
 
-draws <- 300
-burnin <- 10
+draws <- 500
+burnin <- 100
 
 designmat <- matrix(c(0.3485322, 0.536128, 0.2978863, -2.045419, 1.390987, -1.76708, 0.2594924, -1.576583, -1.303889, -0.6729478, -0.6123462, 0.6823703, 1.824069, 0.7192591, -1.059588, -1.303618, 0.3878489, -0.4601865, 1.912537, -0.6549144), 10, 2)
 ar_values <- c(0, 2)
@@ -26,8 +26,6 @@ for (dm in designmatrix_values) {
         svtsample(y, draws = draws, burnin = burnin, designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, quiet = TRUE)
       ))
       res_svl <- c(res_svl, list(  # non-default values
-        devtools::load_all()
-        set.seed(100); svlsample(svsim(200, rho = -0.2)$y, designmatrix = "ar0", keeptime = "all", thinpara = 1, thinlatent = 1, quiet = FALSE)
         svlsample(y, draws = draws, burnin = burnin, designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, quiet = TRUE)
       ))
       res_svl_corrected <- c(res_svl_corrected, list(  # non-default values
@@ -37,3 +35,5 @@ for (dm in designmatrix_values) {
   }
 }
 
+draws <- 30
+burnin <- 10
