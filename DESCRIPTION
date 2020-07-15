@@ -14,5 +14,5 @@ Suggests:
     mvtnorm,
     testthat (>= 2.1.0)
 LinkingTo: Rcpp, RcppArmadillo (>= 0.4)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 BuildResaveData: best
