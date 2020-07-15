@@ -65,7 +65,7 @@ namespace stochvol {
         draws_batch(dim, _batch_size),
         cache_result(scale, arma::mat(_dim, _dim, arma::fill::eye)) {
       if (target_acceptance <= 0.1 || target_acceptance >= 0.8) {
-        Rcpp::warning("Target acceptance rate should be between 10\% and 80\%");
+        Rcpp::warning("Target acceptance rate should be between 10% and 80%");
       }
       memory.reserve(_memory_size);
     }
