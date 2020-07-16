@@ -10,4 +10,5 @@ speedtest.R
 speedtest_sessioninfo.txt
 .ycm_extra_conf.py
 .undodir
+pre-commit.sh
 
