@@ -123,7 +123,7 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
   summaryfunction <- function(x, quants = quantiles, ess = TRUE) {
     if (ess) {
       c(mean = mean(x), sd = sd(x), quantile(x, quantiles),
-        ESS = as.numeric(effectiveSize(x)))
+        ESS = as.numeric(coda::effectiveSize(x)))
     } else {
       c(mean = mean(x), sd = sd(x), quantile(x, quantiles))
     }
