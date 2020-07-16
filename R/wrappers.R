@@ -547,7 +547,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   runtime <- system.time(res <-
     svsample_cpp(y, draws, burnin, designmatrix,
           priormu[1], priormu[2]^2, priorphi[1], priorphi[2], priorsigma,
-          thinlatent, thintime, startpara, startlatent, keeptau, myquiet, para,
+          thinpara, thinlatent, thintime, startpara, startlatent, keeptau, myquiet, para,
           mhsteps, B011, B022, mhcontrol, gammaprior, truncnormal,
           myoffset, FALSE, priornu, priorbeta, priorlatent0))
 
@@ -562,38 +562,36 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
 
   # store results:
-  # remark: +1, because C-sampler also returns the first value
+  colnames(res$para) <- head(c("mu", "phi", "sigma", "nu"), NCOL(res$para))
+  res$latent <- t(res$latent)
+  if (keeptime == "all")
+    colnames(res$latent) <- paste0('h_', arorder + seq_along(y))
+  else if (keeptime == "last")
+    colnames(res$latent) <- paste0('h_', arorder + length(y))
+  res$runtime <- runtime
   res$y <- y_orig
-  res$para <- mcmc(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
-  res$latent <- mcmc(t(res$latent), burnin+thinlatent, burnin+draws, thinlatent)
-  if (keeptime == "all") attr(res$latent, "dimnames") <- list(NULL, paste0('h_', arorder + seq_along(y))) else if (keeptime == "last") attr(res$latent, "dimnames") <- list(NULL, paste0('h_', arorder + length(y)))
-  res$latent0 <- mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
+  res$para <- coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)
+  res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
+  res$latent0 <- coda::mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
+  res$thinning <- list(para = thinpara, latent = thinlatent, time = keeptime)
+  res$priors <- c(list(mu = priormu, phi = priorphi, sigma = priorsigma, gammaprior = gammaprior), if (priornu <= 0) list() else list(nu = priornu))
   if (!any(is.na(designmatrix))) {
-    res$beta <- mcmc(res$beta[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE], burnin+thinpara, burnin+draws, thinpara)
-    attr(res$beta, "dimnames") <- list(NULL, paste("b", 0:(ncol(designmatrix)-1), sep = "_"))
-  } else res$beta <- NULL
+    res$beta <- coda::mcmc(res$beta, burnin+thinpara, burnin+draws, thinpara)
+    colnames(res$beta) <- paste0("b_", 0:(NCOL(designmatrix)-1))
+    res$priors <- c(res$priors, "beta" = list(priorbeta), "designmatrix" = list(designmatrix))
+  } else {
+    res$beta <- NULL
+  }
   res$meanmodel <- meanmodel
 
-  if (ncol(res$para) == 3) {
-    attr(res$para, "dimnames") <- list(NULL, c("mu", "phi", "sigma"))
-    res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, gammaprior = gammaprior)
-  } else {
-    attr(res$para, "dimnames") <- list(NULL, c("mu", "phi", "sigma", "nu"))
-    res$priors <- list(mu = priormu, phi = priorphi, sigma = priorsigma, nu = priornu, gammaprior = gammaprior)
-    #res$tau <- mcmc(t(res$tau), burnin+thinlatent, burnin+draws, thinlatent)
-  }
-
-  if (!any(is.na(designmatrix))) {
-    res$priors <- c(res$priors, "beta" = list(priorbeta), "designmatrix" = list(designmatrix))
-  }
-
   if (keeptau) {
-    res$tau <- mcmc(t(res$tau), burnin+thinlatent, burnin+draws, thinlatent)
-    if (keeptime == "all") attr(res$tau, "dimnames") <- list(NULL, paste0('tau_', arorder + seq_along(y))) else if (keeptime == "last") attr(res$tau, "dimnames") <- list(NULL, paste0('tau_', arorder + length(y)))
+    res$tau <- coda::mcmc(t(res$tau), burnin+thinlatent, burnin+draws, thinlatent)
+    if (keeptime == "all")
+      colnames(res$tau) <- paste0('tau_', arorder + seq_along(y))
+    else if (keeptime == "last")
+      colnames(res$tau) <- paste0('tau_', arorder + length(y))
   }
 
-  res$runtime <- runtime
-  res$thinning <- list(para = thinpara, latent = thinlatent, time = keeptime)
   class(res) <- "svdraws"
 
   if (!quiet) {
@@ -744,12 +742,12 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
   if (keeptime == "all") thintime <- 1L else if (keeptime == "last") thintime <- length(y) else stop("Parameter 'keeptime' must be either 'all' or 'last'.")
 
   res <- svsample_cpp(y, draws, burnin, matrix(NA), priormu[1], priormu[2]^2,
-                      priorphi[1], priorphi[2], priorsigma, thinlatent,
+                      priorphi[1], priorphi[2], priorsigma, thinpara, thinlatent,
                       thintime, startpara, startlatent, keeptau, quiet, 3L, 2L, 10^8,
                       10^12, -1, TRUE, FALSE, 0, FALSE, priornu, c(NA, NA), priorlatent0)
 
-  res$para <- t(res$para[seq(burnin+thinpara+1, burnin+draws+1, thinpara),,drop=FALSE])
-  if (nrow(res$para) == 3) {
+  res$para <- t(res$para)
+  if (NROW(res$para) == 3) {
     rownames(res$para) <- names(res$para) <- c("mu", "phi", "sigma")
   } else {
     rownames(res$para) <- names(res$para) <- c("mu", "phi", "sigma", "nu")

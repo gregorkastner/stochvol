@@ -17,7 +17,8 @@ List svsample_cpp(
     const double a0,
     const double b0,
     const double Bsigma,
-    const int thin,
+    const int thinpara,
+    const int thinlatent,
     const int thintime,
     const List& startpara,
     const arma::vec& startvol,
@@ -90,20 +91,20 @@ List svsample_cpp(
   }
 
   // initialize the variables:
-  arma::vec sigma2inv = arma::ones(N+1) * std::pow(as<double>(startpara["sigma"]), -2);
-  arma::vec phi = arma::ones(N+1) * as<double>(startpara["phi"]);
-  arma::vec mu = arma::ones(N+1) * as<double>(startpara["mu"]);
+  arma::vec sigma2inv_store(draws / thinpara); sigma2inv_store[0] = std::pow(as<double>(startpara["sigma"]), -2);
+  arma::vec phi_store(draws / thinpara); phi_store[0] = as<double>(startpara["phi"]);
+  arma::vec mu_store(draws / thinpara); mu_store[0] = as<double>(startpara["mu"]);
 
   arma::vec h = startvol;  // contains h1 to hT, but not h0!
-  if (!centered_baseline) h = (h-mu[0])*sqrt(sigma2inv[0]);
+  if (!centered_baseline) h = (h-mu_store[0])*sqrt(sigma2inv_store[0]);
 
   double h0;
 
   arma::ivec r(T);  // mixture indicators
 
-  int hstorelength = T/thintime;  // thintime must either be 1 or T
-  arma::mat hstore(hstorelength, draws/thin);
-  arma::vec h0store(draws/thin);
+  int hstorelength = T/thintime;  // thintime must be either 1 or T
+  arma::mat hstore(hstorelength, draws/thinlatent);
+  arma::vec h0store(draws/thinlatent);
 
   arma::mat mixprob(10, T);  // mixture probabilities
   arma::vec mixprob_vec(mixprob.begin(), mixprob.n_elem, false);
@@ -113,17 +114,24 @@ List svsample_cpp(
   arma::vec datastand = data;  // standardized "data" (different for t-errors)
 
   arma::vec curpara(3);  // holds mu, phi, sigma in every iteration
-  curpara[0] = mu[0];
-  curpara[1] = phi[0];
-  curpara[2] = 1/sqrt(sigma2inv[0]);
+  curpara[0] = mu_store[0];
+  curpara[1] = phi_store[0];
+  curpara[2] = 1 / std::sqrt(sigma2inv_store[0]);
 
   // some stuff for the t-errors
   double nu = -1;
   if (terr) nu = as<double>(startpara["nu"]);
-  arma::vec tau = arma::ones(T);
+  arma::vec tau(T, arma::fill::ones);
 
-  arma::vec nustore = arma::ones(terr * (N+1)) * nu;
-  arma::mat taustore(hstorelength * keeptau, draws/thin);
+  arma::vec nustore;
+  if (terr) {
+    nustore.resize(draws / thinpara);
+    nustore[0] = nu;
+  }
+  arma::mat taustore;
+  if (keeptau) {
+    taustore.resize(hstorelength, draws / thinlatent);
+  }
 
   // some stuff for the regression part
   arma::vec curbeta(p, arma::fill::ones);
@@ -135,18 +143,24 @@ List svsample_cpp(
   arma::mat postcov(p, p);
   arma::vec postmean(p);
   arma::vec armadraw(p);
-  arma::mat betastore(regression * (N+1), p);
+  arma::mat betastore;
+  if (regression) {
+    betastore.resize(draws / thinpara, p);
+  }
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
   int show = 0;
   if (verbose) show = progressbar_init(N);
 
-  for (int i = 0; i < N; i++) {  // BEGIN main MCMC loop
+  for (int i = -burnin + 1; i < draws + 1; i++) {  // BEGIN main MCMC loop
     R_CheckUserInterrupt();
 
+    const bool thinpara_round = (thinpara > 1) && (i % thinpara != 0);  // is this a parameter thinning round?
+    const bool thinlatent_round = (thinlatent > 1) && (i % thinlatent != 0);  // is this a latent thinning round?
+
     // print a progress sign every "show" iterations
-    if (verbose) if (!(i % show)) progressbar_print();
+    if (verbose && (i % show == 0)) progressbar_print();
 
     if (regression) {
       datastand = data = log(square(y - X*curbeta));
@@ -190,30 +204,44 @@ List svsample_cpp(
       curbeta = postmean + postpreccholinv * armadraw;
     }
 
-    // storage:
-    if (!((i+1) % thin)) if (i >= burnin) {  // this means we should store h
-      if (centered_baseline) {
-        for (int j = 0; j < hstorelength; j++) hstore.at(j, (i-burnin)/thin) = h[thintime * (j + 1) - 1];
-        h0store[(i-burnin)/thin] = h0;
-      } else {
-        for (int j = 0; j < hstorelength; j++) hstore.at(j, (i-burnin)/thin) = curpara[0] + curpara[2]*h[thintime * (j + 1) - 1];
-        h0store[(i-burnin)/thin] = curpara[0] + curpara[2]*h0;
+    // store draws
+    if ((i >= 1) && !thinpara_round) {
+      const int index = i / thinpara - 1;
+      mu_store(index) = curpara[0];
+      phi_store(index) = curpara[1];
+      sigma2inv_store(index) = std::pow(curpara[2], -2);
+      if (terr) {
+        nustore[index] = nu;
       }
-      if (keeptau && terr) {
-        for (int j = 0; j < hstorelength; j++) taustore.at(j, (i-burnin)/thin) = tau[thintime * (j + 1) - 1];
+      if (regression) {
+        betastore.row(index) = curbeta.t();
       }
     }
-    mu[i+1] = curpara[0];
-    phi[i+1] = curpara[1];
-    sigma2inv[i+1] = 1/(curpara[2]*curpara[2]);
-    if (terr) nustore[i+1] = nu;
-    if (regression) betastore.row(i+1) = curbeta.t();
+    if ((i >= 1) && !thinlatent_round) {
+      const int index = i / thinlatent - 1;
+      if (centered_baseline) {
+        h0store[index] = h0;
+        for (int volind = 0, thincol = 0; thincol < hstorelength; volind++, thincol++) {
+          hstore.at(volind, index) = h[thintime * (thincol + 1) - 1];
+        }
+      } else {
+        h0store[index] = curpara[0] + curpara[2]*h0;
+        for (int volind = 0, thincol = 0; thincol < hstorelength; volind++, thincol++) {
+          hstore.at(volind, index) = curpara[0] + curpara[2]*h[thintime * (thincol + 1) - 1];
+        }
+      }
+      if (keeptau && terr) {
+        for (int volind = 0, thincol = 0; thincol < hstorelength; volind++, thincol++) {
+          taustore.at(volind, index) = tau[thintime * (thincol + 1) - 1];
+        }
+      }
+    }
   }  // END main MCMC loop
 
   if (verbose) progressbar_finish(N);  // finalize progress bar
 
   // Prepare return value and return
-  return cleanup(mu, phi, sqrt(1/sigma2inv), hstore, h0store, nustore, taustore, betastore);
+  return cleanup(mu_store, phi_store, sqrt(1/sigma2inv_store), hstore, h0store, nustore, taustore, betastore);
 }
 
 List svlsample_cpp (
@@ -264,7 +292,7 @@ List svlsample_cpp (
   arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
   arma::mat params(draws/thinpara, 4);
 
-  const int hstorelength = T/thintime;  // thintime must either be 1 or T
+  const int hstorelength = T/thintime;  // thintime must be either 1 or T
   arma::vec latent0(draws/thinlatent);
   arma::mat latent(draws/thinlatent, hstorelength);
 
