@@ -9,7 +9,6 @@ LatentVector draw_latent(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,
-    const double h0_old,
     const arma::vec& h,
     const arma::vec& ht,
     const double phi,
@@ -19,10 +18,11 @@ LatentVector draw_latent(
     const bool correct) {
   // Draw h0 | h1, mu, phi, sigma
   const double phi2 = std::pow(phi, 2),
-               B02 = sigma2 / (1 - phi2),  // stationary
+               B02 = sigma2 / (1 - phi2),  // TODO stationary
                h1 = h[0],
-               mean = mu * sigma2 + phi * B02 * (h1 - mu * (1 - phi)),
-               var = sigma2 * B02 / (B02 * phi2 + sigma2);
+               denominator = B02 * phi2 + sigma2,
+               mean = (mu * sigma2 + phi * B02 * (h1 - mu * (1 - phi))) / denominator,
+               var = sigma2 * B02 / denominator;
   const double h0 = R::rnorm(mean, std::sqrt(var));
 
   // Draw h from AUX

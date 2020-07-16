@@ -18,7 +18,6 @@ LatentVector draw_latent(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,
-    const double h0,
     const arma::vec& h,
     const arma::vec& ht,
     const double phi,

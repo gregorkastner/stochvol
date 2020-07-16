@@ -20,6 +20,7 @@ double theta_log_likelihood(
     const double sigma2,
     const double mu,
     const arma::vec& y,
+    const double h0,
     const arma::vec& h,
     const arma::vec& ht,
     const arma::vec& exp_h_half,
@@ -74,9 +75,6 @@ arma::vec6 theta_propose_rwmh(
     const double rho,
     const double sigma2,
     const double mu,
-    const arma::vec& y,
-    const arma::vec& h,
-    const arma::vec& ht,
     const stochvol::Adaptation::Result& adaptation_proposal);
 
 arma::vec6 theta_propose_mala(
@@ -85,6 +83,7 @@ arma::vec6 theta_propose_mala(
     const double sigma2,
     const double mu,
     const arma::vec& y,
+    const double h0,
     const arma::vec& h,
     const arma::vec2& prior_phi,
     const arma::vec2& prior_rho,
@@ -96,9 +95,6 @@ arma::vec thetamu_propose(
     const double phi,
     const double rho,
     const double sigma2,
-    const arma::vec& y,
-    const arma::vec& h,
-    const arma::vec& ht,
     const stochvol::Adaptation::Result& adaptation_proposal);
 
 #endif  // THETA_UTILS_H

@@ -33,6 +33,7 @@ double theta_log_likelihood_c(
     const double sigma2,
     const double mu,
     const arma::vec& y,
+    const double h0,
     const arma::vec& h,
     const arma::vec& exp_h_half);
 
@@ -42,6 +43,7 @@ double theta_log_likelihood_nc(
     const double sigma2,
     const double mu,
     const arma::vec& y,
+    const double h0,
     const arma::vec& ht,
     const arma::vec& exp_h_half_tilde);
 
@@ -51,6 +53,7 @@ arma::vec4 grad_theta_log_posterior(
     const double sigma2,
     const double mu,
     const arma::vec& y,
+    const double h0,
     const arma::vec& h,
     const arma::vec2& prior_phi,
     const arma::vec2& prior_rho,
@@ -65,6 +68,7 @@ double theta_log_likelihood(
     const double sigma2,
     const double mu,
     const arma::vec& y,
+    const double h0,
     const arma::vec& h,
     const arma::vec& ht,
     const arma::vec& exp_h_half,
@@ -72,10 +76,10 @@ double theta_log_likelihood(
   double result = 0;
   switch (centering) {
     case Parameterization::CENTERED:
-      result = theta_log_likelihood_c(phi, rho, sigma2, mu, y, h, exp_h_half);
+      result = theta_log_likelihood_c(phi, rho, sigma2, mu, y, h0, h, exp_h_half);
       break;
     case Parameterization::NONCENTERED:
-      result = theta_log_likelihood_nc(phi, rho, sigma2, mu, y, ht, exp_h_half);
+      result = theta_log_likelihood_nc(phi, rho, sigma2, mu, y, h0, ht, exp_h_half);  // TODO non-center h0
       break;
   }
   return result;
@@ -87,18 +91,20 @@ double theta_log_likelihood_c(
     const double sigma2,
     const double mu,
     const arma::vec& y,
+    const double h0,  // TODO test
     const arma::vec& h,
     const arma::vec& exp_h_half) {
   const int n = y.size();
-  const double sigma = std::sqrt(sigma2);
-  const double h_sd_t = sigma * std::sqrt(1 - rho * rho);
-  const double log_h_sd_t = std::log(h_sd_t);
-  double log_lik = 0;
+  const double sigma = std::sqrt(sigma2),
+               h_sd_t = sigma * std::sqrt(1 - rho * rho),
+               log_h_sd_t = std::log(h_sd_t),
+               B0 = std::sqrt(sigma2 / (1 - std::pow(phi, 2)));  // TODO stationary
+  double log_lik = logdnorm(h0, mu, B0);
   for (int i = 0; i < n; i++) {
     double h_mean, h_sd, y_mean, y_sd, log_h_sd, log_y_sd;
     if (i == 0) {
-      h_mean = mu;
-      h_sd = sigma / std::sqrt(1 - phi * phi);
+      h_mean = mu + phi * (h0 - mu);
+      h_sd = sigma;
       log_h_sd = std::log(h_sd);
     } else {
       h_mean = mu + phi * (h[i-1] - mu) + rho * sigma / exp_h_half[i-1] * y[i-1];
@@ -120,23 +126,23 @@ double theta_log_likelihood_nc(
     const double sigma2,
     const double mu,
     const arma::vec& y,
+    const double h0,  // TODO implement
     const arma::vec& ht,
     const arma::vec& exp_h_half) {
   const int n = y.size();
-  const double sigma = std::sqrt(sigma2);
-  const double rho_const = std::sqrt(1 - rho * rho);
-  const double log_rho_const = .5 * std::log(1 - rho * rho);
-  double log_lik = 0;
+  const double sigma = std::sqrt(sigma2),
+               rho_const = std::sqrt(1 - rho * rho),
+               log_rho_const = .5 * std::log(1 - rho * rho),
+               B0 = std::sqrt(sigma2 / (1 - std::pow(phi, 2)));  // TODO stationary
+  double log_lik = logdnorm(h0, mu, B0);
   for (int i = 0; i < n; i++) {
-    double h_mean, h_sd, y_mean, y_sd, log_h_sd, log_y_sd;
+    double h_mean, y_mean, y_sd, log_y_sd;
+    const double log_h_sd = 0,
+                 h_sd = 1;
     if (i == 0) {
-      h_mean = 0;
-      h_sd = 1 / std::sqrt(1 - phi * phi);
-      log_h_sd = -.5 * std::log(1 - phi * phi);
+      h_mean = phi * (h0 - mu);  // because h0 is centered
     } else {
       h_mean = phi * ht[i-1];
-      h_sd = 1;
-      log_h_sd = 0;
     }
     if (i < n-1) {
       y_mean = exp_h_half[i] * rho * (ht[i+1] - phi * ht[i]);
@@ -230,9 +236,6 @@ arma::vec6 theta_propose_rwmh(
     const double rho,
     const double sigma2,
     const double mu,
-    const arma::vec& y,
-    const arma::vec& h,
-    const arma::vec& ht,
     const stochvol::Adaptation::Result& adaptation_proposal) {
   const arma::vec4 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
 
@@ -267,12 +270,6 @@ double dmvnorm_mala(
     const arma::mat44& A,  // preconditioning matrix
     const arma::mat44& A_inv,
     const double tau,
-    const arma::vec y,
-    const arma::vec h,
-    const arma::vec2& prior_phi,
-    const arma::vec2& prior_rho,
-    const arma::vec2& prior_sigma2,
-    const arma::vec2& prior_mu,
     const bool log = false) {
   const auto mean = x + tau * A * grad_log_posterior;
   const arma::vec4 demeaned = x_prime - mean;
@@ -289,6 +286,7 @@ arma::vec6 theta_propose_mala(
     const double sigma2,
     const double mu,
     const arma::vec& y,
+    const double h0,  // TODO implement
     const arma::vec& h,
     const arma::vec2& prior_phi,
     const arma::vec2& prior_rho,
@@ -297,7 +295,7 @@ arma::vec6 theta_propose_mala(
     const stochvol::Adaptation::Result& adaptation_proposal) {
   const arma::vec4 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
 
-  const arma::vec4 grad_old = grad_theta_log_posterior(phi, rho, sigma2, mu, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu) %
+  const arma::vec4 grad_old = grad_theta_log_posterior(phi, rho, sigma2, mu, y, h0, h, prior_phi, prior_rho, prior_sigma2, prior_mu) %
     arma::vec4({1 - std::pow(phi, 2), 1 - std::pow(rho, 2), sigma2, 1});
   const arma::vec4 proposal_mean_old =
     theta_old_t +
@@ -307,17 +305,15 @@ arma::vec6 theta_propose_mala(
     proposal_mean_old;
   const arma::vec4 theta_new = theta_transform(theta_new_t(0), theta_new_t(1), theta_new_t(2), theta_new_t(3));
   const double phi_new = theta_new(0), rho_new = theta_new(1), sigma2_new = theta_new(2), mu_new = theta_new(3);
-  const arma::vec4 grad_new = grad_theta_log_posterior(phi_new, rho_new, sigma2_new, mu_new, y, h, prior_phi, prior_rho, prior_sigma2, prior_mu) %
+  const arma::vec4 grad_new = grad_theta_log_posterior(phi_new, rho_new, sigma2_new, mu_new, y, h0, h, prior_phi, prior_rho, prior_sigma2, prior_mu) %
     arma::vec4({1 - std::pow(phi_new, 2), 1 - std::pow(rho_new, 2), sigma2_new, 1});
 
   double theta_density_new = theta_transform_inv_log_det_jac(phi_new, rho_new, sigma2_new, mu_new) +
     dmvnorm_mala(theta_new_t, theta_old_t, grad_old,
-        adaptation_proposal.covariance, adaptation_proposal.precision, adaptation_proposal.scale,
-        y, h, prior_phi, prior_rho, prior_sigma2, prior_mu, true);
+        adaptation_proposal.covariance, adaptation_proposal.precision, adaptation_proposal.scale, true);
   double theta_density_old = theta_transform_inv_log_det_jac(phi, rho, sigma2, mu) +
     dmvnorm_mala(theta_old_t, theta_new_t, grad_new,
-        adaptation_proposal.covariance, adaptation_proposal.precision, adaptation_proposal.scale,
-        y, h, prior_phi, prior_rho, prior_sigma2, prior_mu, true);
+        adaptation_proposal.covariance, adaptation_proposal.precision, adaptation_proposal.scale, true);
 
   return {phi_new, rho_new, sigma2_new, mu_new, theta_density_old, theta_density_new};
 }
@@ -330,9 +326,6 @@ arma::vec thetamu_propose(
     const double phi,
     const double rho,
     const double sigma2,
-    const arma::vec& y,
-    const arma::vec& h,
-    const arma::vec& ht,
     const stochvol::Adaptation::Result& adaptation_proposal) {
   const double mu = 0;
   const arma::vec3 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu).head(3);
@@ -367,6 +360,7 @@ arma::vec4 grad_theta_log_posterior(
     const double sigma2,
     const double mu,
     const arma::vec& y,
+    const double h0,  // TODO implement
     const arma::vec& h,
     const arma::vec2& prior_phi,
     const arma::vec2& prior_rho,
@@ -384,11 +378,11 @@ arma::vec4 grad_theta_log_posterior(
   for (int t = 0; t < n-1; t++) {
     const double y_h_const = y[t] * std::exp(-h[t] / 2);
     h_tilde = (h[t] - mu) / sigma;
-    const double Delta = (h[t+1] - mu) / sigma - phi * h_tilde;
-    const double dryh_const = Delta - rho * y_h_const;
+    const double delta = (h[t+1] - mu) / sigma - phi * h_tilde;
+    const double dryh_const = delta - rho * y_h_const;
     d_phi += rho_const * h_tilde * dryh_const;
-    d_rho += rho_const * (rho - rho_const * rho * (std::pow(y_h_const, 2) - 2 * rho * y_h_const * Delta + Delta * Delta) + y_h_const * Delta);
-    d_sigma2 += .5 / sigma2 * (rho_const * Delta * dryh_const - 1);
+    d_rho += rho_const * (rho - rho_const * rho * (std::pow(y_h_const, 2) - 2 * rho * y_h_const * delta + delta * delta) + y_h_const * delta);
+    d_sigma2 += .5 / sigma2 * (rho_const * delta * dryh_const - 1);
     d_mu += rho_const / sigma * (1 - phi) * dryh_const;
   }
   // Grad of log prior

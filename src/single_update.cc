@@ -215,7 +215,7 @@ void update_svl (
     const bool dontupdatemu) {
   // only centered
   {
-    const LatentVector h_full = draw_latent(y, y_star, d, h0, h, ht, phi, rho, sigma2, mu, correct);
+    const LatentVector h_full = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, correct);
     h0 = h_full.h0;
     h = h_full.h;  // std::move(h_full.h); ?
   }
@@ -232,7 +232,8 @@ void update_svl (
     if (dontupdatemu) {
       theta_updated = draw_thetamu_rwMH(
           phi, rho, sigma2, mu,
-          y, h, ht, exp_h_half, exp_h_half_proposal_nc,
+          y, h0, h, ht,
+          exp_h_half, exp_h_half_proposal_nc,
           prior_phi,
           prior_rho,
           prior_sigma2,
@@ -243,7 +244,8 @@ void update_svl (
     } else {
       theta_updated = draw_theta(
           phi, rho, sigma2, mu,
-          y, h, ht, exp_h_half, exp_h_half_proposal_nc,
+          y, h0, h, ht,
+          exp_h_half, exp_h_half_proposal_nc,
           prior_phi,
           prior_rho,
           prior_sigma2,
