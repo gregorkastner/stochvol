@@ -144,7 +144,7 @@ aud.price <- subset(exrates,
   "AUD")[,1]
 draws <- svsample2(logret(aud.price),
                    draws = 10, burnin = 0,
-                   startpara = list(phi = 0.95, mu = -10, sigma = 0.2, rho = -0.1),
+                   startpara = list(phi = 0.95, mu = -10, sigma = 0.2),
                    startlatent = rep_len(-10, length(aud.price) - 1))
 }
 \seealso{

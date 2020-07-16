@@ -362,7 +362,9 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
 
   if (!is.numeric(priorlatent0) || length(priorlatent0) != 1 || priorlatent0 < 0) {
-    if (priorlatent0 == "stationary") priorlatent0 <- -1L else
+    if (priorlatent0 == "stationary")
+      priorlatent0 <- -1L
+    else
       stop("Argument 'priorlatent0' must be 'stationary' or a single non-negative number.")
   }
 
@@ -724,7 +726,7 @@ svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #'   "AUD")[,1]
 #' draws <- svsample2(logret(aud.price),
 #'                    draws = 10, burnin = 0,
-#'                    startpara = list(phi = 0.95, mu = -10, sigma = 0.2, rho = -0.1),
+#'                    startpara = list(phi = 0.95, mu = -10, sigma = 0.2),
 #'                    startlatent = rep_len(-10, length(aud.price) - 1))
 #' @export
 svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
@@ -733,13 +735,19 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
                       thintime = NULL, keeptime = "all", keeptau = FALSE,
                       quiet = TRUE, startpara, startlatent) {
 
-  if (priorlatent0 == "stationary") priorlatent0 <- -1L
+  if (priorlatent0 == "stationary")
+    priorlatent0 <- -1L
 
   # Check whether 'thintime' was used
   if (!is.null(thintime))
     stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
-  if (keeptime == "all") thintime <- 1L else if (keeptime == "last") thintime <- length(y) else stop("Parameter 'keeptime' must be either 'all' or 'last'.")
+  if (keeptime == "all")
+    thintime <- 1L
+  else if (keeptime == "last")
+    thintime <- length(y)
+  else
+    stop("Parameter 'keeptime' must be either 'all' or 'last'.")
 
   res <- svsample_cpp(y, draws, burnin, matrix(NA), priormu[1], priormu[2]^2,
                       priorphi[1], priorphi[2], priorsigma, thinpara, thinlatent,
@@ -1261,9 +1269,12 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     cat("Converting results to coda objects... ", file=stderr())
   }
   
-  colnames(res$para) <- c("mu", "phi", "sigma", "rho")
-  if (keeptime == "all") colnames(res$latent) <- paste0('h_', arorder + seq_along(y)) else if (keeptime == "last") colnames(res$latent) <- paste0('h_', arorder + length(y))
   # create svldraws class
+  colnames(res$para) <- c("mu", "phi", "sigma", "rho")
+  if (keeptime == "all")
+    colnames(res$latent) <- paste0('h_', arorder + seq_along(y))
+  else if (keeptime == "last")
+    colnames(res$latent) <- paste0('h_', arorder + length(y))
   res$runtime <- runtime
   res$y <- y_orig
   res$para <- coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)
