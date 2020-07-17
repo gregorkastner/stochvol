@@ -1,8 +1,13 @@
 Changes in Version *:
-  - The prior distribution for the degrees of freedom parameter (nu)
-    is an exponential distribution.
+  - The prior distribution for the degrees of freedom parameter 'nu'
+    is an exponential distribution and not a uniform distribution
   - 'svlsample' and the exported C++ function 'update_svl' use
     adaptive Metropolis-Hastings for sampling mu, phi, sigma, and rho
+  - 'svlsample' can make use of either a Random Walk or the Metropolis
+    Adjusted Langevin Algorithm (MALA) for its proposal during sampling
+  - Similar to 'svsample', 'svlsample' results include the draws of 'latent0'
+  - Test suite extended
+  - Vastly improved the computational efficiency of 'svlsample'
 
 Changes in Version 2.0.5:
   - Bugfix in predict when a constant mean model is used for prediction
@@ -10,7 +15,7 @@ Changes in Version 2.0.5:
   - Updated CITATION file
 
 Changes in Version 2.0.4:
-  - Bugfix in svlpredict when an inverse gamma prior is used.
+  - Bugfix in 'svlpredict' when an inverse gamma prior is used.
   - Function 'svtpredict' introduced for convenience when estimating
     SV with heavy tails.
   - New generic: logret; old logret function is now logret.default
@@ -22,8 +27,8 @@ Changes in Version 2.0.3:
   - The exported C++ function 'update_svl' can draw posterior values
     with a fixed 'mu'.
   - Controlling the amount of latent variable draws to be stored can now be
-    controlled through the 'keeptime' argument to svsample, svsample2,
-    svlsample, and svlsample2.
+    controlled through the 'keeptime' argument to 'svsample', 'svsample2',
+    'svlsample', and 'svlsample2'.
 
 Changes in Version 2.0.2:
   - Bugfix in 'predict.svdraws'
