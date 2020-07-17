@@ -5,7 +5,7 @@
 # Please note that this file is not part of the CRAN package stochvol, only part of the development repository hosted on GitHub.
 
 # To install this file as a local pre-commit hook in the repo execute
-# ln -s pre-commit.sh .git/hooks/pre-commit
+# chmod ug+x pre-commit && ln -s `pwd -P`/pre-commit.sh .git/hooks/pre-commit
 
 # Stash staged files that aren't included in this commit
 STASH_NAME="pre-commit-$(date +%s)"
