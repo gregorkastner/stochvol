@@ -27,7 +27,7 @@ test_that("range of svtsample para draws is somewhat meaningful", {
 })
 
 test_that("range of svlsample para draws is somewhat meaningful", {
-  lapply(c(res_svl, res_svl_corrected), function (x) {
+  lapply(c(res_svl, res_svl_corrected, res_svl_mala), function (x) {
     quantile_range <- apply(para(x)[, c("mu", "phi", "sigma", "rho")], 2, quantile, probs = c(0.1, 0.9))
     expect_gt(quantile_range["10%", "mu"], -12,      label = paste("quantile(mu, 10%) with mean model:", x$meanmodel))
     expect_gt(quantile_range["10%", "phi"], -0.8,    label = paste("quantile(phi, 10%) with mean model:", x$meanmodel))
@@ -41,7 +41,7 @@ test_that("range of svlsample para draws is somewhat meaningful", {
 })
 
 test_that("samplers move around", {
-  lapply(c(res_sv, res_svt, res_svl, res_svl_corrected), function (x) {
+  lapply(c(res_sv, res_svt, res_svl, res_svl_corrected, res_svl_mala), function (x) {
     stdevs <- apply(para(x)[, c("mu", "phi", "sigma")], 2, sd)
     expect_gt(stdevs["mu"], 0.1)
     expect_gt(stdevs["phi"], 0.01)

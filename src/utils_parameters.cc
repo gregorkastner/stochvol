@@ -368,22 +368,40 @@ arma::vec4 grad_theta_log_posterior(
     const arma::vec2& prior_mu) {
   const int n = y.n_elem;
   const double sigma = sqrt(sigma2);
-  double h_tilde = (h(0) - mu) / sigma;
   // Grad of log likelihood
-  double d_phi = phi * (std::pow(h_tilde, 2) - 1 / (1 - std::pow(phi, 2)));
-  double d_rho = 0;
-  double d_sigma2 = .5 / sigma2 * ((1 - std::pow(phi, 2)) * std::pow(h_tilde, 2) - 1);
-  double d_mu = (1 - std::pow(phi, 2)) * h_tilde / sigma;
-  const double rho_const = 1 / (1 - std::pow(rho, 2));
+  double d_phi = 0,
+         d_rho = 0,
+         d_sigma2 = 0,
+         d_mu = 0;
+  {  // p(h_0 | theta) and p(h_1 | h_0, theta)
+    const double h_tilde = (h0 - mu) / sigma;
+    d_phi += phi * (std::pow(h_tilde, 2) - 1 / (1 - std::pow(phi, 2)));
+    d_rho += 0;
+    d_sigma2 += .5 / sigma2 * ((1 - std::pow(phi, 2)) * std::pow(h_tilde, 2) - 1);
+    d_mu += (1 - std::pow(phi, 2)) * h_tilde / sigma;
+    const double delta = (h[0] - mu) / sigma - phi * h_tilde;
+    d_phi += h_tilde * delta;
+    d_rho += 0;
+    d_sigma2 += .5 / sigma2 * (std::pow(delta, 2) - 1);
+    d_mu += (1 - phi) * delta / sigma;
+  }
+  // p(h_{t+1} | h_t, theta) and p(y_t | h_{t+1}, h_t, theta)
+  const double rho2 = std::pow(rho, 2);
+  const double rho_const = 1 / (1 - rho2);
   for (int t = 0; t < n-1; t++) {
-    const double y_h_const = y[t] * std::exp(-h[t] / 2);
-    h_tilde = (h[t] - mu) / sigma;
-    const double delta = (h[t+1] - mu) / sigma - phi * h_tilde;
-    const double dryh_const = delta - rho * y_h_const;
-    d_phi += rho_const * h_tilde * dryh_const;
-    d_rho += rho_const * (rho - rho_const * rho * (std::pow(y_h_const, 2) - 2 * rho * y_h_const * delta + delta * delta) + y_h_const * delta);
-    d_sigma2 += .5 / sigma2 * (rho_const * delta * dryh_const - 1);
-    d_mu += rho_const / sigma * (1 - phi) * dryh_const;
+    const double y_h_const = y[t] * std::exp(-h[t] / 2),
+                 h_tilde = (h[t] - mu) / sigma,
+                 delta = (h[t+1] - mu) / sigma - phi * h_tilde,
+                 delta2 = std::pow(delta, 2),
+                 yhrd = -y_h_const + rho * delta;
+    d_phi += h_tilde * delta;
+    d_rho += 0;
+    d_sigma2 += .5 * (delta2 - 1) / sigma2;
+    d_mu += (1 - phi) * delta / sigma;
+    d_phi += rho_const * h_tilde * rho * yhrd;
+    d_rho += std::pow(rho_const, 2) * (-rho * std::pow(y_h_const, 2) + (1 + rho2) * y_h_const * delta - rho * delta2) - rho * rho_const;
+    d_sigma2 += .5 * rho_const * (rho * delta * yhrd) / sigma2;
+    d_mu += rho_const * (1 - phi) * rho * yhrd / sigma;
   }
   // Grad of log prior
   const double phi_beta = .5 * (phi + 1), rho_beta = .5 * (rho + 1);

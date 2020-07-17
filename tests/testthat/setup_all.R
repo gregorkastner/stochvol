@@ -28,6 +28,7 @@ res_sv <- list(svsample(y, draws = draws, burnin = burnin, quiet = TRUE))  # def
 res_svt <- list(svtsample(y, draws = draws, burnin = burnin, quiet = TRUE))  # default values
 res_svl <- list(svlsample(y, draws = draws, burnin = burnin, quiet = TRUE))  # default values
 res_svl_corrected <- list(svlsample(y, draws = draws, burnin = burnin, expert = list(correct.latent.draws = TRUE), quiet = TRUE))  # default values
+res_svl_mala <- list(svlsample(y, draws = draws, burnin = burnin, expert = list(mhcontrol = list(use.mala = TRUE), correct.latent.draws = FALSE), quiet = TRUE))  # default values
 for (dm in designmatrix_values) {
   for (kt in keeptime_values) {
     for (th in thin_values) {
@@ -42,6 +43,9 @@ for (dm in designmatrix_values) {
       ))
       res_svl_corrected <- c(res_svl_corrected, list(  # non-default values
         svlsample(y, draws = draws, burnin = burnin, designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, expert = list(correct.latent.draws = TRUE), quiet = TRUE)
+      ))
+      res_svl_mala <- c(res_svl_mala, list(  # non-default values
+        svlsample(y, draws = draws, burnin = burnin, designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, expert = list(mhcontrol = list(use.mala = TRUE), correct.latent.draws = TRUE), quiet = TRUE)
       ))
     }
   }
