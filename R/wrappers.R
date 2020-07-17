@@ -1062,8 +1062,8 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   } else {
     if (any(grep("ar[0-9]+$", as.character(designmatrix)[1]))) {
       arorder <- as.integer(gsub("ar", "", as.character(designmatrix)))
-      if (length(y) <= (arorder + 1L)) stop("Time series 'y' is to short for this AR process.")
-      designmatrix <- matrix(rep(1, length(y) - arorder), ncol = 1)
+      if (length(y) <= (arorder + 1L)) stop("Time series 'y' is too short for this AR process.")
+      designmatrix <- matrix(1, nrow = length(y) - arorder, ncol = 1)
       colnames(designmatrix) <- c("const")
       meanmodel <- "constant"
       if (arorder >= 1) {
@@ -1080,7 +1080,7 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
     if (!is.matrix(designmatrix)) {
       designmatrix <- matrix(designmatrix, ncol = 1)
     }
-    if (!nrow(designmatrix) == length(y)) stop("Number of columns of argument 'designmatrix' must be equal to length(y).")
+    if (nrow(designmatrix) != length(y)) stop("Number of columns of argument 'designmatrix' must be equal to length(y).")
   }
 
   # Some error checking for the prior parameters 
