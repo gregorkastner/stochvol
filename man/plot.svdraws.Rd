@@ -2,27 +2,9 @@
 % Please edit documentation in R/plotting.R
 \name{plot.svdraws}
 \alias{plot.svdraws}
-\alias{plot.svldraws}
 \title{Graphical Summary of the Posterior Distribution}
 \usage{
 \method{plot}{svdraws}(
-  x,
-  forecast = NULL,
-  dates = NULL,
-  show0 = FALSE,
-  showobs = TRUE,
-  showprior = TRUE,
-  col = NULL,
-  forecastlty = NULL,
-  tcl = -0.4,
-  mar = c(1.9, 1.9, 1.7, 0.5),
-  mgp = c(2, 0.6, 0),
-  simobj = NULL,
-  newdata = NULL,
-  ...
-)
-
-\method{plot}{svldraws}(
   x,
   forecast = NULL,
   dates = NULL,

@@ -3,7 +3,6 @@
 S3method(logret,default)
 S3method(paratraceplot,svdraws)
 S3method(plot,svdraws)
-S3method(plot,svldraws)
 S3method(plot,svlpredict)
 S3method(plot,svpredict)
 S3method(plot,svresid)
