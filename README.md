@@ -9,10 +9,19 @@ install.packages("stochvol")
 ```
 For more information, please visit the [CRAN page](https://cran.r-project.org/package=stochvol) of the package.
 
-# Install Development Version
+# Install Latest Stable Version
 Type into your `R` session:
 ```r
-if (~require("remotes")) {
+if (!require("remotes")) {
+  install.packages("remotes")
+}
+remotes::install_github("https://github.com/gregorkastner/stochvol")
+```
+
+# Install Latest Development Version
+Type into your `R` session:
+```r
+if (!require("remotes")) {
   install.packages("remotes")
 }
 remotes::install_github(
