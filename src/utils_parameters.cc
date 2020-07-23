@@ -191,7 +191,7 @@ double thetamu_log_prior(
     (gammaprior ?
      logdgamma(sigma2, prior_sigma2[0], prior_sigma2[1]) :
      // moment matched InvGamma
-     (-2. * std::log(sigma2) + logdinvgamma(1 / sigma2, prior_sigma2[0] + 2, prior_sigma2[1] / (prior_sigma2[0] * (prior_sigma2[0] + 1.)))));
+     (-2. * std::log(sigma2) + logdinvgamma(1 / sigma2, prior_sigma2[0] + 2, prior_sigma2[1] / (prior_sigma2[0] * (prior_sigma2[0] + 1.)))));  // TODO I think this has been changed too fast; should be simply logdinvgamma(sigma2, ...)
 }
 
 arma::vec4 theta_transform(
