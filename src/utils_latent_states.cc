@@ -3,6 +3,8 @@
 #include "densities.h"
 #include <cmath>
 
+namespace stochvol {
+
 void cholesky_tridiagonal(
     const arma::vec& omega_diag,
     double omega_offdiag,
@@ -152,5 +154,7 @@ double h_aux_log_posterior(
   }
 
   return result;
+}
+
 }
 

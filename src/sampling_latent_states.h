@@ -9,6 +9,8 @@
 #include <RcppArmadillo.h>
 #include "type_definitions.h"
 
+namespace stochvol {
+
 struct LatentVector {
   double h0;
   arma::vec h;
@@ -60,6 +62,8 @@ arma::uvec draw_s_auxiliary(
     const double sigma2,
     const double mu,
     const Parameterization centering);
+
+}
 
 #endif  // _SAMPLING_LATENT_STATES_H_
 

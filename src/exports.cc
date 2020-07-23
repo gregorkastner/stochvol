@@ -5,8 +5,15 @@
 
 using namespace Rcpp;
 
-// svsample_cpp
-Rcpp::List svsample_cpp(const arma::vec& y_in, const int draws, const int burnin, const arma::mat& X_in, const double bmu, const double Bmu, const double a0, const double b0, const double Bsigma, const int thinpara, const int thinlatent, const int timethin, const Rcpp::List& startpara_in, const arma::vec& startvol_in, const bool keeptau, const bool quiet, const int para, const int MHsteps, const double B011, const double B022, const double mhcontrol, const bool gammaprior, const bool truncnormal, const double offset, const bool dontupdatemu, const double priordf, const arma::vec& priorbeta_in, const double priorlatent0);
+namespace stochvol {
+
+  // svsample_cpp
+  Rcpp::List svsample_cpp(const arma::vec& y_in, const int draws, const int burnin, const arma::mat& X_in, const double bmu, const double Bmu, const double a0, const double b0, const double Bsigma, const int thinpara, const int thinlatent, const int timethin, const Rcpp::List& startpara_in, const arma::vec& startvol_in, const bool keeptau, const bool quiet, const int para, const int MHsteps, const double B011, const double B022, const double mhcontrol, const bool gammaprior, const bool truncnormal, const double offset, const bool dontupdatemu, const double priordf, const arma::vec& priorbeta_in, const double priorlatent0);
+  // svlsample_cpp
+  Rcpp::List svlsample_cpp(const arma::vec& y, const int draws, const int burnin, const arma::mat& X, const int thinpara, const int thinlatent, const int thintime, const Rcpp::List& theta_init, const arma::vec& h_init, const double prior_phi_a, const double prior_phi_b, const double prior_rho_a, const double prior_rho_b, const double prior_sigma2_shape, const double prior_sigma2_rate, const double prior_mu_mu, const double prior_mu_sigma, const double prior_beta_mu, const double prior_beta_sigma, const bool verbose, const double offset, const bool use_mala, const bool gammaprior, const bool correct, const Rcpp::CharacterVector& strategy, const bool dontupdatemu);
+
+}
+
 RcppExport SEXP _stochvol_svsample_cpp(SEXP y_inSEXP, SEXP drawsSEXP, SEXP burninSEXP, SEXP X_inSEXP, SEXP bmuSEXP, SEXP BmuSEXP, SEXP a0SEXP, SEXP b0SEXP, SEXP BsigmaSEXP, SEXP thinparaSEXP, SEXP thinlatentSEXP, SEXP timethinSEXP, SEXP startpara_inSEXP, SEXP startvol_inSEXP, SEXP keeptauSEXP, SEXP quietSEXP, SEXP paraSEXP, SEXP MHstepsSEXP, SEXP B011SEXP, SEXP B022SEXP, SEXP mhcontrolSEXP, SEXP gammapriorSEXP, SEXP truncnormalSEXP, SEXP offsetSEXP, SEXP dontupdatemuSEXP, SEXP priordfSEXP, SEXP priorbeta_inSEXP, SEXP priorlatent0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -39,12 +46,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type priordf(priordfSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type priorbeta_in(priorbeta_inSEXP);
     Rcpp::traits::input_parameter< const double >::type priorlatent0(priorlatent0SEXP);
-    rcpp_result_gen = Rcpp::wrap(svsample_cpp(y_in, draws, burnin, X_in, bmu, Bmu, a0, b0, Bsigma, thinpara, thinlatent, timethin, startpara_in, startvol_in, keeptau, quiet, para, MHsteps, B011, B022, mhcontrol, gammaprior, truncnormal, offset, dontupdatemu, priordf, priorbeta_in, priorlatent0));
+    rcpp_result_gen = Rcpp::wrap(stochvol::svsample_cpp(y_in, draws, burnin, X_in, bmu, Bmu, a0, b0, Bsigma, thinpara, thinlatent, timethin, startpara_in, startvol_in, keeptau, quiet, para, MHsteps, B011, B022, mhcontrol, gammaprior, truncnormal, offset, dontupdatemu, priordf, priorbeta_in, priorlatent0));
     return rcpp_result_gen;
 END_RCPP
 }
-// svlsample_cpp
-Rcpp::List svlsample_cpp(const arma::vec& y, const int draws, const int burnin, const arma::mat& X, const int thinpara, const int thinlatent, const int thintime, const Rcpp::List& theta_init, const arma::vec& h_init, const double prior_phi_a, const double prior_phi_b, const double prior_rho_a, const double prior_rho_b, const double prior_sigma2_shape, const double prior_sigma2_rate, const double prior_mu_mu, const double prior_mu_sigma, const double prior_beta_mu, const double prior_beta_sigma, const bool verbose, const double offset, const bool use_mala, const bool gammaprior, const bool correct, const Rcpp::CharacterVector& strategy, const bool dontupdatemu);
 RcppExport SEXP _stochvol_svlsample_cpp(SEXP ySEXP, SEXP drawsSEXP, SEXP burninSEXP, SEXP XSEXP, SEXP thinparaSEXP, SEXP thinlatentSEXP, SEXP thintimeSEXP, SEXP theta_initSEXP, SEXP h_initSEXP, SEXP prior_phi_aSEXP, SEXP prior_phi_bSEXP, SEXP prior_rho_aSEXP, SEXP prior_rho_bSEXP, SEXP prior_sigma2_shapeSEXP, SEXP prior_sigma2_rateSEXP, SEXP prior_mu_muSEXP, SEXP prior_mu_sigmaSEXP, SEXP prior_beta_muSEXP, SEXP prior_beta_sigmaSEXP, SEXP verboseSEXP, SEXP offsetSEXP, SEXP use_malaSEXP, SEXP gammapriorSEXP, SEXP correctSEXP, SEXP strategySEXP, SEXP dontupdatemuSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -75,26 +80,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type correct(correctSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type strategy(strategySEXP);
     Rcpp::traits::input_parameter< const bool >::type dontupdatemu(dontupdatemuSEXP);
-    rcpp_result_gen = Rcpp::wrap(svlsample_cpp(y, draws, burnin, X, thinpara, thinlatent, thintime, theta_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, prior_beta_mu, prior_beta_sigma, verbose, offset, use_mala, gammaprior, correct, strategy, dontupdatemu));
+    rcpp_result_gen = Rcpp::wrap(stochvol::svlsample_cpp(y, draws, burnin, X, thinpara, thinlatent, thintime, theta_init, h_init, prior_phi_a, prior_phi_b, prior_rho_a, prior_rho_b, prior_sigma2_shape, prior_sigma2_rate, prior_mu_mu, prior_mu_sigma, prior_beta_mu, prior_beta_sigma, verbose, offset, use_mala, gammaprior, correct, strategy, dontupdatemu));
     return rcpp_result_gen;
 END_RCPP
 }
 
-// validate (ensure exported C++ functions exist before calling them)
-static int _stochvol_RcppExport_validate(const char* sig) { 
-    static std::set<std::string> signatures;
-    if (signatures.empty()) {
-        signatures.insert("void(*update_sv)(const arma::vec&,arma::vec&,arma::vec&,double&,arma::vec&,arma::ivec&,const bool,const double,const double,const double,const double,const double,const double,const double,const double,const double,const bool,const bool,const double,const int,const int,const bool,const double)");
-        signatures.insert("void(*update_svl)(const arma::vec&,const arma::vec&,const arma::ivec&,double&,double&,double&,double&,arma::vec&,arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const bool,const bool,const bool,const arma::ivec&,const bool)");
-    }
-    return signatures.find(sig) != signatures.end();
-}
-
 // registerCCallable (register entry points for exported C++ functions)
 RcppExport SEXP _stochvol_RcppExport_registerCCallable() { 
-    R_RegisterCCallable("stochvol", "update_sv", (DL_FUNC)update_sv);
-    R_RegisterCCallable("stochvol", "update_svl", (DL_FUNC)update_svl);
-    R_RegisterCCallable("stochvol", "_stochvol_RcppExport_validate", (DL_FUNC)_stochvol_RcppExport_validate);
+    R_RegisterCCallable("stochvol", "update_sv", (DL_FUNC)stochvol::update_sv);
+    R_RegisterCCallable("stochvol", "update_svl", (DL_FUNC)stochvol::update_svl);
     return R_NilValue;
 }
 

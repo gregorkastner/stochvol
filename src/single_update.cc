@@ -10,6 +10,8 @@
 
 using namespace Rcpp;
 
+namespace stochvol {
+
 void update_vanilla_sv(
     const arma::vec& log_data2,
     double& mu,
@@ -230,7 +232,7 @@ void update_df_svt(
     double& nu,
     const PriorSpec& prior_spec) {
 
-  R_assert(prior_spec.nu.distribution != prior_spec.nu.EXPONENTIAL, "Call to update_df_svt when under bad model specs");
+  R_assert(prior_spec.nu.distribution == prior_spec.nu.EXPONENTIAL, "Call to update_df_svt when under bad model specs");
 
   const arma::vec& data = log_data2_minus_h;
   const double lambda = prior_spec.nu.exponential.rate;
@@ -273,7 +275,7 @@ void update_general_sv(
     double& rho,
     double& h0,
     arma::vec& h,
-    stochvol::AdaptationCollection& adaptation_collection,
+    AdaptationCollection& adaptation_collection,
     const PriorSpec& prior_spec,  // prior_mu, prior_phi, prior_sigma2, prior_rho, gammaprior, dontupdatemu feed into this (plus priorlatent0, truncnormal nyi)
     const ExpertSpec_GeneralSV& expert) {  // strategy, correct, use_mala feed into this
 
@@ -316,7 +318,7 @@ void update_general_sv(
 
   const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;
   for (const Parameterization par : strategy) {
-    stochvol::Adaptation& adaptation = par == Parameterization::CENTERED ? adaptation_collection.centered : adaptation_collection.noncentered;
+    Adaptation& adaptation = par == Parameterization::CENTERED ? adaptation_collection.centered : adaptation_collection.noncentered;
     const auto adapted_proposal = adaptation.get_proposal();
     bool theta_updated = false;
     if (dontupdatemu) {
@@ -361,5 +363,7 @@ void update_general_sv(
   }
 
   return;
+}
+
 }
 

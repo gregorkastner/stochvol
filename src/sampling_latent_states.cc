@@ -5,6 +5,8 @@
 
 using namespace Rcpp;
 
+namespace stochvol {
+
 LatentVector draw_latent(
     const arma::vec& y,
     const arma::vec& y_star,
@@ -286,5 +288,7 @@ arma::uvec draw_s_auxiliary(
   }
 
   return new_states;
+}
+
 }
 

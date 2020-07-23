@@ -3,6 +3,8 @@
 
 #include <RcppArmadillo.h>
 
+namespace stochvol {
+
 Rcpp::List svsample_cpp(
     const arma::vec& y_in,
     const int draws,
@@ -60,6 +62,8 @@ Rcpp::List svlsample_cpp (
     const bool correct,
     const Rcpp::CharacterVector& strategy,
     const bool dontupdatemu);
+
+}
 
 #endif  // _SAMPLING_MAIN_H_
 

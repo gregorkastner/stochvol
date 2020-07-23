@@ -6,6 +6,8 @@
 
 using namespace Rcpp;
 
+namespace stochvol {
+
 double newton_raphson(
     const double startval,
     const double sumtau,
@@ -236,7 +238,7 @@ arma::vec6 theta_propose_rwmh(
     const double rho,
     const double sigma2,
     const double mu,
-    const stochvol::Adaptation::Result& adaptation_proposal) {
+    const Adaptation::Result& adaptation_proposal) {
   const arma::vec4 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
 
   const arma::vec4 &proposal_mean_old = theta_old_t;
@@ -292,7 +294,7 @@ arma::vec6 theta_propose_mala(
     const arma::vec2& prior_rho,
     const arma::vec2& prior_sigma2,
     const arma::vec2& prior_mu,
-    const stochvol::Adaptation::Result& adaptation_proposal) {
+    const Adaptation::Result& adaptation_proposal) {
   const arma::vec4 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
 
   const arma::vec4 grad_old = grad_theta_log_posterior(phi, rho, sigma2, mu, y, h0, h, prior_phi, prior_rho, prior_sigma2, prior_mu) %
@@ -326,7 +328,7 @@ arma::vec thetamu_propose(
     const double phi,
     const double rho,
     const double sigma2,
-    const stochvol::Adaptation::Result& adaptation_proposal) {
+    const Adaptation::Result& adaptation_proposal) {
   const double mu = 0;
   const arma::vec3 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu).head(3);
 
@@ -410,5 +412,7 @@ arma::vec4 grad_theta_log_posterior(
   d_sigma2 += (prior_sigma2[0] - 1) / sigma2 - prior_sigma2[1];
   d_mu += -(mu - prior_mu[0]) / std::pow(prior_mu[1], 2);
   return {d_phi, d_rho, d_sigma2, d_mu};
+}
+
 }
 

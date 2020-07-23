@@ -7,6 +7,8 @@
 #include <adaptation.hpp>
 #include "type_definitions.h"
 
+namespace stochvol {
+
 // Step (b): sample mu, phi, sigma - __CENTERED__ version:
 arma::vec regression_centered(
     const double h0,
@@ -65,7 +67,7 @@ bool draw_theta(
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
     const Parameterization centering,
-    const stochvol::Adaptation::Result& adaptation_proposal,
+    const Adaptation::Result& adaptation_proposal,
     const bool gammaprior,
     const Proposal sampler);
 
@@ -84,8 +86,10 @@ bool draw_thetamu_rwMH(
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
     const Parameterization centering,
-    const stochvol::Adaptation::Result& adaptation_proposal,
+    const Adaptation::Result& adaptation_proposal,
     const bool gammaprior);
+
+}
 
 #endif  // THETA_SAMPLER_H
 

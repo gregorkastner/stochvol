@@ -5,6 +5,8 @@
 
 #include <RcppArmadillo.h>
 
+namespace stochvol {
+
 // Sums up results and prepares return value
 Rcpp::List cleanup(
     const arma::vec& mu,
@@ -30,6 +32,8 @@ void progressbar_print() {
 // finalizes progress bar
 void progressbar_finish(
     const int N);
+
+}
 
 #endif  // _UTILS_MAIN_H_
 

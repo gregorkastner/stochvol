@@ -5,6 +5,8 @@
 #include <adaptation.hpp>
 #include "type_definitions.h"
 
+namespace stochvol {
+
 // find the root of a function (Newton-Raphson)
 double newton_raphson(
     const double startval,
@@ -75,7 +77,7 @@ arma::vec6 theta_propose_rwmh(
     const double rho,
     const double sigma2,
     const double mu,
-    const stochvol::Adaptation::Result& adaptation_proposal);
+    const Adaptation::Result& adaptation_proposal);
 
 arma::vec6 theta_propose_mala(
     const double phi,
@@ -89,13 +91,15 @@ arma::vec6 theta_propose_mala(
     const arma::vec2& prior_rho,
     const arma::vec2& prior_sigma2,
     const arma::vec2& prior_mu,
-    const stochvol::Adaptation::Result& adaptation_proposal);
+    const Adaptation::Result& adaptation_proposal);
 
 arma::vec thetamu_propose(
     const double phi,
     const double rho,
     const double sigma2,
-    const stochvol::Adaptation::Result& adaptation_proposal);
+    const Adaptation::Result& adaptation_proposal);
+
+}
 
 #endif  // THETA_UTILS_H
 

@@ -2,11 +2,13 @@
 #include <cmath>
 #include "sampling_parameters.h"
 #include "utils_parameters.h"
-#include "utils_latent_states.h"  // TODO sample rather from true SV
+#include "utils_latent_states.h"
 #include "type_definitions.h"
 #include "densities.h"
 
 using namespace Rcpp;
+
+namespace stochvol {
 
 arma::vec regression_centered(
     const double h0,
@@ -353,7 +355,7 @@ bool draw_theta(
     const arma::vec& prior_sigma2,
     const arma::vec& prior_mu,
     const Parameterization centering,
-    const stochvol::Adaptation::Result& adaptation_proposal,
+    const Adaptation::Result& adaptation_proposal,
     const bool gammaprior,
     const Proposal sampler) {
   arma::vec proposed;
@@ -405,7 +407,7 @@ bool draw_thetamu_rwMH(
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
     const Parameterization centering,
-    const stochvol::Adaptation::Result& adaptation_proposal,
+    const Adaptation::Result& adaptation_proposal,
     const bool gammaprior) {
   const arma::vec5 proposed = thetamu_propose(phi, rho, sigma2, adaptation_proposal);
   const double phi_prop = proposed[0], rho_prop = proposed[1], sigma2_prop = proposed[2],
@@ -430,5 +432,7 @@ bool draw_thetamu_rwMH(
   }
 
   return accepted;
+}
+
 }
 

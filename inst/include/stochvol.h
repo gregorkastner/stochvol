@@ -3,14 +3,15 @@
 
 #include <RcppArmadillo.h>
 #include "adaptation.hpp"
+#include "type_definitions.h"
 
 namespace stochvol {
 
-    inline void update_sv(const arma::vec& data, arma::vec& curpara, arma::vec& h, double& h0, arma::vec& mixprob, arma::ivec& r, const bool centered_baseline, const double C0, const double cT, const double Bsigma, const double a0, const double b0, const double bmu, const double Bmu, const double B011inv, const double B022inv, const bool Gammaprior, const bool truncnormal, const double MHcontrol, const int MHsteps, const int parameterization, const bool dontupdatemu, const double priorlatent0) {
+    inline
+    void update_sv(const arma::vec& data, arma::vec& curpara, arma::vec& h, double& h0, arma::vec& mixprob, arma::ivec& r, const bool centered_baseline, const double C0, const double cT, const double Bsigma, const double a0, const double b0, const double bmu, const double Bmu, const double B011inv, const double B022inv, const bool Gammaprior, const bool truncnormal, const double MHcontrol, const int MHsteps, const int parameterization, const bool dontupdatemu, const double priorlatent0) {
         typedef void(*Update_sv)(const arma::vec&, arma::vec&, arma::vec&, double&, arma::vec&, arma::ivec&, const bool, const double, const double, const double, const double, const double, const double, const double, const double, const double, const bool, const bool, const double, const int, const int, const bool, const double);
         static Update_sv p_update_sv = NULL;
         if (p_update_sv == NULL) {
-            //validateSignature("void(*update_sv)(const arma::vec&,arma::vec&,arma::vec&,double&,arma::vec&,arma::ivec&,const bool,const double,const double,const double,const double,const double,const double,const double,const double,const double,const bool,const bool,const double,const int,const int,const bool,const double)");
             p_update_sv = (Update_sv)R_GetCCallable("stochvol", "update_sv");
         }
         {
@@ -18,11 +19,11 @@ namespace stochvol {
         }
     }
 
-    inline void update_svl(const arma::vec& y, const arma::vec& y_star, const arma::ivec& d, double& phi, double& rho, double& sigma2, double& mu, double& h0, arma::vec& h, arma::vec& ht, Adaptation& adaptation_proposal, const arma::vec& prior_phi, const arma::vec& prior_rho, const arma::vec& prior_sigma2, const arma::vec& prior_mu, const bool use_mala, const bool gammaprior, const bool correct, const arma::ivec& strategy, const bool dontupdatemu) {
+    inline
+    void update_svl(const arma::vec& y, const arma::vec& y_star, const arma::ivec& d, double& phi, double& rho, double& sigma2, double& mu, double& h0, arma::vec& h, arma::vec& ht, Adaptation& adaptation_proposal, const arma::vec& prior_phi, const arma::vec& prior_rho, const arma::vec& prior_sigma2, const arma::vec& prior_mu, const bool use_mala, const bool gammaprior, const bool correct, const arma::ivec& strategy, const bool dontupdatemu) {
         typedef void(*Update_svl)(const arma::vec&, const arma::vec&, const arma::ivec&, double&, double&, double&, double&, double&, arma::vec&, arma::vec&, Adaptation&, const arma::vec&, const arma::vec&, const arma::vec&, const arma::vec&, const bool, const bool, const bool, const arma::ivec&, const bool);
         static Update_svl p_update_svl = NULL;
         if (p_update_svl == NULL) {
-            //validateSignature("void(*update_svl)(const arma::vec&,const arma::vec&,const arma::ivec&,double&,double&,double&,double&,arma::vec&,arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::vec&,const arma::mat&,const arma::mat&,const bool,const double,const bool,const bool,const arma::ivec&,const bool)");
             p_update_svl = (Update_svl)R_GetCCallable("stochvol", "update_svl");
         }
         {

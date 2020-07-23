@@ -3,14 +3,18 @@
 
 #include <R.h>
 
+namespace stochvol {
+
 inline
-void R_assert(const bool error_statement, const char* message) {
+void R_assert(const bool assert_statement, const char* message) {
 #ifndef NDEBUG
-  if (error_statement) {
+  if (!assert_statement) {
     Rf_error(message);
   }
 #endif
   return;
+}
+
 }
 
 #endif

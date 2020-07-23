@@ -8,6 +8,8 @@
 
 #include <RcppArmadillo.h>
 
+namespace stochvol {
+
 const arma::vec::fixed<10> mix_prob {.00609, .04775, .13057, .20674, .22715, .18842, .12047, .05591, .01575, .00115};
 const arma::vec::fixed<10> mix_mean {1.92677, 1.34744, .73504, .02266, -.85173, -1.97278, -3.46788, -5.55246, -8.68384, -14.65000};
 const arma::vec::fixed<10> mix_var {.11265, .17788, .26768, .40611, .62699, .98583, 1.57469, 2.54498, 4.16591, 7.33342};
@@ -97,5 +99,7 @@ double h_aux_log_posterior(
     const double sigma2,
     const double mu,
     const double h0);
+
+}
 
 #endif  // H_UTILS_H

@@ -5,6 +5,8 @@
 #include <adaptation.hpp>
 #include "type_definitions.h"
 
+namespace stochvol {
+
 // single MCMC update approx. SV
 void update_vanilla_sv(
     const arma::vec& log_data2,
@@ -35,7 +37,7 @@ void update_general_sv(
     double& rho,
     double& h0,
     arma::vec& h,
-    stochvol::AdaptationCollection& adaptation,
+    AdaptationCollection& adaptation,
     const PriorSpec& prior_spec,  // prior_mu, prior_phi, prior_sigma2, prior_rho, gammaprior, dontupdatemu feed into this (plus priorlatent0, truncnormal nyi)
     const ExpertSpec_GeneralSV& expert);  // strategy, correct, use_mala feed into this
 
@@ -110,7 +112,7 @@ void update_svl [[gnu::deprecated]] (
     double& h0,
     arma::vec& h,
     arma::vec& ht,
-    stochvol::AdaptationCollection& adaptation,
+    AdaptationCollection& adaptation,
     const arma::vec& prior_phi,
     const arma::vec& prior_rho,
     const arma::vec& prior_sigma2,
@@ -137,6 +139,8 @@ void update_svl [[gnu::deprecated]] (
   };
   update_general_sv(y, y_star, d, mu, phi, sigma2, rho, h0, h, adaptation, prior_spec, expert);
   ht = (h - mu) / std::sqrt(sigma2);
+}
+
 }
 
 #endif  // _SINGLE_UPDATES_H_

@@ -7,6 +7,8 @@
 
 using namespace Rcpp;
 
+namespace stochvol {
+
 List svsample_cpp(
     const arma::vec& y_in,
     const int draws,
@@ -326,7 +328,7 @@ List svlsample_cpp (
   arma::vec armadraw(p);
 
   // adaptive MH
-  stochvol::AdaptationCollection adaptation_collection(
+  AdaptationCollection adaptation_collection(
       4,
       (draws + burnin) / 200 + 1,
       200,
@@ -425,5 +427,7 @@ List svlsample_cpp (
       _["latent"] = latent,
       _["latent0"] = latent0,
       _["beta"] = betas);
+}
+
 }
 

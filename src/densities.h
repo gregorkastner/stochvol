@@ -2,9 +2,12 @@
 #define _DENSITIES_H_
 
 #include <Rmath.h>
+#include <limits>
 
 // Some (non-normalized) densities and transformations thereof
 // (such as acceptance rates or other proportions)
+
+namespace stochvol {
 
 // non-normalized log-density for N(mu, sigma^2)
 inline
@@ -95,7 +98,9 @@ double logdnu(
     const double sumtau,
     const double lambda,
     const int n) {
-  return nu <= 2 ? -std::numeric_limits<double>::infinity() : .5 * nu * (n * std::log(.5 * nu) - sumtau) - n * std::lgamma(.5 * nu) - (nu - 2) * lambda;
+  using nl = std::numeric_limits<double>;
+  static constexpr double negative_infinity = nl::has_infinity ? -nl::infinity() : nl::lowest();
+  return nu > 2 ? .5 * nu * (n * std::log(.5 * nu) - sumtau) - n * std::lgamma(.5 * nu) - (nu - 2) * lambda : negative_infinity;
 }
 
 // first derivative of logdnu
@@ -114,6 +119,8 @@ double ddlogdnu(
     const double nu,
     const int n) {
   return .25 * n * (2 / nu - ::Rf_trigamma(.5 * nu));
+}
+
 }
 
 #endif

@@ -4,6 +4,8 @@
 
 using namespace Rcpp;
 
+namespace stochvol {
+
 List cleanup(
     const arma::vec& mu,
     const arma::vec& phi,
@@ -54,5 +56,7 @@ void progressbar_finish(
   if (!(N % 50) && N >= 2500) REprintf("+");
   REprintf("] 100%%\n\n");
   R_FlushConsole();
+}
+
 }
 
