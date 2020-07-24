@@ -43,8 +43,9 @@ void update_general_sv(
 
 // OLD FUNCTIONS
 
+// Deprecated
 inline
-void update_sv [[gnu::deprecated]] (
+void update_sv(
     const arma::vec& data,
     arma::vec& curpara,
     arma::vec& h,
@@ -92,7 +93,7 @@ void update_sv [[gnu::deprecated]] (
 }
 
 inline
-void update_terr [[gnu::deprecated]] (
+void update_terr(
     const arma::vec& data,
     arma::vec& tau,
     double& nu,
@@ -101,7 +102,7 @@ void update_terr [[gnu::deprecated]] (
 }
 
 inline
-void update_svl [[gnu::deprecated]] (
+void update_svl(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,

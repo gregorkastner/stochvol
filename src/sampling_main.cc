@@ -150,6 +150,26 @@ List svsample_cpp(
     betastore.resize(draws / thinpara, p);
   }
 
+  // Prior specification
+  const PriorSpec prior_spec {
+    (priorlatent0 <= 0) ? PriorSpec::Latent0() : PriorSpec::Latent0(PriorSpec::Constant(priorlatent0)),
+    dontupdatemu ? PriorSpec::Mu(PriorSpec::Constant(0)) : PriorSpec::Mu(PriorSpec::Normal(bmu, std::sqrt(Bmu))),
+    PriorSpec::Phi(PriorSpec::Beta(a0, b0)),
+    Gammaprior ? PriorSpec::Sigma2(PriorSpec::Gamma(0.5, 0.5 / Bsigma)) : PriorSpec::Sigma2(PriorSpec::InverseGamma(2.5, C0)),
+    priordf > 0 ? PriorSpec::Nu(PriorSpec::Exponential(priordf)) : PriorSpec::Nu(PriorSpec::Infinity())
+  };
+  // Expert (sampler specific) settings
+  const ExpertSpec_VanillaSV expert {
+    parameterization > 2,  // interweave
+    parameterization % 2 ? Parameterization::CENTERED : Parameterization::NONCENTERED,  // centered_baseline
+    B011inv,
+    B022inv,
+    MHsteps,
+    MHcontrol < 0 ? ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENT : ExpertSpec_VanillaSV::ProposalSigma2::LOG_RANDOM_WALK,
+    MHcontrol,
+    truncnormal ? ExpertSpec_VanillaSV::ProposalPhi::TRUNCATED_NORMAL : ExpertSpec_VanillaSV::ProposalPhi::ACCEPT_REJECT_NORMAL
+  };
+
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
   int show = 0;
@@ -169,17 +189,22 @@ List svsample_cpp(
     }
 
     if (terr) {
-      if (centered_baseline) update_terr(data - h, tau, nu, priordf);
-      else update_terr(data - curpara[0] - curpara[2] * h, tau, nu, priordf);
+      if (centered_baseline) {
+        update_df_svt(data - h, tau, nu, prior_spec);
+      } else {
+        update_df_svt(data - curpara[0] - curpara[2] * h, tau, nu, prior_spec);
+      }
 
-      datastand = data - log(tau);
+      datastand = data - arma::log(tau);
     }
 
     // a single MCMC update: update indicators, latent volatilities,
     // and parameters ONCE
-    update_sv(datastand, curpara, h, h0, mixprob_vec, r, centered_baseline, C0, cT,
-        Bsigma, a0, b0, bmu, Bmu, B011inv, B022inv, Gammaprior,
-        truncnormal, MHcontrol, MHsteps, parameterization, dontupdatemu, priorlatent0);
+    double mu = curpara[0],
+           phi = curpara[1],
+           sigma2 = std::pow(curpara[2], 2);
+    update_vanilla_sv(datastand, mu, phi, sigma2, h0, h, r, prior_spec, expert);
+    curpara = {mu, phi, std::sqrt(sigma2)};
 
     if (regression) { // update betas (regression)
       normalizer = exp(-h/2);
@@ -327,6 +352,24 @@ List svlsample_cpp (
   arma::vec postmean(p);
   arma::vec armadraw(p);
 
+  // Prior specification
+  const PriorSpec prior_spec {
+    PriorSpec::Latent0(),
+    dontupdatemu ? PriorSpec::Mu(PriorSpec::Constant(0)) : PriorSpec::Mu(PriorSpec::Normal(prior_mu[0], prior_mu[1])),
+    PriorSpec::Phi(PriorSpec::Beta(prior_phi[0], prior_phi[1])),
+    gammaprior ? PriorSpec::Sigma2(PriorSpec::Gamma(prior_sigma2[0], prior_sigma2[1])) : PriorSpec::Sigma2(PriorSpec::InverseGamma(prior_sigma2[0] + 2, prior_sigma2[1] / (prior_sigma2[0] * (prior_sigma2[0] + 1)))),  // moment matched inverse gamma
+    PriorSpec::Nu(PriorSpec::Infinity()),
+    PriorSpec::Rho(PriorSpec::Beta(prior_rho[0], prior_rho[1]))
+  };
+  // Expert (sampler specific) settings
+  std::vector<Parameterization> strategy_vector(strategy.n_elem);
+  std::transform(strategy.cbegin(), strategy.cend(), strategy_vector.begin(), [](const int ipar) -> Parameterization { return Parameterization(ipar); });
+  const ExpertSpec_GeneralSV expert {
+    strategy_vector,
+    correct,
+    use_mala
+  };
+
   // adaptive MH
   AdaptationCollection adaptation_collection(
       4,
@@ -356,18 +399,8 @@ List svlsample_cpp (
     }
 
     // update theta and h
-    update_svl(
-        y, y_star, d,
-        phi, rho, sigma2, mu,
-        h0, h, ht,
-        adaptation_collection,
-        prior_phi, prior_rho,
-        prior_sigma2, prior_mu,
-        use_mala,
-        gammaprior,
-        correct,
-        strategy,
-        dontupdatemu);
+    update_general_sv(y, y_star, d, mu, phi, sigma2, rho, h0, h, adaptation_collection, prior_spec, expert);
+    ht = (h - mu) / std::sqrt(sigma2);
 
     // update beta
     if (regression) {

@@ -86,7 +86,9 @@ END_RCPP
 }
 
 // registerCCallable (register entry points for exported C++ functions)
-RcppExport SEXP _stochvol_RcppExport_registerCCallable() { 
+RcppExport SEXP _stochvol_Export_registerCCallable() { 
+    R_RegisterCCallable("stochvol", "update_vanilla_sv", (DL_FUNC)stochvol::update_vanilla_sv);
+    R_RegisterCCallable("stochvol", "update_general_sv", (DL_FUNC)stochvol::update_general_sv);
     R_RegisterCCallable("stochvol", "update_sv", (DL_FUNC)stochvol::update_sv);
     R_RegisterCCallable("stochvol", "update_svl", (DL_FUNC)stochvol::update_svl);
     return R_NilValue;
@@ -95,7 +97,7 @@ RcppExport SEXP _stochvol_RcppExport_registerCCallable() {
 static const R_CallMethodDef CallEntries[] = {
     {"_stochvol_svsample_cpp", (DL_FUNC) &_stochvol_svsample_cpp, 28},
     {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 26},
-    {"_stochvol_RcppExport_registerCCallable", (DL_FUNC) &_stochvol_RcppExport_registerCCallable, 0},
+    {"_stochvol_Export_registerCCallable", (DL_FUNC) &_stochvol_Export_registerCCallable, 0},
     {NULL, NULL, 0}
 };
 

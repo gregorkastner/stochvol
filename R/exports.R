@@ -8,5 +8,5 @@ svlsample_cpp <- function(y, draws, burnin, X, thinpara, thinlatent, thintime, t
 
 # Register entry points for exported C++ functions
 methods::setLoadAction(function(ns) {
-    .Call('_stochvol_RcppExport_registerCCallable', PACKAGE = 'stochvol')
+    .Call('_stochvol_Export_registerCCallable', PACKAGE = 'stochvol')
 })
