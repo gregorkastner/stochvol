@@ -16,10 +16,7 @@ R -e 'quit(save = "no", status = length(devtools::check(vignettes = FALSE, cran 
 RESULT=$?
 
 # Restore stashed files in the workspace
-STASHES=$(git stash list)
-if [[ $STASHES == "$STASH_NAME" ]]; then
-  git stash pop -q
-fi
+git stash pop
 
 # Return an appropriate value: 0 => everything's fine, other value => error
 [ $RESULT -ne 0 ] && exit 1
