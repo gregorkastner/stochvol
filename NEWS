@@ -8,6 +8,7 @@ Changes in Version *:
   - Similar to 'svsample', 'svlsample' results include the draws of 'latent0'
   - Test suite extended
   - Vastly improved the computational efficiency of 'svlsample'
+  - CITATION file updated
 
 Changes in Version 2.0.5:
   - Bugfix in predict when a constant mean model is used for prediction

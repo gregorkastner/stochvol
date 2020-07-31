@@ -69,16 +69,16 @@ citEntry(header = "To refer to the sampling methodology used by the sampler that
                           email = "gregor.kastner@wu.ac.at")),
          booktitle = "Bayesian Statistics and New Generations. BAYSM 2018",
          year = "2019",
-         series = "Springer Proceedings in Mathematics \& Statistics",
+         series = "Springer Proceedings in Mathematics \\& Statistics",
          volume = "296",
          pages = "75--83",
          editor = personList(as.person("Raffaele Argiento"),
                              as.person("Daniele Durante"),
-                             as.person("Sara Wade"),
+                             as.person("Sara Wade")),
          doi = "10.1007/978-3-030-30611-3_8",
          publisher = "Springer",
          address = "Cham",
-         textVersion = "Hosszejni, Darjus and Kastner, Gregor (2019) Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage. In: Argiento R., Durante D., Wade S. (eds). Bayesian Statistics and New Generations. BAYSM 2018. Springer Proceedings in Mathematics & Statistics, vol 296. Springer, Cham. https://doi.org/10.1007/978-3-030-30611-3_8"
+         textVersion = "Hosszejni, Darjus and Kastner, Gregor (2019). Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage. In: Argiento R., Durante D., Wade S. (eds). Bayesian Statistics and New Generations. BAYSM 2018. Springer Proceedings in Mathematics & Statistics, vol 296. Springer, Cham. https://doi.org/10.1007/978-3-030-30611-3_8"
 )
 
 citEntry(header = "If you want to specifically refer to the conditional Student's t sampler, use:",
@@ -91,5 +91,3 @@ citEntry(header = "If you want to specifically refer to the conditional Student'
          url = "https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf",
          textVersion = "Kastner, Gregor (2015). Heavy-Tailed Innovations in the R Package stochvol. R Package Vignette. URL: https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf"
 )
-
-citFooter("BibTeX entries of the above can be obtained by", sQuote('toBibtex(citation("stochvol"))'))
