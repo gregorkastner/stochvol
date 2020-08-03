@@ -1,54 +1,11 @@
 #' @describeIn logret Log returns of vectors
 #' @family utilities
 #' @export
-
 logret.default <- function(dat, demean = FALSE, standardize = FALSE, ...) {
   logretx <- tail(diff(log(dat)), length(dat) - 1)
   if (all(isTRUE(demean))) logretx <- logretx - mean(logretx)
   if (all(isTRUE(standardize))) logretx <- logretx / sd(logretx)
   logretx
-}
-
-myplot <- function (X) {
-  par(mfrow = c(4, 1))
-  for (i in 1:4) {
-    plot(X[, i], type = "l")
-  }
-}
-
-myplot2 <- function (X) {
-  #par(mfrow = c(4, 1))
-  for (i in 1:4) {
-    traceplot(X[, i])
-  }
-}
-
-acceptance.rate <- function (X) {
-  mean(tail(X[, 1], -1) != head(X[, 1], -1))
-}
-
-rangetransform <- function (x, r, funcinv, func) {
-  tx <- funcinv(x)
-  txl <- tx-r
-  txu <- tx+r
-  func(txu)-func(txl)
-}
-
-funcinv.phi <- function (x) {
-  .5*log(2/(1-x)-1)
-}
-func.phi <- function (tx) {
-  1-2/(exp(2*tx)+1)
-}
-
-funcinv.sigma2 <- log
-func.sigma2 <- exp
-
-rangetransform.phi <- function (x, r) {
-  rangetransform(x, r, funcinv.phi, func.phi)
-}
-rangetransform.sigma2 <- function (x, r) {
-  rangetransform(x, r, funcinv.sigma2, func.sigma2)
 }
 
 asisprint <- function (x, censtring) {
