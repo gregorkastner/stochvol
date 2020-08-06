@@ -61,7 +61,7 @@ namespace stochvol {
 
       Phi (const Constant& _c) : distribution{CONSTANT}, constant{_c} {}
       Phi (const Beta& _b) : distribution{BETA}, beta{_b} {}
-      Phi (const Normal& _n) : distribution{BETA}, normal{_n} {}
+      Phi (const Normal& _n) : distribution{NORMAL}, normal{_n} {}
     };
 
     struct Sigma2 {
