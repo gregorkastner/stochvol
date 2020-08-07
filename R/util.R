@@ -8,6 +8,34 @@ logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
   logretx
 }
 
+# Distributions used as prior in the \code{stochvol} package
+# TODO write validation
+sv_prior_constant <- function (value) {
+  if (is.finite(value)) {
+    list(distribution = "constant", para = list(value = value))
+  } else if (isTRUE(value == Inf)) {
+    sv_prior_infinity()
+  }
+}
+sv_prior_normal <- function (mean = 0, sd = 1) {
+  list(distribution = "normal", para = list(mean = mean, stdev = sd))
+}
+sv_prior_gamma <- function (shape, rate) {
+  list(distribution = "gamma", para = list(shape = shape, rate = rate))
+}
+sv_prior_inverse_gamma <- function (shape, scale) {
+  list(distribution = "inverse_gamma", para = list(shape = shape, scale = scale))
+}
+sv_prior_beta <- function (alpha, beta) {
+  list(distribution = "beta", para = list(alpha = alpha, beta = beta))
+}
+sv_prior_exponential <- function (rate) {
+  list(distribution = "exponential", para = list(rate = rate))
+}
+sv_prior_infinity <- function () {
+  list(distribution = "infinity", para = list())
+}
+
 # Find a good initial value for mu
 ## Posterior mean of the homoskedastic Bayesian linear regression model
 ## log((y_t - X_t*beta_hat)^2) + 1.27 = mu + epsilon_t
