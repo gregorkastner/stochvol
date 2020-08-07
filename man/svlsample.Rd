@@ -17,7 +17,6 @@ svlsample(
   priorbeta = c(0, 10000),
   thinpara = 1,
   thinlatent = 1,
-  thintime = NULL,
   keeptime = "all",
   quiet = FALSE,
   startpara,
@@ -89,8 +88,6 @@ draw is stored.}
 Every \code{thinlatent}th latent variable draw is kept and returned. The
 default value is 1, corresponding to no thinning of the latent variable
 draws, i.e. every draw is kept.}
-
-\item{thintime}{\emph{Deprecated.} Use 'keeptime' instead.}
 
 \item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent}
 

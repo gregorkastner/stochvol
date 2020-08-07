@@ -63,6 +63,8 @@
 #' distribution of the latent AR(1)-process is used as the prior for the
 #' initial log-volatility \code{h_0}. When \code{priorlatent0} is equal to a
 #' number \eqn{B}, we have \eqn{h_0 \sim N(\mu, B\sigma^2)} a priori.
+#' @param priorrho to be documented TODO
+#' @param priorspec to be documented TODO
 #' @param thinpara single number greater or equal to 1, coercible to integer.
 #' Every \code{thinpara}th parameter draw is kept and returned. The default
 #' value is 1, corresponding to no thinning of the parameter draws i.e. every
@@ -71,7 +73,6 @@
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
-#' @param thintime \emph{Deprecated.} Use 'keeptime' instead.
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #  volatility draws should be stored.
 #' @param keeptau logical value indicating whether the 'variance inflation
@@ -276,8 +277,31 @@
 svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                      priornu = 0, priorbeta = c(0, 10000), priorlatent0 = "stationary",
-                     thinpara = 1, thinlatent = 1, keeptime = "all", thintime = NULL,
+                     priorrho = NA,
+                     priorspec = NULL,
+                     thinpara = 1, thinlatent = 1, keeptime = "all",
                      keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...) {
+#svsample_old <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
+#                     priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
+#                     priornu = 0, priorbeta = c(0, 10000), priorlatent0 = "stationary",
+#                     thinpara = 1, thinlatent = 1, keeptime = "all", thintime = NULL,
+#                     keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...) {
+
+# Decision tree: we prefer fast_sv, sampler is chosen based on the prior specification
+#expert <-
+#  list(correct_model_misspecification = FALSE,  # online correction for general_sv and post-correction for fast_sv
+#       interweave = TRUE,
+#       fast_sv =  # UNDOCUMENTED
+#         list(baseline_parameterization = "centered",  # "centered" or "noncentered"
+#              proposal_phi = "immediate acceptace-rejection",  # "immediate acceptance-rejection" or "repeated acceptance-rejection"
+#              proposal_sigma2 = "independent",  # "independent" or "log random walk"
+#              proposal_intercept_var = 1e12,  # positive number
+#              proposal_phi_var = 1e8,  # positive number
+#              proposal_sigma2_rw_scale = 0.1,  # positive number
+#              mh_blocking_steps = 2),  # 1/2/3
+#       general_sv =  # UNDOCUMENTED
+#         list(multi_asis = 3,  # positive integer
+#              proposal_para = "random-walk"))  # "random walk" or "metropolis-adjusted langevin algorithm
 
   # Some error checking for y
   if (inherits(y, "svsim")) {
@@ -381,10 +405,6 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   } else {
     thinlatent <- as.integer(thinlatent)
   }
-  
-  # Check whether 'thintime' was used
-  if (!is.null(thintime))
-    stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   # Some error checking for keeptime
   if (length(keeptime) != 1L || !is.character(keeptime) || !(keeptime %in% c("all", "last"))) {
@@ -614,12 +634,12 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                       priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                       priornu = 0.1, priorbeta = c(0, 10000), priorlatent0 = "stationary",
-                      thinpara = 1, thinlatent = 1, keeptime = "all", thintime = NULL,
+                      thinpara = 1, thinlatent = 1, keeptime = "all",
                       keeptau = FALSE, quiet = FALSE, startpara, startlatent, expert, ...) {
   svsample(y, draws = draws, burnin = burnin, designmatrix = designmatrix,
            priormu = priormu, priorphi = priorphi, priorsigma = priorsigma,
            priornu = priornu, priorbeta = priorbeta, priorlatent0 = priorlatent0,
-           thinpara = thinpara, thinlatent = thinlatent, keeptime = keeptime, thintime = thintime,
+           thinpara = thinpara, thinlatent = thinlatent, keeptime = keeptime,
            keeptau = keeptau, quiet = quiet, startpara = startpara, startlatent = startlatent,
            expert = expert, ...)
 }
@@ -683,7 +703,6 @@ svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
-#' @param thintime \emph{Deprecated.} Use 'keeptime' instead.
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #  volatility draws should be stored.
 #' @param keeptau logical value indicating whether the 'variance inflation
@@ -732,15 +751,11 @@ svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
                       priorphi = c(5, 1.5), priorsigma = 1, priornu = 0,
                       priorlatent0 = "stationary", thinpara = 1, thinlatent = 1,
-                      thintime = NULL, keeptime = "all", keeptau = FALSE,
+                      keeptime = "all", keeptau = FALSE,
                       quiet = TRUE, startpara, startlatent) {
 
   if (priorlatent0 == "stationary")
     priorlatent0 <- -1L
-
-  # Check whether 'thintime' was used
-  if (!is.null(thintime))
-    stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   if (keeptime == "all")
     thintime <- 1L
@@ -827,7 +842,6 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
-#' @param thintime \emph{Deprecated.} Use 'keeptime' instead.
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #  volatility draws should be stored.
 #' @param quiet logical value indicating whether the progress bar and other
@@ -1021,7 +1035,7 @@ svsample2 <- function(y, draws = 1, burnin = 0, priormu = c(0, 100),
 svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                        priorrho = c(4, 4), priorbeta = c(0, 10000),
-                       thinpara = 1, thinlatent = 1, thintime = NULL, keeptime = "all",
+                       thinpara = 1, thinlatent = 1, keeptime = "all",
                        quiet = FALSE, startpara, startlatent, expert, ...) {
   # Some error checking for y
   if (inherits(y, "svsim")) {
@@ -1117,10 +1131,6 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
   } else {
     thinlatent <- as.integer(thinlatent)
   }
-
-  # Check whether 'thintime' was used
-  if (!is.null(thintime))
-    stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   # Some error checking for keeptime
   if (length(keeptime) != 1L || !is.character(keeptime) || !(keeptime %in% c("all", "last"))) {
@@ -1355,7 +1365,6 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
 #' default value is 1, corresponding to no thinning of the latent variable
 #' draws, i.e. every draw is kept.
-#' @param thintime \emph{Deprecated.} Use 'keeptime' instead.
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #  volatility draws should be stored.
 #' @param quiet logical value indicating whether the progress bar and other
@@ -1394,12 +1403,8 @@ svlsample <- function (y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' @export
 svlsample2 <- function(y, draws = 1, burnin = 0,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1, priorrho = c(4, 4),
-                       thinpara = 1, thinlatent = 1, thintime = NULL, keeptime = "all",
+                       thinpara = 1, thinlatent = 1, keeptime = "all",
                        quiet = TRUE, startpara, startlatent) {
-
-  # Check whether 'thintime' was used
-  if (!is.null(thintime))
-    stop("Argument 'thintime' is deprecated. Please use 'keeptime' instead.")
 
   if (keeptime == "all") thintime <- 1L else if (keeptime == "last") thintime <- length(y) else stop("Parameter 'keeptime' must be either 'all' or 'last'.")
 
