@@ -1,0 +1,32 @@
+context("Prior specification")
+
+test_that("enabled priors are accepted", {
+  expect_s3_class(specify_priors(), "sv_priorspec")
+  expect_s3_class(specify_priors(mu = sv_normal(0, 5)), "sv_priorspec")
+  expect_s3_class(specify_priors(mu = sv_constant(0)), "sv_priorspec")
+  expect_s3_class(specify_priors(phi = sv_beta(4, 4)), "sv_priorspec")
+  expect_s3_class(specify_priors(sigma2 = sv_gamma(4, 4)), "sv_priorspec")
+  expect_s3_class(specify_priors(sigma2 = sv_inverse_gamma(4, 4)), "sv_priorspec")
+  expect_s3_class(specify_priors(nu = sv_exponential(10)), "sv_priorspec")
+  expect_s3_class(specify_priors(nu = sv_infinity()), "sv_priorspec")
+  expect_s3_class(specify_priors(rho = sv_beta(4, 4)), "sv_priorspec")
+  expect_s3_class(specify_priors(rho = sv_constant(0)), "sv_priorspec")
+  expect_s3_class(specify_priors(latent0 = 10), "sv_priorspec")
+  expect_s3_class(specify_priors(latent0 = "stationary"), "sv_priorspec")
+  expect_s3_class(specify_priors(beta = sv_normal(0, 100)), "sv_priorspec")
+})
+
+test_that("disallowed priors fail", {
+  expect_error(specify_priors(mu = sv_exponential(0)))
+  expect_error(specify_priors(phi = sv_inverse_gamma(4, 4)))
+  expect_error(specify_priors(sigma2 = sv_constant(0)))
+  expect_error(specify_priors(sigma2 = sv_infinity()))
+  expect_error(specify_priors(nu = sv_constant(10)))
+  expect_error(specify_priors(nu = sv_constant(1)))
+  expect_error(specify_priors(rho = sv_normal(4, 4)))
+  expect_error(specify_priors(rho = sv_constant(2)))
+  expect_error(specify_priors(latent0 = -10))
+  expect_error(specify_priors(latent0 = "st"))
+  expect_error(specify_priors(beta = sv_beta(0, 100)))
+})
+

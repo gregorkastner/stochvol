@@ -10,30 +10,112 @@ logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
 
 # Distributions used as prior in the \code{stochvol} package
 # TODO write validation
-sv_prior_constant <- function (value) {
+sv_constant <- function (value) {
+  assert_single(value, "sv_constant")
+  assert_numeric(value, "sv_constant")
+
   if (is.finite(value)) {
-    list(distribution = "constant", para = list(value = value))
+    structure(list(value = value),
+              class = c("sv_constant", "sv_distribution"))
   } else if (isTRUE(value == Inf)) {
-    sv_prior_infinity()
+    sv_infinity()
   }
 }
-sv_prior_normal <- function (mean = 0, sd = 1) {
-  list(distribution = "normal", para = list(mean = mean, stdev = sd))
+sv_normal <- function (mean = 0, sd = 1) {
+  assert_single(mean, "mean of sv_normal")
+  assert_numeric(mean, "mean of sv_normal")
+
+  assert_single(sd, "sd of sv_normal")
+  assert_positive(sd, "sd of sv_normal")
+
+  structure(list(mean = mean, stdev = sd),
+            class = c("sv_normal", "sv_distribution"))
 }
-sv_prior_gamma <- function (shape, rate) {
-  list(distribution = "gamma", para = list(shape = shape, rate = rate))
+sv_gamma <- function (shape, rate) {
+  assert_single(shape, "shape of sv_gamma")
+  assert_positive(shape, "shape of sv_gamma")
+
+  assert_single(rate, "rate of sv_gamma")
+  assert_positive(rate, "rate of sv_gamma")
+
+  structure(list(shape = shape, rate = rate),
+            class = c("sv_gamma", "sv_distribution"))
 }
-sv_prior_inverse_gamma <- function (shape, scale) {
-  list(distribution = "inverse_gamma", para = list(shape = shape, scale = scale))
+sv_inverse_gamma <- function (shape, scale) {
+  assert_single(shape, "shape of sv_inverse_gamma")
+  assert_positive(shape, "shape of sv_inverse_gamma")
+
+  assert_single(scale, "scale of sv_invgamma")
+  assert_gt(scale, 2, "scale of sv_invgamma")
+
+  structure(list(shape = shape, scale = scale),
+            class = c("sv_inverse_gamma", "sv_distribution"))
 }
-sv_prior_beta <- function (alpha, beta) {
-  list(distribution = "beta", para = list(alpha = alpha, beta = beta))
+sv_beta <- function (alpha, beta) {
+  assert_single(alpha, "shape of sv_beta")
+  assert_positive(alpha, "shape of sv_beta")
+
+  assert_single(beta, "rate of sv_beta")
+  assert_positive(beta, "rate of sv_beta")
+
+  structure(list(alpha = alpha, beta = beta),
+            class = c("sv_beta", "sv_distribution"))
 }
-sv_prior_exponential <- function (rate) {
-  list(distribution = "exponential", para = list(rate = rate))
+sv_exponential <- function (rate) {
+  assert_single(rate, "rate of sv_exponential")
+  assert_positive(rate, "rate of sv_exponential")
+
+  structure(list(rate = rate),
+            class = c("sv_exponential", "sv_distribution"))
 }
-sv_prior_infinity <- function () {
-  list(distribution = "infinity", para = list())
+sv_infinity <- function () {
+  structure(list(),
+            class = c("sv_infinity", "sv_distribution"))
+}
+# TODO document and export
+specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
+                            phi = sv_beta(alpha = 15, beta = 0.5),
+                            sigma2 = sv_gamma(shape = 0.5, rate = 0.5),
+                            nu = sv_infinity(),
+                            rho = sv_constant(0),
+                            latent0 = "stationary",
+                            beta = sv_normal(mean = 0, sd = 100)) {
+  # Validation
+  ## Check mu, phi, sigma2, nu, rho, and beta
+  sv_inherits <- function (x, whatlist) {
+    isTRUE(any(sapply(whatlist, function (what, xx) inherits(xx, what), xx = x)))
+  }
+  enabled_distributions <-
+    list(list(x = mu, name = "mu", whatlist = c("sv_normal", "sv_constant")),
+         list(x = phi, name = "phi", whatlist = c("sv_beta")),
+         list(x = sigma2, name = "sigma2", whatlist = c("sv_gamma", "sv_inverse_gamma")),
+         list(x = nu, name = "nu", whatlist = c("sv_infinity", "sv_exponential")),
+         list(x = rho, name = "rho", whatlist = c("sv_constant", "sv_beta")),
+         list(x = beta, name = "beta", whatlist = c("sv_normal")))
+  lapply(enabled_distributions,
+         function (x) {
+           with(x, if (!sv_inherits(x, whatlist)) {
+             stop(name, " should inherit from one of ", prettify(whatlist), "; not ", class(x))
+           })
+         })
+  ## If constant, check constant value
+  if (inherits(mu, "sv_constant") && mu$value != 0) {
+    stop("Fixed mu != 0 not yet implemented; got mu = ", mu$value)
+  }
+  if (inherits(rho, "sv_constant") && rho$value != 0) {
+    stop("Fixed rho != 0 not yet implemented; got rho = ", rho$value)
+  }
+  ## Check latent0
+  if(!(isTRUE(latent0 == "stationary") ||
+       (assert_single(latent0, "latent0") &&
+        assert_positive(latent0, "latent0")))) {  # TODO sv_inherits(latent0, "sv_normal"))) {
+    stop("Currently implemented options for 'latent0' are either the string \"stationary\" or a single positive number; received ", latent0)
+  }
+
+  structure(list(mu = mu, phi = phi, sigma2 = sigma2,
+                 nu = nu, rho = rho,
+                 latent0 = latent0, beta = beta),
+            class = "sv_priorspec")
 }
 
 # Find a good initial value for mu
