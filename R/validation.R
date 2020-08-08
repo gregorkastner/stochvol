@@ -40,13 +40,18 @@ assert_infinite <- function (x, name) {
   TRUE
 }
 
-assert_positive <- function (x, name) {
+assert_gt <- function (x, value, name) {
   assert_numeric(x, name)
+  assert_numeric(value, "right hand side")
 
-  if (!isTRUE(all(x > 0))) {
-    sv_stop(what = x, name = name, should = "be positive", and_not = x)
+  if (!isTRUE(all(x > value))) {
+    sv_stop(what = x, name = name, should = paste("be greater than", prettify(value)), and_not = "smaller or equal")
   }
   TRUE
+}
+
+assert_positive <- function (x, name) {
+  assert_gt(x, 0, name)
 }
 
 assert_element <- function (x, v, name_x, name_v) {
