@@ -18,11 +18,16 @@ List cleanup(
   int paracols;
   if (nustore.size() > 0) paracols = 4; else paracols = 3;
 
-  arma::mat res(mu.size(), paracols); 
-  res.col(0) = mu;
-  res.col(1) = phi;
-  res.col(2) = sigma;
-  if (nustore.size() > 0) res.col(3) = nustore;
+  CharacterVector coln(paracols);
+  NumericMatrix res(mu.size(), paracols);
+  arma::mat res_arma(res.begin(), mu.size(), paracols, false, false); 
+  res_arma.col(0) = mu; coln[0] = "mu";
+  res_arma.col(1) = phi; coln[1] = "phi";
+  res_arma.col(2) = sigma; coln[2] = "sigma";
+  if (nustore.size() > 0) {
+    res_arma.col(3) = nustore; coln[3] = "nu";
+  }
+  colnames(res) = coln;
 
   List val = List::create(
       _["para"] = res,

@@ -91,7 +91,7 @@ runtime <- function(x) {
 #' don't forget to overwrite the old object if this is want you intend to do.
 #' See the examples below for more details.
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
-#' @seealso \code{\link{svsample}}, \code{\link{svlsample}}
+#' @seealso \code{\link{svsample}}
 #' @keywords utilities
 #' @examples
 #' 
@@ -268,7 +268,7 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' @param steps \emph{optional} single number, coercible to integer. Denotes the number of
 #' steps to forecast.
 #' @param newdata \emph{only in case d) of the description} corresponds to input
-#' parameter \code{designmatrix} in \code{\link{svsample}} and \code{\link{svlsample}}.
+#' parameter \code{designmatrix} in \code{\link{svsample}}.
 #' A matrix of regressors with number of rows equal to parameter \code{steps}.
 #' @param \dots  currently ignored.
 #' @return Returns an object of class \code{svpredict}, a list containing
@@ -329,9 +329,9 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' simreg$y <- simreg$y + as.numeric(regressors %*% betas)
 #' 
 #' ## Obtain 12000 draws
-#' drawsreg <- svlsample(simreg$y, draws = 12000, burnin = 3000,
+#' drawsreg <- svsample(simreg$y, draws = 12000, burnin = 3000,
 #'   designmatrix = regressors, priormu = c(-10, 1), priorphi = c(20, 1.5),
-#'   priorsigma = 0.2)
+#'   priorsigma = 0.2, priorrho = c(4, 4))
 #' 
 #' ## Predict 5 days ahead using new regressors
 #' predlen <- 5L

@@ -136,7 +136,7 @@ namespace stochvol {
 
   struct ExpertSpec_VanillaSV {
     enum class ProposalPhi {ACCEPT_REJECT_NORMAL, TRUNCATED_NORMAL};  // scoped enums would not be needed in C++14
-    enum class ProposalSigma2 {INDEPENDENT, LOG_RANDOM_WALK};  // scoped enums would not be needed in C++14
+    enum class ProposalSigma2 {INDEPENDENCE, LOG_RANDOM_WALK};  // scoped enums would not be needed in C++14
 
     bool interweave;
     Parameterization baseline;
@@ -154,7 +154,7 @@ namespace stochvol {
         const double _proposal_intercept_varinv = 1e-12,
         const double _proposal_phi_varinv = 1e-8,
         const int _mh_blocking_steps = 2,
-        const ProposalSigma2 _proposal_sigma2 = ProposalSigma2::INDEPENDENT,
+        const ProposalSigma2 _proposal_sigma2 = ProposalSigma2::INDEPENDENCE,
         const double _proposal_sigma2_rw_scale = 0.1,
         const ProposalPhi _proposal_phi = ProposalPhi::ACCEPT_REJECT_NORMAL)
       : interweave {_interweave},

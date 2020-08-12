@@ -2,7 +2,6 @@
 % Please edit documentation in R/wrappers.R
 \name{svsample}
 \alias{svsample}
-\alias{svtsample}
 \title{Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility (SV)
 Model}
 \usage{
@@ -15,47 +14,25 @@ svsample(
   priorphi = c(5, 1.5),
   priorsigma = 1,
   priornu = 0,
+  priorrho = NA,
   priorbeta = c(0, 10000),
   priorlatent0 = "stationary",
-  priorrho = NA,
   priorspec = NULL,
   thinpara = 1,
   thinlatent = 1,
   keeptime = "all",
   keeptau = FALSE,
   quiet = FALSE,
-  startpara,
-  startlatent,
-  expert,
-  ...
-)
-
-svtsample(
-  y,
-  draws = 10000,
-  burnin = 1000,
-  designmatrix = NA,
-  priormu = c(0, 100),
-  priorphi = c(5, 1.5),
-  priorsigma = 1,
-  priornu = 0.1,
-  priorbeta = c(0, 10000),
-  priorlatent0 = "stationary",
-  thinpara = 1,
-  thinlatent = 1,
-  keeptime = "all",
-  keeptau = FALSE,
-  quiet = FALSE,
-  startpara,
-  startlatent,
-  expert,
+  startpara = NULL,
+  startlatent = NULL,
+  expert = NULL,
   ...
 )
 }
 \arguments{
 \item{y}{numeric vector containing the data (usually log-returns), which
 must not contain zeros. Alternatively, \code{y} can be an \code{svsim}
-object. In this case, the returns will be extracted and a warning is thrown.}
+object. In this case, the returns will be extracted and a message is signalled.}
 
 \item{draws}{single number greater or equal to 1, indicating the number of
 draws after burn-in (see below). Will be automatically coerced to integer.
@@ -101,6 +78,8 @@ t-distribution. The default value is \code{0}, fixing the
 degrees-of-freedom to infinity. This corresponds to conditional standard
 normal innovations, the pre-1.1.0 behavior of \pkg{stochvol}.}
 
+\item{priorrho}{to be documented TODO}
+
 \item{priorbeta}{numeric vector of length 2, indicating the mean and
 standard deviation of the Gaussian prior for the regression parameters. The
 default value is \code{c(0, 10000)}, which constitutes a very vague prior
@@ -112,8 +91,6 @@ When \code{priorlatent0} is equal to \code{'stationary'}, the stationary
 distribution of the latent AR(1)-process is used as the prior for the
 initial log-volatility \code{h_0}. When \code{priorlatent0} is equal to a
 number \eqn{B}, we have \eqn{h_0 \sim N(\mu, B\sigma^2)} a priori.}
-
-\item{priorrho}{to be documented TODO}
 
 \item{priorspec}{to be documented TODO}
 
@@ -157,38 +134,9 @@ applications, the default values probably work best. Interested users are
 referred to the literature provided in the References section. If
 \code{expert} is provided, it may contain the following named elements:
 
-\code{parameterization}: Character string equal to \code{"centered"},
-\code{"noncentered"}, \code{"GIS_C"}, or \code{"GIS_NC"}. Defaults to
-\code{"GIS_C"}.
+\code{interweaving}: Logical value. TODO
 
-\code{mhcontrol}: Single numeric value controlling the proposal density of a
-Metropolis-Hastings (MH) update step when sampling \code{sigma}. If
-\code{mhcontrol} is smaller than 0, an independence proposal will be used,
-while values greater than zero control the stepsize of a log-random-walk
-proposal. Defaults to \code{-1}.
-
-\code{gammaprior}: Single logical value indicating whether a Gamma prior for
-\code{sigma^2} should be used. If set to \code{FALSE}, an Inverse Gamma
-prior is employed. Defaults to \code{TRUE}.
-
-\code{truncnormal}: Single logical value indicating whether a truncated
-Gaussian distribution should be used as proposal for draws of \code{phi}. If
-set to \code{FALSE}, a regular Gaussian prior is employed and the draw is
-immediately discarded when values outside the unit ball happen to be drawn.
-Defaults to \code{FALSE}.
-
-\code{mhsteps}: Either \code{1}, \code{2}, or \code{3}. Indicates the number
-of blocks used for drawing from the posterior of the parameters. Defaults to
-\code{2}.
-
-\code{proposalvar4sigmaphi}: Single positive number indicating the
-conditional prior variance of \code{sigma*phi} in the ridge \emph{proposal}
-density for sampling \code{(mu, phi)}. Defaults to \code{10^8}.
-
-\code{proposalvar4sigmatheta}: Single positive number indicating the
-conditional prior variance of \code{sigma*theta} in the ridge
-\emph{proposal} density for sampling \code{(mu, phi)}. Defaults to
-\code{10^12}.}
+\code{correct_model_misspecification}: Logical value. TODO}
 
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
@@ -266,7 +214,7 @@ plot(draws, simobj = sim)
 sim <- svsim(100, mu = -10, phi = 0.96, sigma = 0.3, nu = 2.5)
 
 ## Obtain 5000 draws from the sampler
-tdraws <- svtsample(sim$y, draws = 5000, burnin = 100,
+tdraws <- svsample(sim$y, draws = 5000, burnin = 100,
 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.5,
      priornu = 0.2)
 
@@ -348,7 +296,7 @@ Data Analysis}, \bold{76}, 408--423,
 \url{http://dx.doi.org/10.1016/j.csda.2013.01.002}.
 }
 \seealso{
-\code{\link{svsim}}, \code{\link{svlsample}}, \code{\link{updatesummary}},
+\code{\link{svsim}}, \code{\link{updatesummary}},
 \code{\link{predict.svdraws}}, \code{\link{plot.svdraws}}.
 }
 \author{

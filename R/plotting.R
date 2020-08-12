@@ -224,7 +224,7 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
 #' @param newdata corresponds to parameter \code{newdata} in \code{\link{predict.svdraws}}.
 #' \emph{Only if \code{forecast} is a positive integer and \code{\link{predict.svdraws}}
 #' needs a \code{newdata} object.} Corresponds to input
-#' parameter \code{designmatrix} in \code{\link{svsample}} and \code{\link{svlsample}}.
+#' parameter \code{designmatrix} in \code{\link{svsample}}.
 #' A matrix of regressors with number of rows equal to parameter \code{forecast}.
 #' @return Called for its side effects. Returns argument \code{x} invisibly.
 #' @note In case you want different quantiles to be plotted, use
@@ -423,7 +423,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 #' @param newdata corresponds to parameter \code{newdata} in \code{\link{predict.svdraws}}.
 #' \emph{Only if \code{forecast} is a positive integer and \code{\link{predict.svdraws}}
 #' needs a \code{newdata} object.} Corresponds to input
-#' parameter \code{designmatrix} in \code{\link{svsample}} and \code{\link{svlsample}}.
+#' parameter \code{designmatrix} in \code{\link{svsample}}.
 #' A matrix of regressors with number of rows equal to parameter \code{forecast}.
 #' @param \dots further arguments are passed on to the invoked plotting
 #' functions.

@@ -62,7 +62,7 @@ will be added to the plot(s).}
 \item{newdata}{corresponds to parameter \code{newdata} in \code{\link{predict.svdraws}}.
 \emph{Only if \code{forecast} is a positive integer and \code{\link{predict.svdraws}}
 needs a \code{newdata} object.} Corresponds to input
-parameter \code{designmatrix} in \code{\link{svsample}} and \code{\link{svlsample}}.
+parameter \code{designmatrix} in \code{\link{svsample}}.
 A matrix of regressors with number of rows equal to parameter \code{forecast}.}
 
 \item{\dots}{further arguments are passed on to the invoked \code{\link[stats]{ts.plot}}

@@ -94,7 +94,7 @@ void update_vanilla_sv(
   const int MHsteps = expert.mh_blocking_steps;
   const double MHcontrol = [&expert]() -> double {
     switch (expert.proposal_sigma2) {
-      case ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENT:
+      case ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENCE:
         return -1;
       case ExpertSpec_VanillaSV::ProposalSigma2::LOG_RANDOM_WALK:
         return expert.proposal_sigma2_rw_scale;

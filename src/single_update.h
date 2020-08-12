@@ -84,7 +84,7 @@ void update_sv(
     B011inv,
     B022inv,
     MHsteps,
-    MHcontrol < 0 ? ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENT : ExpertSpec_VanillaSV::ProposalSigma2::LOG_RANDOM_WALK,
+    MHcontrol < 0 ? ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENCE : ExpertSpec_VanillaSV::ProposalSigma2::LOG_RANDOM_WALK,
     MHcontrol,
     truncnormal ? ExpertSpec_VanillaSV::ProposalPhi::TRUNCATED_NORMAL : ExpertSpec_VanillaSV::ProposalPhi::ACCEPT_REJECT_NORMAL
   };

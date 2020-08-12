@@ -9,7 +9,7 @@ logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
 }
 
 # Distributions used as prior in the \code{stochvol} package
-# TODO write validation
+# TODO document and export
 sv_constant <- function (value) {
   assert_single(value, "sv_constant")
   assert_numeric(value, "sv_constant")
@@ -21,6 +21,10 @@ sv_constant <- function (value) {
     sv_infinity()
   }
 }
+mean.sv_constant <- function (x) {
+  x$value
+}
+
 sv_normal <- function (mean = 0, sd = 1) {
   assert_single(mean, "mean of sv_normal")
   assert_numeric(mean, "mean of sv_normal")
@@ -31,6 +35,10 @@ sv_normal <- function (mean = 0, sd = 1) {
   structure(list(mean = mean, stdev = sd),
             class = c("sv_normal", "sv_distribution"))
 }
+mean.sv_normal <- function (x) {
+  x$mean
+}
+
 sv_gamma <- function (shape, rate) {
   assert_single(shape, "shape of sv_gamma")
   assert_positive(shape, "shape of sv_gamma")
@@ -41,6 +49,10 @@ sv_gamma <- function (shape, rate) {
   structure(list(shape = shape, rate = rate),
             class = c("sv_gamma", "sv_distribution"))
 }
+mean.sv_gamma <- function (x) {
+  x$shape / x$rate
+}
+
 sv_inverse_gamma <- function (shape, scale) {
   assert_single(shape, "shape of sv_inverse_gamma")
   assert_positive(shape, "shape of sv_inverse_gamma")
@@ -51,6 +63,10 @@ sv_inverse_gamma <- function (shape, scale) {
   structure(list(shape = shape, scale = scale),
             class = c("sv_inverse_gamma", "sv_distribution"))
 }
+mean.sv_inverse_gamma <- function (x) {
+  x$scale / (x$shape - 1)
+}
+
 sv_beta <- function (alpha, beta) {
   assert_single(alpha, "shape of sv_beta")
   assert_positive(alpha, "shape of sv_beta")
@@ -61,6 +77,10 @@ sv_beta <- function (alpha, beta) {
   structure(list(alpha = alpha, beta = beta),
             class = c("sv_beta", "sv_distribution"))
 }
+mean.sv_beta <- function (x) {
+  x$alpha / (x$alpha + x$beta)
+}
+
 sv_exponential <- function (rate) {
   assert_single(rate, "rate of sv_exponential")
   assert_positive(rate, "rate of sv_exponential")
@@ -68,10 +88,18 @@ sv_exponential <- function (rate) {
   structure(list(rate = rate),
             class = c("sv_exponential", "sv_distribution"))
 }
+mean.sv_exponential <- function (x) {
+  1 / x$rate
+}
+
 sv_infinity <- function () {
   structure(list(),
             class = c("sv_infinity", "sv_distribution"))
 }
+mean.sv_infinity <- function (x) {
+  Inf
+}
+
 # TODO document and export
 specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
                             phi = sv_beta(alpha = 15, beta = 0.5),
@@ -91,7 +119,7 @@ specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
          list(x = sigma2, name = "sigma2", whatlist = c("sv_gamma", "sv_inverse_gamma")),
          list(x = nu, name = "nu", whatlist = c("sv_infinity", "sv_exponential")),
          list(x = rho, name = "rho", whatlist = c("sv_constant", "sv_beta")),
-         list(x = beta, name = "beta", whatlist = c("sv_normal")))
+         list(x = beta, name = "beta", whatlist = c("sv_normal", "sv_constant")))
   lapply(enabled_distributions,
          function (x) {
            with(x, if (!sv_inherits(x, whatlist)) {
@@ -104,6 +132,9 @@ specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
   }
   if (inherits(rho, "sv_constant") && rho$value != 0) {
     stop("Fixed rho != 0 not yet implemented; got rho = ", rho$value)
+  }
+  if (inherits(beta, "sv_constant") && beta$value != 0) {
+    stop("Fixed beta != 0 not yet implemented; got beta = ", beta$value)
   }
   ## Check latent0
   if(!(isTRUE(latent0 == "stationary") ||
@@ -121,6 +152,7 @@ specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
 # Find a good initial value for mu
 ## Posterior mean of the homoskedastic Bayesian linear regression model
 ## log((y_t - X_t*beta_hat)^2) + 1.27 = mu + epsilon_t
+# TODO document and export
 init_mu <- function (y, priorspec, X = NULL, beta_hat = NULL) {
   moments_prior_mu <- switch(priorspec$mu$distribution,
                              "normal" =
@@ -137,6 +169,23 @@ init_mu <- function (y, priorspec, X = NULL, beta_hat = NULL) {
   len <- length(left_hand_side)
   ols <- mean(left_hand_side)
   (len * ols + e_prior_mu / v_prior_mu) / (len + 1 / v_prior_mu)
+}
+
+# Merge lists: match user input to a default, fill in missing parts in the input from the default
+apply_default_list <- function (input, default, name_input, name_default) {
+  if (is.null(input)) {
+    default
+  } else if (is.list(default)) {
+    elements <- names(default)
+    assert_element(names(input), elements, name_input, name_default)
+
+    for (element in elements) {
+      default[[element]] <- apply_default_list(input[[element]], default[[element]], paste0(name_input, "$", element), paste0(name_default, "$", element))
+    }
+    default
+  } else {
+    input
+  }
 }
 
 asisprint <- function (x, censtring) {

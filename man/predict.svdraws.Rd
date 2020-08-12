@@ -16,7 +16,7 @@
 steps to forecast.}
 
 \item{newdata}{\emph{only in case d) of the description} corresponds to input
-parameter \code{designmatrix} in \code{\link{svsample}} and \code{\link{svlsample}}.
+parameter \code{designmatrix} in \code{\link{svsample}}.
 A matrix of regressors with number of rows equal to parameter \code{steps}.}
 
 \item{\dots}{currently ignored.}
@@ -86,9 +86,9 @@ simreg <- svsim(len, rho = -0.42)
 simreg$y <- simreg$y + as.numeric(regressors \%*\% betas)
 
 ## Obtain 12000 draws
-drawsreg <- svlsample(simreg$y, draws = 12000, burnin = 3000,
+drawsreg <- svsample(simreg$y, draws = 12000, burnin = 3000,
   designmatrix = regressors, priormu = c(-10, 1), priorphi = c(20, 1.5),
-  priorsigma = 0.2)
+  priorsigma = 0.2, priorrho = c(4, 4))
 
 ## Predict 5 days ahead using new regressors
 predlen <- 5L

@@ -165,7 +165,7 @@ List svsample_cpp(
     B011inv,
     B022inv,
     MHsteps,
-    MHcontrol < 0 ? ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENT : ExpertSpec_VanillaSV::ProposalSigma2::LOG_RANDOM_WALK,
+    MHcontrol < 0 ? ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENCE : ExpertSpec_VanillaSV::ProposalSigma2::LOG_RANDOM_WALK,
     MHcontrol,
     truncnormal ? ExpertSpec_VanillaSV::ProposalPhi::TRUNCATED_NORMAL : ExpertSpec_VanillaSV::ProposalPhi::ACCEPT_REJECT_NORMAL
   };
@@ -317,7 +317,8 @@ List svlsample_cpp (
   arma::vec beta(p); beta.fill(0.0);
 
   arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
-  arma::mat params(draws/thinpara, 4);
+  Rcpp::NumericMatrix para(draws/thinpara, 4);
+  arma::mat params(para.begin(), para.nrow(), para.ncol(), false, false);
 
   const int hstorelength = T/thintime;  // thintime must be either 1 or T
   arma::vec latent0(draws/thinlatent);
@@ -453,8 +454,12 @@ List svlsample_cpp (
 
   if (verbose) progressbar_finish(N);  // finalize progress bar
 
+  Rcpp::CharacterVector coln(para.ncol());
+  coln[0] = "mu"; coln[1] = "phi"; coln[2] = "sigma"; coln[3] = "rho";
+  colnames(para) = coln;
+
   return List::create(
-      _["para"] = params,
+      _["para"] = para,
       _["adaptation_centered"] = Rcpp::wrap(adaptation_collection.centered.get_storage()),
       _["adaptation_noncentered"] = Rcpp::wrap(adaptation_collection.noncentered.get_storage()),
       _["latent"] = latent,
