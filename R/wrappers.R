@@ -288,7 +288,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   meanmodel <- "matrix"
   arorder <- 0L
   if (any(is.na(designmatrix))) {
-    designmatrix <- matrix(NA)
+    designmatrix <- matrix(NA_real_)
     meanmodel <- "none"
   } else {
     if (any(grep("ar[0-9]+$", as.character(designmatrix)[1]))) {
@@ -348,16 +348,9 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     list(correct_model_misspecification = FALSE,  # online correction for general_sv and post-correction for fast_sv
          interweave = TRUE,
          fast_sv =  # UNDOCUMENTED; very expert settings of the fast_sv sampler
-           list(baseline_parameterization = "centered",  # "centered" or "noncentered"
-                proposal_phi = "immediate acceptance-rejection",  # "immediate acceptance-rejection" or "repeated acceptance-rejection"
-                proposal_sigma2 = "independence",  # "independence" or "log random walk"
-                proposal_intercept_var = 1e12,  # positive number
-                proposal_phi_var = 1e8,  # positive number
-                proposal_sigma2_rw_scale = 0.1,  # positive number
-                mh_blocking_steps = 2),  # 1/2/3
+           default_fast_sv,
          general_sv =  # UNDOCUMENTED; very expert settings of the general_sv sampler
-           list(multi_asis = 3,  # positive integer
-                proposal_para = "random walk"))  # "random walk" or "metropolis-adjusted langevin algorithm
+           default_general_sv)
   expert <- apply_default_list(expert, expertdefault, "Names in expert", "allowed names in expert")
   validate_expert(expert)
   correct_model_misspecification <- expert$correct_model_misspecification
@@ -372,7 +365,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
          sigma = sqrt(mean(priorspec$sigma2)),
          nu = 2 + mean(priorspec$nu),
          rho = if (inherits(priorspec$rho, "sv_beta")) 2 * mean(priorspec$rho) - 1 else mean(priorspec$rho),
-         beta = rep.int(mean(priorspec$beta), NCOL(designmatrix)))  # init_beta
+         beta = rep.int(mean(priorspec$beta), NCOL(designmatrix)),
+         latent0 = -10)  # init_beta
   startlatentdefault <- rep.int(-10, length(y))
   startpara <- apply_default_list(startpara, startparadefault)
   startlatent <- apply_default_list(startlatent, startlatentdefault)
@@ -384,11 +378,12 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     use_fast_sv <- FALSE
   }
   # TODO fully specify!!
+  #  e.g. keeptime == "last" && correct_model_misspecification
 
   # Call sampler
   myquiet <- (.Platform$OS.type != "unix") || quiet  # Hack to prevent console flushing problems with Windows
   if (use_fast_sv) {
-    para <- (fast_sv$baseline_parameterization == "noncentered") + 2 * interweave
+    para <- 1 + (fast_sv$baseline_parameterization == "noncentered") + 2 * interweave
     parameterization <- c("centered", "noncentered", "GIS_C", "GIS_NC")[para]
     mhcontrol <- if (fast_sv$proposal_sigma2 == "independence") -1 else fast_sv$proposal_sigma2_rw_scale
     gammaprior <- inherits(priorspec$sigma2, "sv_gamma")
@@ -403,11 +398,11 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     }
 
     runtime <- system.time(res <-
-      svsample_cpp(y, draws, burnin, designmatrix,
-                   priormu[1], priormu[2]^2, priorphi[1], priorphi[2], priorsigma,
-                   thinpara, thinlatent, thintime, startpara, startlatent, keeptau, myquiet, para,
-                   mhsteps, B011, B022, mhcontrol, gammaprior, truncnormal,
-                   myoffset, FALSE, priornu, priorbeta, if (is.character(priorlatent0)) -1L else priorlatent0))
+      svsample_cpp(y, draws, burnin, designmatrix, priorspec,
+                   thinpara, thinlatent, keeptime,
+                   startpara, startlatent, keeptau, myquiet,
+                   correct_model_misspecification, interweave,
+                   myoffset, fast_sv))
 
     res$latent <- t(res$latent)
     class(res) <- "svdraws"
@@ -425,14 +420,11 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     }
 
     runtime <- system.time(res <-
-      svlsample_cpp(y, draws, burnin, designmatrix, thinpara, thinlatent, thintime,
-                    startpara, startlatent,
-                    priorphi[1], priorphi[2], priorrho[1], priorrho[2],
-                    0.5, 0.5/priorsigma, priormu[1], priormu[2],
-                    priorbeta[1], priorbeta[2], !myquiet,
-                    myoffset, use.mala,
-                    gammaprior, correct.latent.draws,
-                    parameterization, FALSE))
+      svlsample_cpp(y, draws, burnin, designmatrix, priorspec,
+                    thinpara, thinlatent, keeptime,
+                    startpara, startlatent, keeptau, quiet,
+                    correct_model_misspecification, interweave,
+                    myoffset, general_sv))
 
     class(res) <- c("svldraws", "svdraws")
   }
@@ -462,7 +454,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
   res$latent0 <- coda::mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
   res$thinning <- list(para = thinpara, latent = thinlatent, time = keeptime)
-  res$priors <- c(list(mu = priormu, phi = priorphi, sigma = priorsigma, gammaprior = gammaprior), if (priornu <= 0) list() else list(nu = priornu))
+  res$priors <- c(list(mu = priormu, phi = priorphi, sigma = priorsigma, gammaprior = gammaprior), if (priornu <= 0) list() else list(nu = priornu), if (isTRUE(is.na(priorrho))) list() else list(rho = priorrho))
   if (!any(is.na(designmatrix))) {
     res$beta <- coda::mcmc(res$beta, burnin+thinpara, burnin+draws, thinpara)
     colnames(res$beta) <- paste0("b_", 0:(NCOL(designmatrix)-1))
@@ -489,6 +481,45 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   if (!quiet) cat("Done!\n\n", file=stderr())
   res
 }
+
+#' @rdname svsample
+#' @export
+svsample_fast <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA, 1, 1), priorspec,
+                          thinpara = 1, thinlatent = 1, keeptime = "all", keeptau = FALSE,
+                          quiet = TRUE, startpara, startlatent) {
+  svsample_cpp(y, draws, burnin, designmatrix, priorspec,
+               thinpara, thinlatent, keeptime,
+               startpara, startlatent, keeptau, quiet,
+               FALSE, TRUE,
+               0, default_fast_sv)
+}
+
+#' @rdname svsample
+#' @export
+svsample_general <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA, 1, 1), priorspec,
+                             thinpara = 1, thinlatent = 1, keeptime = "all", keeptau = FALSE,
+                             quiet = TRUE, startpara, startlatent) {
+  svlsample_cpp(y, draws, burnin, designmatrix, priorspec,
+                thinpara, thinlatent, keeptime,
+                startpara, startlatent, keeptau, quiet,
+                FALSE, TRUE,
+                0, default_general_sv)
+}
+
+default_fast_sv <- 
+  list(baseline_parameterization = "centered",  # "centered" or "noncentered"
+       proposal_phi = "immediate acceptance-rejection",  # "immediate acceptance-rejection" or "repeated acceptance-rejection"
+       proposal_sigma2 = "independence",  # "independence" or "log random walk"
+       proposal_intercept_var = 1e12,  # positive number
+       proposal_phi_var = 1e8,  # positive number
+       proposal_sigma2_rw_scale = 0.1,  # positive number
+       mh_blocking_steps = 2,  # 1/2/3
+       store_indicators = FALSE,
+       init_indicators = 5)
+
+default_general_sv <-
+  list(multi_asis = 3,  # positive integer
+       proposal_para = "random walk")  # "random walk" or "metropolis-adjusted langevin algorithm
 
 ##' @rdname svsample
 ##' @export

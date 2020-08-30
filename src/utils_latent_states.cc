@@ -7,13 +7,13 @@ namespace stochvol {
 
 void cholesky_tridiagonal(
     const arma::vec& omega_diag,
-    double omega_offdiag,
+    const double omega_offdiag,
     arma::vec& chol_diag,
     arma::vec& chol_offdiag) {
-  chol_diag[0] = sqrt(omega_diag[0]);  // maybe speed up via iterators?
+  chol_diag[0] = std::sqrt(omega_diag[0]);
   for (int j = 1; j < int(omega_diag.size()); j++) {
     chol_offdiag[j-1] = omega_offdiag/chol_diag[j-1];
-    chol_diag[j] = sqrt(omega_diag[j]-chol_offdiag[j-1]*chol_offdiag[j-1]);
+    chol_diag[j] = std::sqrt(omega_diag[j]-chol_offdiag[j-1]*chol_offdiag[j-1]);
   }
 }
 
@@ -33,50 +33,36 @@ void backward_algorithm(
     const arma::vec& chol_offdiag,
     const arma::vec& htmp,
     arma::vec& h) {
-  int T = chol_diag.size();
-  h[T-1] = htmp[T-1]/chol_diag[T-1];
-  for (int j = T-2; j >= 0; j--) {
-    h[j] = (htmp[j] - chol_offdiag[j]*h[j+1])/chol_diag[j];
+  const int T = chol_diag.size() - 1;
+  h[T] = htmp[T] / chol_diag[T];
+  for (int j = T-1; j >= 0; j--) {
+    h[j] = (htmp[j] - chol_offdiag[j] * h[j+1]) / chol_diag[j];
   }
 }
 
 void inverse_transform_sampling(
     const arma::vec& mixprob,
     arma::ivec& r,
-    int T) {
-  int index;
-  arma::vec innov = Rcpp::runif(T); 
-  double temp;
-  bool larger, smaller;
+    const int T) {
+  const arma::vec innov = Rcpp::runif(T);  // TODO imbue
   for (int j = 0; j < T; j++) {
-    index = (10-1)/2;  // start searching in the middle
-    temp = innov[j]*mixprob[9 + 10*j];  // current (non-normalized) value
-    larger = false;  // indicates that we already went up
-    smaller = false; // indicates that we already went down
+    int index = (10-1)/2;  // start searching in the middle
+    const double unnorm_cdf_value = innov[j]*mixprob[9 + 10*j];  // current (non-normalized) value
+    bool larger = false;  // indicates that we already went up
+    bool smaller = false; // indicates that we already went down
     while(true) {
-      if (temp > mixprob[index +  10*j]) {
-        if (smaller == true) {
-          index++;
+      if (unnorm_cdf_value > mixprob[index +  10*j]) {
+        index++;
+        if (smaller) {
           break;
-        }
-        else {
-          index++;
+        } else {
           larger = true;
         }
-      }
-      else {
-        if (larger == true) {
-          break;
-        }
-        else {
-          if (index == 0) {
-            break;
-          }
-          else {
-            index--;
-            smaller = true;
-          }
-        } 
+      } else if (larger || index == 0) {
+        break;
+      } else {
+        index--;
+        smaller = true;
       }
     }
     r[j] = index;
@@ -86,13 +72,12 @@ void inverse_transform_sampling(
 void find_mixture_indicator_cdf(
     arma::vec& mixprob,
     const arma::vec& datanorm)  {
-  int T = datanorm.size();
-  int tmp; 
-  for (int c = 0; c < T; c++) {  // TODO slow (10*T calls to exp)!
-    tmp = 10*c;
-    mixprob[tmp] = exp(mix_pre[0]-(datanorm[c]-mix_mean[0])*(datanorm[c]-mix_mean[0])*mix_2varinv[0]);
+  const int T = datanorm.size();
+  for (int j = 0; j < T; j++) {  // TODO slow (10*T calls to exp)!
+    const int first_index = 10*j;
+    mixprob[first_index] = std::exp(mix_pre[0]-(datanorm[j]-mix_mean[0])*(datanorm[j]-mix_mean[0])*mix_2varinv[0]);
     for (int r = 1; r < 10; r++) {
-      mixprob[tmp+r] = mixprob[tmp+r-1] + exp(mix_pre[r]-(datanorm[c]-mix_mean[r])*(datanorm[c]-mix_mean[r])*mix_2varinv[r]);
+      mixprob[first_index+r] = mixprob[first_index+r-1] + std::exp(mix_pre[r]-(datanorm[j]-mix_mean[r])*(datanorm[j]-mix_mean[r])*mix_2varinv[r]);
     }
   }
 }

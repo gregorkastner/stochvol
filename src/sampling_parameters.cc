@@ -10,7 +10,7 @@ using namespace Rcpp;
 
 namespace stochvol {
 
-arma::vec regression_centered(
+ReturnRegression regression_centered(
     const double h0,
     const arma::vec& h,
     double mu,
@@ -32,173 +32,169 @@ arma::vec regression_centered(
     const bool dontupdatemu,
     const double priorlatent0) {
 
-  double Bh0inv = 1./priorlatent0;
-  if (priorlatent0 < 0) Bh0inv = 1-phi*phi;
+  const double Bh0inv = (priorlatent0 < 0) ? 1-phi*phi : 1./priorlatent0;
 
-  if (dontupdatemu) mu = 0;
+  if (dontupdatemu) mu = 0;  // TODO change
 
   const int T = h.size();
-  double z, CT, sum1 = 0, sum2 = 0, sum3 = 0, sum4 = 0, tmp1,
-         BT11, BT12, BT22, bT1 = 0, bT2 = 0, chol11, chol12, chol22, phi_prop,
-         gamma_prop, tmpR, tmpR2, logR;
-  double R = -10000.;
-  double sigma2_prop = -10000.;
-  double sigma_prop = -10000.;
-  arma::vec innov(1);
-  arma::vec quant(2);
+  double sigma_prop;
 
   // first calculate bT and BT:
-  sum1 = h[0];
-  sum3 = h0*h[0];
-  sum4 = h[0]*h[0];
+  double sum1 = h[0];
+  double sum3 = h0*h[0];
+  double sum4 = h[0]*h[0];
   for (int j = 1; j < T-1; j++) {
     sum1 += h[j];
     sum3 += h[j-1]*h[j];
     sum4 += h[j]*h[j];
   }
-  sum2 = sum1 + h[T-1];  // h_1 + h_2 + ... + h_T
+  double sum2 = sum1 + h[T-1];  // h_1 + h_2 + ... + h_T
   sum1 += h0;            // h_0 + h_1 + ... + h_{T-1}
   sum3 += h[T-2]*h[T-1]; // h_0*h_1 + h_1*h_2 + ... + h_{T-1}*h_T
   sum4 += h0*h0;         // h_0^2 + h_1^2 + ... + h_{T-1}^2
 
-  tmp1 = 1/(((sum4 + B011inv)*(T+B022inv)-sum1*sum1));
-  BT11 = (T + B022inv)*tmp1;
-  BT12 = -sum1*tmp1;
-  BT22 = (sum4+B011inv)*tmp1;
-
-  bT1 = BT11*sum3 + BT12*sum2;
-  bT2 = BT12*sum3 + BT22*sum2;
+  const double tmp1 = 1/(((sum4 + B011inv)*(T+B022inv)-sum1*sum1)),
+               BT11 = (T + B022inv)*tmp1,
+               BT12 = -sum1*tmp1,
+               BT22 = (sum4+B011inv)*tmp1,
+               bT1 = BT11*sum3 + BT12*sum2,
+               bT2 = BT12*sum3 + BT22*sum2;
 
   // draw sigma^2 
-  if (MHsteps == 2 || MHsteps == 3 || dontupdatemu == true) { // draw sigma^2 from full conditional
-    z = pow(((h[0]-mu)-phi*(h0-mu)),2);  // TODO: more efficiently via sum1, sum2, etc.
+  if (MHsteps == 2 || MHsteps == 3 || dontupdatemu) { // draw sigma^2 from full conditional
+    double z = std::pow(((h[0]-mu)-phi*(h0-mu)), 2);  // TODO: more efficiently via sum1, sum2, etc.
     for (int j = 0; j < (T-1); j++) {
-      z += pow((h[j+1]-mu)-phi*(h[j]-mu),2);
+      z += std::pow((h[j+1]-mu)-phi*(h[j]-mu), 2);
     }
-    z += (h0-mu)*(h0-mu)*Bh0inv;
+    z += std::pow(h0-mu, 2) * Bh0inv;
     if (MHcontrol > 0) {  // let's do a log normal random walk
-      sigma2_prop = exp(R::rnorm(log(sigma*sigma), MHcontrol));
-      logR = logacceptrateRW(sigma2_prop, sigma*sigma, Bsigma, T, z);
+      const double sigma2_prop = std::exp(R::rnorm(2 * std::log(sigma), MHcontrol)),
+                   log_ar_prob = logacceptrateRW(sigma2_prop, std::pow(sigma, 2), Bsigma, T, z);
 
-      if (log(R::runif(0, 1)) < logR) sigma = sqrt(sigma2_prop);
+      if (log_ar_prob >= 0 || R::unif_rand() < std::exp(log_ar_prob)) {
+        sigma = std::sqrt(sigma2_prop);
+      }
     } else {  // either IG(-.5,0)-proposal or IG(1.5,1.5*Bsigma)-prior
       if (Gammaprior) {
-        CT = .5*z;
-        sigma2_prop = 1/R::rgamma(cT, 1/CT);
-        if (log(R::runif(0, 1)) <
+        const double CT = .5*z,
+                     sigma2_prop = 1/R::rgamma(cT, 1/CT);
+        if (std::log(R::unif_rand()) <
             logacceptrateGamma(sigma2_prop, sigma*sigma, Bsigma)) {
-          sigma = sqrt(sigma2_prop);
+          sigma = std::sqrt(sigma2_prop);
         }
       } else {
-        CT = C0+.5*z;
-        sigma = sqrt(1/R::rgamma(cT, 1/CT));
+        const double CT = C0+.5*z;
+        sigma = std::sqrt(1/R::rgamma(cT, 1/CT));
       }
     }
-  } else if (MHsteps == 1) {  // draw sigma^2 marginalized over gamma, phi
-    if (Gammaprior) {
-      CT = .5*((sum4 - h0*h0 + h[T-1]*h[T-1]) - bT1*sum3 - bT2*sum2);
-      sigma2_prop = 1/R::rgamma(cT, 1/CT);
-    }
+    sigma_prop = sigma;
+  } else if (Gammaprior && MHsteps == 1) {  // draw sigma^2 marginalized over gamma, phi
+    const double CT = .5*((sum4 - h0*h0 + h[T-1]*h[T-1]) - bT1*sum3 - bT2*sum2);
+    sigma_prop = std::sqrt(1/R::rgamma(cT, 1/CT));
+  } else {
+    ::Rf_error("The 1-block sampler is only implemented with a gamma prior for sigma^2");
   }
 
 
   // sampling of "betas" (i.e. phi and gamma)
-  if (MHsteps == 3 || dontupdatemu == true) {
+  if (MHsteps == 3 || dontupdatemu) {
 
-    // sampling of phi from full conditional:
-    double gamma = (1-phi)*mu;  // = 0 if mu = 0
-    double BTsqrt = sigma/sqrt(sum4+B011inv);
-    double bT = (sum3-gamma*sum1)/(sum4+B011inv);
-    phi_prop = R::rnorm(bT, BTsqrt);
+    {
+      // sampling of phi from full conditional:
+      const double gamma = (1-phi)*mu,  // = 0 if mu = 0
+                   BTsqrt = sigma/std::sqrt(sum4+B011inv),
+                   bT = (sum3-gamma*sum1)/(sum4+B011inv),
+                   phi_prop = R::rnorm(bT, BTsqrt);
 
-    R = 0;
-    if (priorlatent0 < 0.) { // needed only if prior of h0 depends on phi
-      R += logdnorm(h0, mu, sigma/sqrt(1-phi_prop*phi_prop));
-      R -= logdnorm(h0, mu, sigma/sqrt(1-phi*phi));
-    } 
-    R += logdbeta((phi_prop+1)/2, a0, b0);
-    R -= logdbeta((phi+1)/2, a0, b0);
-    R += logdnorm(phi, 0, sigma/sqrt(B011inv));
-    R -= logdnorm(phi_prop, 0, sigma/sqrt(B011inv));
+      double ar_prob = 0;
+      if (priorlatent0 < 0.) { // needed only if prior of h0 depends on phi
+        ar_prob += logdnorm(h0, mu, sigma/std::sqrt(1-phi_prop*phi_prop));
+        ar_prob -= logdnorm(h0, mu, sigma/std::sqrt(1-phi*phi));
+      } 
+      ar_prob += logdbeta((phi_prop+1)/2, a0, b0);
+      ar_prob -= logdbeta((phi+1)/2, a0, b0);
+      ar_prob += logdnorm(phi, 0, sigma/std::sqrt(B011inv));
+      ar_prob -= logdnorm(phi_prop, 0, sigma/std::sqrt(B011inv));
 
-    if (log(R::runif(0, 1)) < R) {
-      phi = phi_prop;
+      if (std::log(R::runif(0, 1)) < ar_prob) {
+        phi = phi_prop;
+      }
     }
 
-    if (dontupdatemu == false) {
+    if (!dontupdatemu) {
       // sampling of gamma from full conditional:
-      gamma = (1-phi)*mu;
-      BTsqrt = sigma/sqrt(T+B022inv);
-      bT = (sum2-phi*sum1)/(T+B022inv);
-      gamma_prop = R::rnorm(bT, BTsqrt);
+      const double gamma = (1-phi)*mu,
+                   BTsqrt = sigma/std::sqrt(T+B022inv),
+                   bT = (sum2-phi*sum1)/(T+B022inv),
+                   gamma_prop = R::rnorm(bT, BTsqrt);
 
-      R = logdnorm(h0, gamma_prop/(1-phi), sigma/sqrt(Bh0inv));
-      R -= logdnorm(h0, gamma/(1-phi), sigma/sqrt(Bh0inv));
-      R += logdnorm(gamma_prop, bmu*(1-phi), sqrt(Bmu)*(1-phi));
-      R -= logdnorm(gamma, bmu*(1-phi), sqrt(Bmu)*(1-phi));
-      R += logdnorm(gamma, 0, sigma/sqrt(B022inv));
-      R -= logdnorm(gamma_prop, 0, sigma/sqrt(B022inv));
+      double ar_prob = 0;
+      ar_prob = logdnorm(h0, gamma_prop/(1-phi), sigma/std::sqrt(Bh0inv));
+      ar_prob -= logdnorm(h0, gamma/(1-phi), sigma/std::sqrt(Bh0inv));
+      ar_prob += logdnorm(gamma_prop, bmu*(1-phi), std::sqrt(Bmu)*(1-phi));
+      ar_prob -= logdnorm(gamma, bmu*(1-phi), std::sqrt(Bmu)*(1-phi));
+      ar_prob += logdnorm(gamma, 0, sigma/std::sqrt(B022inv));
+      ar_prob -= logdnorm(gamma_prop, 0, sigma/std::sqrt(B022inv));
 
-      if (log(R::runif(0, 1)) < R) {
+      if (std::log(R::unif_rand()) < ar_prob) {
         mu = gamma_prop/(1-phi);
       }
     }
-  } else { 
-    // Some more temps needed for sampling the betas
-    chol11 = sqrt(BT11);
-    chol12 = (BT12/chol11);
-    chol22 = sqrt(BT22-chol12*chol12);
+  } else {
+    double chol11 = std::sqrt(BT11),
+           chol12 = (BT12/chol11),
+           chol22 = std::sqrt(BT22-chol12*chol12);
     chol11 *= sigma;
     chol12 *= sigma;
     chol22 *= sigma;
 
+    double phi_prop,
+           gamma_prop;
     if (truncnormal) { // draw from truncated normal via inversion method
-      quant[0] = R::pnorm(-1, bT1, chol11, true, false);
-      quant[1] = R::pnorm(1, bT1, chol11, true, false);
-      phi_prop = R::qnorm((quant[0] + R::runif(0, 1)*(quant[1]-quant[0])),
+      const double quant_low = R::pnorm(-1, bT1, chol11, true, false),
+                   quant_high = R::pnorm(1, bT1, chol11, true, false);
+      phi_prop = R::qnorm((quant_low + R::unif_rand()*(quant_high-quant_low)),
           bT1, chol11, true, false);
       gamma_prop = R::rnorm(bT2 + chol12*((phi_prop-bT1)/chol11),
           chol22);
-    }
-    else { // draw from normal and reject (return) if outside
-      innov[0] = R::rnorm(0, 1);
-      phi_prop = bT1 + chol11*innov[0];
+    } else { // draw from normal and reject (return) if outside
+      const double innov = R::norm_rand();
+      phi_prop = bT1 + chol11*innov;
       if ((phi_prop >= 1) || (phi_prop <= -1)) { // outside the unit sphere
         return {mu, phi, sigma};
       }
-      else gamma_prop = bT2 + chol12*innov[0] + chol22*R::rnorm(0, 1);
+      gamma_prop = bT2 + chol12*innov + chol22*R::norm_rand();
     }
 
     // acceptance probability exp(R) calculated on a log scale
-    tmpR = 1-phi_prop;  // some temps used for acceptance probability
-    tmpR2 = 1-phi;
+    const double phi_prop_const = 1-phi_prop,  // some temps used for acceptance probability
+                 phi_const = 1-phi;
 
-    R = 0.;  // initialize R
+    double ar_prob;
     if (MHsteps == 2) {
-      sigma_prop = sigma;  // sigma was accepted/rejected independently
-    } else if (MHsteps == 1) {
-      sigma_prop = sqrt(sigma2_prop);  // accept sigma jointly with "betas"
-      R = logacceptrateGamma(sigma2_prop, sigma*sigma, Bsigma);  // initialize R
+      ar_prob = 0;
+    } else {  // if (MHsteps == 1)
+      ar_prob = logacceptrateGamma(std::pow(sigma_prop, 2), sigma*sigma, Bsigma);  // initialize R
     }
 
     if (priorlatent0 < 0.) {
-      R += logdnorm(h0, gamma_prop/tmpR, sigma_prop/sqrt(1-phi_prop*phi_prop));
-      R -= logdnorm(h0, mu, sigma/sqrt(1-phi*phi));
+      ar_prob += logdnorm(h0, gamma_prop/phi_prop_const, sigma_prop/std::sqrt(1-phi_prop*phi_prop));
+      ar_prob -= logdnorm(h0, mu, sigma/std::sqrt(1-phi*phi));
     } else {
-      R += logdnorm(h0, gamma_prop/tmpR, sqrt(priorlatent0)*sigma_prop);
-      R -= logdnorm(h0, mu, sqrt(priorlatent0)*sigma);
+      ar_prob += logdnorm(h0, gamma_prop/phi_prop_const, std::sqrt(priorlatent0)*sigma_prop);
+      ar_prob -= logdnorm(h0, mu, std::sqrt(priorlatent0)*sigma);
     }
-    R += logdnorm(gamma_prop, bmu*tmpR, sqrt(Bmu)*tmpR);
-    R -= logdnorm(mu*tmpR2, bmu*tmpR2, sqrt(Bmu)*tmpR2);
-    R += logdbeta((phi_prop+1)/2, a0, b0);
-    R -= logdbeta((phi+1)/2, a0, b0);
-    R += logdnorm(phi, 0, sigma/sqrt(B011inv));
-    R -= logdnorm(phi_prop, 0, sigma_prop/sqrt(B011inv));
-    R += logdnorm(mu*tmpR2, 0, sigma/sqrt(B011inv));
-    R -= logdnorm(gamma_prop, 0, sigma_prop/sqrt(B011inv));
+    ar_prob += logdnorm(gamma_prop, bmu*phi_prop_const, std::sqrt(Bmu)*phi_prop_const);
+    ar_prob -= logdnorm(mu*phi_const, bmu*phi_const, std::sqrt(Bmu)*phi_const);
+    ar_prob += logdbeta((phi_prop+1)/2, a0, b0);
+    ar_prob -= logdbeta((phi+1)/2, a0, b0);
+    ar_prob += logdnorm(phi, 0, sigma/std::sqrt(B011inv));
+    ar_prob -= logdnorm(phi_prop, 0, sigma_prop/std::sqrt(B011inv));
+    ar_prob += logdnorm(mu*phi_const, 0, sigma/std::sqrt(B011inv));
+    ar_prob -= logdnorm(gamma_prop, 0, sigma_prop/std::sqrt(B011inv));
 
     // accept/reject
-    if (log(R::runif(0, 1)) < R) {
+    if (std::log(R::unif_rand()) < ar_prob) {
       mu = gamma_prop/(1-phi_prop);
       phi = phi_prop;
       if (MHsteps == 1) sigma = sigma_prop;
@@ -208,10 +204,10 @@ arma::vec regression_centered(
   return {mu, phi, sigma};
 }
 
-arma::vec regression_noncentered(
+ReturnRegression regression_noncentered(
     const arma::vec& data,
-    const double h0,
-    const arma::vec& h,
+    const double ht0,
+    const arma::vec& ht,
     const arma::ivec& r,
     double mu,
     double phi,
@@ -227,74 +223,73 @@ arma::vec regression_noncentered(
     const double priorlatent0) {
   if (dontupdatemu) mu = 0;
 
-  const int T = h.size();
-  double sumtmp1, sumtmp2, expR, phi_prop, BT11, BT12, BT22, bT1, bT2, tmp1,
-         tmp2, tmp3, tmp, chol11, chol12, chol22, tmpmean, tmpsd;
-  arma::vec innov(2);
-  arma::vec quant(2);
+  const int T = ht.size();
 
   if (MHsteps == 3 || dontupdatemu) {  // Gibbs-sample mu|sigma,... and sigma|mu,...
 
     // first, draw sigma from the full conditional posterior:
-    tmp1 = 0; 
-    tmp2 = 0; 
+    double tmp1 = 0,
+           tmp2 = 0;
     for (int j = 0; j < T; j++) {
-      tmp1 += h[j]*h[j]*mix_varinv[r[j]];
-      tmp2 += h[j]*(data[j]-mix_mean[r[j]]-mu)*mix_varinv[r[j]];
+      tmp1 += ht[j]*ht[j]*mix_varinv[r[j]];
+      tmp2 += ht[j]*(data[j]-mix_mean[r[j]]-mu)*mix_varinv[r[j]];
     }
-    BT11 = 1/(tmp1+1/Bsigma);
-    bT1 = BT11*tmp2; 
-    //  REprintf("old: %f, new: mean %f and sd %f\n", sigma, bT1, sqrt(BT11));
-    sigma = R::rnorm(bT1, sqrt(BT11));
+    const double BT11 = 1/(tmp1+1/Bsigma),
+                 bT1 = BT11*tmp2;
+    sigma = R::rnorm(bT1, std::sqrt(BT11));
 
     // TODO: check w.r.t. sign of sigma (low priority, 3 block is
     // practically useless anyway if dontupdatemu==false)
     if (!dontupdatemu) {
       // second, draw mu from the full conditional posterior:
-      tmp1 = 0; 
-      tmp2 = 0; 
+      double tmp1 = 0,
+             tmp2 = 0;
       for (int j = 0; j < T; j++) {
         tmp1 += mix_varinv[r[j]];
-        tmp2 += (data[j]-mix_mean[r[j]]-sigma*h[j])*mix_varinv[r[j]];
+        tmp2 += (data[j]-mix_mean[r[j]]-sigma*ht[j])*mix_varinv[r[j]];
       }
-      BT22 = 1/(tmp1+1/Bmu);
-      bT2 = BT22*(tmp2 + bmu/Bmu);
-      //  REprintf("old: %f, new: mean %f and sd %f\n\n", mu, bT2, sqrt(BT22));
-      mu = R::rnorm(bT2, sqrt(BT22));
+      const int BT22 = 1/(tmp1+1/Bmu);
+      const int bT2 = BT22*(tmp2 + bmu/Bmu);
+      mu = R::rnorm(bT2, std::sqrt(BT22));
     }
 
   } else {  // Gibbs-sample mu and sigma jointly (regression) 
-    BT11 = 1/Bmu;
-    BT12 = 0;
-    BT22 = 1/Bsigma;
-    bT1 = 0;
-    bT2 = bmu/Bmu;
+    double BT11 = 1/Bmu,
+           BT12 = 0,
+           BT22 = 1/Bsigma,
+           bT1 = 0,
+           bT2 = bmu/Bmu;
 
     for (int j = 0; j < T; j++) {
-      tmp1 = mix_varinv[r[j]];
-      tmp2 = (data[j]-mix_mean[r[j]])*tmp1;
-      tmp3 = h[j]*tmp1;
+      const double tmp1 = mix_varinv[r[j]],
+                   tmp2 = (data[j]-mix_mean[r[j]])*tmp1,
+                   tmp3 = ht[j]*tmp1;
       BT11 += tmp1;
       BT12 -= tmp3;
-      BT22 += h[j]*tmp3;
-      bT1 += h[j]*tmp2;
+      BT22 += ht[j]*tmp3;
+      bT1 += ht[j]*tmp2;
       bT2 += tmp2;
     }
 
-    tmp = BT11*BT22-BT12*BT12;
-    BT11 /= tmp;
-    BT12 /= tmp;
-    BT22 /= tmp;
+    {
+      const double tmp = BT11*BT22-BT12*BT12;
+      BT11 /= tmp;
+      BT12 /= tmp;
+      BT22 /= tmp;
+    }
 
-    tmp = bT1;
-    bT1 = BT11*tmp + BT12*bT2;
-    bT2 = BT12*tmp + BT22*bT2;
+    {
+      const double tmp = bT1;
+      bT1 = BT11*tmp + BT12*bT2;
+      bT2 = BT12*tmp + BT22*bT2;
+    }
 
-    chol11 = sqrt(BT11);
-    chol12 = (BT12/chol11);
-    chol22 = sqrt(BT22-chol12*chol12);
+    const double chol11 = std::sqrt(BT11),
+                 chol12 = (BT12/chol11),
+                 chol22 = std::sqrt(BT22-chol12*chol12);
 
-    innov = rnorm(2);
+    arma::vec2 innov;
+    innov.imbue([]() -> double { return R::norm_rand(); });
     sigma = bT1 + chol11*innov[0];
     mu = bT2 + chol12*innov[0] + chol22*innov[1];
   }
@@ -302,41 +297,46 @@ arma::vec regression_noncentered(
 
   // Sampling phi: find posterior mean muT and posterior variance sigma2T
 
-  sumtmp1 = h0*h[0];
-  sumtmp2 = h0*h0;
+  double sum_covar = ht0*ht[0],
+         sum_var = ht0*ht0;
+  double phi_prop;
   for (int j = 0; j < T-1; j++) {
-    sumtmp1 += h[j]*h[j+1];
-    sumtmp2 += h[j]*h[j];
+    sum_covar += ht[j]*ht[j+1];
+    sum_var += ht[j]*ht[j];
   }
-  tmpmean = sumtmp1/sumtmp2;
-  tmpsd = 1/sqrt(sumtmp2);
+  const double mean = sum_covar/sum_var,
+               sd = 1/std::sqrt(sum_var);
 
   // actual sampling
   if (truncnormal) {  // draw from truncated normal via inversion method
-    quant[0] = R::pnorm(-1, tmpmean, tmpsd, true, false);
-    quant[1] = R::pnorm(1, tmpmean, tmpsd, true, false);
-    phi_prop = R::qnorm((quant[0] + R::runif(0, 1)*(quant[1]-quant[0])),
-        tmpmean, tmpsd, true, false);
-  }
-  else {  // draw from normal and reject (return) if outside
-    phi_prop = R::rnorm(tmpmean, tmpsd); 
+    const double quant_low = R::pnorm(-1, mean, sd, true, false),
+                 quant_high = R::pnorm(1, mean, sd, true, false);
+    phi_prop = R::qnorm((quant_low + R::unif_rand()*(quant_high-quant_low)),
+        mean, sd, true, false);
+  } else {  // draw from normal and reject (return) if outside
+    phi_prop = R::rnorm(mean, sd);
     if ((phi_prop >= 1) || (phi_prop <= -1)) { // outside the unit sphere
-      return {mu, phi, fabs(sigma)};
+      return {mu, phi, std::fabs(sigma)};
     }
   }
 
-  // now for the MH step, acceptance prob expR
-  if (priorlatent0 < .0) { // only needed if prior of ho depends on phi
-    expR  = exp(logdnorm(h0, 0, 1/sqrt(1-phi_prop*phi_prop))
-        - logdnorm(h0, 0, 1/sqrt(1-phi*phi)));
-  } else expR = 1;
-  expR *= propBeta((phi_prop+1)/2, (phi+1)/2, a0, b0);
-  // ^^note that factor 1/2 from transformation of densities cancels
+  // now for the MH step, acceptance prob ar_prob
+  double ar_prob;
+  if (priorlatent0 < 0) { // only needed if prior of ht0 depends on phi
+    ar_prob = std::exp(logdnorm(ht0, 0, 1/std::sqrt(1-phi_prop*phi_prop))
+        - logdnorm(ht0, 0, 1/std::sqrt(1-phi*phi)));
+  } else {
+    ar_prob = 1;
+  }
+  ar_prob *= propBeta((phi_prop+1)/2, (phi+1)/2, a0, b0);
+  //         ^^note that factor 1/2 from transformation of densities cancels
 
   // accept/reject
-  if (R::runif(0, 1) < expR) phi = phi_prop;
+  if (R::unif_rand() < ar_prob) {
+    phi = phi_prop;
+  }
 
-  return {mu, phi, fabs(sigma)};
+  return {mu, phi, std::fabs(sigma)};
 }
 
 bool draw_theta(

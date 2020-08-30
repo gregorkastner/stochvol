@@ -86,7 +86,7 @@ void update_sv(
     MHsteps,
     MHcontrol < 0 ? ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENCE : ExpertSpec_VanillaSV::ProposalSigma2::LOG_RANDOM_WALK,
     MHcontrol,
-    truncnormal ? ExpertSpec_VanillaSV::ProposalPhi::TRUNCATED_NORMAL : ExpertSpec_VanillaSV::ProposalPhi::ACCEPT_REJECT_NORMAL
+    truncnormal ? ExpertSpec_VanillaSV::ProposalPhi::REPEATED_ACCEPT_REJECT_NORMAL : ExpertSpec_VanillaSV::ProposalPhi::IMMEDIATE_ACCEPT_REJECT_NORMAL
   };
   update_vanilla_sv(data, mu, phi, sigma2, h0, h, r, prior_spec, expert);
   curpara = {mu, phi, std::sqrt(sigma2)};
@@ -131,12 +131,12 @@ void update_svl(
     PriorSpec::Nu(PriorSpec::Infinity()),
     PriorSpec::Rho(PriorSpec::Beta(prior_rho[0], prior_rho[1]))
   };
-  std::vector<Parameterization> strategy_vector(strategy.n_elem);
+  ExpertSpec_GeneralSV::StrategyVector strategy_vector(strategy.n_elem);
   std::transform(strategy.cbegin(), strategy.cend(), strategy_vector.begin(), [](const int ipar) -> Parameterization { return Parameterization(ipar); });
   const ExpertSpec_GeneralSV expert {
     strategy_vector,
     correct,
-    use_mala
+    use_mala ? ExpertSpec_GeneralSV::ProposalPara::METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM : ExpertSpec_GeneralSV::ProposalPara::RANDOM_WALK
   };
   update_general_sv(y, y_star, d, mu, phi, sigma2, rho, h0, h, adaptation, prior_spec, expert);
   ht = (h - mu) / std::sqrt(sigma2);

@@ -12,6 +12,22 @@ using namespace Rcpp;
 
 namespace stochvol {
 
+template<typename T>
+T centered_to_noncentered(
+    const double mu,
+    const double sigma,
+    const T& h) {
+  return (h - mu) / sigma;
+}
+
+template<typename T>
+T noncentered_to_centered(
+    const double mu,
+    const double sigma,
+    const T& ht) {
+  return mu + sigma * ht;
+}
+
 void update_vanilla_sv(
     const arma::vec& log_data2,
     double& mu,
@@ -30,10 +46,9 @@ void update_vanilla_sv(
 
   const arma::vec& data = log_data2;
   const int T = data.size();
-  arma::vec curpara {mu, phi, std::sqrt(sigma2)};
-
-  // Used only to decrease calls to malloc but it is not slowing down anything actually and it is uncomfortable to handle outside of update_*
-  arma::vec mixprob(10 * T);
+  double sigma = std::sqrt(sigma2);
+  double ht0 = centered_to_noncentered(mu, sigma, h0);
+  arma::vec ht = centered_to_noncentered(mu, sigma, h);
 
   // PriorSpec (this part will be removed at later stages of the refactorization)
   const double a0 = prior_spec.phi.beta.alpha,
@@ -84,13 +99,19 @@ void update_vanilla_sv(
         return prior_spec.latent0.constant.value;
     }
   }();
+  const double Bh0inv = [&prior_spec, phi]() -> double {
+    switch (prior_spec.latent0.variance) {
+      case PriorSpec::Latent0::STATIONARY:
+        return 1. - std::pow(phi, 2);
+      case PriorSpec::Latent0::CONSTANT:
+        return 1. / prior_spec.latent0.constant.value;
+    }
+  }();
 
   // ExpertSpec (this part will be removed at later stages of the refactorization)
-  const bool centered_baseline = expert.baseline == Parameterization::CENTERED;
-  const int parameterization = 1 + int(expert.baseline == Parameterization::CENTERED) + 2 * int(expert.interweave);
   const double B011inv = expert.proposal_intercept_varinv,
                B022inv = expert.proposal_phi_varinv;
-  const bool truncnormal = expert.proposal_phi == ExpertSpec_VanillaSV::ProposalPhi::TRUNCATED_NORMAL;
+  const bool truncnormal = expert.proposal_phi == ExpertSpec_VanillaSV::ProposalPhi::REPEATED_ACCEPT_REJECT_NORMAL;
   const int MHsteps = expert.mh_blocking_steps;
   const double MHcontrol = [&expert]() -> double {
     switch (expert.proposal_sigma2) {
@@ -103,127 +124,175 @@ void update_vanilla_sv(
 
 
   if (dontupdatemu) {
-    curpara[0] = 0; // TODO rewrite to curpara[0] = prior_spec.mu.constant.value;
+    mu = 0;
   }
-
-  arma::vec omega_diag(T+1);  // contains diagonal elements of precision matrix
-  double omega_offdiag;  // contains off-diag element of precision matrix (const)
-  arma::vec chol_offdiag(T), chol_diag(T+1);  // Cholesky-factor of Omega
-  arma::vec covector(T+1);  // holds covector (see McCausland et al. 2011)
-  arma::vec htmp(T+1);  // intermediate vector for sampling h
-  arma::vec hnew(T+1);  // intermediate vector for sampling h
-
-  const double sigma2inv = pow(curpara[2], -2);
-
-  double Bh0inv = 1./priorlatent0;
-  if (priorlatent0 < 0) Bh0inv = 1-phi*phi;
 
   /*
    * Step (c): sample indicators
    */
+  {
+    // calculate non-normalized CDF of posterior indicator probs
+    arma::vec mixprob(10 * T);
 
-  // calculate non-normalized CDF of posterior indicator probs
+    find_mixture_indicator_cdf(mixprob, data-h);
 
-  if (centered_baseline) find_mixture_indicator_cdf(mixprob, data-h);
-  else find_mixture_indicator_cdf(mixprob, data-mu-curpara[2]*h); 
+    if (false) {  // TODO remove
+      switch (expert.baseline) {
+        case Parameterization::CENTERED:
+          find_mixture_indicator_cdf(mixprob, data-h);
+          break;
+        case Parameterization::NONCENTERED:
+          find_mixture_indicator_cdf(mixprob, data-mu-sigma*h); 
+          break;
+      }
+    }
 
-  // find correct indicators (currently by inversion method)
-  inverse_transform_sampling(mixprob, r, T);
+    // find correct indicators
+    inverse_transform_sampling(mixprob, r, T);
+  }
 
   /*
    * Step (a): sample the latent volatilities h:
    */
+  {
+    double omega_offdiag;  // contains off-diag element of precision matrix (const)
+    arma::vec omega_diag(T+1),  // contains diagonal elements of precision matrix
+              chol_offdiag(T), chol_diag(T+1),  // Cholesky-factor of Omega
+              covector(T+1),  // holds covector (see McCausland et al. 2011)
+              htmp(T+1),  // intermediate vector for sampling h
+              hnew(T+1);  // intermediate vector for sampling h
+    const double sigma2inv = 1. / sigma2;
 
-  if (centered_baseline) { // fill precision matrix omega and covector c for CENTERED para:
+    switch (expert.baseline) {
+      case Parameterization::CENTERED:  // fill precision matrix omega and covector c for CENTERED para:
+        {
+          const double phi2 = std::pow(phi, 2);
 
-    omega_diag[0] = (Bh0inv + phi*phi) * sigma2inv;
-    covector[0] = mu * (Bh0inv - phi*(1-phi)) * sigma2inv;
+          omega_diag[0] = (Bh0inv + phi2) * sigma2inv;
+          covector[0] = mu * (Bh0inv - phi*(1-phi)) * sigma2inv;
 
-    for (int j = 1; j < T; j++) {
-      omega_diag[j] = mix_varinv[r[j-1]] + (1+phi*phi)*sigma2inv; 
-      covector[j] = (data[j-1] - mix_mean[r[j-1]])*mix_varinv[r[j-1]]
-        + mu*(1-phi)*(1-phi)*sigma2inv;
+          for (int j = 1; j < T; j++) {
+            omega_diag[j] = mix_varinv[r[j-1]] + (1+phi2)*sigma2inv; 
+            covector[j] = (data[j-1] - mix_mean[r[j-1]])*mix_varinv[r[j-1]]
+              + mu*(1-phi)*(1-phi)*sigma2inv;
+          }
+          omega_diag[T] = mix_varinv[r[T-1]] + sigma2inv;
+          covector[T] = (data[T-1] - mix_mean[r[T-1]])*mix_varinv[r[T-1]] + mu*(1-phi)*sigma2inv;
+          omega_offdiag = -phi*sigma2inv;
+        }
+        break;
+      case Parameterization::NONCENTERED:  // fill precision matrix omega and covector c for NONCENTERED para:
+        {
+          const double phi2 = std::pow(phi, 2);
+
+          omega_diag[0] = Bh0inv + phi2;
+          covector[0] = 0.;
+
+          for (int j = 1; j < T; j++) {
+            omega_diag[j] = mix_varinv[r[j-1]] * sigma2 + 1 + phi2;
+            covector[j] = mix_varinv[r[j-1]] * sigma * (data[j-1] - mix_mean[r[j-1]] - mu);
+          }
+          omega_diag[T] = mix_varinv[r[T-1]] * sigma2 + 1;
+          covector[T] = mix_varinv[r[T-1]] * sigma * (data[T-1] - mix_mean[r[T-1]] - mu);
+          omega_offdiag = -phi;
+        }
+        break;
+    } 
+
+    // Cholesky decomposition
+    cholesky_tridiagonal(omega_diag, omega_offdiag, chol_diag, chol_offdiag);
+
+    // Solution of Chol*x = covector ("forward algorithm")
+    forward_algorithm(chol_diag, chol_offdiag, covector, htmp);
+
+    htmp += as<arma::vec>(rnorm(T+1));
+    //htmp.transform( [](double h_elem) -> double { return h_elem + R::norm_rand(); });
+
+    // Solution of (Chol')*x = htmp ("backward algorithm")
+    backward_algorithm(chol_diag, chol_offdiag, htmp, hnew);
+
+    switch (expert.baseline) {
+      case Parameterization::CENTERED:
+        h = hnew.tail(T);
+        h0 = hnew[0];
+
+        ht = centered_to_noncentered(mu, sigma, h);
+        ht0 = centered_to_noncentered(mu, sigma, h0);
+        break;
+      case Parameterization::NONCENTERED:
+        ht = hnew.tail(T);
+        ht0 = hnew[0];
+
+        h = noncentered_to_centered(mu, sigma, ht);
+        h0 = noncentered_to_centered(mu, sigma, ht0);
+        break;
     }
-    omega_diag[T] = mix_varinv[r[T-1]] + sigma2inv;
-    covector[T] = (data[T-1] - mix_mean[r[T-1]])*mix_varinv[r[T-1]]
-      + mu*(1-phi)*sigma2inv;
-    omega_offdiag = -phi*sigma2inv;  // omega_offdiag is constant
-
-  } else { // fill precision matrix omega and covector c for NONCENTERED para:
-
-    const double sigmainvtmp = sqrt(sigma2inv);
-    const double phi2tmp = phi*phi;
-
-    omega_diag[0] = phi2tmp + Bh0inv;
-    covector[0] = 0.;
-
-    for (int j = 1; j < T; j++) {
-      omega_diag[j] = mix_varinv[r[j-1]]/sigma2inv + 1 + phi2tmp; 
-      covector[j] = mix_varinv[r[j-1]]/sigmainvtmp*(data[j-1] - mix_mean[r[j-1]] - mu);
-    }
-    omega_diag[T] = mix_varinv[r[T-1]]/sigma2inv + 1;
-    covector[T] = mix_varinv[r[T-1]]/sigmainvtmp*(data[T-1] - mix_mean[r[T-1]] - mu);
-    omega_offdiag = -phi;  // omega_offdiag is constant
-  } 
-
-  // Cholesky decomposition
-  cholesky_tridiagonal(omega_diag, omega_offdiag, chol_diag, chol_offdiag);
-
-  // Solution of Chol*x = covector ("forward algorithm")
-  forward_algorithm(chol_diag, chol_offdiag, covector, htmp);
-
-  htmp += as<arma::vec>(rnorm(T+1));
-  //htmp.transform( [](double h_elem) -> double { return h_elem + R::norm_rand(); });
-
-  // Solution of (Chol')*x = htmp ("backward algorithm")
-  backward_algorithm(chol_diag, chol_offdiag, htmp, hnew);
-
-  h = hnew.tail(T);
-  h0 = hnew[0];
+  }
 
   /*
    * Step (b): sample mu, phi, sigma
    */
+  {
+    switch (expert.baseline) {
+      case Parameterization::CENTERED:
+        {
+          {
+            const auto parameter_draw = regression_centered(h0, h, mu, phi, sigma,
+                C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv,
+                B022inv, Gammaprior, truncnormal, MHcontrol, MHsteps, dontupdatemu, priorlatent0);
+            mu = parameter_draw.mu;
+            phi = parameter_draw.phi;
+            sigma = parameter_draw.sigma;
+            sigma2 = std::pow(sigma, 2);
 
-  if (centered_baseline) {  // this means we have C as base
-    curpara = regression_centered(h0, h, mu, phi, curpara[2],
-        C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv,
-        B022inv, Gammaprior, truncnormal, MHcontrol, MHsteps, dontupdatemu, priorlatent0);
+            ht = centered_to_noncentered(mu, sigma, h);
+            ht0 = centered_to_noncentered(mu, sigma, h0);
+          }
 
-    if (parameterization == 3) {  // this means we should interweave
-      double h0_alter;
-      htmp = (h-curpara[0])/curpara[2];
-      h0_alter = (h0-curpara[0])/curpara[2];
-      curpara = regression_noncentered(data, h0_alter, htmp, r,
-          curpara[0], curpara[1], curpara[2], Bsigma, a0, b0, bmu, Bmu,
-          truncnormal, MHsteps, dontupdatemu, priorlatent0);
-      h = curpara[0] + curpara[2]*htmp;
-      h0 = curpara[0] + curpara[2]*h0_alter;
-    }
+          if (expert.interweave) {
+            const auto parameter_draw = regression_noncentered(data, ht0, ht, r,
+                mu, phi, sigma, Bsigma, a0, b0, bmu, Bmu,
+                truncnormal, MHsteps, dontupdatemu, priorlatent0);
+            mu = parameter_draw.mu;
+            phi = parameter_draw.phi;
+            sigma = parameter_draw.sigma;
+            sigma2 = std::pow(sigma, 2);
+            h = noncentered_to_centered(mu, sigma, ht);
+            h0 = noncentered_to_centered(mu, sigma, ht0);
+          }
+        }
+        break;
+      case Parameterization::NONCENTERED:
+        {
+          {
+            const auto parameter_draw = regression_noncentered(data, ht0, ht, r, mu, phi, sigma,
+                Bsigma, a0, b0, bmu, Bmu, truncnormal, MHsteps,
+                dontupdatemu, priorlatent0);
+            mu = parameter_draw.mu;
+            phi = parameter_draw.phi;
+            sigma = parameter_draw.sigma;
+            sigma2 = std::pow(sigma, 2);
 
+            h = noncentered_to_centered(mu, sigma, ht);
+            h0 = noncentered_to_centered(mu, sigma, ht0);
+          }
 
-  } else {  // NC as base
-
-    curpara = regression_noncentered(data, h0, h, r, mu, phi, curpara[2],
-        Bsigma, a0, b0, bmu, Bmu, truncnormal, MHsteps,
-        dontupdatemu, priorlatent0);
-
-    if (parameterization == 4) {  // this means we should interweave
-      double h0_alter;
-      htmp = curpara[0] + curpara[2]*h;
-      h0_alter = curpara[0] + curpara[2]*h0;
-      curpara = regression_centered(h0_alter, htmp, curpara[0], curpara[1], curpara[2],
-          C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv, B022inv,
-          Gammaprior, truncnormal, MHcontrol, MHsteps,
-          dontupdatemu, priorlatent0);
-      h = (htmp-curpara[0])/curpara[2];
-      h0 = (h0_alter-curpara[0])/curpara[2];
+          if (expert.interweave) {
+            const auto parameter_draw = regression_centered(h0, h, mu, phi, sigma,
+                C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv, B022inv,
+                Gammaprior, truncnormal, MHcontrol, MHsteps,
+                dontupdatemu, priorlatent0);
+            mu = parameter_draw.mu;
+            phi = parameter_draw.phi;
+            sigma = parameter_draw.sigma;
+            sigma2 = std::pow(sigma, 2);
+            // updating ht0 and ht is unnecessary, we don't return them
+            //ht = centered_to_noncentered(mu, sigma, h);
+            //ht0 = centered_to_noncentered(mu, sigma, h0);
+          }
+        }
     }
   }
-
-  mu = curpara[0];
-  phi = curpara[1];
-  sigma2 = std::pow(curpara[2], 2);
 }
 
 void update_df_svt(
@@ -232,7 +301,7 @@ void update_df_svt(
     double& nu,
     const PriorSpec& prior_spec) {
 
-  R_assert(prior_spec.nu.distribution == prior_spec.nu.EXPONENTIAL, "Call to update_df_svt when under bad model specs");
+  R_assert(prior_spec.nu.distribution == prior_spec.nu.EXPONENTIAL, "Call to update_df_svt: Non-matching model specification. Prior for nu should be exponential.");
 
   const arma::vec& data = log_data2_minus_h;
   const double lambda = prior_spec.nu.exponential.rate;
@@ -304,7 +373,7 @@ void update_general_sv(
   // ExpertSpec
   const bool correct = expert.correct_latent_draws;
   const std::vector<Parameterization>& strategy = expert.strategy;
-  const bool use_mala = expert.proposal_mala;  // TODO remove, only 'proposal' is needed
+  const bool use_mala = expert.proposal_para == ExpertSpec_GeneralSV::ProposalPara::METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM;  // TODO remove, only 'proposal' is needed
 
   // only centered
   {

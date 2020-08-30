@@ -1,7 +1,7 @@
 context("Wrapper functions")
 
 test_that("svsample executes", {
-  res_sv <- expect_warning(svsample(y, draws = draws, burnin = burnin, quiet = TRUE), NA) %>%
+  expect_warning(svsample(y, draws = draws, burnin = burnin, quiet = TRUE), NA) %>%
     expect_is("svdraws")
   for (dm in designmatrix_values) {
     for (kt in keeptime_values) {
@@ -14,7 +14,7 @@ test_that("svsample executes", {
 })
 
 test_that("svtsample executes", {
-  res_sv <- expect_warning(svsample(y, draws = draws, burnin = burnin, priornu = 0.1, quiet = TRUE), NA) %>%
+  expect_warning(svsample(y, draws = draws, burnin = burnin, priornu = 0.1, quiet = TRUE), NA) %>%
     expect_is("svdraws")
   for (dm in designmatrix_values) {
     for (kt in keeptime_values) {
@@ -27,7 +27,7 @@ test_that("svtsample executes", {
 })
 
 test_that("svlsample executes", {
-  res_sv <- expect_warning(svsample(y, draws = draws, burnin = burnin, priorrho = c(4, 4), quiet = TRUE), NA) %>%
+  expect_warning(svsample(y, draws = draws, burnin = burnin, priorrho = c(4, 4), quiet = TRUE), NA) %>%
     expect_is("svldraws")
   for (dm in designmatrix_values) {
     for (kt in keeptime_values) {

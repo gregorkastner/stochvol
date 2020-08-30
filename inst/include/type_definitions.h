@@ -1,6 +1,7 @@
 #ifndef _TYPE_DEFINITIONS_H_
 #define _TYPE_DEFINITIONS_H_
 
+#include <Rcpp.h>
 #include <vector>
 
 namespace stochvol {
@@ -14,27 +15,27 @@ namespace stochvol {
   struct PriorSpec {
     // Recognized distributions
     struct Constant {
-      const double value;
+      double value;
       Constant (const double _v) : value{_v} {}
     };
     struct Normal {
-      const double mean, stdev;
+      double mean, stdev;
       Normal (const double _m, const double _s) : mean{_m}, stdev{_s} {}
     };
     struct Gamma {
-      const double shape, rate;
+      double shape, rate;
       Gamma (const double _s, const double _r) : shape{_s}, rate{_r} {}
     };
     struct InverseGamma {
-      const double shape, scale;
+      double shape, scale;
       InverseGamma (const double _sh, const double _sc) : shape{_sh}, scale{_sc} {}
     };
     struct Beta {
-      const double alpha, beta;
+      double alpha, beta;
       Beta (const double _a, const double _b) : alpha{_a}, beta{_b} {}
     };
     struct Exponential {
-      const double rate;
+      double rate;
       Exponential (const double _r) : rate{_r} {}
     };
     struct Infinity {};
@@ -110,6 +111,17 @@ namespace stochvol {
       Latent0 () : variance{STATIONARY} {}  // default: stationary
     };
 
+    struct Covariates {
+      enum {CONSTANT, NORMAL} distribution;
+      union {
+        Constant constant;
+        Normal normal;
+      };
+
+      Covariates (const Constant& _c) : distribution{CONSTANT}, constant{_c} {}
+      Covariates (const Normal& _n) : distribution{NORMAL}, normal{_n} {}
+    };
+
     // Members
     Latent0 latent0;
     Mu mu;
@@ -117,25 +129,28 @@ namespace stochvol {
     Sigma2 sigma2;
     Nu nu;
     Rho rho;
+    Covariates beta;
 
     // This constructor is implicitly well defined with initializer lists from C++14 on
     PriorSpec(
-        const Latent0& _l,
-        const Mu& _m,
-        const Phi& _p,
-        const Sigma2& _s,
+        const Latent0& _l = Latent0 {},
+        const Mu& _m = Mu {Normal(0, 100)},
+        const Phi& _p = Phi {Beta(15, 1.5)},
+        const Sigma2& _s = Sigma2 {Gamma(0.5, 0.5)},
         const Nu& _n = Nu {Infinity()},
-        const Rho& _r = Rho {Constant(0)})
+        const Rho& _r = Rho {Constant(0)},
+        const Covariates& _b = Covariates{Normal(0, 100)})
       : latent0 {_l},
         mu {_m},
         phi {_p},
         sigma2 {_s},
         nu {_n},
-        rho {_r} {}
+        rho {_r},
+        beta {_b} {}
   };
 
   struct ExpertSpec_VanillaSV {
-    enum class ProposalPhi {ACCEPT_REJECT_NORMAL, TRUNCATED_NORMAL};  // scoped enums would not be needed in C++14
+    enum class ProposalPhi {IMMEDIATE_ACCEPT_REJECT_NORMAL, REPEATED_ACCEPT_REJECT_NORMAL};  // scoped enums would not be needed in C++14
     enum class ProposalSigma2 {INDEPENDENCE, LOG_RANDOM_WALK};  // scoped enums would not be needed in C++14
 
     bool interweave;
@@ -156,7 +171,7 @@ namespace stochvol {
         const int _mh_blocking_steps = 2,
         const ProposalSigma2 _proposal_sigma2 = ProposalSigma2::INDEPENDENCE,
         const double _proposal_sigma2_rw_scale = 0.1,
-        const ProposalPhi _proposal_phi = ProposalPhi::ACCEPT_REJECT_NORMAL)
+        const ProposalPhi _proposal_phi = ProposalPhi::IMMEDIATE_ACCEPT_REJECT_NORMAL)
       : interweave {_interweave},
         baseline {_baseline},
         proposal_intercept_varinv {_proposal_intercept_varinv},
@@ -170,17 +185,19 @@ namespace stochvol {
   struct ExpertSpec_GeneralSV {
     using StrategyVector = std::vector<Parameterization>;
 
+    enum class ProposalPara {RANDOM_WALK, METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM};
+
     StrategyVector strategy;
-    bool correct_latent_draws,
-         proposal_mala;
+    bool correct_latent_draws;
+    ProposalPara proposal_para;
 
     ExpertSpec_GeneralSV(
         const StrategyVector& _strategy = {Parameterization::CENTERED, Parameterization::NONCENTERED},
         const bool _correct_latent_draws = false,
-        const bool _proposal_mala = false)
+        const ProposalPara _proposal_para = ProposalPara::RANDOM_WALK)
       : strategy {_strategy},
         correct_latent_draws {_correct_latent_draws},
-        proposal_mala {_proposal_mala} {}
+        proposal_para {_proposal_para} {}
   };
 
 }

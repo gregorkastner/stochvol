@@ -9,8 +9,14 @@
 
 namespace stochvol {
 
+struct ReturnRegression {
+  double mu;
+  double phi;
+  double sigma;
+};
+
 // Step (b): sample mu, phi, sigma - __CENTERED__ version:
-arma::vec regression_centered(
+ReturnRegression regression_centered(
     const double h0,
     const arma::vec &h,
     double mu,
@@ -33,7 +39,7 @@ arma::vec regression_centered(
     const double priorlatent0);
 
 // Step (b): sample mu, phi, sigma - __NONCENTERED__ version:
-arma::vec regression_noncentered(
+ReturnRegression regression_noncentered(
     const arma::vec& data,
     const double h0,
     const arma::vec& h,

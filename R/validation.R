@@ -156,25 +156,28 @@ validate_initial_values <- function (startpara, startlatent, y, x) {
   assert_element(names(startpara), c("mu", "phi", "sigma", "nu", "rho", "beta", "latent0"),
                  "Elements of argument 'startpara'", "parameters of the model")
 
-  assert_single(startpara$mu, "Provided initial value of parameter mu in 'startpara'")
-  assert_numeric(startpara$mu, "Provided initial value of parameter mu in 'startpara'")
+  assert_single(startpara$mu, "Provided initial value for parameter mu in 'startpara'")
+  assert_numeric(startpara$mu, "Provided initial value for parameter mu in 'startpara'")
 
-  assert_single(startpara$phi, "Provided initial value of parameter phi in 'startpara'")
-  assert_gt(startpara$phi, -1, "Provided initial value of parameter phi in 'startpara'")
-  assert_lt(startpara$phi, 1, "Provided initial value of parameter phi in 'startpara'")
+  assert_single(startpara$phi, "Provided initial value for parameter phi in 'startpara'")
+  assert_gt(startpara$phi, -1, "Provided initial value for parameter phi in 'startpara'")
+  assert_lt(startpara$phi, 1, "Provided initial value for parameter phi in 'startpara'")
 
-  assert_single(startpara$sigma, "Provided initial value of parameter sigma in 'startpara'")
-  assert_positive(startpara$sigma, "Provided initial value of parameter sigma in 'startpara'")
+  assert_single(startpara$sigma, "Provided initial value for parameter sigma in 'startpara'")
+  assert_positive(startpara$sigma, "Provided initial value for parameter sigma in 'startpara'")
 
-  assert_single(startpara$nu, "Provided initial value of parameter nu in 'startpara'")
-  assert_gt(startpara$nu, 2, "Provided initial value of parameter nu in 'startpara'")
+  assert_single(startpara$nu, "Provided initial value for parameter nu in 'startpara'")
+  assert_gt(startpara$nu, 2, "Provided initial value for parameter nu in 'startpara'")
 
-  assert_single(startpara$rho, "Provided initial value of parameter rho in 'startpara'")
-  assert_gt(startpara$rho, -1, "Provided initial value of parameter rho in 'startpara'")
-  assert_lt(startpara$rho, 1, "Provided initial value of parameter rho in 'startpara'")
+  assert_single(startpara$rho, "Provided initial value for parameter rho in 'startpara'")
+  assert_gt(startpara$rho, -1, "Provided initial value for parameter rho in 'startpara'")
+  assert_lt(startpara$rho, 1, "Provided initial value for parameter rho in 'startpara'")
 
   assert_length(startpara$beta, NCOL(x), "Provided initial values for the regressors beta in 'startpara'")
   assert_numeric(startpara$beta, "Provided initial values for the regressors beta in 'startpara'")
+
+  assert_single(startpara$latent0, "Provided initial value for parameter latent0 in 'startpara'")
+  assert_numeric(startpara$latent0, "Provided initial value for parameter latent0 in 'startpara'")
 
   assert_length(startlatent, length(y), "Argument 'startlatent'")
   assert_numeric(startlatent, "Argument 'startlatent'")
@@ -227,6 +230,15 @@ validate_expert <- function (expert) {
                    "the allowed values")
     assert_single(expert$fast_sv$mh_blocking_steps,
                   "Fast SV expert argument 'mh_blocking_steps'")
+
+    assert_logical(expert$fast_sv$store_indicators,
+                  "Fast SV expert argument 'store_indicators'")
+    assert_single(expert$fast_sv$store_indicators,
+                  "Fast SV expert argument 'store_indicators'")
+
+    assert_element(expert$fast_sv$init_indicators, 1:10,
+                   "Fast SV expert argument 'init_indicators'",
+                   "the allowed values")
 
     ### general SV arguments
     assert_positive(expert$general_sv$multi_asis,

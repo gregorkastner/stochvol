@@ -21,7 +21,9 @@ sv_constant <- function (value) {
     sv_infinity()
   }
 }
-mean.sv_constant <- function (x) {
+
+#' @export
+mean.sv_constant <- function (x, ...) {
   x$value
 }
 
@@ -35,7 +37,9 @@ sv_normal <- function (mean = 0, sd = 1) {
   structure(list(mean = mean, stdev = sd),
             class = c("sv_normal", "sv_distribution"))
 }
-mean.sv_normal <- function (x) {
+
+#' @export
+mean.sv_normal <- function (x, ...) {
   x$mean
 }
 
@@ -49,7 +53,9 @@ sv_gamma <- function (shape, rate) {
   structure(list(shape = shape, rate = rate),
             class = c("sv_gamma", "sv_distribution"))
 }
-mean.sv_gamma <- function (x) {
+
+#' @export
+mean.sv_gamma <- function (x, ...) {
   x$shape / x$rate
 }
 
@@ -63,7 +69,9 @@ sv_inverse_gamma <- function (shape, scale) {
   structure(list(shape = shape, scale = scale),
             class = c("sv_inverse_gamma", "sv_distribution"))
 }
-mean.sv_inverse_gamma <- function (x) {
+
+#' @export
+mean.sv_inverse_gamma <- function (x, ...) {
   x$scale / (x$shape - 1)
 }
 
@@ -77,7 +85,9 @@ sv_beta <- function (alpha, beta) {
   structure(list(alpha = alpha, beta = beta),
             class = c("sv_beta", "sv_distribution"))
 }
-mean.sv_beta <- function (x) {
+
+#' @export
+mean.sv_beta <- function (x, ...) {
   x$alpha / (x$alpha + x$beta)
 }
 
@@ -88,7 +98,9 @@ sv_exponential <- function (rate) {
   structure(list(rate = rate),
             class = c("sv_exponential", "sv_distribution"))
 }
-mean.sv_exponential <- function (x) {
+
+#' @export
+mean.sv_exponential <- function (x, ...) {
   1 / x$rate
 }
 
@@ -96,7 +108,9 @@ sv_infinity <- function () {
   structure(list(),
             class = c("sv_infinity", "sv_distribution"))
 }
-mean.sv_infinity <- function (x) {
+
+#' @export
+mean.sv_infinity <- function (x, ...) {
   Inf
 }
 

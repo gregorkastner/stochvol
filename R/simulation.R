@@ -74,6 +74,7 @@
 #' @export
 svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
 
+  # TODO use validation functions
   # Some error checking
   if (any(is.na(len)) || !is.numeric(len) || length(len) != 1 || any(len < 1)) {
     stop("Argument 'len' (length of simulated series) must be a single number >= 2.")
@@ -115,14 +116,14 @@ svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
   y <- exp(h / 2) * eps  # "log-returns"
 
   ret <- list(y = y,
-              vol = exp(h/2),
+              vol0 = exp(h0 / 2),
+              vol = exp(h / 2),
               para = list(mu = mu,
                           phi = phi,
-                          sigma = sigma))
-  ret$vol0 <- exp(h0/2)
-  ret$para$rho <- rho
-  ret$para$nu <- nu
-  ret$correction <- 1/standardizer  # TODO discuss with Gregor
+                          sigma = sigma,
+                          rho = rho,
+                          nu = nu),
+              correction = 1/standardizer)
   class(ret) <- "svsim"
   ret
 }

@@ -49,10 +49,20 @@ const arma::vec::fixed<10> mix_pre {
 -4.8643822832849297199686589010525494813919067382812500000,
 -7.7642143280080739842219372803810983896255493164062500000};
 
+inline
+Rcpp::List get_omori_constants () {
+  return Rcpp::List::create(
+      Rcpp::_["prob"] = mix_prob,
+      Rcpp::_["mean"] = mix_mean,
+      Rcpp::_["var"] = mix_var,
+      Rcpp::_["a"] = mix_a,
+      Rcpp::_["b"] = mix_b);
+}
+
 // Cholesky factor for a tridiagonal matrix with constant off-diagonal
 void cholesky_tridiagonal(
     const arma::vec& omega_diag,
-    double omega_offdiag,
+    const double omega_offdiag,
     arma::vec& chol_diag,
     arma::vec& chol_offdiag);
 
@@ -74,7 +84,7 @@ void backward_algorithm(
 void inverse_transform_sampling(
     const arma::vec& mixprob,
     arma::ivec& r,
-    int T);
+    const int T);
 
 // Computes the CDF of the mixture indicators
 void find_mixture_indicator_cdf(

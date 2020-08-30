@@ -13,130 +13,112 @@ List svsample_cpp(
     const arma::vec& y_in,
     const int draws,
     const int burnin,
-    const arma::mat& X_in,
-    const double bmu,
-    const double Bmu,
-    const double a0,
-    const double b0,
-    const double Bsigma,
+    const arma::mat& X,
+    const Rcpp::List& priorspec_in,
     const int thinpara,
     const int thinlatent,
-    const int thintime,
-    const List& startpara,
-    const arma::vec& startvol,
-    const bool keeptau,
+    const Rcpp::CharacterVector& keeptime_in,
+    const Rcpp::List& startpara,
+    const arma::vec& startlatent,
+    const bool keep_tau,
     const bool quiet,
-    const int para,
-    const int MHsteps,
-    const double B011,
-    const double B022,
-    const double mhcontrol,
-    const bool gammaprior,
-    const bool truncnormal,
+    const bool correct_model_specification,
+    const bool interweave,
     const double offset,
-    const bool dontupdatemu,
-    const double priordf,
-    const arma::vec& priorbeta_in,
-    const double priorlatent0) {
+    const Rcpp::List& expert_in) {
 
   arma::vec y(y_in);
-
-  arma::mat X(X_in);
 
   const int T = y.size();
   const int p = X.n_cols;
 
   // should we model the mean as well?
-  bool regression;
-  if (ISNA(X.at(0,0))) regression = false; else regression = true;
-  arma::vec priorbeta(priorbeta_in);
+  const bool regression = !::ISNA(X.at(0,0));
+  const PriorSpec prior_spec = list_to_priorspec(priorspec_in);
+  const ExpertSpec_VanillaSV expert = list_to_vanilla_sv(expert_in, interweave);
+
+  if (prior_spec.mu.distribution == PriorSpec::Mu::CONSTANT && expert.mh_blocking_steps == 1) { // not implemented (would be easy, though)
+    ::Rf_error("Single block update leaving mu constant is not yet implemented");
+  }
+
+  // shortcuts / precomputations
+  const int thintime = ([&keeptime_in, T] () -> int {
+      const std::string keeptime = as<std::string>(keeptime_in);
+      if (keeptime == "all") {
+        return 1;
+      } else if (keeptime == "last") {
+        return T;
+      } else {
+        ::Rf_error("Unknown value for 'keeptime'; got \"%s\"", keeptime.c_str());
+      }
+  })();
 
   // prior mean and precision matrix for the regression part (currently fixed)
-  arma::vec priorbetamean(p); priorbetamean.fill(priorbeta[0]);
-  arma::mat priorbetaprec(p, p, arma::fill::zeros);
-  priorbetaprec.diag() += 1./(priorbeta[1]*priorbeta[1]);
+  const arma::vec priorbetamean = arma::ones(p) * prior_spec.beta.normal.mean;
+  const arma::mat priorbetaprec = arma::eye(p, p) / std::pow(prior_spec.beta.normal.stdev, 2);
 
   // number of MCMC draws
-  int N 	    = burnin + draws;
+  const int N = burnin + draws;
 
   // verbosity control
-  bool verbose = !quiet;
-
-  // "expert" settings:
-  double B011inv         = 1/B011;
-  double B022inv         = 1/B022;
-  bool Gammaprior        = gammaprior;
-  double MHcontrol       = mhcontrol;
-  int parameterization   = para;
-  bool centered_baseline = parameterization % 2; // 0 for C, 1 for NC baseline
+  const bool verbose = !quiet;
 
   // t-errors:
-  const bool terr = priordf > 0;
-
-  // moment-matched IG-prior
-  double c0 = 2.5;
-  double C0 = 1.5*Bsigma;
-
-  // pre-calculation of a posterior parameter
-  double cT = -10000; 
-  if (Gammaprior) {  
-    if (MHsteps == 2 || MHsteps == 3) cT = T/2.0; // we want IG(-.5,0) as proposal
-    else if (MHsteps == 1) cT = (T-1)/2.0; // we want IG(-.5,0) as proposal
-  }
-  else {
-    if (MHsteps == 2) cT = c0 + (T+1)/2.0;  // pre-calculation outside the loop
-    else Rf_error("This setup is not yet implemented");
-  }
-
-  if (dontupdatemu == true && MHsteps == 1) { // not implemented (would be easy, though)
-    Rf_error("This setup is not yet implemented");
-  }
+  const bool terr = prior_spec.nu.distribution == PriorSpec::Nu::EXPONENTIAL;
 
   // initialize the variables:
-  arma::vec sigma2inv_store(draws / thinpara); sigma2inv_store[0] = std::pow(as<double>(startpara["sigma"]), -2);
-  arma::vec phi_store(draws / thinpara); phi_store[0] = as<double>(startpara["phi"]);
-  arma::vec mu_store(draws / thinpara); mu_store[0] = as<double>(startpara["mu"]);
+  double mu = as<double>(startpara["mu"]),
+         phi = as<double>(startpara["phi"]),
+         sigma2 = std::pow(as<double>(startpara["sigma"]), 2);
+  arma::vec sigma2inv_store(draws / thinpara),
+            phi_store(draws / thinpara),
+            mu_store(draws / thinpara);
+  sigma2inv_store[0] = 1. / sigma2;
+  phi_store[0] = phi;
+  mu_store[0] = mu;
 
-  arma::vec h = startvol;  // contains h1 to hT, but not h0!
-  if (!centered_baseline) h = (h-mu_store[0])*sqrt(sigma2inv_store[0]);
+  arma::vec h = startlatent;  // contains h1 to hT, but not h0!
+  double h0 = as<double>(startpara["latent0"]);
 
-  double h0;
+  const bool keep_r = as<bool>(expert_in["store_indicators"]);
+  arma::ivec r = as<arma::ivec>(expert_in["init_indicators"]);  // mixture indicators
+  if (r.n_elem == 1) {
+    const double r_elem = r[0];
+    r.set_size(T);
+    r.fill(r_elem);
+  } else if (r.n_elem != T) {
+    ::Rf_error("Bad initialization for the vector of mixture indicators. Should have length %d, received length %d, first element %f", T, r.n_elem, r[0]);
+  }
+  arma::imat r_store;
+  if (keep_r) {
+    r_store.set_size(T / thintime, draws / thinlatent);
+  }
 
-  arma::ivec r(T);  // mixture indicators
+  const int hstorelength = T / thintime;  // thintime must be either 1 or T
+  arma::mat h_store(hstorelength, draws / thinlatent);
+  arma::vec h0_store(draws / thinlatent);
 
-  int hstorelength = T/thintime;  // thintime must be either 1 or T
-  arma::mat hstore(hstorelength, draws/thinlatent);
-  arma::vec h0store(draws/thinlatent);
-
-  arma::mat mixprob(10, T);  // mixture probabilities
-  arma::vec mixprob_vec(mixprob.begin(), mixprob.n_elem, false);
-
-  arma::vec data = log(y%y + offset);  // commonly used transformation
+  arma::vec data = arma::log(y%y + offset);  // commonly used transformation
 
   arma::vec datastand = data;  // standardized "data" (different for t-errors)
-
-  arma::vec curpara(3);  // holds mu, phi, sigma in every iteration
-  curpara[0] = mu_store[0];
-  curpara[1] = phi_store[0];
-  curpara[2] = 1 / std::sqrt(sigma2inv_store[0]);
 
   // some stuff for the t-errors
   double nu = -1;
   if (terr) nu = as<double>(startpara["nu"]);
   arma::vec tau(T, arma::fill::ones);
 
-  arma::vec nustore;
+  arma::vec nu_store;
   if (terr) {
-    nustore.resize(draws / thinpara);
-    nustore[0] = nu;
+    nu_store.set_size(draws / thinpara);
+    nu_store[0] = nu;
   }
-  arma::mat taustore;
-  if (keeptau) {
-    taustore.resize(hstorelength, draws / thinlatent);
+  arma::mat tau_store;
+  if (keep_tau) {
+    tau_store.set_size(hstorelength, draws / thinlatent);
   }
 
   // some stuff for the regression part
-  arma::vec curbeta(p, arma::fill::ones);
+  arma::vec beta = as<arma::vec>(startpara["beta"]);
   arma::vec normalizer;
   arma::mat Xnew = X;
   arma::vec ynew = y;
@@ -145,30 +127,10 @@ List svsample_cpp(
   arma::mat postcov(p, p);
   arma::vec postmean(p);
   arma::vec armadraw(p);
-  arma::mat betastore;
+  arma::mat beta_store;
   if (regression) {
-    betastore.resize(draws / thinpara, p);
+    beta_store.resize(draws / thinpara, p);
   }
-
-  // Prior specification
-  const PriorSpec prior_spec {
-    (priorlatent0 <= 0) ? PriorSpec::Latent0() : PriorSpec::Latent0(PriorSpec::Constant(priorlatent0)),
-    dontupdatemu ? PriorSpec::Mu(PriorSpec::Constant(0)) : PriorSpec::Mu(PriorSpec::Normal(bmu, std::sqrt(Bmu))),
-    PriorSpec::Phi(PriorSpec::Beta(a0, b0)),
-    Gammaprior ? PriorSpec::Sigma2(PriorSpec::Gamma(0.5, 0.5 / Bsigma)) : PriorSpec::Sigma2(PriorSpec::InverseGamma(2.5, C0)),
-    priordf > 0 ? PriorSpec::Nu(PriorSpec::Exponential(priordf)) : PriorSpec::Nu(PriorSpec::Infinity())
-  };
-  // Expert (sampler specific) settings
-  const ExpertSpec_VanillaSV expert {
-    parameterization > 2,  // interweave
-    parameterization % 2 ? Parameterization::CENTERED : Parameterization::NONCENTERED,  // centered_baseline
-    B011inv,
-    B022inv,
-    MHsteps,
-    MHcontrol < 0 ? ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENCE : ExpertSpec_VanillaSV::ProposalSigma2::LOG_RANDOM_WALK,
-    MHcontrol,
-    truncnormal ? ExpertSpec_VanillaSV::ProposalPhi::TRUNCATED_NORMAL : ExpertSpec_VanillaSV::ProposalPhi::ACCEPT_REJECT_NORMAL
-  };
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
@@ -185,29 +147,20 @@ List svsample_cpp(
     if (verbose && (i % show == 0)) progressbar_print();
 
     if (regression) {
-      datastand = data = log(square(y - X*curbeta));
+      datastand = data = arma::log(arma::square(y - X*beta));
     }
 
     if (terr) {
-      if (centered_baseline) {
-        update_df_svt(data - h, tau, nu, prior_spec);
-      } else {
-        update_df_svt(data - curpara[0] - curpara[2] * h, tau, nu, prior_spec);
-      }
-
+      update_df_svt(data - h, tau, nu, prior_spec);
       datastand = data - arma::log(tau);
     }
 
     // a single MCMC update: update indicators, latent volatilities,
     // and parameters ONCE
-    double mu = curpara[0],
-           phi = curpara[1],
-           sigma2 = std::pow(curpara[2], 2);
     update_vanilla_sv(datastand, mu, phi, sigma2, h0, h, r, prior_spec, expert);
-    curpara = {mu, phi, std::sqrt(sigma2)};
 
     if (regression) { // update betas (regression)
-      normalizer = exp(-h/2);
+      normalizer = arma::exp(-h/2);
       Xnew = X;
       Xnew.each_col() %= normalizer;
       ynew = y % normalizer;
@@ -228,38 +181,36 @@ List svsample_cpp(
       armadraw = rnorm(p);
 
       // posterior betas
-      curbeta = postmean + postpreccholinv * armadraw;
+      beta = postmean + postpreccholinv * armadraw;
     }
 
     // store draws
     if ((i >= 1) && !thinpara_round) {
       const int index = i / thinpara - 1;
-      mu_store(index) = curpara[0];
-      phi_store(index) = curpara[1];
-      sigma2inv_store(index) = std::pow(curpara[2], -2);
+      mu_store(index) = mu;
+      phi_store(index) = phi;
+      sigma2inv_store(index) = 1. / sigma2;
       if (terr) {
-        nustore[index] = nu;
+        nu_store[index] = nu;
       }
       if (regression) {
-        betastore.row(index) = curbeta.t();
+        beta_store.row(index) = beta.t();
       }
     }
     if ((i >= 1) && !thinlatent_round) {
       const int index = i / thinlatent - 1;
-      if (centered_baseline) {
-        h0store[index] = h0;
+      h0_store[index] = h0;
+      for (int volind = 0, thincol = 0; thincol < hstorelength; volind++, thincol++) {
+        h_store.at(volind, index) = h[thintime * (thincol + 1) - 1];
+      }
+      if (keep_tau && terr) {
         for (int volind = 0, thincol = 0; thincol < hstorelength; volind++, thincol++) {
-          hstore.at(volind, index) = h[thintime * (thincol + 1) - 1];
-        }
-      } else {
-        h0store[index] = curpara[0] + curpara[2]*h0;
-        for (int volind = 0, thincol = 0; thincol < hstorelength; volind++, thincol++) {
-          hstore.at(volind, index) = curpara[0] + curpara[2]*h[thintime * (thincol + 1) - 1];
+          tau_store.at(volind, index) = tau[thintime * (thincol + 1) - 1];
         }
       }
-      if (keeptau && terr) {
+      if (keep_r) {
         for (int volind = 0, thincol = 0; thincol < hstorelength; volind++, thincol++) {
-          taustore.at(volind, index) = tau[thintime * (thincol + 1) - 1];
+          r_store.at(volind, index) = r[thintime * (thincol + 1) - 1];
         }
       }
     }
@@ -268,7 +219,7 @@ List svsample_cpp(
   if (verbose) progressbar_finish(N);  // finalize progress bar
 
   // Prepare return value and return
-  return cleanup(mu_store, phi_store, sqrt(1/sigma2inv_store), hstore, h0store, nustore, taustore, betastore);
+  return cleanup(mu_store, phi_store, sqrt(1/sigma2inv_store), h_store, h0_store, nu_store, tau_store, beta_store, r_store);
 }
 
 List svlsample_cpp (
@@ -276,45 +227,50 @@ List svlsample_cpp (
     const int draws,
     const int burnin,
     const arma::mat& X,
+    const Rcpp::List& priorspec_in,
     const int thinpara,
     const int thinlatent,
-    const int thintime,
-    const List& theta_init,
-    const arma::vec& h_init,
-    const double prior_phi_a,
-    const double prior_phi_b,
-    const double prior_rho_a,
-    const double prior_rho_b,
-    const double prior_sigma2_shape,
-    const double prior_sigma2_rate,
-    const double prior_mu_mu,
-    const double prior_mu_sigma,
-    const double prior_beta_mu,
-    const double prior_beta_sigma,
-    const bool verbose,
+    const Rcpp::CharacterVector& keeptime_in,
+    const Rcpp::List& startpara,
+    const arma::vec& startlatent,
+    const bool keeptau,
+    const bool quiet,
+    const bool correct_model_specification,
+    const bool interweave,
     const double offset,
-    const bool use_mala,
-    const bool gammaprior,
-    const bool correct,
-    const CharacterVector& strategy_rcpp,
-    const bool dontupdatemu) {
+    const Rcpp::List& expert_in) {
 
   const int N = burnin + draws;
   const bool regression = !ISNA(X.at(0,0));
   const int T = y_in.size();
   const int p = X.n_cols;
 
+  const PriorSpec prior_spec = list_to_priorspec(priorspec_in);
+  const ExpertSpec_GeneralSV expert = list_to_general_sv(expert_in, correct_model_specification, interweave);
+
+  const bool verbose = !quiet;
+  const int thintime = ([&keeptime_in, T] () -> int {
+      const std::string keeptime = as<std::string>(keeptime_in);
+      if (keeptime == "all") {
+        return 1;
+      } else if (keeptime == "last") {
+        return T;
+      } else {
+        Rf_error("Unknown value for 'keeptime'; got \"%s\"", keeptime.c_str());
+      }
+  })();
+
   arma::vec y = y_in;
   arma::vec y_star = arma::log(y%y + offset);
   arma::ivec d(T); std::transform(y_in.cbegin(), y_in.cend(), d.begin(), [](const double y_elem) -> int { return y_elem > 0 ? 1 : -1; });
 
-  double phi = theta_init["phi"];
-  double rho = theta_init["rho"];
-  double sigma2 = std::pow(Rcpp::as<double>(theta_init["sigma"]), 2);
-  double mu = theta_init["mu"];
-  double h0 = std::numeric_limits<double>::quiet_NaN();
-  arma::vec h = h_init, ht = (h_init-mu)/sqrt(sigma2);
-  arma::vec beta(p); beta.fill(0.0);
+  double mu = startpara["mu"];
+  double phi = startpara["phi"];
+  double sigma2 = std::pow(Rcpp::as<double>(startpara["sigma"]), 2);
+  double rho = startpara["rho"];
+  double h0 = -1;
+  arma::vec h = startlatent, ht = (h - mu) / std::sqrt(sigma2);
+  arma::vec beta = as<arma::vec>(startpara["beta"]);
 
   arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
   Rcpp::NumericMatrix para(draws/thinpara, 4);
@@ -324,26 +280,11 @@ List svlsample_cpp (
   arma::vec latent0(draws/thinlatent);
   arma::mat latent(draws/thinlatent, hstorelength);
 
-  // priors in objects
-  const arma::vec prior_phi = {prior_phi_a, prior_phi_b};
-  const arma::vec prior_rho = {prior_rho_a, prior_rho_b};
-  const arma::vec prior_sigma2 = {prior_sigma2_shape, prior_sigma2_rate};
-  const arma::vec prior_mu = {prior_mu_mu, prior_mu_sigma};
-
-  // don't use strings or RcppCharacterVector
-  arma::ivec strategy(strategy_rcpp.length());
-  std::transform(strategy_rcpp.cbegin(), strategy_rcpp.cend(), strategy.begin(),
-      [](const SEXP& par) -> int {
-        if (as<std::string>(par) == "centered") return int(Parameterization::CENTERED);
-        else if (as<std::string>(par) == "noncentered") return int(Parameterization::NONCENTERED);
-        else Rf_error("Illegal parameterization");
-  });
-
   // some stuff for the regression part
   // prior mean and precision matrix for the regression part (currently fixed)
   const arma::vec y_in_arma(y_in.begin(), T);
-  const arma::vec priorbetamean = arma::ones(p) * prior_beta_mu;
-  const arma::mat priorbetaprec = arma::eye(p, p) / std::pow(prior_beta_sigma, 2);
+  const arma::vec priorbetamean = arma::ones(p) * prior_spec.beta.normal.mean;
+  const arma::mat priorbetaprec = arma::eye(p, p) / std::pow(prior_spec.beta.normal.stdev, 2);
   arma::vec normalizer(T);
   arma::mat X_reg(T, p);
   arma::vec y_reg(T);
@@ -353,30 +294,12 @@ List svlsample_cpp (
   arma::vec postmean(p);
   arma::vec armadraw(p);
 
-  // Prior specification
-  const PriorSpec prior_spec {
-    PriorSpec::Latent0(),
-    dontupdatemu ? PriorSpec::Mu(PriorSpec::Constant(0)) : PriorSpec::Mu(PriorSpec::Normal(prior_mu[0], prior_mu[1])),
-    PriorSpec::Phi(PriorSpec::Beta(prior_phi[0], prior_phi[1])),
-    gammaprior ? PriorSpec::Sigma2(PriorSpec::Gamma(prior_sigma2[0], prior_sigma2[1])) : PriorSpec::Sigma2(PriorSpec::InverseGamma(prior_sigma2[0] + 2, prior_sigma2[1] / (prior_sigma2[0] * (prior_sigma2[0] + 1)))),  // moment matched inverse gamma
-    PriorSpec::Nu(PriorSpec::Infinity()),
-    PriorSpec::Rho(PriorSpec::Beta(prior_rho[0], prior_rho[1]))
-  };
-  // Expert (sampler specific) settings
-  std::vector<Parameterization> strategy_vector(strategy.n_elem);
-  std::transform(strategy.cbegin(), strategy.cend(), strategy_vector.begin(), [](const int ipar) -> Parameterization { return Parameterization(ipar); });
-  const ExpertSpec_GeneralSV expert {
-    strategy_vector,
-    correct,
-    use_mala
-  };
-
   // adaptive MH
   AdaptationCollection adaptation_collection(
       4,
       (draws + burnin) / 200 + 1,
       200,
-      use_mala ? 0.35 : 0.16,  //0.574 : 0.234,
+      expert.proposal_para == ExpertSpec_GeneralSV::ProposalPara::METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM ? 0.35 : 0.16,  //0.574 : 0.234,
       0.10,  // between 0 and 1: the larger the value the stronger and longer the adaptation
       0.001);
 
@@ -421,7 +344,7 @@ List svlsample_cpp (
       // inverse cholesky factor of posterior precision matrix 
       success = success && arma::inv(postpreccholinv, arma::trimatu(postprecchol));
       if (!success) {
-        Rcpp::stop("Cholesky or its inverse failed");
+        Rcpp::stop("Cholesky or its inverse failed during the sampling of the betas");
       }
 
       // posterior covariance matrix and posterior mean vector

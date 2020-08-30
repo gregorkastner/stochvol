@@ -5,8 +5,8 @@ y <- c(-0.867537088, 0.424335171, -0.048784030, -0.749483682,
        0.306340493, -1.451189223, -1.095406999, 2.765907287,
        -2.196736048, 0.879586318, 0.359074117, -1.700210392)
 
-draws <- 500
-burnin <- 100
+draws <- 50
+burnin <- 10
 
 designmat <- matrix(c(0.18554962, 1.71128430, 2.76005663, 0.27480471, -0.04419060,
                       -1.54191962, 0.03668254, 1.71851215, -1.48924188, 1.45517746,
@@ -23,34 +23,6 @@ designmatrix_values <- c(list(NA), as.list(paste0("ar", ar_values)), list(design
 keeptime_values <- c("all", "last")
 thin_values <- c(1, 3)
 
-# Run samplers (repeated code not nice but readable)
-res_sv <- list(svsample(y, draws = draws, burnin = burnin, quiet = TRUE))  # default values
-res_svt <- list(svsample(y, draws = draws, burnin = burnin, priornu = 0.1, quiet = TRUE))  # default values
-res_svl <- list(svsample(y, draws = draws, burnin = burnin, priorrho = c(4, 4), quiet = TRUE))  # default values
-res_svl_corrected <- list(svsample(y, draws = draws, burnin = burnin, priorrho = c(4, 4), expert = list(correct_model_misspecification = TRUE), quiet = TRUE))  # default values
-res_svl_mala <- list(svsample(y, draws = draws, burnin = burnin, priorrho = c(4, 4), expert = list(general_sv = list(proposal_para = "metropolis-adjusted langevin algorithm"), correct_model_misspecification = FALSE), quiet = TRUE))  # default values
-for (dm in designmatrix_values) {
-  for (kt in keeptime_values) {
-    for (th in thin_values) {
-      res_sv <- c(res_sv, list(  # non-default values
-        svsample(y, draws = draws, burnin = burnin, designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, quiet = TRUE)
-      ))
-      res_svt <- c(res_svt, list(  # non-default values
-        svsample(y, draws = draws, burnin = burnin, priornu = 0.1, designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, quiet = TRUE)
-      ))
-      res_svl <- c(res_svl, list(  # non-default values
-        svsample(y, draws = draws, burnin = burnin, priorrho = c(4, 4), designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, quiet = TRUE)
-      ))
-      res_svl_corrected <- c(res_svl_corrected, list(  # non-default values
-        svsample(y, draws = draws, burnin = burnin, priorrho = c(4, 4), expert = list(correct_model_misspecification = TRUE), designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, quiet = TRUE)
-      ))
-      res_svl_mala <- c(res_svl_mala, list(  # non-default values
-        svsample(y, draws = draws, burnin = burnin, priorrho = c(4, 4), expert = list(general_sv = list(proposal_para = "metropolis-adjusted langevin algorithm"), correct_model_misspecification = FALSE), designmatrix = dm, keeptime = kt, thinpara = th, thinlatent = th, quiet = TRUE)
-      ))
-    }
-  }
-}
-
-draws <- 30
-burnin <- 10
+pred_steps <- 3
+pred_designmat <- designmat[seq_len(pred_steps), ]
 
