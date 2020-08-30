@@ -25,7 +25,7 @@ namespace stochvol {
           const arma::mat& _covariance) {
         scale = _scale;
         covariance = _covariance;
-        bool success = arma::inv_sympd(precision, _covariance) &&
+        const bool success = arma::inv_sympd(precision, _covariance) &&
           arma::chol(covariance_chol, _covariance, "lower") &&
           arma::inv(covariance_chol_inv, arma::trimatl(covariance_chol));
         if (!success) {
