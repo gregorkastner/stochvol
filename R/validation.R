@@ -184,72 +184,78 @@ validate_initial_values <- function (startpara, startlatent, y, x) {
 }
 
 validate_expert <- function (expert) {
-    ### joint arguments
-    assert_logical(expert$correct_model_misspecification, "Expert argument 'correct_model_misspecification'")
-    assert_single(expert$correct_model_misspecification, "Expert argument 'correct_model_misspecification'")
+  ### joint arguments
+  assert_logical(expert$correct_model_misspecification, "Expert argument 'correct_model_misspecification'")
+  assert_single(expert$correct_model_misspecification, "Expert argument 'correct_model_misspecification'")
 
-    assert_logical(expert$interweave, "Expert argument 'interweave'")
-    assert_single(expert$interweave, "Expert argument 'interweave'")
+  assert_logical(expert$interweave, "Expert argument 'interweave'")
+  assert_single(expert$interweave, "Expert argument 'interweave'")
 
-    ### fast SV arguments
-    assert_element(expert$fast_sv$baseline_parameterization, c("centered", "noncentered"),
-                   "Fast SV expert argument 'baseline_parameterization'",
-                   "the allowed values")
-    assert_single(expert$fast_sv$baseline_parameterization,
-                   "Fast SV expert argument 'baseline_parameterization'")
+  ### fast SV arguments
+  assert_element(expert$fast_sv$baseline_parameterization, c("centered", "noncentered"),
+                 "Fast SV expert argument 'baseline_parameterization'",
+                 "the allowed values")
+  assert_single(expert$fast_sv$baseline_parameterization,
+                "Fast SV expert argument 'baseline_parameterization'")
 
-    assert_element(expert$fast_sv$proposal_phi, c("immediate acceptance-rejection", "repeated acceptance-rejection"),
-                   "Fast SV expert argument 'proposal_phi'",
-                   "the allowed values")
-    assert_single(expert$fast_sv$proposal_phi,
-                   "Fast SV expert argument 'proposal_phi'")
+  assert_element(expert$fast_sv$proposal_phi, c("immediate acceptance-rejection", "repeated acceptance-rejection"),
+                 "Fast SV expert argument 'proposal_phi'",
+                 "the allowed values")
+  assert_single(expert$fast_sv$proposal_phi,
+                "Fast SV expert argument 'proposal_phi'")
 
-    assert_element(expert$fast_sv$proposal_sigma2, c("independence", "log random walk"),
-                   "Fast SV expert argument 'proposal_sigma2'",
-                   "the allowed values")
-    assert_single(expert$fast_sv$proposal_sigma2,
-                   "Fast SV expert argument 'proposal_sigma2'")
+  assert_element(expert$fast_sv$proposal_sigma2, c("independence", "log random walk"),
+                 "Fast SV expert argument 'proposal_sigma2'",
+                 "the allowed values")
+  assert_single(expert$fast_sv$proposal_sigma2,
+                "Fast SV expert argument 'proposal_sigma2'")
 
-    assert_positive(expert$fast_sv$proposal_intercept_var,
-                   "Fast SV expert argument 'proposal_intercept_var'")
-    assert_single(expert$fast_sv$proposal_intercept_var,
-                   "Fast SV expert argument 'proposal_intercept_var'")
+  assert_positive(expert$fast_sv$proposal_intercept_var,
+                  "Fast SV expert argument 'proposal_intercept_var'")
+  assert_single(expert$fast_sv$proposal_intercept_var,
+                "Fast SV expert argument 'proposal_intercept_var'")
 
-    assert_positive(expert$fast_sv$proposal_phi_var,
-                   "Fast SV expert argument 'proposal_phi_var'")
-    assert_single(expert$fast_sv$proposal_phi_var,
-                   "Fast SV expert argument 'proposal_phi_var'")
+  assert_positive(expert$fast_sv$proposal_phi_var,
+                  "Fast SV expert argument 'proposal_phi_var'")
+  assert_single(expert$fast_sv$proposal_phi_var,
+                "Fast SV expert argument 'proposal_phi_var'")
 
-    assert_positive(expert$fast_sv$proposal_sigma2_rw_scale,
-                   "Fast SV expert argument 'proposal_sigma2_rw_scale'")
-    assert_single(expert$fast_sv$proposal_sigma2_rw_scale,
+  assert_positive(expert$fast_sv$proposal_sigma2_rw_scale,
                   "Fast SV expert argument 'proposal_sigma2_rw_scale'")
+  assert_single(expert$fast_sv$proposal_sigma2_rw_scale,
+                "Fast SV expert argument 'proposal_sigma2_rw_scale'")
 
-    assert_element(expert$fast_sv$mh_blocking_steps, 1:3,
-                   "Fast SV expert argument 'mh_blocking_steps'",
-                   "the allowed values")
-    assert_single(expert$fast_sv$mh_blocking_steps,
-                  "Fast SV expert argument 'mh_blocking_steps'")
+  assert_element(expert$fast_sv$mh_blocking_steps, 1:3,
+                 "Fast SV expert argument 'mh_blocking_steps'",
+                 "the allowed values")
+  assert_single(expert$fast_sv$mh_blocking_steps,
+                "Fast SV expert argument 'mh_blocking_steps'")
 
-    assert_logical(expert$fast_sv$store_indicators,
-                  "Fast SV expert argument 'store_indicators'")
-    assert_single(expert$fast_sv$store_indicators,
-                  "Fast SV expert argument 'store_indicators'")
+  assert_logical(expert$fast_sv$store_indicators,
+                 "Fast SV expert argument 'store_indicators'")
+  assert_single(expert$fast_sv$store_indicators,
+                "Fast SV expert argument 'store_indicators'")
 
-    assert_element(expert$fast_sv$init_indicators, 1:10,
-                   "Fast SV expert argument 'init_indicators'",
-                   "the allowed values")
+  assert_element(expert$fast_sv$init_indicators, 1:10,
+                 "Fast SV expert argument 'init_indicators'",
+                 "the allowed values")
 
-    ### general SV arguments
-    assert_positive(expert$general_sv$multi_asis,
-                   "General SV expert argument 'multi_asis'")
-    assert_single(expert$general_sv$multi_asis,
-                   "General SV expert argument 'multi_asis'")
+  ### general SV arguments
+  assert_positive(expert$general_sv$multi_asis,
+                  "General SV expert argument 'multi_asis'")
+  assert_single(expert$general_sv$multi_asis,
+                "General SV expert argument 'multi_asis'")
 
-    assert_element(expert$general_sv$proposal_para, c("random walk", "metropolis-adjusted langevin algorithm"),
-                   "General SV expert argument 'proposal_para'",
-                   "among the allowed values")
-    assert_single(expert$general_sv$proposal_para,
-                   "General SV expert argument 'proposal_para'")
+  assert_element(expert$general_sv$starting_parameterization, c("centered", "noncentered"),
+                 "General SV expert argument 'starting_parameterization'",
+                 "the allowed values")
+  assert_single(expert$general_sv$starting_parameterization,
+                "General SV expert argument 'starting_parameterization'")
+
+  assert_element(expert$general_sv$proposal_para, c("random walk", "metropolis-adjusted langevin algorithm"),
+                 "General SV expert argument 'proposal_para'",
+                 "among the allowed values")
+  assert_single(expert$general_sv$proposal_para,
+                "General SV expert argument 'proposal_para'")
 }
 

@@ -237,10 +237,21 @@ ExpertSpec_VanillaSV list_to_vanilla_sv(
 
 ExpertSpec_GeneralSV list_to_general_sv(
     const Rcpp::List& list,
-    const bool interweave,
-    const bool correct_latent_draws) {
+    const bool correct_latent_draws,
+    const bool interweave) {
   const int multi_asis = as<int>(list["multi_asis"]);
+  const std::string starting_parameterization_str = as<std::string>(list["starting_parameterization"]);
   const std::string proposal_para_str = as<std::string>(list["proposal_para"]);
+
+  Parameterization starting_parameterization;
+  if (starting_parameterization_str == "centered") {
+    starting_parameterization = Parameterization::CENTERED;
+  } else if (starting_parameterization_str == "noncentered") {
+    starting_parameterization = Parameterization::NONCENTERED;
+  } else {
+    ::Rf_error("Unknown parameterization setting in expert$general_sv$starting_parameterization == \"%s\"; should be \"centered\" or \"noncentered\"", starting_parameterization_str.c_str());
+  }
+  const Parameterization other_parameterization = starting_parameterization == Parameterization::CENTERED ? Parameterization::NONCENTERED : Parameterization::CENTERED;
 
   ExpertSpec_GeneralSV::ProposalPara proposal_para;
   if (proposal_para_str == "random walk") {
@@ -248,19 +259,21 @@ ExpertSpec_GeneralSV list_to_general_sv(
   } else if (proposal_para_str == "metropolis-adjusted langevin algorithm") {
     proposal_para = ExpertSpec_GeneralSV::ProposalPara::METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM;
   } else {
-    ::Rf_error("Unknown proposal setting in expert$general_sv == \"%s\"; should be \"random walk\" or \"metropolis-adjusted langevin algorithm\"", proposal_para_str.c_str());
+    ::Rf_error("Unknown proposal setting in expert$general_sv$proposal_para == \"%s\"; should be \"random walk\" or \"metropolis-adjusted langevin algorithm\"", proposal_para_str.c_str());
   }
 
   std::vector<Parameterization> strategy;
+  int strategy_size;
   if (interweave) {
-    strategy.reserve(multi_asis * 2);
+    strategy_size = multi_asis * 2;
   } else {
-    strategy.reserve(multi_asis);
+    strategy_size = multi_asis;
   }
-  for (int i = 0; i < strategy.size(); i += interweave + 1) {
-    strategy.push_back(Parameterization::CENTERED);
+  strategy.reserve(strategy_size);
+  for (int i = 0; i < multi_asis; i++) {
+    strategy.push_back(starting_parameterization);
     if (interweave) {
-      strategy.push_back(Parameterization::NONCENTERED);
+      strategy.push_back(other_parameterization);
     }
   }
 

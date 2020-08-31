@@ -295,13 +295,17 @@ List svlsample_cpp (
   arma::vec armadraw(p);
 
   // adaptive MH
+  const int batch_size = 200;
+  const double target_acceptance = expert.proposal_para == ExpertSpec_GeneralSV::ProposalPara::METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM ? 0.574 : 0.234,  //0.35 : 0.16,
+               lambda = 0.1,
+               init_scale = 0.001;
   AdaptationCollection adaptation_collection(
       4,
-      (draws + burnin) / 200 + 1,
-      200,
-      expert.proposal_para == ExpertSpec_GeneralSV::ProposalPara::METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM ? 0.35 : 0.16,  //0.574 : 0.234,
-      0.10,  // between 0 and 1: the larger the value the stronger and longer the adaptation
-      0.001);
+      expert.strategy.size() * (draws + burnin) / batch_size + 1,
+      batch_size,
+      target_acceptance,
+      lambda,  // between 0 and 1: the larger the value the stronger and longer the adaptation
+      init_scale);
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
@@ -383,8 +387,15 @@ List svlsample_cpp (
 
   return List::create(
       _["para"] = para,
-      _["adaptation_centered"] = Rcpp::wrap(adaptation_collection.centered.get_storage()),
-      _["adaptation_noncentered"] = Rcpp::wrap(adaptation_collection.noncentered.get_storage()),
+      _["adaptation"] = List::create(
+        _["centered"] = List::create(
+          _["history"] = adaptation_collection.centered.get_storage(),
+          _["scale"] = wrap(adaptation_collection.centered.get_proposal().scale),
+          _["covariance"] = wrap(adaptation_collection.centered.get_proposal().covariance)),
+        _["noncentered"] = List::create(
+          _["history"] = adaptation_collection.noncentered.get_storage(),
+          _["scale"] = wrap(adaptation_collection.noncentered.get_proposal().scale),
+          _["covariance"] = wrap(adaptation_collection.noncentered.get_proposal().covariance))),
       _["latent"] = latent,
       _["latent0"] = latent0,
       _["beta"] = betas);

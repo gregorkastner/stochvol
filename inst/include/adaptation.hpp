@@ -133,16 +133,18 @@ namespace stochvol {
     }
 
     inline
-    arma::mat get_storage () const {
-      arma::mat storage(memory.size(), 3);
-      for (int i = 0; i < storage.n_rows; i++) {
-        storage.row(i) = arma::rowvec({memory[i].gamma, memory[i].scale, memory[i].rate_acceptance});
+    Rcpp::NumericMatrix get_storage () const {
+      const Rcpp::CharacterVector coln({"Gamma", "Scale", "Acceptance Rate"});
+      Rcpp::NumericMatrix storage(memory.size(), 3);
+      for (int i = 0; i < storage.nrow(); i++) {
+        storage(i, Rcpp::_) = Rcpp::NumericVector({memory[i].gamma, memory[i].scale, memory[i].rate_acceptance});
       }
+      colnames(storage) = coln;
       return storage;
     }
 
     inline
-    Result get_proposal () {
+    const Result& get_proposal () {
       if (updated_proposal) {
         updated_proposal = false;
         cache_result.set_result(scale, state.get_covariance());
@@ -173,7 +175,7 @@ namespace stochvol {
 
       // overwrites draws
       inline
-      bool update_covariance(arma::mat draws, const double gamma) {
+      bool update_covariance(arma::mat draws, const double gamma) {  // TODO maybe prevent copy of 'draws'
         draws.each_col() -= mu;
         mu += gamma * (arma::sum(draws, 1) / batch_size - mu);
         Sigma += gamma * (draws * draws.t() / (batch_size - 1) - Sigma);
@@ -181,7 +183,7 @@ namespace stochvol {
       }
 
       inline
-      const arma::mat get_covariance () const {
+      const arma::mat& get_covariance () const {
         return Sigma;
       }
 

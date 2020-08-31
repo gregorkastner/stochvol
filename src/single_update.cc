@@ -381,14 +381,14 @@ void update_general_sv(
     h0 = h_full.h0;
     h = h_full.h;  // std::move(h_full.h); ?
   }
-  ht = (h - mu) / std::sqrt(sigma2);
+  ht = centered_to_noncentered(mu, std::sqrt(sigma2), h);
   arma::vec exp_h_half = arma::exp(.5 * h);  // cache exp() calculations
   arma::vec exp_h_half_proposal_nc;
 
   const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;
   for (const Parameterization par : strategy) {
     Adaptation& adaptation = par == Parameterization::CENTERED ? adaptation_collection.centered : adaptation_collection.noncentered;
-    const auto adapted_proposal = adaptation.get_proposal();
+    const Adaptation::Result& adapted_proposal = adaptation.get_proposal();
     bool theta_updated = false;
     if (dontupdatemu) {
       theta_updated = draw_thetamu_rwMH(
@@ -421,10 +421,10 @@ void update_general_sv(
     if (theta_updated) {
       switch (par) {
         case Parameterization::CENTERED:
-          ht = (h - mu) / std::sqrt(sigma2);
+          ht = centered_to_noncentered(mu, std::sqrt(sigma2), h);
           break;
         case Parameterization::NONCENTERED:
-          h = std::sqrt(sigma2) * ht + mu;
+          h = noncentered_to_centered(mu, std::sqrt(sigma2), ht);
           exp_h_half = std::move(exp_h_half_proposal_nc);
           break;
       }
