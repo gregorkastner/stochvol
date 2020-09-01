@@ -191,7 +191,7 @@ validate_expert <- function (expert) {
   assert_logical(expert$interweave, "Expert argument 'interweave'")
   assert_single(expert$interweave, "Expert argument 'interweave'")
 
-  ### fast SV arguments
+  ### fast SV arguments UNDOCUMENTED (expert use!)
   assert_element(expert$fast_sv$baseline_parameterization, c("centered", "noncentered"),
                  "Fast SV expert argument 'baseline_parameterization'",
                  "the allowed values")
@@ -240,7 +240,7 @@ validate_expert <- function (expert) {
                  "Fast SV expert argument 'init_indicators'",
                  "the allowed values")
 
-  ### general SV arguments
+  ### general SV arguments UNDOCUMENTED (expert use!)
   assert_positive(expert$general_sv$multi_asis,
                   "General SV expert argument 'multi_asis'")
   assert_single(expert$general_sv$multi_asis,
@@ -257,5 +257,33 @@ validate_expert <- function (expert) {
                  "among the allowed values")
   assert_single(expert$general_sv$proposal_para,
                 "General SV expert argument 'proposal_para'")
+
+  if (isTRUE(is.list(expert$general_sv$proposal_diffusion_ken))) {
+    assert_length(expert$general_sv$proposal_diffusion_ken, 2,
+                   "General SV expert argument 'proposal_diffusion_ken' (the second moment of the random proposal)")
+    assert_element(names(expert$general_sv$proposal_diffusion_ken), c("scale", "covariance"),
+                   "General SV expert argument 'proposal_diffusion_ken' (the second moment of the random proposal)",
+                   "among the allowed values")
+
+    assert_single(expert$general_sv$proposal_diffusion_ken$scale,
+                  "General SV expert argument 'proposal_diffusion_ken$scale' (the scaling for the proposal covariance matrix for the model parameters)")
+    assert_positive(expert$general_sv$proposal_diffusion_ken$scale,
+                    "General SV expert argument 'proposal_diffusion_ken$scale' (the scaling for the proposal covariance matrix for the model parameters)")
+
+    if (!isTRUE(is.matrix(expert$general_sv$proposal_diffusion_ken$covariance))) {
+      stop("General SV expert argument 'proposal_diffusion_ken$covariance' (the unscaled proposal covariance matrix for the model parameters) should be a matrix.")
+    }
+    covdims <- dim(expert$general_sv$proposal_diffusion_ken$covariance)
+    if (any(covdims != 4)) {
+      stop("General SV expert argument 'proposal_diffusion_ken$covariance' (the unscaled proposal covariance matrix for the model parameters) should be a 4x4 matrix; got dimensions ", covdims, ".")
+    }
+    tryCatch({
+      chol(expert$general_sv$proposal_diffusion_ken$covariance)
+    }, error = function (e) {
+      stop("General SV expert argument 'proposal_diffusion_ken$covariance' (the unscaled proposal covariance matrix for the model parameters) should be a covariance matrix; cholesky factorization failed.")
+    })
+  } else if (!isTRUE(is.null(expert$general_sv$proposal_diffusion_ken))) {
+    stop("General SV expert argument 'proposal_diffusion_ken' (the second moment of the random proposal) should be either NULL or a list with elements 'scale' and 'covariance'; received type ", typeof(expert$general_sv$proposal_diffusion_ken))
+  }
 }
 

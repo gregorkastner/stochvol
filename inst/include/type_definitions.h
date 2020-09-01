@@ -1,7 +1,7 @@
 #ifndef _TYPE_DEFINITIONS_H_
 #define _TYPE_DEFINITIONS_H_
 
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #include <vector>
 
 namespace stochvol {
@@ -149,6 +149,68 @@ namespace stochvol {
         beta {_b} {}
   };
 
+  // Proposal scale and covariance matrix used in the random walk and the Metropolis-adjusted Langevin algorithm
+  // The English word 'ken' means range of sight.
+  struct ProposalDiffusionKen {
+    ProposalDiffusionKen () : ProposalDiffusionKen(0, {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}}) {}
+    ProposalDiffusionKen (
+        const double _scale,
+        const arma::mat& _covariance) {
+      set(_scale, _covariance);
+    }
+
+    inline
+    void set (
+        const double _scale,
+        const arma::mat& _covariance) {
+      set_scale(_scale);
+      covariance = _covariance;
+      const bool success = arma::inv_sympd(precision, _covariance) &&
+        arma::chol(covariance_chol, _covariance, "lower") &&
+        arma::inv(covariance_chol_inv, arma::trimatl(covariance_chol));
+      if (!success) {
+        Rcpp::stop("Failed to take Cholesky or to take inverse");
+      }
+    }
+
+    inline
+    void set_scale (const double _scale) {
+      scale = _scale;
+    }
+
+    inline
+    double get_scale () const {
+      return scale;
+    }
+
+    inline
+    const arma::mat& get_covariance () const {
+      return covariance;
+    }
+
+    inline
+    const arma::mat& get_precision () const {
+      return precision;
+    }
+
+    inline
+    const arma::mat& get_covariance_chol () const {
+      return covariance_chol;
+    }
+
+    inline
+    const arma::mat& get_covariance_chol_inv () const {
+      return covariance_chol_inv;
+    }
+
+    private:
+    double scale;
+    arma::mat covariance;
+    arma::mat precision;  // Covariance_inv
+    arma::mat covariance_chol;
+    arma::mat covariance_chol_inv;
+  };
+
   struct ExpertSpec_VanillaSV {
     enum class ProposalPhi {IMMEDIATE_ACCEPT_REJECT_NORMAL, REPEATED_ACCEPT_REJECT_NORMAL};  // scoped enums would not be needed in C++14
     enum class ProposalSigma2 {INDEPENDENCE, LOG_RANDOM_WALK};  // scoped enums would not be needed in C++14
@@ -190,14 +252,20 @@ namespace stochvol {
     StrategyVector strategy;
     bool correct_latent_draws;
     ProposalPara proposal_para;
+    bool adapt;
+    ProposalDiffusionKen proposal_diffusion_ken;
 
     ExpertSpec_GeneralSV(
         const StrategyVector& _strategy = {Parameterization::CENTERED, Parameterization::NONCENTERED},
         const bool _correct_latent_draws = false,
-        const ProposalPara _proposal_para = ProposalPara::RANDOM_WALK)
+        const ProposalPara _proposal_para = ProposalPara::RANDOM_WALK,
+        const bool _adapt = true,
+        const ProposalDiffusionKen& _proposal_diffusion_ken = {0, {}})
       : strategy {_strategy},
         correct_latent_draws {_correct_latent_draws},
-        proposal_para {_proposal_para} {}
+        proposal_para {_proposal_para},
+        adapt {_adapt},
+        proposal_diffusion_ken {_proposal_diffusion_ken} {}
   };
 
 }

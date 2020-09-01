@@ -3,6 +3,7 @@
 
 #include <RcppArmadillo.h>
 #include <vector>
+#include "type_definitions.h"
 
 namespace stochvol {
   // Encapsulate adaptation logic
@@ -12,34 +13,6 @@ namespace stochvol {
   class Adaptation {
   public:
     // Useful structs
-    struct Result {
-      Result (
-          const double _scale,
-          const arma::mat& _covariance) {
-        set_result(_scale, _covariance);
-      }
-
-      inline
-      void set_result (
-          const double _scale,
-          const arma::mat& _covariance) {
-        scale = _scale;
-        covariance = _covariance;
-        const bool success = arma::inv_sympd(precision, _covariance) &&
-          arma::chol(covariance_chol, _covariance, "lower") &&
-          arma::inv(covariance_chol_inv, arma::trimatl(covariance_chol));
-        if (!success) {
-          Rcpp::stop("Failed to take Cholesky or to take inverse");
-        }
-      }
-      
-      double scale;
-      arma::mat covariance;
-      arma::mat precision;  // Covariance_inv
-      arma::mat covariance_chol;
-      arma::mat covariance_chol_inv;
-    };
-
     struct Storage {
       const double gamma;
       const double scale;
@@ -78,7 +51,7 @@ namespace stochvol {
         scale{other.scale},
         state(other.state.dim, other.state.batch_size),
         draws_batch(arma::size(other.draws_batch)),
-        cache_result(other.scale, arma::mat(arma::size(other.cache_result.covariance), arma::fill::eye)) {
+        cache_result(other.scale, arma::mat(arma::size(other.cache_result.get_covariance()), arma::fill::eye)) {
       memory.reserve(other.memory.capacity());
     }
 
@@ -144,12 +117,12 @@ namespace stochvol {
     }
 
     inline
-    const Result& get_proposal () {
+    const ProposalDiffusionKen& get_proposal () {
       if (updated_proposal) {
         updated_proposal = false;
-        cache_result.set_result(scale, state.get_covariance());
+        cache_result.set(scale, state.get_covariance());
       } else {
-        cache_result.scale = scale;
+        cache_result.set_scale(scale);
       }
       return cache_result;
     }
@@ -207,7 +180,7 @@ namespace stochvol {
     bool updated_proposal = false;
 
     std::vector<Storage> memory;
-    Result cache_result;
+    ProposalDiffusionKen cache_result;
 
     inline
     void store_statistics () {

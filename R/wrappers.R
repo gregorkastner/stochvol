@@ -520,7 +520,8 @@ default_fast_sv <-
 default_general_sv <-
   list(multi_asis = 3,  # positive integer
        starting_parameterization = "centered",  # "centered" or "noncentered"
-       proposal_para = "random walk")  # "random walk" or "metropolis-adjusted langevin algorithm
+       proposal_para = "random walk",  # "random walk" or "metropolis-adjusted langevin algorithm
+       proposal_diffusion_ken = NULL)
 
 ##' @rdname svsample
 ##' @export

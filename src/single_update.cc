@@ -374,6 +374,7 @@ void update_general_sv(
   const bool correct = expert.correct_latent_draws;
   const std::vector<Parameterization>& strategy = expert.strategy;
   const bool use_mala = expert.proposal_para == ExpertSpec_GeneralSV::ProposalPara::METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM;  // TODO remove, only 'proposal' is needed
+  const bool adapt = expert.adapt;
 
   // only centered
   {
@@ -388,7 +389,7 @@ void update_general_sv(
   const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;
   for (const Parameterization par : strategy) {
     Adaptation& adaptation = par == Parameterization::CENTERED ? adaptation_collection.centered : adaptation_collection.noncentered;
-    const Adaptation::Result& adapted_proposal = adaptation.get_proposal();
+    const ProposalDiffusionKen& adapted_proposal = adapt ? adaptation.get_proposal() : expert.proposal_diffusion_ken;
     bool theta_updated = false;
     if (dontupdatemu) {
       theta_updated = draw_thetamu_rwMH(
@@ -401,7 +402,9 @@ void update_general_sv(
           par,
           adapted_proposal,
           gammaprior);
-      adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu).head(3));
+      if (adapt) {
+        adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu).head(3));
+      }
     } else {
       theta_updated = draw_theta(
           phi, rho, sigma2, mu,
@@ -415,7 +418,9 @@ void update_general_sv(
           adapted_proposal,
           gammaprior,
           proposal);
-      adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu));
+      if (adapt) {
+        adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu));
+      }
     }
 
     if (theta_updated) {

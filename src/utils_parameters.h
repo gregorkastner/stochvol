@@ -77,7 +77,7 @@ arma::vec6 theta_propose_rwmh(
     const double rho,
     const double sigma2,
     const double mu,
-    const Adaptation::Result& adaptation_proposal);
+    const ProposalDiffusionKen& adaptation_proposal);
 
 arma::vec6 theta_propose_mala(
     const double phi,
@@ -91,13 +91,13 @@ arma::vec6 theta_propose_mala(
     const arma::vec2& prior_rho,
     const arma::vec2& prior_sigma2,
     const arma::vec2& prior_mu,
-    const Adaptation::Result& adaptation_proposal);
+    const ProposalDiffusionKen& adaptation_proposal);
 
 arma::vec thetamu_propose(
     const double phi,
     const double rho,
     const double sigma2,
-    const Adaptation::Result& adaptation_proposal);
+    const ProposalDiffusionKen& adaptation_proposal);
 
 }
 

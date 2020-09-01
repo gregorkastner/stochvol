@@ -242,7 +242,9 @@ ExpertSpec_GeneralSV list_to_general_sv(
   const int multi_asis = as<int>(list["multi_asis"]);
   const std::string starting_parameterization_str = as<std::string>(list["starting_parameterization"]);
   const std::string proposal_para_str = as<std::string>(list["proposal_para"]);
+  const SEXP proposal_diffusion_ken_sexp = list["proposal_diffusion_ken"];
 
+  // starting parameterization
   Parameterization starting_parameterization;
   if (starting_parameterization_str == "centered") {
     starting_parameterization = Parameterization::CENTERED;
@@ -253,6 +255,7 @@ ExpertSpec_GeneralSV list_to_general_sv(
   }
   const Parameterization other_parameterization = starting_parameterization == Parameterization::CENTERED ? Parameterization::NONCENTERED : Parameterization::CENTERED;
 
+  // proposal strategy for the parameters
   ExpertSpec_GeneralSV::ProposalPara proposal_para;
   if (proposal_para_str == "random walk") {
     proposal_para = ExpertSpec_GeneralSV::ProposalPara::RANDOM_WALK;
@@ -262,6 +265,7 @@ ExpertSpec_GeneralSV list_to_general_sv(
     ::Rf_error("Unknown proposal setting in expert$general_sv$proposal_para == \"%s\"; should be \"random walk\" or \"metropolis-adjusted langevin algorithm\"", proposal_para_str.c_str());
   }
 
+  // parameterization strategy
   std::vector<Parameterization> strategy;
   int strategy_size;
   if (interweave) {
@@ -277,10 +281,22 @@ ExpertSpec_GeneralSV list_to_general_sv(
     }
   }
 
+  // adaptation or fix proposal diffusion
+  const bool adapt = ::Rf_isNull(proposal_diffusion_ken_sexp);
+  ProposalDiffusionKen proposal_diffusion_ken;
+  if (!adapt) {
+    const List proposal_diffusion_ken_rcpp = proposal_diffusion_ken_sexp;
+    proposal_diffusion_ken.set(
+        as<double>(proposal_diffusion_ken_rcpp["scale"]),
+        as<arma::mat>(proposal_diffusion_ken_rcpp["covariance"]));
+  }
+
   return {
     strategy,
     correct_latent_draws,
-    proposal_para
+    proposal_para,
+    adapt,
+    proposal_diffusion_ken
   };
 }
 

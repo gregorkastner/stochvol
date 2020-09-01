@@ -295,13 +295,14 @@ List svlsample_cpp (
   arma::vec armadraw(p);
 
   // adaptive MH
-  const int batch_size = 200;
+  const int batch_size = 200,
+            memory_size = expert.adapt ? expert.strategy.size() * (draws + burnin) / batch_size + 1 : 1;
   const double target_acceptance = expert.proposal_para == ExpertSpec_GeneralSV::ProposalPara::METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM ? 0.574 : 0.234,  //0.35 : 0.16,
                lambda = 0.1,
                init_scale = 0.001;
   AdaptationCollection adaptation_collection(
       4,
-      expert.strategy.size() * (draws + burnin) / batch_size + 1,
+      memory_size,
       batch_size,
       target_acceptance,
       lambda,  // between 0 and 1: the larger the value the stronger and longer the adaptation
@@ -390,12 +391,12 @@ List svlsample_cpp (
       _["adaptation"] = List::create(
         _["centered"] = List::create(
           _["history"] = adaptation_collection.centered.get_storage(),
-          _["scale"] = wrap(adaptation_collection.centered.get_proposal().scale),
-          _["covariance"] = wrap(adaptation_collection.centered.get_proposal().covariance)),
+          _["scale"] = wrap(adaptation_collection.centered.get_proposal().get_scale()),
+          _["covariance"] = wrap(adaptation_collection.centered.get_proposal().get_covariance())),
         _["noncentered"] = List::create(
           _["history"] = adaptation_collection.noncentered.get_storage(),
-          _["scale"] = wrap(adaptation_collection.noncentered.get_proposal().scale),
-          _["covariance"] = wrap(adaptation_collection.noncentered.get_proposal().covariance))),
+          _["scale"] = wrap(adaptation_collection.noncentered.get_proposal().get_scale()),
+          _["covariance"] = wrap(adaptation_collection.noncentered.get_proposal().get_covariance()))),
       _["latent"] = latent,
       _["latent0"] = latent0,
       _["beta"] = betas);
