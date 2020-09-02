@@ -10,15 +10,6 @@
 namespace stochvol {
 
 // non-normalized log-density for N(mu, sigma^2)
-inline
-double logdnorm(
-    double x,
-    double mu = 0,
-    double sigma = 1) {
-  return -std::log(sigma)-((x-mu)*(x-mu)/(2*sigma*sigma));
-}
-
-// non-normalized log-density for N(mu, sigma^2)
 // with log_sd as input
 inline
 double logdnorm2(
@@ -28,6 +19,15 @@ double logdnorm2(
     const double log_sigma = 0) {
   const double z = (x - mu) / sigma;
   return -.5 * z * z - log_sigma;
+}
+
+// non-normalized log-density for N(mu, sigma^2)
+inline
+double logdnorm(
+    double x,
+    double mu = 0,
+    double sigma = 1) {
+  return logdnorm2(x, mu, sigma, std::log(sigma));
 }
 
 // non-normalized log-density of the gamma distribution
@@ -45,7 +45,7 @@ double logdinvgamma(
     const double x,
     const double alpha,
     const double beta) {
-  return -(alpha - 1.) * std::log(x) - beta / x;
+  return (-alpha - 1.) * std::log(x) - beta / x;
 }
 
 // non-normalized log-density for Beta(a, b)
