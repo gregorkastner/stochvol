@@ -284,7 +284,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   assert_ge(burnin, 0, "Argument 'burnin'")
   burnin <- as.integer(burnin)
 
-  ## prior setup
+  ## regression
   meanmodel <- "matrix"
   arorder <- 0L
   if (any(is.na(designmatrix))) {
@@ -454,7 +454,12 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
   res$latent0 <- coda::mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
   res$thinning <- list(para = thinpara, latent = thinlatent, time = keeptime)
-  res$priors <- c(list(mu = priormu, phi = priorphi, sigma = priorsigma, gammaprior = gammaprior), if (priornu <= 0) list() else list(nu = priornu), if (isTRUE(is.na(priorrho))) list() else list(rho = priorrho))
+  res$priors <- c(list(mu = priormu,
+                       phi = priorphi,
+                       sigma = priorsigma,
+                       gammaprior = gammaprior),
+                  if (priornu <= 0) list() else list(nu = priornu),
+                  if (isTRUE(inherits(priorspec$rho, "sv_beta"))) list(rho = c(priorspec$rho$alpha, priorspec$rho$beta)) else list())
   if (!any(is.na(designmatrix))) {
     res$beta <- coda::mcmc(res$beta, burnin+thinpara, burnin+draws, thinpara)
     colnames(res$beta) <- paste0("b_", 0:(NCOL(designmatrix)-1))
