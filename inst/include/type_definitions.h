@@ -19,8 +19,8 @@ namespace stochvol {
       Constant (const double _v) : value{_v} {}
     };
     struct Normal {
-      double mean, stdev;
-      Normal (const double _m, const double _s) : mean{_m}, stdev{_s} {}
+      double mean, sd;
+      Normal (const double _m, const double _s) : mean{_m}, sd{_s} {}
     };
     struct Gamma {
       double shape, rate;

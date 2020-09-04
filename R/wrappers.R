@@ -454,16 +454,16 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
   res$latent0 <- coda::mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
   res$thinning <- list(para = thinpara, latent = thinlatent, time = keeptime)
-  res$priors <- c(list(mu = priormu,
-                       phi = priorphi,
-                       sigma = priorsigma,
+  res$priors <- c(list(mu = c(priorspec$mu$mean, priorspec$mu$sd),
+                       phi = c(priorspec$phi$alpha, priorspec$phi$beta),
+                       sigma = 0.5 / priorspec$sigma2$rate,
                        gammaprior = gammaprior),
-                  if (priornu <= 0) list() else list(nu = priornu),
+                  if (priornu <= 0) list() else list(nu = priorspec$nu$rate),
                   if (isTRUE(inherits(priorspec$rho, "sv_beta"))) list(rho = c(priorspec$rho$alpha, priorspec$rho$beta)) else list())
   if (!any(is.na(designmatrix))) {
     res$beta <- coda::mcmc(res$beta, burnin+thinpara, burnin+draws, thinpara)
     colnames(res$beta) <- paste0("b_", 0:(NCOL(designmatrix)-1))
-    res$priors <- c(res$priors, "beta" = list(priorbeta), "designmatrix" = list(designmatrix))
+    res$priors <- c(res$priors, beta = list(c(priorspec$beta$mean, priorspec$beta$sd)), "designmatrix" = list(designmatrix))
   } else {
     res$beta <- NULL
   }
@@ -526,7 +526,7 @@ default_general_sv <-
   list(multi_asis = 3,  # positive integer
        starting_parameterization = "centered",  # "centered" or "noncentered"
        proposal_para = "random walk",  # "random walk" or "metropolis-adjusted langevin algorithm
-       proposal_diffusion_ken = NULL)
+       proposal_diffusion_ken = FALSE)
 
 ##' @rdname svsample
 ##' @export

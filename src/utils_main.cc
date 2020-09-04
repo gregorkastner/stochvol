@@ -102,7 +102,7 @@ PriorSpec list_to_priorspec(
   if (priormu.inherits("sv_normal")) {
     priorspec.mu.distribution = PriorSpec::Mu::NORMAL;
     priorspec.mu.normal.mean = as<double>(priormu["mean"]);
-    priorspec.mu.normal.stdev = as<double>(priormu["stdev"]);
+    priorspec.mu.normal.sd = as<double>(priormu["sd"]);
   } else if (priormu.inherits("sv_constant")) {
     priorspec.mu.distribution = PriorSpec::Mu::CONSTANT;
     priorspec.mu.constant.value = as<double>(priormu["value"]);
@@ -172,7 +172,7 @@ PriorSpec list_to_priorspec(
   if (priorbeta.inherits("sv_normal")) {
     priorspec.beta.distribution = PriorSpec::Covariates::NORMAL;
     priorspec.beta.normal.mean = as<double>(priorbeta["mean"]);
-    priorspec.beta.normal.stdev = as<double>(priorbeta["stdev"]);
+    priorspec.beta.normal.sd = as<double>(priorbeta["sd"]);
   } else if (priorbeta.inherits("sv_constant")) {
     priorspec.beta.distribution = PriorSpec::Covariates::CONSTANT;
     priorspec.beta.constant.value = as<double>(priorbeta["value"]);
@@ -282,7 +282,7 @@ ExpertSpec_GeneralSV list_to_general_sv(
   }
 
   // adaptation or fix proposal diffusion
-  const bool adapt = ::Rf_isNull(proposal_diffusion_ken_sexp);
+  const bool adapt = ::Rf_isLogical(proposal_diffusion_ken_sexp);
   ProposalDiffusionKen proposal_diffusion_ken;
   if (!adapt) {
     const List proposal_diffusion_ken_rcpp = proposal_diffusion_ken_sexp;

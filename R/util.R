@@ -34,7 +34,7 @@ sv_normal <- function (mean = 0, sd = 1) {
   assert_single(sd, "sd of sv_normal")
   assert_positive(sd, "sd of sv_normal")
 
-  structure(list(mean = mean, stdev = sd),
+  structure(list(mean = mean, sd = sd),
             class = c("sv_normal", "sv_distribution"))
 }
 
@@ -170,7 +170,7 @@ specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
 init_mu <- function (y, priorspec, X = NULL, beta_hat = NULL) {
   moments_prior_mu <- switch(priorspec$mu$distribution,
                              "normal" =
-                               c(priorspec$mu$para$mean, priorspec$mu$para$stdev^2),
+                               c(priorspec$mu$para$mean, priorspec$mu$para$sd^2),
                              stop("nyi"))
   e_prior_mu <- moments_prior_mu[1]; v_prior_mu <- moments_prior_mu[2]
 

@@ -54,7 +54,7 @@ void update_vanilla_sv(
   const double a0 = prior_spec.phi.beta.alpha,
                b0 = prior_spec.phi.beta.beta;
   const double bmu = prior_spec.mu.distribution == PriorSpec::Mu::NORMAL ? prior_spec.mu.normal.mean : std::numeric_limits<double>::lowest(),
-               Bmu = prior_spec.mu.distribution == PriorSpec::Mu::NORMAL ? std::pow(prior_spec.mu.normal.stdev, 2) : std::numeric_limits<double>::lowest();
+               Bmu = prior_spec.mu.distribution == PriorSpec::Mu::NORMAL ? std::pow(prior_spec.mu.normal.sd, 2) : std::numeric_limits<double>::lowest();
   const bool Gammaprior = prior_spec.sigma2.distribution == PriorSpec::Sigma2::GAMMA,
              dontupdatemu = prior_spec.mu.distribution == PriorSpec::Mu::CONSTANT;
   const double C0 = [&prior_spec]() -> double {
@@ -354,7 +354,7 @@ void update_general_sv(
   arma::vec ht = (h - mu) / std::sqrt(sigma2);
 
   // PriorSpec
-  const arma::vec prior_mu {prior_spec.mu.normal.mean, prior_spec.mu.normal.stdev},  // invalid if prior_spec.mu.distribution != NORMAL
+  const arma::vec prior_mu {prior_spec.mu.normal.mean, prior_spec.mu.normal.sd},  // invalid if prior_spec.mu.distribution != NORMAL
                   prior_phi {prior_spec.phi.beta.alpha, prior_spec.phi.beta.beta},  // invalid if prior_spec.phi.distribution != BETA
                   prior_sigma2 = [&prior_spec]() -> arma::vec2 {
                     switch (prior_spec.sigma2.distribution) {

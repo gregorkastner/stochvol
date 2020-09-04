@@ -88,7 +88,7 @@ test_that("vanilla SV passes Geweke test", {
 
     # TODO account for autocorrelation
     expect_gt(shapiro.test(sample(sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate), 4500, replace = TRUE))$p.value, 1e-5)
-    expect_gt(shapiro.test(sample((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$stdev, 4500, replace = TRUE))$p.value, 1e-5)
+    expect_gt(shapiro.test(sample((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$sd, 4500, replace = TRUE))$p.value, 1e-5)
     expect_gt(shapiro.test(sample(qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$alpha, priorspec$phi$beta)), 4500, replace = TRUE))$p.value, 1e-5)
 
     # visual tests for manual checks

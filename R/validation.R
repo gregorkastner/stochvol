@@ -282,8 +282,8 @@ validate_expert <- function (expert) {
     }, error = function (e) {
       stop("General SV expert argument 'proposal_diffusion_ken$covariance' (the unscaled proposal covariance matrix for the model parameters) should be a covariance matrix; cholesky factorization failed.")
     })
-  } else if (!isTRUE(is.null(expert$general_sv$proposal_diffusion_ken))) {
-    stop("General SV expert argument 'proposal_diffusion_ken' (the second moment of the random proposal) should be either NULL or a list with elements 'scale' and 'covariance'; received type ", typeof(expert$general_sv$proposal_diffusion_ken))
+  } else if (!isTRUE(is.logical(expert$general_sv$proposal_diffusion_ken)) && !expert$general_sv$proposal_diffusion_ken) {
+    stop("General SV expert argument 'proposal_diffusion_ken' (the second moment of the random proposal) should be either FALSE or a list with elements 'scale' and 'covariance'; received type ", typeof(expert$general_sv$proposal_diffusion_ken))
   }
 }
 

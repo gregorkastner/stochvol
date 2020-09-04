@@ -55,7 +55,7 @@ List svsample_cpp(
 
   // prior mean and precision matrix for the regression part (currently fixed)
   const arma::vec priorbetamean = arma::ones(p) * prior_spec.beta.normal.mean;
-  const arma::mat priorbetaprec = arma::eye(p, p) / std::pow(prior_spec.beta.normal.stdev, 2);
+  const arma::mat priorbetaprec = arma::eye(p, p) / std::pow(prior_spec.beta.normal.sd, 2);
 
   // number of MCMC draws
   const int N = burnin + draws;
@@ -284,7 +284,7 @@ List svlsample_cpp (
   // prior mean and precision matrix for the regression part (currently fixed)
   const arma::vec y_in_arma(y_in.begin(), T);
   const arma::vec priorbetamean = arma::ones(p) * prior_spec.beta.normal.mean;
-  const arma::mat priorbetaprec = arma::eye(p, p) / std::pow(prior_spec.beta.normal.stdev, 2);
+  const arma::mat priorbetaprec = arma::eye(p, p) / std::pow(prior_spec.beta.normal.sd, 2);
   arma::vec normalizer(T);
   arma::mat X_reg(T, p);
   arma::vec y_reg(T);
