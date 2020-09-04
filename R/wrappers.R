@@ -407,7 +407,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     res$latent <- t(res$latent)
     class(res) <- "svdraws"
   } else {
-    strategies <- if (interweave) c("centered", "noncentered") else "centered"
+    strategies <- if (interweave) c("centered", "noncentered") else expert$general_sv$starting_parameterization
     parameterization <- rep(strategies, general_sv$multi_asis)
     use.mala <- general_sv$proposal_para == "metropolis-adjusted langevin algorithm"
     gammaprior <- inherits(priorspec$sigma2, "sv_gamma")
