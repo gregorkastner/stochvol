@@ -251,19 +251,15 @@ arma::vec6 theta_propose_rwmh(
     proposal_mean_old;
   const arma::vec4 theta_new = theta_transform(theta_new_t[0], theta_new_t[1], theta_new_t[2], theta_new_t[3]);
   const double phi_new = theta_new[0], rho_new = theta_new[1], sigma2_new = theta_new[2], mu_new = theta_new[3];
-  double theta_density_new = theta_transform_inv_log_det_jac(phi_new, rho_new, sigma2_new, mu_new);
-  for (int i = 0; i < 4; i++) {
-    theta_density_new += -.5 * std::pow(theta_new_t_standardized[i], 2);  // dnorm(x, 0, 1, true)
-  }
+  const double theta_density_new = theta_transform_inv_log_det_jac(phi_new, rho_new, sigma2_new, mu_new) +
+    (-0.5) * arma::sum(arma::square(theta_new_t_standardized));;
 
   const arma::vec4 &proposal_mean_new = theta_new_t;
   const arma::vec4 theta_old_t_standardized =
     1 / std::sqrt(diffusion_ken.get_scale()) * diffusion_ken.get_covariance_chol_inv() *
     (theta_old_t - proposal_mean_new);
-  double theta_density_old = theta_transform_inv_log_det_jac(phi, rho, sigma2, mu);
-  for (int i = 0; i < 4; i++) {
-    theta_density_old += -.5 * std::pow(theta_old_t_standardized[i], 2);  // dnorm(x, 0, 1, true)
-  }
+  const double theta_density_old = theta_transform_inv_log_det_jac(phi, rho, sigma2, mu) +
+    (-0.5) * arma::sum(arma::square(theta_old_t_standardized));
 
   return {phi_new, rho_new, sigma2_new, mu_new, theta_density_old, theta_density_new};
 }
