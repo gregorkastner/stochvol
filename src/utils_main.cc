@@ -89,7 +89,7 @@ PriorSpec list_to_priorspec(
     const List priorlatent0 = priorlatent0_sexp;
     if (priorlatent0.inherits("sv_constant")) {
       priorspec.latent0.variance = PriorSpec::Latent0::CONSTANT;
-      priorspec.latent0.constant.value = as<double>(priorlatent0["value"]);
+      priorspec.latent0.constant.value = priorlatent0["value"];
     } else {
       const CharacterVector classes_rcpp = priorlatent0.attr("class");
       const std::string classes = as<std::string>(classes_rcpp.at(0));
@@ -101,11 +101,11 @@ PriorSpec list_to_priorspec(
   // mu
   if (priormu.inherits("sv_normal")) {
     priorspec.mu.distribution = PriorSpec::Mu::NORMAL;
-    priorspec.mu.normal.mean = as<double>(priormu["mean"]);
-    priorspec.mu.normal.sd = as<double>(priormu["sd"]);
+    priorspec.mu.normal.mean = priormu["mean"];
+    priorspec.mu.normal.sd = priormu["sd"];
   } else if (priormu.inherits("sv_constant")) {
     priorspec.mu.distribution = PriorSpec::Mu::CONSTANT;
-    priorspec.mu.constant.value = as<double>(priormu["value"]);
+    priorspec.mu.constant.value = priormu["value"];
   } else {
     const CharacterVector classes_rcpp = priormu.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
@@ -114,11 +114,11 @@ PriorSpec list_to_priorspec(
   // phi
   if (priorphi.inherits("sv_beta")) {
     priorspec.phi.distribution = PriorSpec::Phi::BETA;
-    priorspec.phi.beta.alpha = as<double>(priorphi["alpha"]);
-    priorspec.phi.beta.beta = as<double>(priorphi["beta"]);
+    priorspec.phi.beta.alpha = priorphi["alpha"];
+    priorspec.phi.beta.beta = priorphi["beta"];
   } else if (priorphi.inherits("sv_constant")) {
     priorspec.phi.distribution = PriorSpec::Phi::CONSTANT;
-    priorspec.phi.constant.value = as<double>(priorphi["value"]);
+    priorspec.phi.constant.value = priorphi["value"];
   } else {
     const CharacterVector classes_rcpp = priorphi.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
@@ -127,15 +127,15 @@ PriorSpec list_to_priorspec(
   // sigma2
   if (priorsigma2.inherits("sv_gamma")) {
     priorspec.sigma2.distribution = PriorSpec::Sigma2::GAMMA;
-    priorspec.sigma2.gamma.shape = as<double>(priorsigma2["shape"]);
-    priorspec.sigma2.gamma.rate = as<double>(priorsigma2["rate"]);
+    priorspec.sigma2.gamma.shape = priorsigma2["shape"];
+    priorspec.sigma2.gamma.rate = priorsigma2["rate"];
   } else if (priorsigma2.inherits("sv_inverse_gamma")) {
     priorspec.sigma2.distribution = PriorSpec::Sigma2::INVERSE_GAMMA;
-    priorspec.sigma2.inverse_gamma.shape = as<double>(priorsigma2["shape"]);
-    priorspec.sigma2.inverse_gamma.scale = as<double>(priorsigma2["scale"]);
+    priorspec.sigma2.inverse_gamma.shape = priorsigma2["shape"];
+    priorspec.sigma2.inverse_gamma.scale = priorsigma2["scale"];
   } else if (priorsigma2.inherits("sv_constant")) {
     priorspec.sigma2.distribution = PriorSpec::Sigma2::CONSTANT;
-    priorspec.sigma2.constant.value = as<double>(priorsigma2["value"]);
+    priorspec.sigma2.constant.value = priorsigma2["value"];
   } else {
     const CharacterVector classes_rcpp = priorsigma2.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
@@ -144,10 +144,10 @@ PriorSpec list_to_priorspec(
   // nu
   if (priornu.inherits("sv_exponential")) {
     priorspec.nu.distribution = PriorSpec::Nu::EXPONENTIAL;
-    priorspec.nu.exponential.rate = as<double>(priornu["rate"]);
+    priorspec.nu.exponential.rate = priornu["rate"];
   } else if (priornu.inherits("sv_constant")) {
     priorspec.nu.distribution = PriorSpec::Nu::CONSTANT;
-    priorspec.nu.constant.value = as<double>(priornu["value"]);
+    priorspec.nu.constant.value = priornu["value"];
   } else if (priornu.inherits("sv_infinity")) {
     priorspec.nu.distribution = PriorSpec::Nu::INIFINITY;
   } else {
@@ -158,11 +158,11 @@ PriorSpec list_to_priorspec(
   // rho
   if (priorrho.inherits("sv_beta")) {
     priorspec.rho.distribution = PriorSpec::Rho::BETA;
-    priorspec.rho.beta.alpha = as<double>(priorrho["alpha"]);
-    priorspec.rho.beta.beta = as<double>(priorrho["beta"]);
+    priorspec.rho.beta.alpha = priorrho["alpha"];
+    priorspec.rho.beta.beta = priorrho["beta"];
   } else if (priorrho.inherits("sv_constant")) {
     priorspec.rho.distribution = PriorSpec::Rho::CONSTANT;
-    priorspec.rho.constant.value = as<double>(priorrho["value"]);
+    priorspec.rho.constant.value = priorrho["value"];
   } else {
     const CharacterVector classes_rcpp = priorrho.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
@@ -171,11 +171,11 @@ PriorSpec list_to_priorspec(
   // beta
   if (priorbeta.inherits("sv_normal")) {
     priorspec.beta.distribution = PriorSpec::Covariates::NORMAL;
-    priorspec.beta.normal.mean = as<double>(priorbeta["mean"]);
-    priorspec.beta.normal.sd = as<double>(priorbeta["sd"]);
+    priorspec.beta.normal.mean = priorbeta["mean"];
+    priorspec.beta.normal.sd = priorbeta["sd"];
   } else if (priorbeta.inherits("sv_constant")) {
     priorspec.beta.distribution = PriorSpec::Covariates::CONSTANT;
-    priorspec.beta.constant.value = as<double>(priorbeta["value"]);
+    priorspec.beta.constant.value = priorbeta["value"];
   } else {
     const CharacterVector classes_rcpp = priorbeta.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
@@ -191,9 +191,9 @@ ExpertSpec_VanillaSV list_to_vanilla_sv(
   const std::string baseline_parameterization_str = as<std::string>(list["baseline_parameterization"]),
                     proposal_phi_str = as<std::string>(list["proposal_phi"]),
                     proposal_sigma2_str = as<std::string>(list["proposal_sigma2"]);
-  const double proposal_intercept_var = as<double>(list["proposal_intercept_var"]),
-               proposal_phi_var = as<double>(list["proposal_phi_var"]),
-               proposal_sigma2_rw_scale = as<double>(list["proposal_sigma2_rw_scale"]);
+  const double proposal_intercept_var = list["proposal_intercept_var"],
+               proposal_phi_var = list["proposal_phi_var"],
+               proposal_sigma2_rw_scale = list["proposal_sigma2_rw_scale"];
   const int mh_blocking_steps = as<int>(list["mh_blocking_steps"]);
 
   Parameterization baseline_parameterization;
@@ -287,7 +287,7 @@ ExpertSpec_GeneralSV list_to_general_sv(
   if (!adapt) {
     const List proposal_diffusion_ken_rcpp = proposal_diffusion_ken_sexp;
     proposal_diffusion_ken.set(
-        as<double>(proposal_diffusion_ken_rcpp["scale"]),
+        proposal_diffusion_ken_rcpp["scale"],
         as<arma::mat>(proposal_diffusion_ken_rcpp["covariance"]));
   }
 

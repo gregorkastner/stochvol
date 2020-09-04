@@ -68,8 +68,8 @@ List svsample_cpp(
   const bool terr = prior_spec.nu.distribution == PriorSpec::Nu::EXPONENTIAL;
 
   // initialize the variables:
-  double mu = as<double>(startpara["mu"]),
-         phi = as<double>(startpara["phi"]),
+  double mu = startpara["mu"],
+         phi = startpara["phi"],
          sigma2 = std::pow(as<double>(startpara["sigma"]), 2);
   arma::vec sigma2inv_store(draws / thinpara),
             phi_store(draws / thinpara),
@@ -79,10 +79,10 @@ List svsample_cpp(
   mu_store[0] = mu;
 
   arma::vec h = startlatent;  // contains h1 to hT, but not h0!
-  double h0 = as<double>(startpara["latent0"]);
+  double h0 = startpara["latent0"];
 
-  const bool keep_r = as<bool>(expert_in["store_indicators"]);
-  arma::ivec r = as<arma::ivec>(expert_in["init_indicators"]);  // mixture indicators
+  const bool keep_r = expert_in["store_indicators"];
+  arma::ivec r = expert_in["init_indicators"];  // mixture indicators
   if (r.n_elem == 1) {
     const double r_elem = r[0];
     r.set_size(T);
@@ -105,7 +105,7 @@ List svsample_cpp(
 
   // some stuff for the t-errors
   double nu = -1;
-  if (terr) nu = as<double>(startpara["nu"]);
+  if (terr) nu = startpara["nu"];
   arma::vec tau(T, arma::fill::ones);
 
   arma::vec nu_store;
@@ -119,7 +119,7 @@ List svsample_cpp(
   }
 
   // some stuff for the regression part
-  arma::vec beta = as<arma::vec>(startpara["beta"]);
+  arma::vec beta = startpara["beta"];
   arma::vec normalizer;
   arma::mat Xnew = X;
   arma::vec ynew = y;
@@ -267,11 +267,11 @@ List svlsample_cpp (
 
   double mu = startpara["mu"];
   double phi = startpara["phi"];
-  double sigma2 = std::pow(Rcpp::as<double>(startpara["sigma"]), 2);
+  double sigma2 = std::pow(as<double>(startpara["sigma"]), 2);
   double rho = startpara["rho"];
   double h0 = -1;
-  arma::vec beta = as<arma::vec>(startpara["beta"]);
   arma::vec h = startlatent, ht = centered_to_noncentered(mu, std::sqrt(sigma2), h);
+  arma::vec beta = startpara["beta"];
 
   arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
   Rcpp::NumericMatrix para(draws/thinpara, 4);
