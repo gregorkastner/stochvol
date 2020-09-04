@@ -345,7 +345,7 @@ void update_general_sv(
                       case PriorSpec::Sigma2::GAMMA:
                         return {prior_spec.sigma2.gamma.shape, prior_spec.sigma2.gamma.rate};
                       case PriorSpec::Sigma2::INVERSE_GAMMA:
-                        return {prior_spec.sigma2.gamma.shape, prior_spec.sigma2.gamma.rate};
+                        return {prior_spec.sigma2.inverse_gamma.shape, prior_spec.sigma2.inverse_gamma.scale};
                       default:
                         return {};
                     }
