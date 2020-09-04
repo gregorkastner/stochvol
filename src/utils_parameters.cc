@@ -218,7 +218,7 @@ double theta_transform_log_det_jac(
     const double s,
     const double m) {
   static const double log4 = std::log(4.);
-  return 2 * (log4 + f + r + s / 2. - std::log(std::exp(2. * f) + 1.) - std::log(std::exp(2. * r) + 1.));
+  return 2 * (log4 + f + r + 0.5 * s - std::log((std::exp(2. * f) + 1.) * (std::exp(2. * r) + 1.)));
 }
 
 double theta_transform_inv_log_det_jac(
