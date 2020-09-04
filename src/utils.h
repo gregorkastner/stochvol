@@ -15,6 +15,22 @@ void R_assert(const bool assert_statement, const char* message) {
   return;
 }
 
+template<typename T>
+T centered_to_noncentered(
+    const double mu,
+    const double sigma,
+    const T& h) {
+  return (h - mu) / sigma;
+}
+
+template<typename T>
+T noncentered_to_centered(
+    const double mu,
+    const double sigma,
+    const T& ht) {
+  return mu + sigma * ht;
+}
+
 }
 
 #endif

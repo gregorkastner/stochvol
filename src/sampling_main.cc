@@ -4,6 +4,7 @@
 #include "single_update.h"
 #include "type_definitions.h"
 #include "utils_main.h"
+#include "utils.h"
 
 using namespace Rcpp;
 
@@ -269,8 +270,8 @@ List svlsample_cpp (
   double sigma2 = std::pow(Rcpp::as<double>(startpara["sigma"]), 2);
   double rho = startpara["rho"];
   double h0 = -1;
-  arma::vec h = startlatent, ht = (h - mu) / std::sqrt(sigma2);
   arma::vec beta = as<arma::vec>(startpara["beta"]);
+  arma::vec h = startlatent, ht = centered_to_noncentered(mu, std::sqrt(sigma2), h);
 
   arma::mat betas(regression * draws/thinpara, p, arma::fill::zeros);
   Rcpp::NumericMatrix para(draws/thinpara, 4);
@@ -329,7 +330,7 @@ List svlsample_cpp (
 
     // update theta and h
     update_general_sv(y, y_star, d, mu, phi, sigma2, rho, h0, h, adaptation_collection, prior_spec, expert);
-    ht = (h - mu) / std::sqrt(sigma2);
+    ht = centered_to_noncentered(mu, std::sqrt(sigma2), h);
 
     // update beta
     if (regression) {

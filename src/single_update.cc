@@ -12,22 +12,6 @@ using namespace Rcpp;
 
 namespace stochvol {
 
-template<typename T>
-T centered_to_noncentered(
-    const double mu,
-    const double sigma,
-    const T& h) {
-  return (h - mu) / sigma;
-}
-
-template<typename T>
-T noncentered_to_centered(
-    const double mu,
-    const double sigma,
-    const T& ht) {
-  return mu + sigma * ht;
-}
-
 void update_vanilla_sv(
     const arma::vec& log_data2,
     double& mu,
@@ -351,7 +335,7 @@ void update_general_sv(
   const arma::vec& y = data,
                  & y_star = log_data2;
   const arma::ivec& d = sign_data;
-  arma::vec ht = (h - mu) / std::sqrt(sigma2);
+  arma::vec ht = centered_to_noncentered(mu, std::sqrt(sigma2), h);
 
   // PriorSpec
   const arma::vec prior_mu {prior_spec.mu.normal.mean, prior_spec.mu.normal.sd},  // invalid if prior_spec.mu.distribution != NORMAL
