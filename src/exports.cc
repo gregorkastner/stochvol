@@ -130,6 +130,8 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP run_testthat_tests ();
+
 // registerCCallable (register entry points for exported C++ functions)
 RcppExport SEXP _stochvol_Export_registerCCallable() { 
     R_RegisterCCallable("stochvol", "update_vanilla_sv", (DL_FUNC)stochvol::update_vanilla_sv);
@@ -143,6 +145,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_stochvol_svsample_cpp", (DL_FUNC) &_stochvol_svsample_cpp, 16},
     {"_stochvol_svlsample_cpp", (DL_FUNC) &_stochvol_svlsample_cpp, 16},
     {"_stochvol_get_omori_constants", (DL_FUNC) &_stochvol_get_omori_constants, 0},
+    {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 0},
     {"_stochvol_Export_registerCCallable", (DL_FUNC) &_stochvol_Export_registerCCallable, 0},
     {NULL, NULL, 0}
 };

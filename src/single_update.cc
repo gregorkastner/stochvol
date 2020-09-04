@@ -361,7 +361,7 @@ void update_general_sv(
   const bool adapt = expert.adapt;
 
   // only centered
-  {
+  if (false) {
     const LatentVector h_full = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, correct);
     h0 = h_full.h0;
     h = h_full.h;  // std::move(h_full.h); ?

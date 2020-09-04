@@ -119,19 +119,20 @@ test_that("general SV passes Geweke test", {
 
   #for (centered in c(FALSE, TRUE)) {
   {
+    devtools::load_all()
     centered <- TRUE
     priorspec <-
-      #if (centered) {  # pro-centered
+      if (centered) {  # pro-centered
         specify_priors(mu = sv_normal(mean = -9, sd = 0.1),
-                       phi = sv_beta(alpha = 10, beta = 3),
-                       sigma2 = sv_gamma(shape = 0.5, rate = 0.5 / 0.1),
+                       phi = sv_beta(alpha = 10, beta = 5),
+                       sigma2 = sv_gamma(shape = 0.5, rate = 0.5 / 10),
+                       rho = sv_beta(alpha = 20, beta = 20))
+      } else {  # pro-noncentered
+        specify_priors(mu = sv_normal(mean = -9, sd = 0.1),
+                       phi = sv_beta(alpha = 10, beta = 1),
+                       sigma2 = sv_gamma(shape = 0.5, rate = 0.5 / 0.01),
                        rho = sv_beta(alpha = 5, beta = 15))
-      #} else {  # pro-noncentered
-      #  specify_priors(mu = sv_normal(mean = -9, sd = 0.1),
-      #                 phi = sv_beta(alpha = 10, beta = 1),
-      #                 sigma2 = sv_gamma(shape = 0.5, rate = 0.5 / 0.01),
-      #                 rho = sv_beta(alpha = 5, beta = 15))
-      #}
+      }
 
     #set.seed(61)
     startpara <- list(mu = mean(priorspec$mu),
@@ -163,7 +164,7 @@ test_that("general SV passes Geweke test", {
     general_sv$proposal_diffusion_ken <-
       res$adaptation[[general_sv$starting_parameterization]][c("scale", "covariance")]
 
-    draws <- 40000L
+    draws <- 500000L
     store_para <- matrix(NA_real_, draws, 5, dimnames = list(NULL, c("mu", "phi", "sigma", "rho", "h0")))
     #store_y <- matrix(NA_real_, draws, len)
     #store_h <- matrix(NA_real_, draws, len)
@@ -174,16 +175,16 @@ test_that("general SV passes Geweke test", {
       startlatent <- 2 * log(data$vol)
       y <- data$y
       res <- svlsample_cpp(y, 1L, 0L, designmatrix, priorspec,
-                           1L, 1L, "all",
+                           1L, 1L, "last",
                            startpara, startlatent, FALSE, TRUE,
-                           TRUE, FALSE,
+                           FALSE, FALSE,
                            0, general_sv)
       param <- para(res)[1, ]
       startpara$mu <- param["mu"]
       startpara$phi <- param["phi"]
       startpara$sigma <- param["sigma"]
       startpara$rho <- param["rho"]
-      store_para[tt, 1:4] <- para(res)[1, ]
+      store_para[tt, c("mu", "phi", "sigma", "rho")] <- para(res)[1, c("mu", "phi", "sigma", "rho")]
       store_para[tt, "h0"] <- latent0(res)[1]
       #store_y[tt, ] <- y
       #store_h[tt, ] <- latent(res)[, 1]
@@ -195,19 +196,19 @@ test_that("general SV passes Geweke test", {
     #expect_gt(shapiro.test(sample(qnorm(pbeta(0.5 * (1 + store_para[, "rho"]), priorspec$rho$alpha, priorspec$rho$beta)), 4500, replace = TRUE))$p.value, 1e-5)
 
     # visual tests for manual checks
-    if (FALSE) {
-      opar <- par(mfrow = c(6, 1), mgp = c(1.6, 0.6, 0), mar = c(1.5, 1.5, 2, 0.5))
+    if (TRUE) {
+      opar <- par(mfrow = c(5, 1), mgp = c(1.6, 0.6, 0), mar = c(1.5, 1.5, 2, 0.5))
       ts.plot(store_para[, "h0"], main = "h0")
       ts.plot(store_para[, "mu"], main = "mu")
       ts.plot(store_para[, "phi"], main = "phi")
       ts.plot(store_para[, "sigma"], main = "sigma")
       ts.plot(store_para[, "rho"], main = "rho")
       #ts.plot(store_h[, len], main = "h_last")
-      ts.plot(diff(store_para[, "h0"]), main = "diff(h0)")
-      abline(h = 0, col = "blue")
+      #ts.plot(diff(store_para[, "h0"]), main = "diff(h0)"); abline(h = 0, col = "blue")
       par(opar)
     }
-    if (FALSE) {
+  }
+    if (TRUE) {
       opar <- par(mfrow = c(2, 2), mgp = c(1.6, 0.6, 0), mar = c(1.5, 1.5, 2, 0.5))
       qqnorm(sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate)); abline(0, 1, col = "blue")
       qqnorm((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$stdev); abline(0, 1, col = "blue")
@@ -215,6 +216,5 @@ test_that("general SV passes Geweke test", {
       qqnorm(qnorm(pbeta(0.5 * (1 + store_para[, "rho"]), priorspec$rho$alpha, priorspec$rho$beta))); abline(0, 1, col = "blue")
       par(opar)
     }
-  }
 })
 
