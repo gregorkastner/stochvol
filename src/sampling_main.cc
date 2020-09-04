@@ -269,7 +269,7 @@ List svlsample_cpp (
   double phi = startpara["phi"];
   double sigma2 = std::pow(as<double>(startpara["sigma"]), 2);
   double rho = startpara["rho"];
-  double h0 = -1;
+  double h0 = startpara["latent0"];
   arma::vec h = startlatent, ht = centered_to_noncentered(mu, std::sqrt(sigma2), h);
   arma::vec beta = startpara["beta"];
 
