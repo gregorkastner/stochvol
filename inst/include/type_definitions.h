@@ -165,9 +165,9 @@ namespace stochvol {
         const arma::mat& _covariance) {
       set_scale(_scale);
       covariance = _covariance;
-      const bool success = arma::inv_sympd(precision, _covariance) &&
-        arma::chol(covariance_chol, _covariance, "lower") &&
-        arma::inv(covariance_chol_inv, arma::trimatl(covariance_chol));
+      bool success = arma::inv_sympd(precision, _covariance) and
+        arma::chol(covariance_chol, _covariance, "lower");
+      success = success and arma::inv(covariance_chol_inv, arma::trimatl(covariance_chol));
       if (!success) {
         Rcpp::stop("Failed to take Cholesky or to take inverse");
       }
