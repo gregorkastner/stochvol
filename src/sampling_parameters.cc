@@ -381,7 +381,7 @@ bool draw_theta(
      theta_log_likelihood(phi, rho, sigma2, mu, y, h0, h, ht, exp_h_half, centering)) -
     (prop_new_logdens - prop_old_logdens);
 
-  const bool accepted = log_acceptance > 0 || std::exp(log_acceptance) > R::runif(0, 1);
+  const bool accepted = log_acceptance > 0 || std::exp(log_acceptance) > R::unif_rand();
   if (accepted) {
     phi = phi_prop;
     rho = rho_prop;

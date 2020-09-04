@@ -75,7 +75,7 @@ double theta_log_likelihood(
     const arma::vec& ht,
     const arma::vec& exp_h_half,
     const Parameterization centering) {
-  double result = 0;
+  double result;
   switch (centering) {
     case Parameterization::CENTERED:
       result = theta_log_likelihood_c(phi, rho, sigma2, mu, y, h0, h, exp_h_half);

@@ -218,7 +218,7 @@ arma::vec correct_latent_auxiliaryMH(
   const double halp2 = h_aux_log_posterior(h, y_star, d, phi, rho, sigma2, mu, h0);
   const double log_acceptance = hlp1-hlp2-(halp1-halp2);
   arma::vec result;
-  if (log_acceptance > 0 || exp(log_acceptance) > R::runif(0, 1)) {
+  if (log_acceptance > 0 || std::exp(log_acceptance) > R::unif_rand()) {
     result = proposed;
   } else {
     result = h;
@@ -251,7 +251,7 @@ arma::uvec draw_s_auxiliary(
       eta = (h.tail(n-1) - mu) - phi*(h.head(n-1) - mu);
       break;
     case Parameterization::NONCENTERED:
-      eps_star = y_star - mu - sqrt(sigma2)*ht;
+      eps_star = y_star - mu - std::sqrt(sigma2)*ht;
       eta = ht.tail(n-1) - phi*ht.head(n-1);
       break;
   }
@@ -283,7 +283,7 @@ arma::uvec draw_s_auxiliary(
     post_dist = arma::cumsum(arma::exp(/*log_*/post_dist - max_log_post_dist));
     post_dist = post_dist / post_dist[mix_count-1];
 
-    auto binary_search_result = std::lower_bound(post_dist.cbegin(), post_dist.cend(), R::unif_rand());
+    const auto binary_search_result = std::lower_bound(post_dist.cbegin(), post_dist.cend(), R::unif_rand());
     new_states[r] = std::distance(post_dist.cbegin(), binary_search_result);
   }
 
