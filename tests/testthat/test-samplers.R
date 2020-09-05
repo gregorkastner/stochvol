@@ -2,12 +2,13 @@ context("Samplers behave well")
 
 test_that("vanilla SV passes Geweke test", {
   skip_if_not_installed(pkg = "magrittr", minimum_version = "1.5")
+  library("magrittr")
 
   # general helper functions
   increment_fun <- function (mu, phi, sigma) {
     function (h_t, eps) { mu + phi * (h_t - mu) + sigma * eps }
   }
-  generate_h <- function (len, increment_fun) {
+  generate_h <- function (len, increment_fun, h0) {
     increment_fun %>%
     Reduce(rnorm(len), h0,
            accumulate = TRUE) %>%
@@ -44,25 +45,22 @@ test_that("vanilla SV passes Geweke test", {
     #data <- svsim(len, mu = startpara$mu, phi = startpara$phi, sigma = startpara$sigma)
     #h <- 2 * log(data$vol)
     #y <- data$y
-    h <- increment_fun(startpara$mu, startpara$phi, startpara$sigma) %>%
-      Reduce(rnorm(len), h0,
-             accumulate = TRUE) %>%
-      tail(-1)  # remove h0 from h
-
+    h <- generate_h(len, increment_fun(startpara$mu, startpara$phi, startpara$sigma), h0)
     startlatent <- h
     designmatrix <- matrix(NA_real_, 1, 1)
     fast_sv <- default_fast_sv
     fast_sv$store_indicators <- TRUE
     fast_sv$baseline_parameterization <- if (centered) "centered" else "noncentered"
-    fast_sv$init_indicators <- sample.int(10, len, replace = TRUE, prob = p)
+    fast_sv$init_indicators <- sample.int(10, len, replace = TRUE, prob = p) - 1
 
-    draws <- 10000L
+    draws <- 20000L
     store_para <- matrix(NA_real_, draws, 4, dimnames = list(NULL, c("mu", "phi", "sigma", "h0")))
     store_y <- matrix(NA_real_, draws, len)
     store_h <- matrix(NA_real_, draws, len)
+    store_r <- matrix(NA_real_, draws, len)
 
     for (tt in seq_len(draws)) {
-      z <- fast_sv$init_indicators
+      z <- fast_sv$init_indicators + 1
       y <- sample(c(-1, 1), len, replace = TRUE) * exp(0.5 * rnorm(len, m[z], v[z])) * exp(0.5 * startlatent)
       res <- svsample_cpp(y, 1L, 0L, designmatrix, priorspec,
                           1L, 1L, "all",
@@ -73,23 +71,28 @@ test_that("vanilla SV passes Geweke test", {
       startpara$mu <- param["mu"]
       startpara$phi <- param["phi"]
       startpara$sigma <- param["sigma"]
-      startpara$latent0 <- rnorm(1, startpara$mu, startpara$sigma / sqrt(1 - startpara$phi^2))  #latent0(res)[1]
-      fast_sv$init_indicators <- sample.int(10, len, replace = TRUE, prob = p)  #res$indicators[, 1]
-      startlatent <-
-        increment_fun(startpara$mu, startpara$phi, startpara$sigma) %>%
-        Reduce(rnorm(len), startpara$latent0,
-               accumulate = TRUE) %>%
-        tail(-1)  #latent(res)[, 1]
+      if (TRUE) {  # correct way
+        startpara$latent0 <- latent0(res)[1]
+        fast_sv$init_indicators <- res$indicators[, 1]
+        startlatent <- latent(res)[, 1]
+      } else {  # wrong way
+        startpara$latent0 <- rnorm(1, startpara$mu, startpara$sigma / sqrt(1 - startpara$phi^2))
+        fast_sv$init_indicators <- sample.int(10, len, replace = TRUE, prob = p)
+        startlatent <- generate_h(len, increment_fun(startpara$mu, startpara$phi, startpara$sigma), startpara$latent0)
+      }
       store_para[tt, 1:3] <- para(res)[1, ]
       store_para[tt, 4] <- latent0(res)[1]
-      #store_y[tt, ] <- y
-      #store_h[tt, ] <- latent(res)[, 1]
+      store_y[tt, ] <- y
+      store_h[tt, ] <- latent(res)[, 1]
+      store_r[tt, ] <- res$indicators[, 1]
     }
 
-    # TODO account for autocorrelation
-    expect_gt(shapiro.test(sample(sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate), 4500, replace = TRUE))$p.value, 1e-5)
-    expect_gt(shapiro.test(sample((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$sd, 4500, replace = TRUE))$p.value, 1e-5)
-    expect_gt(shapiro.test(sample(qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$alpha, priorspec$phi$beta)), 4500, replace = TRUE))$p.value, 1e-5)
+    thin_skip <- ceiling(draws / min(apply(store_para, 2, coda::effectiveSize)))
+    thin_index <- seq(1, draws, by = thin_skip)
+
+    expect_gt(shapiro.test((sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate))[thin_index])$p.value, 1e-5)
+    expect_gt(shapiro.test(((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$sd)[thin_index])$p.value, 1e-5)
+    expect_gt(shapiro.test((qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$alpha, priorspec$phi$beta)))[thin_index])$p.value, 1e-5)
 
     # visual tests for manual checks
     if (FALSE) {
@@ -106,7 +109,7 @@ test_that("vanilla SV passes Geweke test", {
     if (FALSE) {
       opar <- par(mfrow = c(1, 3), mgp = c(1.6, 0.6, 0), mar = c(1.5, 1.5, 2, 0.5))
       qqnorm(sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate)); abline(0, 1, col = "blue")
-      qqnorm((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$stdev); abline(0, 1, col = "blue")
+      qqnorm((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$sd); abline(0, 1, col = "blue")
       qqnorm(qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$alpha, priorspec$phi$beta))); abline(0, 1, col = "blue")
       par(opar)
     }
@@ -211,7 +214,7 @@ test_that("general SV passes Geweke test", {
     if (TRUE) {
       opar <- par(mfrow = c(2, 2), mgp = c(1.6, 0.6, 0), mar = c(1.5, 1.5, 2, 0.5))
       qqnorm(sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate)); abline(0, 1, col = "blue")
-      qqnorm((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$stdev); abline(0, 1, col = "blue")
+      qqnorm((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$sd); abline(0, 1, col = "blue")
       qqnorm(qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$alpha, priorspec$phi$beta))); abline(0, 1, col = "blue")
       qqnorm(qnorm(pbeta(0.5 * (1 + store_para[, "rho"]), priorspec$rho$alpha, priorspec$rho$beta))); abline(0, 1, col = "blue")
       par(opar)

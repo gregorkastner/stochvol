@@ -120,17 +120,6 @@ void update_vanilla_sv(
 
     find_mixture_indicator_cdf(mixprob, data-h);
 
-    if (false) {  // TODO remove
-      switch (expert.baseline) {
-        case Parameterization::CENTERED:
-          find_mixture_indicator_cdf(mixprob, data-h);
-          break;
-        case Parameterization::NONCENTERED:
-          find_mixture_indicator_cdf(mixprob, data-mu-sigma*h); 
-          break;
-      }
-    }
-
     // find correct indicators
     inverse_transform_sampling(mixprob, r, T);
   }
@@ -270,9 +259,8 @@ void update_vanilla_sv(
             phi = parameter_draw.phi;
             sigma = parameter_draw.sigma;
             sigma2 = std::pow(sigma, 2);
-            // updating ht0 and ht is unnecessary, we don't return them
-            //ht = centered_to_noncentered(mu, sigma, h);
-            //ht0 = centered_to_noncentered(mu, sigma, h0);
+            ht = centered_to_noncentered(mu, sigma, h);
+            ht0 = centered_to_noncentered(mu, sigma, h0);
           }
         }
     }
@@ -361,7 +349,7 @@ void update_general_sv(
   const bool adapt = expert.adapt;
 
   // only centered
-  if (false) {
+  {
     const LatentVector h_full = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, correct);
     h0 = h_full.h0;
     h = h_full.h;  // std::move(h_full.h); ?
