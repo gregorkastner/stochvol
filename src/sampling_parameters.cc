@@ -5,6 +5,7 @@
 #include "utils_latent_states.h"
 #include "type_definitions.h"
 #include "densities.h"
+#include "utils.h"
 
 using namespace Rcpp;
 
@@ -346,6 +347,7 @@ bool draw_theta(
     double& mu,
     const arma::vec& y,
     const double h0,
+    const double ht0,
     const arma::vec& h,
     const arma::vec& ht,
     const arma::vec& exp_h_half,
@@ -367,18 +369,19 @@ bool draw_theta(
       proposed = theta_propose_mala(phi, rho, sigma2, mu, y, h0, h, prior_phi, prior_rho, prior_sigma2, prior_mu, adaptation_proposal);
       break;
   }
+  //Rcpp::Rcout << "proposed theta: " << proposed.t() << std::endl;
   const double phi_prop = proposed[0], rho_prop = proposed[1], sigma2_prop = proposed[2],
     mu_prop = proposed[3], prop_old_logdens = proposed[4], prop_new_logdens = proposed[5];
   if (centering == Parameterization::NONCENTERED) {
-    exp_h_half_proposal_nc = arma::exp(.5 * (std::sqrt(sigma2_prop) * ht + mu_prop));
+    exp_h_half_proposal_nc = arma::exp(.5 * noncentered_to_centered(mu_prop, std::sqrt(sigma2_prop), ht));
   }
   const arma::vec& exp_h_half_proposal = centering == Parameterization::CENTERED ? exp_h_half : exp_h_half_proposal_nc;
 
   const double log_acceptance =
     (theta_log_prior(phi_prop, rho_prop, sigma2_prop, mu_prop, prior_phi, prior_rho, prior_sigma2, prior_mu, gammaprior) +
-     theta_log_likelihood(phi_prop, rho_prop, sigma2_prop, mu_prop, y, h0, h, ht, exp_h_half_proposal, centering)) -
+     theta_log_likelihood(phi_prop, rho_prop, sigma2_prop, mu_prop, y, h0, ht0, h, ht, exp_h_half_proposal, centering)) -
     (theta_log_prior(phi, rho, sigma2, mu, prior_phi, prior_rho, prior_sigma2, prior_mu, gammaprior) +
-     theta_log_likelihood(phi, rho, sigma2, mu, y, h0, h, ht, exp_h_half, centering)) -
+     theta_log_likelihood(phi, rho, sigma2, mu, y, h0, ht0, h, ht, exp_h_half, centering)) -
     (prop_new_logdens - prop_old_logdens);
 
   const bool accepted = log_acceptance > 0 || std::exp(log_acceptance) > R::unif_rand();
@@ -399,6 +402,7 @@ bool draw_thetamu_rwMH(
     const double mu,
     const arma::vec& y,
     const double h0,
+    const double ht0,
     const arma::vec& h,
     const arma::vec& ht,
     const arma::vec& exp_h_half,
@@ -419,12 +423,12 @@ bool draw_thetamu_rwMH(
 
   const double log_acceptance =
     (thetamu_log_prior(phi_prop, rho_prop, sigma2_prop, prior_phi, prior_rho, prior_sigma2, gammaprior) +
-     theta_log_likelihood(phi_prop, rho_prop, sigma2_prop, mu, y, h0, h, ht, exp_h_half_proposal, centering)) -
+     theta_log_likelihood(phi_prop, rho_prop, sigma2_prop, mu, y, h0, ht0, h, ht, exp_h_half_proposal, centering)) -
     (thetamu_log_prior(phi, rho, sigma2, prior_phi, prior_rho, prior_sigma2, gammaprior) +
-     theta_log_likelihood(phi, rho, sigma2, mu, y, h0, h, ht, exp_h_half, centering)) -
+     theta_log_likelihood(phi, rho, sigma2, mu, y, h0, ht0, h, ht, exp_h_half, centering)) -
     (prop_new_logdens - prop_old_logdens);
 
-  const bool accepted = log_acceptance > 0 || std::exp(log_acceptance) > R::runif(0, 1);
+  const bool accepted = log_acceptance > 0 || std::exp(log_acceptance) > R::unif_rand();
   if (accepted) {
     phi = phi_prop;
     rho = rho_prop;

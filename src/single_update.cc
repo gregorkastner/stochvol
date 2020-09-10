@@ -323,7 +323,13 @@ void update_general_sv(
   const arma::vec& y = data,
                  & y_star = log_data2;
   const arma::ivec& d = sign_data;
-  arma::vec ht = centered_to_noncentered(mu, std::sqrt(sigma2), h);
+  double ht0;
+  arma::vec ht;
+  {
+    const double sigma = std::sqrt(sigma2);
+    ht0 = centered_to_noncentered(mu, sigma, h0);
+    ht = centered_to_noncentered(mu, sigma, h);
+  }
 
   // PriorSpec
   const arma::vec prior_mu {prior_spec.mu.normal.mean, prior_spec.mu.normal.sd},  // invalid if prior_spec.mu.distribution != NORMAL
@@ -350,11 +356,15 @@ void update_general_sv(
 
   // only centered
   {
-    const LatentVector h_full = draw_latent(y, y_star, d, h, ht, phi, rho, sigma2, mu, correct);
+    const LatentVector h_full = draw_latent(y, y_star, d, h0, h, ht, phi, rho, sigma2, mu, correct);
     h0 = h_full.h0;
-    h = h_full.h;  // std::move(h_full.h); ?
+    h = std::move(h_full.h);
   }
-  ht = centered_to_noncentered(mu, std::sqrt(sigma2), h);
+  {
+    const double sigma = std::sqrt(sigma2);
+    ht0 = centered_to_noncentered(mu, sigma, h0);
+    ht = centered_to_noncentered(mu, sigma, h);
+  }
   arma::vec exp_h_half = arma::exp(.5 * h);  // cache exp() calculations
   arma::vec exp_h_half_proposal_nc;
 
@@ -366,7 +376,7 @@ void update_general_sv(
     if (dontupdatemu) {
       theta_updated = draw_thetamu_rwMH(
           phi, rho, sigma2, mu,
-          y, h0, h, ht,
+          y, h0, ht0, h, ht,
           exp_h_half, exp_h_half_proposal_nc,
           prior_phi,
           prior_rho,
@@ -378,9 +388,10 @@ void update_general_sv(
         adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu).head(3));
       }
     } else {
+  //exp_h_half = arma::exp(.5 * h);  // cache exp() calculations
       theta_updated = draw_theta(
           phi, rho, sigma2, mu,
-          y, h0, h, ht,
+          y, h0, ht0, h, ht,
           exp_h_half, exp_h_half_proposal_nc,
           prior_phi,
           prior_rho,
@@ -396,12 +407,15 @@ void update_general_sv(
     }
 
     if (theta_updated) {
+      const double sigma = std::sqrt(sigma2);
       switch (par) {
         case Parameterization::CENTERED:
-          ht = centered_to_noncentered(mu, std::sqrt(sigma2), h);
+          ht0 = centered_to_noncentered(mu, sigma, h0);
+          ht = centered_to_noncentered(mu, sigma, h);
           break;
         case Parameterization::NONCENTERED:
-          h = noncentered_to_centered(mu, std::sqrt(sigma2), ht);
+          h = noncentered_to_centered(mu, sigma, ht);
+          h0 = noncentered_to_centered(mu, sigma, ht0);
           exp_h_half = std::move(exp_h_half_proposal_nc);
           break;
       }

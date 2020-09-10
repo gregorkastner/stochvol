@@ -139,6 +139,7 @@ List svsample_cpp(
   if (verbose) show = progressbar_init(N);
 
   for (int i = -burnin + 1; i < draws + 1; i++) {  // BEGIN main MCMC loop
+    //Rcpp::Rcout << "round " << i << std::endl;
     R_CheckUserInterrupt();
 
     const bool thinpara_round = (thinpara > 1) && (i % thinpara != 0);  // is this a parameter thinning round?

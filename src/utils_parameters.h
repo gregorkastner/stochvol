@@ -23,6 +23,7 @@ double theta_log_likelihood(
     const double mu,
     const arma::vec& y,
     const double h0,
+    const double ht0,
     const arma::vec& h,
     const arma::vec& ht,
     const arma::vec& exp_h_half,

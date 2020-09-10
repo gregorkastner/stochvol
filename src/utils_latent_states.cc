@@ -97,9 +97,9 @@ double h_log_posterior(
   double result = logdnorm2(h[0], mu + phi * (h0 - mu), sigma);  // log p(h_1 | theta)
   for (int t = 0; t < n - 1; t++) {  // TODO parallel?
     result += logdnorm2(h[t + 1], mu + phi * (h[t] - mu), sigma);
-    result += logdnorm2(y[t], exp_h_half[t] * rho * (h[t + 1] - mu - phi * (h[t] - mu)) / sigma, exp_h_half[t] * rho_const) - .5 * h[t];
+    result += logdnorm2(y[t], exp_h_half[t] * rho * (h[t + 1] - mu - phi * (h[t] - mu)) / sigma, exp_h_half[t] * rho_const, .5 * h[t]);
   }
-  result += logdnorm2(y[n - 1], 0, exp_h_half[n - 1]) - .5 * h[n - 1];
+  result += logdnorm2(y[n - 1], 0, exp_h_half[n - 1], .5 * h[n - 1]);
   return result;
 }
 
