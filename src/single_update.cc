@@ -385,7 +385,7 @@ void update_general_sv(
           adapted_proposal,
           gammaprior);
       if (adapt) {
-        adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu).head(3));
+        adaptation.register_sample(theta_updated, theta_transform_inv(phi, rho, sigma2, mu).head(3));
       }
     } else {
       theta_updated = draw_theta(
@@ -401,7 +401,7 @@ void update_general_sv(
           gammaprior,
           proposal);
       if (adapt) {
-        adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu));
+        adaptation.register_sample(theta_updated, theta_transform_inv(phi, rho, sigma2, mu));
       }
     }
 

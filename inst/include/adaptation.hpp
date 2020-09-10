@@ -65,12 +65,10 @@ namespace stochvol {
     // Store new samples in the batch state
     // Do all kinds of adaptation logic
     inline
-    void register_sample (const arma::vec& sample) {
+    void register_sample (const bool accepted, const arma::vec& sample) {
       const int i = state.get_i_batch();
       draws_batch.col(i) = sample;
-      if (i >= 1) {
-        count_acceptance += 1e-20 < arma::sum(arma::abs(draws_batch.col(i - 1) - sample));  // is this sophisticated enough?
-      }
+      count_acceptance += accepted;
       if (i == state.batch_size - 1) {
         store_statistics();
         if (count_acceptance > 1) {  // 1 acceptance seems still too few
@@ -78,7 +76,7 @@ namespace stochvol {
             return (probability_of_value >= 1. || R::unif_rand() < probability_of_value) ? value : 1.;
           };
           const double probability_of_change = 100. * gamma / C;
-          const double rate_acceptance = count_acceptance / (state.batch_size - 1.);
+          const double rate_acceptance = count_acceptance / state.batch_size;
           if (rate_acceptance < 0.05) {
             // no update_covariance
             scale *= randomize_1_or(.1, probability_of_change);
