@@ -369,7 +369,6 @@ bool draw_theta(
       proposed = theta_propose_mala(phi, rho, sigma2, mu, y, h0, h, prior_phi, prior_rho, prior_sigma2, prior_mu, adaptation_proposal);
       break;
   }
-  //Rcpp::Rcout << "proposed theta: " << proposed.t() << std::endl;
   const double phi_prop = proposed[0], rho_prop = proposed[1], sigma2_prop = proposed[2],
     mu_prop = proposed[3], prop_old_logdens = proposed[4], prop_new_logdens = proposed[5];
   if (centering == Parameterization::NONCENTERED) {

@@ -131,13 +131,13 @@ double theta_log_likelihood_nc(
     const arma::vec& y,
     const double ht0,  // TODO test
     const arma::vec& ht,
-    const arma::vec& eexp_h_half) {
+    const arma::vec& exp_h_half) {
   const int n = y.size();
   const double sigma = std::sqrt(sigma2),
                rho_const = std::sqrt(1 - std::pow(rho, 2)),
                log_rho_const = std::log(rho_const),
                B0 = 1 / std::sqrt(1 - std::pow(phi, 2));  // TODO stationary
-  double log_lik = R::dnorm(ht0, 0, 1 / sqrt(1 - phi*phi), true);  //logdnorm(ht0, 0, B0);
+  double log_lik = logdnorm(ht0, 0, B0);
   for (int i = 0; i < n; i++) {
     double h_mean, y_mean, y_sd, log_y_sd;
     const double log_h_sd = 0,
@@ -147,25 +147,16 @@ double theta_log_likelihood_nc(
     } else {
       h_mean = phi * ht[i-1];
     }
-    //if (i < n-1) {
-    //  y_mean = exp_h_half[i] * rho * (ht[i+1] - phi * ht[i]);
-    //  y_sd = exp_h_half[i] * rho_const;
-    //  log_y_sd = .5 * (sigma * ht[i] + mu) + log_rho_const;
-    //} else {
-    //  y_mean = 0;
-    //  y_sd = exp_h_half[i];
-    //  log_y_sd = .5 * (sigma * ht[i] + mu);
-    //}
     if (i < n-1) {
-      const double exp_h_half = exp((sigma*ht[i]+mu)/2);
-      y_mean = exp_h_half*rho*(ht[i+1]-phi*ht[i]);
-      y_sd = exp_h_half*sqrt(1-rho*rho);
+      y_mean = exp_h_half[i] * rho * (ht[i+1] - phi * ht[i]);
+      y_sd = exp_h_half[i] * rho_const;
+      log_y_sd = .5 * (sigma * ht[i] + mu) + log_rho_const;
     } else {
       y_mean = 0;
-      y_sd = exp((sigma*ht[i] + mu)/2);
+      y_sd = exp_h_half[i];
+      log_y_sd = .5 * (sigma * ht[i] + mu);
     }
-    log_lik += R::dnorm(y[i], y_mean, y_sd, true) + R::dnorm(ht[i], h_mean, h_sd, true);
-    //log_lik += logdnorm2(y[i], y_mean, y_sd, log_y_sd) + logdnorm2(ht[i], h_mean, h_sd, log_h_sd);
+    log_lik += logdnorm2(y[i], y_mean, y_sd, log_y_sd) + logdnorm2(ht[i], h_mean, h_sd, log_h_sd);
   }
 
   return log_lik;

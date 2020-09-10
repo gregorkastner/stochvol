@@ -388,7 +388,6 @@ void update_general_sv(
         adaptation.register_sample(theta_transform_inv(phi, rho, sigma2, mu).head(3));
       }
     } else {
-  //exp_h_half = arma::exp(.5 * h);  // cache exp() calculations
       theta_updated = draw_theta(
           phi, rho, sigma2, mu,
           y, h0, ht0, h, ht,

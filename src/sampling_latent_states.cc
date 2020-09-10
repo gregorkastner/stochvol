@@ -23,9 +23,6 @@ LatentVector draw_latent(
   const arma::uvec s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
   const arma::vec proposed = draw_h_auxiliary(y_star, d, s, h0_old, phi, rho, sigma2, mu, Parameterization::CENTERED);
 
-  //Rcpp::Rcout << "proposed s: " << s.t() << std::endl;
-  //Rcpp::Rcout << "proposed h: " << proposed.t() << std::endl;
-
   LatentVector latent_new;
   if (correct) {
     latent_new.h = correct_latent_auxiliaryMH(y, y_star, d, h0_old, h, ht, proposed, phi, rho, sigma2, mu);
@@ -129,14 +126,6 @@ arma::vec draw_h_auxiliary(
     Lambda_inv[t] = 1 / std::sqrt(Omega_tt);
     help_Omega_Lambda[t] = Omega_t_tp1 * Lambda_inv[t];
     m[t] = c_t * std::pow(Lambda_inv[t], 2);
-
-    //Rcpp::Rcout <<
-    //  " Omega_tt t=" << t << ": " << Omega_tt << ", comparison: " <<
-    //  mix_varinv[z_t] + (1 - rho*rho + phi2 - 2 * phi * d_t * rho_sigma * b_exp_m2[z_t] + rho_sigma * b2_exp_m[z_t]) / ((1 - rho*rho) * sigma2) << std::endl <<
-    //  " Lambda_t_inv t=" << t << ": " << Lambda_inv[t] << std::endl <<
-    //  " Omega_t_tp1 t=" << t << ": " << Omega_t_tp1 << ", comparison: " <<
-    //  (-phi + d_t * rho_sigma * b_exp_m2[z_t]) / ((1 - rho*rho) * sigma2) <<
-    //  std::endl;
   }
 
   for (int t = 1; t < n - 1; t++) {
@@ -169,22 +158,6 @@ arma::vec draw_h_auxiliary(
     Lambda_inv[t] = 1 / std::sqrt(Omega_tt - std::pow(help_Omega_Lambda[t - 1], 2));
     help_Omega_Lambda[t] = Omega_t_tp1 * Lambda_inv[t];
     m[t] = (c_t - Omega_tm1_t * m[t - 1]) * std::pow(Lambda_inv[t], 2);
-
-    //Rcpp::Rcout <<
-    //  " Omega_tt t=" << t << ": " << Omega_tt << ", comparison: " <<
-    //  mix_varinv[z_t] + (1 + phi2 - 2 * phi * d_t * rho_sigma * b_exp_m2[z_t] + rho_sigma * b2_exp_m[z_t]) / ((1 - rho*rho) * sigma2) << std::endl <<
-    //  //" d * b * exp_m2 t=" << t << ": " << d_t * b_exp_m2[z_t] << std::endl <<
-    //  " Lambda_t_inv t=" << t << ": " << Lambda_inv[t] << ", comparison: " << 1/std::sqrt(Omega_tt - std::pow(Omega_tm1_t * Lambda_inv[t - 1], 2)) << std::endl <<
-    //  " Omega_t_tp1 t=" << t << ": " << Omega_t_tp1 << ", comparison: " <<
-    //  (-phi + d_t * rho_sigma * b_exp_m2[z_t]) / ((1 - rho*rho) * sigma2) <<
-    //  //" d_t " << d_t <<
-    //  std::endl;
-    //if (t >= 11 and t <= 15) {
-    //  const arma::mat A_t {{A_t_11, A_t_12}, {A_t_12, A_t_22}};
-    //  Rcpp::Rcout << "t=" << t << " A_t:" << std::endl << A_t <<
-    //    " det=" << arma::det(A_t) << std::endl;
-    //  //Rcpp::Rcout << "values t=" << t << ": " << W_t__beta << ' ' << Omega_tt << ' ' << Omega_t_tp1 << ' ' << c_t << std::endl;
-    //}
   }
 
   {
@@ -226,23 +199,6 @@ arma::vec draw_h_auxiliary(
   for (int t = n - 2; t >= 0; t--) {
     alpha[t] = m[t] + (R::norm_rand() - help_Omega_Lambda[t] * alpha[t + 1]) * Lambda_inv[t];
   }
-
-  //arma::vec dd(d.n_elem);
-  //std::transform(d.cbegin(), d.cend(), dd.begin(), [](const int d_elem) -> double { return double(d_elem); });
-  //const arma::vec omegatt = mix_varinv.elem(z) + (1 + phi2 - 2*phi*rho * sigma*(d % b_exp_m2.elem(z)) + rho2 * sigma2 * b2_exp_m.elem(z)) / ((1 - rho*rho) * sigma2);
-  //const arma::vec omegattp1 = (phi - rho * sigma * (d % b_exp_m2.elem(z))) / (sigma2 * (-1 + rho*rho));
-  //Rcpp::Rcout <<
-  //  "m: " << m.t() <<
-  //  "Lambda_inv: " << Lambda_inv.t() <<
-  //  "again:      " <<
-  //  arma::trans(1 / arma::sqrt(
-  //        omegatt.tail(n-1) -
-  //        arma::square(omegattp1.head(n-1) % Lambda_inv.head(n-1)))) <<
-  //  "Omega_tt: " << arma::trans(omegatt) <<
-  //  "Omega_tm1_t: " << arma::trans(omegattp1) <<
-  //  //"d * b * exp_m2: " << arma::trans(dd % b_exp_m2.elem(z)) <<
-  //  //"d int:    " << d.t() << "d double: " << dd.t() <<
-  //  "help_Omega_Lambda" << help_Omega_Lambda.t() << std::endl;
 
   return alpha;
 }
