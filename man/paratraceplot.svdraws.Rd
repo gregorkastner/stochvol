@@ -54,8 +54,5 @@ Other plotting:
 \code{\link{plot.svpredict}()},
 \code{\link{volplot}()}
 }
-\author{
-Gregor Kastner \email{gregor.kastner@wu.ac.at}
-}
 \concept{plotting}
 \keyword{hplot}

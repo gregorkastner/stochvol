@@ -73,10 +73,10 @@ namespace stochvol {
         store_statistics();
         if (count_acceptance > 1) {  // 1 acceptance seems still too few
           const auto randomize_1_or = [] (const double value, const double probability_of_value) -> double {
-            return (probability_of_value >= 1. || R::unif_rand() < probability_of_value) ? value : 1.;
+            return (probability_of_value >= 1. or R::unif_rand() < probability_of_value) ? value : 1.;
           };
           const double probability_of_change = 100. * gamma / C;
-          const double rate_acceptance = count_acceptance / state.batch_size;
+          const double rate_acceptance = count_acceptance / double(state.batch_size);
           if (rate_acceptance < 0.05) {
             // no update_covariance
             scale *= randomize_1_or(.1, probability_of_change);
@@ -182,7 +182,7 @@ namespace stochvol {
 
     inline
     void store_statistics () {
-      memory.push_back({gamma, scale, count_acceptance / (state.batch_size - 1.)});
+      memory.push_back({gamma, scale, count_acceptance / double(state.batch_size)});
     }
 
     inline
@@ -207,6 +207,26 @@ namespace stochvol {
         const double _C = 0.99)
       : centered(_dim, _memory_size, _batch_size, _target_acceptance, _lambda, _scale, _C),
         noncentered(centered) { }
+
+    inline
+    Adaptation& operator[] (const Parameterization par) {
+      switch (par) {
+        case Parameterization::CENTERED:
+          return centered;
+        case Parameterization::NONCENTERED:
+          return noncentered;
+      }
+    }
+
+    inline
+    const Adaptation& operator[] (const Parameterization par) const {
+      switch (par) {
+        case Parameterization::CENTERED:
+          return centered;
+        case Parameterization::NONCENTERED:
+          return noncentered;
+      }
+    }
   };
 }
 

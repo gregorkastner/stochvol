@@ -1,3 +1,26 @@
+#  #####################################################################################
+#  R package stochvol by
+#     Gregor Kastner Copyright (C) 2013-2020
+#     Darjus Hosszejni Copyright (C) 2019-2020
+#  
+#  This file is part of the R package stochvol: Efficient Bayesian
+#  Inference for Stochastic Volatility Models.
+#  
+#  The R package stochvol is free software: you can redistribute it
+#  and/or modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation, either version 2 or
+#  any later version of the License.
+#  
+#  The R package stochvol is distributed in the hope that it will be
+#  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+#  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#  General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with the R package stochvol. If that is not the case, please
+#  refer to <http://www.gnu.org/licenses/>.
+#  #####################################################################################
+
 #' Simulating a Stochastic Volatility Process
 #' 
 #' \code{svsim} is used to produce realizations of a stochastic volatility (SV)
@@ -74,33 +97,38 @@
 #' @export
 svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
 
-  # TODO use validation functions
-  # Some error checking
-  if (any(is.na(len)) || !is.numeric(len) || length(len) != 1 || any(len < 1)) {
-    stop("Argument 'len' (length of simulated series) must be a single number >= 2.")
-  } else {
-    len <- as.integer(len)
-  }
-
-  if (!is.numeric(mu) || length(mu) != 1) {
-    stop("Argument 'mu' (level of latent variable) must be a single number.")
-  }
-
-  if (!is.numeric(phi) || length(phi) != 1) {
-    stop("Argument 'phi' (persistence of latent variable) must be a single number.")
-  }
-
-  if (!is.numeric(sigma) || length(sigma) != 1 || sigma <= 0) {
-    stop("Argument 'sigma' (volatility of latent variable) must be a single number > 0.")
-  }
-
-  if (!is.numeric(nu) || length(nu) != 1 || nu <= 2) {
-    stop("Argument 'nu' (degrees of freedom for the conditional error) must be a single number > 2.")
-  }
-
-  if (!is.numeric(rho) || length(rho) != 1 || abs(rho) >= 1) {
-    stop("Argument 'rho' (correlation between the observations and the volatility increments) must be a single number between -1 and 1 exclusive.")
-  }
+  name_len <- "length of simulated data set"
+  assert_numeric(len, name_len)
+  assert_single(len, name_len)
+  assert_ge(len, 2, name_len)
+  
+  name_mu <- "input parameter mu"
+  assert_numeric(mu, name_mu)
+  assert_single(mu, name_mu)
+  
+  name_phi <- "input parameter phi"
+  assert_numeric(phi, name_phi)
+  assert_single(phi, name_phi)
+  assert_gt(phi, -1, name_phi)
+  assert_lt(phi, 1, name_phi)
+  
+  name_sigma <- "input parameter sigma"
+  assert_numeric(sigma, name_sigma)
+  assert_single(sigma, name_sigma)
+  assert_positive(sigma, name_sigma)
+  
+  name_nu <- "input parameter nu"
+  assert_numeric(nu, name_nu)
+  assert_single(nu, name_nu)
+  assert_gt(nu, 2, name_nu)
+  
+  name_rho <- "input parameter rho"
+  assert_numeric(rho, name_rho)
+  assert_single(rho, name_rho)
+  assert_gt(rho, -1, name_rho)
+  assert_lt(rho, 1, name_rho)
+  
+  len <- as.integer(len)
 
   h <- rep(as.numeric(NA), len)
   h0 <- rnorm(1, mean=mu, sd=sigma/sqrt(1-phi^2))
@@ -133,9 +161,9 @@ print.svsim <- function(x, ...) {
   cat("\nSimulated time series consisting of ", length(x$y), " observations.\n\n",
       "Parameters: level of latent variable                  mu = ", x$para$mu, "\n",
       "            persistence of latent variable           phi = ", x$para$phi, "\n",
-      "            standard deviation of latent variable  sigma = ", x$para$sigma, "\n", sep="")
-  if ("nu" %in% names(x$para)) cat("            degrees of freedom parameter              nu =", x$para$nu, "\n")
-  if ("rho" %in% names(x$para)) cat("            leverage effect parameter                rho =", x$para$rho, "\n")
+      "            standard deviation of latent variable  sigma = ", x$para$sigma, "\n",
+      "            degrees of freedom parameter              nu =", x$para$nu, "\n",
+      "            leverage effect parameter                rho =", x$para$rho, "\n", sep="")
   cat("\nSimulated initial volatility:", x$vol0*x$correction, "\n")
   cat("\nSimulated volatilities:\n")
   print(x$vol*x$correction, ...)

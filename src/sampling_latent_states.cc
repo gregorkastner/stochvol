@@ -1,5 +1,36 @@
+/*
+ * R package stochvol by
+ *     Gregor Kastner Copyright (C) 2013-2020
+ *     Darjus Hosszejni Copyright (C) 2019-2020
+ *  
+ *  This file is part of the R package stochvol: Efficient Bayesian
+ *  Inference for Stochastic Volatility Models.
+ *  
+ *  The R package stochvol is free software: you can redistribute it
+ *  and/or modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation, either version 2 or
+ *  any later version of the License.
+ *  
+ *  The R package stochvol is distributed in the hope that it will be
+ *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with the R package stochvol. If that is not the case, please
+ *  refer to <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * sampling_latent_states.cc
+ * 
+ * Definitions of the functions declared in sampling_latent_states.h.
+ * Documentation can also be found in sampling_latent_states.h.
+ */
+
 #include <RcppArmadillo.h>
 #include "sampling_latent_states.h"
+#include "utils.h"
 #include "utils_latent_states.h"
 #include "type_definitions.h"
 
@@ -7,50 +38,195 @@ using namespace Rcpp;
 
 namespace stochvol {
 
+namespace fast_sv {
+
+// Main sampling function for the latent states.
+// See documentation above the declaration
+LatentVector draw_latent(
+    const arma::vec& data,
+    const double mu,
+    const double phi,
+    const double sigma,
+    const arma::uvec& r,
+    const PriorSpec& prior_spec,
+    const ExpertSpec_FastSV& expert) {
+  const arma::vec& y = data;  // rename
+  const int T = y.n_elem;
+
+  double omega_offdiag;  // contains off-diag element of precision matrix (const)
+  arma::vec omega_diag(T+1),  // contains diagonal elements of precision matrix
+    covector(T+1);  // holds covector (see McCausland et al. 2011)
+  const double sigma2 = std::pow(sigma, 2),
+               sigma2inv = 1. / sigma2,
+               Bh0inv = determine_Bh0inv(phi, prior_spec);
+
+  switch (expert.baseline) {
+    case Parameterization::CENTERED:  // fill precision matrix omega and covector c for CENTERED para:
+      {
+        const double phi2 = std::pow(phi, 2);
+
+        omega_diag[0] = (Bh0inv + phi2) * sigma2inv;
+        covector[0] = mu * (Bh0inv - phi*(1-phi)) * sigma2inv;
+
+        for (int j = 1; j < T; j++) {
+          omega_diag[j] = mix_varinv[r[j-1]] + (1+phi2)*sigma2inv; 
+          covector[j] = (data[j-1] - mix_mean[r[j-1]])*mix_varinv[r[j-1]]
+            + mu*(1-phi)*(1-phi)*sigma2inv;
+        }
+        omega_diag[T] = mix_varinv[r[T-1]] + sigma2inv;
+        covector[T] = (data[T-1] - mix_mean[r[T-1]])*mix_varinv[r[T-1]] + mu*(1-phi)*sigma2inv;
+        omega_offdiag = -phi*sigma2inv;
+      }
+      break;
+    case Parameterization::NONCENTERED:  // fill precision matrix omega and covector c for NONCENTERED para:
+      {
+        const double phi2 = std::pow(phi, 2);
+
+        omega_diag[0] = Bh0inv + phi2;
+        covector[0] = 0.;
+
+        for (int j = 1; j < T; j++) {
+          omega_diag[j] = mix_varinv[r[j-1]] * sigma2 + 1 + phi2;
+          covector[j] = mix_varinv[r[j-1]] * sigma * (data[j-1] - mix_mean[r[j-1]] - mu);
+        }
+        omega_diag[T] = mix_varinv[r[T-1]] * sigma2 + 1;
+        covector[T] = mix_varinv[r[T-1]] * sigma * (data[T-1] - mix_mean[r[T-1]] - mu);
+        omega_offdiag = -phi;
+      }
+      break;
+  } 
+
+  // Cholesky decomposition
+  const auto cholesky_matrix = cholesky_tridiagonal(omega_diag, omega_offdiag);
+  const arma::vec chol_diag = std::move(cholesky_matrix.chol_diag);
+  const arma::vec chol_offdiag = std::move(cholesky_matrix.chol_offdiag);
+
+  // Solution of Chol*x = covector ("forward algorithm")
+  arma::vec htmp = forward_algorithm(chol_diag, chol_offdiag, covector);
+  htmp.transform( [](double h_elem) -> double { return h_elem + R::norm_rand(); });
+
+  // Solution of (Chol')*x = htmp ("backward algorithm")
+  const arma::vec hnew = backward_algorithm(chol_diag, chol_offdiag, htmp);
+
+  return {hnew[0], hnew.tail(T)};
+}
+
+// Main sampling function for the mixture indicators.
+// See documentation above the declaration
+arma::uvec draw_mixture_indicators(
+    const arma::vec& data,
+    const double mu,
+    const double phi,
+    const double sigma,
+    const arma::vec& h) {
+  const int T = data.n_elem;
+
+  // calculate non-normalized CDF of posterior indicator probs
+  const arma::vec mixprob = find_mixture_indicator_cdf(data-h);
+
+  // find correct indicators
+  const arma::uvec r = inverse_transform_sampling(mixprob, T);
+
+  return r;
+}
+
+}  // END namespace fast_sv
+
+namespace general_sv {
+
+// Sample from the proposal distribution of the latent
+// states. It is the conditional posterior distribution
+// for the latent states in the conditionally Gaussian
+// state space model by Omori et al (2007).
+// Parameter 'centering' sets the parameterization.
+arma::vec draw_h_auxiliary(
+    const arma::vec& y_star,
+    const arma::ivec& d,
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const arma::uvec& z,
+    const double h0,
+    const Parameterization centering);  // currently only CENTERED
+
+// Compute the Metropolis-Hasting acceptance-rejection
+// ratio and accept or reject 'proposed' against the current
+// draw 'h'.
+arma::vec correct_latent_auxiliaryMH(
+    const arma::vec& y,
+    const arma::vec& y_star,
+    const arma::ivec& d,
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const double h0,
+    const arma::vec& h,
+    const arma::vec& proposed);
+
+// Sample the vector of mixture indicators. For more
+// information see Omori et al (2007).
+arma::uvec draw_s_auxiliary(
+    const arma::vec& y_star,
+    const arma::ivec& d,
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const arma::vec& h,
+    const arma::vec& ht,
+    const Parameterization centering);
+
+// Main sampling function for the latent states.
+// See documentation above the declaration
 LatentVector draw_latent(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,
-    const double h0_old,
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
     const arma::vec& h,
     const arma::vec& ht,
-    const double phi,
-    const double rho,
-    const double sigma2,
-    const double mu,
-    const bool correct) {
-  // Draw h from AUX
-  const arma::uvec s = draw_s_auxiliary(y_star, d, h, ht, phi, rho, sigma2, mu, Parameterization::CENTERED);
-  const arma::vec proposed = draw_h_auxiliary(y_star, d, s, h0_old, phi, rho, sigma2, mu, Parameterization::CENTERED);
-
+    const PriorSpec& prior_spec,
+    const ExpertSpec_GeneralSV& expert) {
   LatentVector latent_new;
-  if (correct) {
-    latent_new.h = correct_latent_auxiliaryMH(y, y_star, d, h0_old, h, ht, proposed, phi, rho, sigma2, mu);
-  } else {
-    latent_new.h = std::move(proposed);
-  }
 
   // Draw h0 | h1, mu, phi, sigma
   const double phi2 = std::pow(phi, 2),
-               B02 = sigma2 / (1 - phi2),  // TODO stationary
-               h1 = latent_new.h[0],
+               sigma2 = std::pow(sigma, 2),
+               B02 = sigma2 / determine_Bh0inv(phi, prior_spec),
+               h1 = h[0],
                denominator = B02 * phi2 + sigma2,
                mean = (mu * sigma2 + phi * B02 * (h1 - mu * (1 - phi))) / denominator,
                var = sigma2 * B02 / denominator;
   latent_new.h0 = R::rnorm(mean, std::sqrt(var));
 
+  // Draw h from AUX
+  const arma::uvec s = draw_s_auxiliary(y_star, d, mu, phi, sigma, rho, h, ht, Parameterization::CENTERED);
+  const arma::vec proposed = draw_h_auxiliary(y_star, d, mu, phi, sigma, rho, s, latent_new.h0, Parameterization::CENTERED);
+
+  if (expert.correct_latent_draws) {
+    latent_new.h = correct_latent_auxiliaryMH(y, y_star, d, mu, phi, sigma, rho, latent_new.h0, h, proposed);
+  } else {
+    latent_new.h = std::move(proposed);
+  }
+
   return latent_new;
 }
 
+// See documentation above the declaration
 arma::vec draw_h_auxiliary(
     const arma::vec& y_star,
     const arma::ivec& d,
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
     const arma::uvec& z,
     const double h0,
-    const double phi,
-    const double rho,
-    const double sigma2,
-    const double mu,
     const Parameterization centering) {
   // arrays for
   //   A_z_{+; -}, X_z.beta, W_z_{+; -}.beta
@@ -68,13 +244,13 @@ arma::vec draw_h_auxiliary(
 
   // Runtime constants
   const int n = y_star.n_elem;
-  const double sigma = std::sqrt(sigma2),
-        phi2 = std::pow(phi, 2),
-        rho2 = std::pow(rho, 2),
-        rho_const = 1 / (1 - rho2),
-        help_mu_phi = mu * (1 - phi),
-        a_1 = help_mu_phi + phi * h0,
-        P_1_inv = 1 / sigma2;
+  const double sigma2 = std::pow(sigma, 2),
+               phi2 = std::pow(phi, 2),
+               rho2 = std::pow(rho, 2),
+               rho_const = 1 / (1 - rho2),
+               help_mu_phi = mu * (1 - phi),
+               a_1 = help_mu_phi + phi * h0,
+               P_1_inv = 1 / sigma2;
 
   // A as the function of z
   const double A_z_22 = rho_const / sigma2;
@@ -203,25 +379,25 @@ arma::vec draw_h_auxiliary(
   return alpha;
 }
 
+// See documentation above the declaration
 arma::vec correct_latent_auxiliaryMH(
     const arma::vec& y,
     const arma::vec& y_star,
     const arma::ivec& d,
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
     const double h0,
     const arma::vec& h,
-    const arma::vec& ht,
-    const arma::vec& proposed,
-    const double phi,
-    const double rho,
-    const double sigma2,
-    const double mu) {
+    const arma::vec& proposed) {
   //const CharacterVector centering,
 
   // Calculate MH acceptance ratio
-  const double hlp1 = h_log_posterior(proposed, y, phi, rho, sigma2, mu, h0);
-  const double hlp2 = h_log_posterior(h, y, phi, rho, sigma2, mu, h0);
-  const double halp1 = h_aux_log_posterior(proposed, y_star, d, phi, rho, sigma2, mu, h0);
-  const double halp2 = h_aux_log_posterior(h, y_star, d, phi, rho, sigma2, mu, h0);
+  const double hlp1 = h_log_posterior(proposed, y, phi, rho, sigma, mu, h0);
+  const double hlp2 = h_log_posterior(h, y, phi, rho, sigma, mu, h0);
+  const double halp1 = h_aux_log_posterior(proposed, y_star, d, phi, rho, sigma, mu, h0);
+  const double halp2 = h_aux_log_posterior(h, y_star, d, phi, rho, sigma, mu, h0);
   const double log_acceptance = hlp1-hlp2-(halp1-halp2);
   arma::vec result;
   if (log_acceptance > 0 || std::exp(log_acceptance) > R::unif_rand()) {
@@ -233,18 +409,19 @@ arma::vec correct_latent_auxiliaryMH(
   return result;
 }
 
+// See documentation above the declaration
 arma::uvec draw_s_auxiliary(
     const arma::vec& y_star,
     const arma::ivec& d,
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
     const arma::vec& h,
     const arma::vec& ht,
-    const double phi,
-    const double rho,
-    const double sigma2,
-    const double mu,
     const Parameterization centering) {
   const int n = y_star.size();
-  const double sigma2_used = centering == Parameterization::CENTERED ? sigma2 : 1.0;
+  const double sigma2_used = centering == Parameterization::CENTERED ? std::pow(sigma, 2) : 1.0;
   static const int mix_count = mix_a.n_elem;
   arma::vec eps_star;
   arma::vec eta;
@@ -257,14 +434,16 @@ arma::uvec draw_s_auxiliary(
       eta = (h.tail(n-1) - mu) - phi*(h.head(n-1) - mu);
       break;
     case Parameterization::NONCENTERED:
-      eps_star = y_star - mu - std::sqrt(sigma2)*ht;
+      eps_star = y_star - mu - sigma*ht;
       eta = ht.tail(n-1) - phi*ht.head(n-1);
       break;
   }
 
   static const arma::vec::fixed<10> mix_log_prob = arma::log(mix_prob);
   static const arma::vec::fixed<10> likelihood_normalizer = 0.5 * arma::log(2 * arma::datum::pi * mix_var);
-  static const arma::vec::fixed<10> help_eta_mean = rho * std::sqrt(sigma2_used) * arma::exp(0.5 * mix_mean);
+  static const arma::vec::fixed<10> exp_m2 = arma::exp(0.5 * mix_mean);
+
+  const arma::vec::fixed<10> help_eta_mean = rho * std::sqrt(sigma2_used) * exp_m2;
   const double log_eta_coefficient = -0.5 / (sigma2_used * (1 - rho * rho));
   const double log_eta_constant = -0.5 * std::log(2 * arma::datum::pi * sigma2_used * (1 - rho * rho));
   for (int r = 0; r < n; r++) {
@@ -295,6 +474,8 @@ arma::uvec draw_s_auxiliary(
 
   return new_states;
 }
+
+}  // END namespace general_sv
 
 }
 

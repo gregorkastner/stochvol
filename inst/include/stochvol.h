@@ -8,11 +8,11 @@
 namespace stochvol {
 
     inline
-    void update_vanilla_sv (const arma::vec& log_data2, double& mu, double& phi, double& sigma2, double& h0, arma::vec& h, arma::ivec& r, const PriorSpec& prior_spec, const ExpertSpec_VanillaSV& expert) {
-        typedef void(*CppFunction)(const arma::vec&, double&, double&, double&, double&, arma::vec&, arma::ivec&, const PriorSpec&, const ExpertSpec_VanillaSV&);
+    void update_fast_sv (const arma::vec& log_data2, double& mu, double& phi, double& sigma2, double& h0, arma::vec& h, arma::ivec& r, const PriorSpec& prior_spec, const ExpertSpec_FastSV& expert) {
+        typedef void(*CppFunction)(const arma::vec&, double&, double&, double&, double&, arma::vec&, arma::ivec&, const PriorSpec&, const ExpertSpec_FastSV&);
         static CppFunction cpp_function = NULL;
         if (cpp_function == NULL) {
-            cpp_function = (CppFunction)R_GetCCallable("stochvol", "update_vanilla_sv");
+            cpp_function = (CppFunction)R_GetCCallable("stochvol", "update_fast_sv");
         }
         {
             cpp_function(log_data2, mu, phi, sigma2, h0, h, r, prior_spec, expert);

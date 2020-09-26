@@ -2,8 +2,6 @@
 % Please edit documentation in R/wrappers.R
 \name{svsample}
 \alias{svsample}
-\alias{svsample_fast}
-\alias{svsample_general}
 \title{Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility (SV)
 Model}
 \usage{
@@ -29,36 +27,6 @@ svsample(
   startlatent = NULL,
   expert = NULL,
   ...
-)
-
-svsample_fast(
-  y,
-  draws = 1,
-  burnin = 0,
-  designmatrix = matrix(NA, 1, 1),
-  priorspec,
-  thinpara = 1,
-  thinlatent = 1,
-  keeptime = "all",
-  keeptau = FALSE,
-  quiet = TRUE,
-  startpara,
-  startlatent
-)
-
-svsample_general(
-  y,
-  draws = 1,
-  burnin = 0,
-  designmatrix = matrix(NA, 1, 1),
-  priorspec,
-  thinpara = 1,
-  thinlatent = 1,
-  keeptime = "all",
-  keeptau = FALSE,
-  quiet = TRUE,
-  startpara,
-  startlatent
 )
 }
 \arguments{
@@ -104,13 +72,15 @@ reasonably vague prior for many common exchange rate datasets, stock returns
 and the like.}
 
 \item{priornu}{single non-negative number, indicating the rate parameter
-for the exponential prior distribution of the parameter
+for the exponential prior distribution of the parameter; can be \code{Inf}
 \code{nu}, the degrees-of-freedom parameter of the conditional innovations
 t-distribution. The default value is \code{0}, fixing the
 degrees-of-freedom to infinity. This corresponds to conditional standard
 normal innovations, the pre-1.1.0 behavior of \pkg{stochvol}.}
 
-\item{priorrho}{to be documented TODO}
+\item{priorrho}{either \code{NA} for the no-leverage case or a numeric
+vector of length 2 that specify the beta prior distribution for
+\code{(rho+1)/2}}
 
 \item{priorbeta}{numeric vector of length 2, indicating the mean and
 standard deviation of the Gaussian prior for the regression parameters. The
@@ -124,7 +94,10 @@ distribution of the latent AR(1)-process is used as the prior for the
 initial log-volatility \code{h_0}. When \code{priorlatent0} is equal to a
 number \eqn{B}, we have \eqn{h_0 \sim N(\mu, B\sigma^2)} a priori.}
 
-\item{priorspec}{to be documented TODO}
+\item{priorspec}{in case one needs different prior distributions than the
+ones specified by \code{priormu}, \code{...}, \code{priorrho}, a \code{priorspec}
+object can be supplied here. A smart constructor for this usecase is
+\link{specify_priors}.}
 
 \item{thinpara}{single number greater or equal to 1, coercible to integer.
 Every \code{thinpara}th parameter draw is kept and returned. The default
@@ -136,7 +109,8 @@ Every \code{thinlatent}th latent variable draw is kept and returned. The
 default value is 1, corresponding to no thinning of the latent variable
 draws, i.e. every draw is kept.}
 
-\item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent}
+\item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent
+volatility draws should be stored.}
 
 \item{keeptau}{logical value indicating whether the 'variance inflation
 factors' should be stored (used for the sampler with conditional t
@@ -161,15 +135,6 @@ t-innovations). The default value is equal to the prior mean.}
 containing the starting values for the latent log-volatility draws. The
 default value is \code{rep(-10, length(y))}.}
 
-\item{expert}{\emph{optional} named list of expert parameters. For most
-applications, the default values probably work best. Interested users are
-referred to the literature provided in the References section. If
-\code{expert} is provided, it may contain the following named elements:
-
-\code{interweaving}: Logical value. TODO
-
-\code{correct_model_misspecification}: Logical value. TODO}
-
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
 for the posterior draws.}
@@ -187,14 +152,15 @@ initial log-volatility} draws from the posterior distribution.}
 factors} for the sampler with conditional t-innovations \emph{(optional)}.}
 \item{beta}{\code{mcmc} object containing the \emph{regression coefficient}
 draws from the posterior distribution \emph{(optional)}.}
-\item{y}{the
-argument \code{y}.}
+\item{y}{the left hand side of the observation equation, usually
+the argument \code{y}. In case of an AR(\code{k}) specification, the
+first \code{k} elements are removed.}
 \item{runtime}{\code{proc_time} object containing the
 run time of the sampler.}
-\item{priors}{\code{list} containing the parameter
-values of the prior distribution, i.e. the arguments \code{priormu},
-\code{priorphi}, \code{priorsigma}, and potentially \code{priornu} and
-\code{priorbeta}.}
+\item{priors}{a \code{priorspec} object containing the parameter
+values of the prior distributions for \code{mu},
+\code{phi}, \code{sigma}, \code{nu}, \code{rho}, and
+\code{beta}s, and the variance of specification for \code{latent0}.}
 \item{thinning}{\code{list} containing the thinning
 parameters, i.e. the arguments \code{thinpara}, \code{thinlatent} and
 \code{keeptime}.}
@@ -328,11 +294,7 @@ Data Analysis}, \bold{76}, 408--423,
 \url{http://dx.doi.org/10.1016/j.csda.2013.01.002}.
 }
 \seealso{
-\code{\link{svsim}}, \code{\link{updatesummary}},
-\code{\link{predict.svdraws}}, \code{\link{plot.svdraws}}.
-}
-\author{
-Gregor Kastner \email{gregor.kastner@wu.ac.at}
+\code{\link{svsim}}, \code{\link{specify_priors}}
 }
 \keyword{models}
 \keyword{ts}

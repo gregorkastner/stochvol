@@ -1,3 +1,33 @@
+/*
+ * R package stochvol by
+ *     Gregor Kastner Copyright (C) 2013-2020
+ *     Darjus Hosszejni Copyright (C) 2019-2020
+ *  
+ *  This file is part of the R package stochvol: Efficient Bayesian
+ *  Inference for Stochastic Volatility Models.
+ *  
+ *  The R package stochvol is free software: you can redistribute it
+ *  and/or modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation, either version 2 or
+ *  any later version of the License.
+ *  
+ *  The R package stochvol is distributed in the hope that it will be
+ *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with the R package stochvol. If that is not the case, please
+ *  refer to <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * single_update.cc
+ * 
+ * Definitions of the functions declared in single_update.h.
+ * Documentation can also be found in single_update.h.
+ */
+
 #include <RcppArmadillo.h>
 #include "single_update.h"
 #include "densities.h"
@@ -12,411 +42,260 @@ using namespace Rcpp;
 
 namespace stochvol {
 
-void update_vanilla_sv(
+namespace fast_sv {
+
+// Determine ASIS from 'expert'
+std::vector<Parameterization> expert_to_strategy(
+    const ExpertSpec_FastSV& expert) {
+  switch (expert.baseline) {
+    case Parameterization::CENTERED:
+      if (expert.interweave) {
+        return {Parameterization::CENTERED, Parameterization::NONCENTERED};
+      } else {
+        return {Parameterization::CENTERED};
+      }
+    case Parameterization::NONCENTERED:
+      if (expert.interweave) {
+        return {Parameterization::NONCENTERED, Parameterization::CENTERED};
+      } else {
+        return {Parameterization::NONCENTERED};
+      }
+  }
+}
+
+}
+
+// Single update accoring to fast SV.
+// See documentation above the declaration
+void update_fast_sv(
     const arma::vec& log_data2,
     double& mu,
     double& phi,
-    double& sigma2,
+    double& sigma,
     double& h0,
     arma::vec& h,
-    arma::ivec& r,
+    arma::uvec& r,
     const PriorSpec& prior_spec,  // C0, cT, Bsigma, a0, b0, bmu, Bmu, Gammaprior, dontupdatemu, priorlatent0 feed into this
-    const ExpertSpec_VanillaSV& expert) {  // parameterization, centered_baseline, B011inv, B022inv, truncnormal, Mhcontrol, MHsteps feed into this
+    const ExpertSpec_FastSV& expert) {  // parameterization, centered_baseline, B011inv, B022inv, truncnormal, Mhcontrol, MHsteps feed into this
   // TODO setup validation (put in a "debug" environment in the end)
   // phi is beta
   // sigma2 is either inverse_gamma with shape == 2.5 or gamma with shape == 0.5
   // inverse_gamma prior and mh_blocking_steps != 2 is nyi
   // constant mu implies mh_blocking_steps == 3 (mh_blocking_steps == 1 is nyi and 2 does not make sense because mu is drawn jointly with either phi or sigma2 in the 2-block)
 
-  const arma::vec& data = log_data2;
-  const int T = data.size();
-  double sigma = std::sqrt(sigma2);
   double ht0 = centered_to_noncentered(mu, sigma, h0);
   arma::vec ht = centered_to_noncentered(mu, sigma, h);
 
-  // PriorSpec (this part will be removed at later stages of the refactorization)
-  const double a0 = prior_spec.phi.beta.alpha,
-               b0 = prior_spec.phi.beta.beta;
-  const double bmu = prior_spec.mu.distribution == PriorSpec::Mu::NORMAL ? prior_spec.mu.normal.mean : std::numeric_limits<double>::lowest(),
-               Bmu = prior_spec.mu.distribution == PriorSpec::Mu::NORMAL ? std::pow(prior_spec.mu.normal.sd, 2) : std::numeric_limits<double>::lowest();
-  const bool Gammaprior = prior_spec.sigma2.distribution == PriorSpec::Sigma2::GAMMA,
-             dontupdatemu = prior_spec.mu.distribution == PriorSpec::Mu::CONSTANT;
-  const double C0 = [&prior_spec]() -> double {
-    switch (prior_spec.sigma2.distribution) {
-      case PriorSpec::Sigma2::INVERSE_GAMMA:
-        return prior_spec.sigma2.inverse_gamma.scale;
-      default:
-        return std::numeric_limits<double>::lowest();
-    }
-  }();
-  const double cT = [&prior_spec, &expert, T]() -> double {
-    switch (prior_spec.sigma2.distribution) {
-      case PriorSpec::Sigma2::GAMMA:
-        if (expert.mh_blocking_steps == 1) {
-          return 0.5 * (T - 1);
-        } else {
-          return 0.5 * T;
-        }
-      case PriorSpec::Sigma2::INVERSE_GAMMA:
-        if (expert.mh_blocking_steps == 2) {
-          return prior_spec.sigma2.inverse_gamma.shape + 0.5 * (T + 1);
-        } else {
-          return std::numeric_limits<double>::lowest();
-        }
-      default:
-        return std::numeric_limits<double>::lowest();
-    }
-  }();
-  const double Bsigma = [&prior_spec]() -> double {
-    switch (prior_spec.sigma2.distribution) {
-      case PriorSpec::Sigma2::GAMMA:
-        return 0.5 / prior_spec.sigma2.gamma.rate;
-      default:
-        return std::numeric_limits<double>::lowest();
-    }
-  }();
-  const double priorlatent0 = [&prior_spec]() -> double {
-    switch (prior_spec.latent0.variance) {
-      case PriorSpec::Latent0::STATIONARY:
-        return -1;
-      case PriorSpec::Latent0::CONSTANT:
-        return prior_spec.latent0.constant.value;
-    }
-  }();
-  const double Bh0inv = [&prior_spec, phi]() -> double {
-    switch (prior_spec.latent0.variance) {
-      case PriorSpec::Latent0::STATIONARY:
-        return 1. - std::pow(phi, 2);
-      case PriorSpec::Latent0::CONSTANT:
-        return 1. / prior_spec.latent0.constant.value;
-    }
-  }();
-
-  // ExpertSpec (this part will be removed at later stages of the refactorization)
-  const double B011inv = expert.proposal_intercept_varinv,
-               B022inv = expert.proposal_phi_varinv;
-  const bool truncnormal = expert.proposal_phi == ExpertSpec_VanillaSV::ProposalPhi::REPEATED_ACCEPT_REJECT_NORMAL;
-  const int MHsteps = expert.mh_blocking_steps;
-  const double MHcontrol = [&expert]() -> double {
-    switch (expert.proposal_sigma2) {
-      case ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENCE:
-        return -1;
-      case ExpertSpec_VanillaSV::ProposalSigma2::LOG_RANDOM_WALK:
-        return expert.proposal_sigma2_rw_scale;
-    }
-  }();
-
-
-  if (dontupdatemu) {
+  if (prior_spec.mu.distribution == PriorSpec::Mu::CONSTANT) {
     mu = 0;
   }
 
-  /*
-   * Step (c): sample indicators
-   */
-  {
-    // calculate non-normalized CDF of posterior indicator probs
-    arma::vec mixprob(10 * T);
-
-    find_mixture_indicator_cdf(mixprob, data-h);
-
-    // find correct indicators
-    inverse_transform_sampling(mixprob, r, T);
+  if (expert.update.mixture_indicators) {  // Step (c): sample indicators
+    r = fast_sv::draw_mixture_indicators(log_data2, mu, phi, sigma, h);
   }
 
-  /*
-   * Step (a): sample the latent volatilities h:
-   */
-  {
-    double omega_offdiag;  // contains off-diag element of precision matrix (const)
-    arma::vec omega_diag(T+1),  // contains diagonal elements of precision matrix
-              chol_offdiag(T), chol_diag(T+1),  // Cholesky-factor of Omega
-              covector(T+1),  // holds covector (see McCausland et al. 2011)
-              htmp(T+1),  // intermediate vector for sampling h
-              hnew(T+1);  // intermediate vector for sampling h
-    const double sigma2inv = 1. / sigma2;
-
-    switch (expert.baseline) {
-      case Parameterization::CENTERED:  // fill precision matrix omega and covector c for CENTERED para:
-        {
-          const double phi2 = std::pow(phi, 2);
-
-          omega_diag[0] = (Bh0inv + phi2) * sigma2inv;
-          covector[0] = mu * (Bh0inv - phi*(1-phi)) * sigma2inv;
-
-          for (int j = 1; j < T; j++) {
-            omega_diag[j] = mix_varinv[r[j-1]] + (1+phi2)*sigma2inv; 
-            covector[j] = (data[j-1] - mix_mean[r[j-1]])*mix_varinv[r[j-1]]
-              + mu*(1-phi)*(1-phi)*sigma2inv;
-          }
-          omega_diag[T] = mix_varinv[r[T-1]] + sigma2inv;
-          covector[T] = (data[T-1] - mix_mean[r[T-1]])*mix_varinv[r[T-1]] + mu*(1-phi)*sigma2inv;
-          omega_offdiag = -phi*sigma2inv;
-        }
-        break;
-      case Parameterization::NONCENTERED:  // fill precision matrix omega and covector c for NONCENTERED para:
-        {
-          const double phi2 = std::pow(phi, 2);
-
-          omega_diag[0] = Bh0inv + phi2;
-          covector[0] = 0.;
-
-          for (int j = 1; j < T; j++) {
-            omega_diag[j] = mix_varinv[r[j-1]] * sigma2 + 1 + phi2;
-            covector[j] = mix_varinv[r[j-1]] * sigma * (data[j-1] - mix_mean[r[j-1]] - mu);
-          }
-          omega_diag[T] = mix_varinv[r[T-1]] * sigma2 + 1;
-          covector[T] = mix_varinv[r[T-1]] * sigma * (data[T-1] - mix_mean[r[T-1]] - mu);
-          omega_offdiag = -phi;
-        }
-        break;
-    } 
-
-    // Cholesky decomposition
-    cholesky_tridiagonal(omega_diag, omega_offdiag, chol_diag, chol_offdiag);
-
-    // Solution of Chol*x = covector ("forward algorithm")
-    forward_algorithm(chol_diag, chol_offdiag, covector, htmp);
-
-    htmp += as<arma::vec>(rnorm(T+1));
-    //htmp.transform( [](double h_elem) -> double { return h_elem + R::norm_rand(); });
-
-    // Solution of (Chol')*x = htmp ("backward algorithm")
-    backward_algorithm(chol_diag, chol_offdiag, htmp, hnew);
+  if (expert.update.latent_vector) {  // Step (a): sample the latent volatilities h:
+    const auto latent_new = fast_sv::draw_latent(log_data2, mu, phi, sigma, r, prior_spec, expert);
 
     switch (expert.baseline) {
       case Parameterization::CENTERED:
-        h = hnew.tail(T);
-        h0 = hnew[0];
-
+        h = latent_new.h;
+        h0 = latent_new.h0;
         ht = centered_to_noncentered(mu, sigma, h);
         ht0 = centered_to_noncentered(mu, sigma, h0);
         break;
       case Parameterization::NONCENTERED:
-        ht = hnew.tail(T);
-        ht0 = hnew[0];
-
+        ht = latent_new.h;
+        ht0 = latent_new.h0;
         h = noncentered_to_centered(mu, sigma, ht);
         h0 = noncentered_to_centered(mu, sigma, ht0);
         break;
     }
   }
 
-  /*
-   * Step (b): sample mu, phi, sigma
-   */
-  {
-    switch (expert.baseline) {
-      case Parameterization::CENTERED:
-        {
-          {
-            const auto parameter_draw = regression_centered(h0, h, mu, phi, sigma,
-                C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv,
-                B022inv, Gammaprior, truncnormal, MHcontrol, MHsteps, dontupdatemu, priorlatent0);
-            mu = parameter_draw.mu;
-            phi = parameter_draw.phi;
-            sigma = parameter_draw.sigma;
-            sigma2 = std::pow(sigma, 2);
-
-            ht = centered_to_noncentered(mu, sigma, h);
-            ht0 = centered_to_noncentered(mu, sigma, h0);
-          }
-
-          if (expert.interweave) {
-            const auto parameter_draw = regression_noncentered(data, ht0, ht, r,
-                mu, phi, sigma, Bsigma, a0, b0, bmu, Bmu,
-                truncnormal, MHsteps, dontupdatemu, priorlatent0);
-            mu = parameter_draw.mu;
-            phi = parameter_draw.phi;
-            sigma = parameter_draw.sigma;
-            sigma2 = std::pow(sigma, 2);
-            h = noncentered_to_centered(mu, sigma, ht);
-            h0 = noncentered_to_centered(mu, sigma, ht0);
-          }
-        }
-        break;
-      case Parameterization::NONCENTERED:
-        {
-          {
-            const auto parameter_draw = regression_noncentered(data, ht0, ht, r, mu, phi, sigma,
-                Bsigma, a0, b0, bmu, Bmu, truncnormal, MHsteps,
-                dontupdatemu, priorlatent0);
-            mu = parameter_draw.mu;
-            phi = parameter_draw.phi;
-            sigma = parameter_draw.sigma;
-            sigma2 = std::pow(sigma, 2);
-
-            h = noncentered_to_centered(mu, sigma, ht);
-            h0 = noncentered_to_centered(mu, sigma, ht0);
-          }
-
-          if (expert.interweave) {
-            const auto parameter_draw = regression_centered(h0, h, mu, phi, sigma,
-                C0, cT, Bsigma, a0, b0, bmu, Bmu, B011inv, B022inv,
-                Gammaprior, truncnormal, MHcontrol, MHsteps,
-                dontupdatemu, priorlatent0);
-            mu = parameter_draw.mu;
-            phi = parameter_draw.phi;
-            sigma = parameter_draw.sigma;
-            sigma2 = std::pow(sigma, 2);
-            ht = centered_to_noncentered(mu, sigma, h);
-            ht0 = centered_to_noncentered(mu, sigma, h0);
-          }
-        }
+  if (expert.update.parameters) {  // Step (b): sample mu, phi, sigma
+    const auto strategy = fast_sv::expert_to_strategy(expert);
+    for (const auto parameterization : strategy) {
+      // Draw theta
+      const auto parameter_draw = fast_sv::draw_theta(log_data2, mu, phi, sigma, h0, ht0, h, ht, r, prior_spec, expert, parameterization);
+      mu = parameter_draw.mu;
+      phi = parameter_draw.phi;
+      sigma = parameter_draw.sigma;
+      // Update latent vectors
+      switch (parameterization) {
+        case Parameterization::CENTERED:
+          ht = centered_to_noncentered(mu, sigma, h);
+          ht0 = centered_to_noncentered(mu, sigma, h0);
+          break;
+        case Parameterization::NONCENTERED:
+          h = noncentered_to_centered(mu, sigma, ht);
+          h0 = noncentered_to_centered(mu, sigma, ht0);
+          break;
+      }
     }
   }
 }
 
-void update_df_svt(
-    const arma::vec& log_data2_minus_h,
+// Single update of the marginal data augmentation for the degrees of freedom.
+void update_tau(
+    const arma::vec& homosked_data,
+    arma::vec& tau,
+    const double nu) {
+  // Watch out, R::rgamma(shape, scale), not Rf_rgamma(shape, rate)
+  std::transform(
+      homosked_data.cbegin(), homosked_data.cend(),
+      tau.begin(),
+      [nu](const double homosked_data_i) -> double { return 1./R::rgamma((nu + 1.) / 2., 2. / (nu + std::pow(homosked_data_i, 2))); });
+}
+
+// Single update of the degrees of freedom.
+// See documentation above the declaration
+void update_t_error(
+    const arma::vec& homosked_data,
     arma::vec& tau,
     double& nu,
     const PriorSpec& prior_spec) {
+  R_assert(prior_spec.nu.distribution != PriorSpec::Nu::INFINITE, "Call to update_t_error: Non-matching model specification. Prior for nu should not be infinity.");
 
-  R_assert(prior_spec.nu.distribution == prior_spec.nu.EXPONENTIAL, "Call to update_df_svt: Non-matching model specification. Prior for nu should be exponential.");
-
-  const arma::vec& data = log_data2_minus_h;
-  const double lambda = prior_spec.nu.exponential.rate;
-  const int T = data.size();
-
-  // **** STEP 1: Update tau ****
-
-  // Watch out, R::rgamma(shape, scale), not Rf_rgamma(shape, rate)
-  std::transform(
-      data.cbegin(), data.cend(),
-      tau.begin(),
-      [nu](const double data_i) -> double { return 1./R::rgamma((nu + 1.) / 2., 2. / (nu + exp(data_i))); });
+  update_tau(homosked_data, tau, nu);
   // TODO since C++17 this can be done with transform_reduce (in parallel)
   const double sumtau = std::accumulate(
       tau.cbegin(), tau.cend(),
       0.,
       [](const double partial_sum, const double tau_i) -> double { return partial_sum + std::log(tau_i) + 1. / tau_i;});
 
-  // **** STEP 2: Update nu ****
+  const int T = homosked_data.size();
 
-  const double numean = newton_raphson(nu, sumtau, T, lambda);
-  const double auxsd = sqrt(-1/ddlogdnu(numean, T)); 
-  const double nuprop = R::rnorm(numean, auxsd);
-  const double logR =
-    logdnu(nuprop, sumtau, lambda, T) - logdnorm(nuprop, numean, auxsd) -
-    (logdnu(nu, sumtau, lambda, T) - logdnorm(nu, numean, auxsd));
+  if (prior_spec.nu.distribution == PriorSpec::Nu::EXPONENTIAL) {
+    const double lambda = prior_spec.nu.exponential.rate;
+    const double numean = newton_raphson(nu, sumtau, T, lambda);
+    const double auxsd = std::sqrt(-1/ddlogdnu(numean, T)); 
+    const double nuprop = R::rnorm(numean, auxsd);
+    const double logR =
+      logdnu(nuprop, sumtau, lambda, T) - logdnorm(nuprop, numean, auxsd) -
+      (logdnu(nu, sumtau, lambda, T) - logdnorm(nu, numean, auxsd));
 
-  if (logR >= 1. || std::log(R::unif_rand()) < logR) {
-    nu = nuprop;
+    if (logR >= 0 or std::log(R::unif_rand()) < logR) {
+      nu = nuprop;
+    }
   }
 }
 
+// Single update of the coefficients in a Bayesian linear regression.
+// See documentation above the declaration
+void update_regressors(
+    arma::vec dependent_variable,  // by value on purpose
+    arma::mat independent_variables,  // by value on purpose
+    arma::vec& beta,
+    arma::vec& tau,
+    const arma::vec& normalizer,  // inverse of heteroskedastic scales
+    const double df,
+    const PriorSpec& prior_spec) {
+  dependent_variable %= normalizer;
+  independent_variables.each_col() %= normalizer;
+  if (df < 10000) {  // heavy-tailed
+    update_tau(dependent_variable - independent_variables * beta, tau, df);
+    dependent_variable /= tau;
+    independent_variables.each_col() /= tau;
+  }
+
+  const int p = independent_variables.n_cols;
+  arma::mat postprecchol;
+  arma::mat postpreccholinv;
+  arma::mat postcov;
+  arma::vec postmean;
+  arma::vec armadraw(p);
+
+  bool success = true;
+  // cholesky factor of posterior precision matrix
+  success = success and arma::chol(postprecchol, independent_variables.t() * independent_variables + prior_spec.beta.multivariate_normal.precision);
+  // inverse cholesky factor of posterior precision matrix 
+  success = success and arma::inv(postpreccholinv, arma::trimatu(postprecchol));
+  if (!success) {
+    Rcpp::stop("Cholesky or its inverse failed");
+  }
+
+  // posterior covariance matrix and posterior mean vector
+  postcov = postpreccholinv * postpreccholinv.t();
+  postmean = postcov * (independent_variables.t() * dependent_variable + prior_spec.beta.multivariate_normal.precision * prior_spec.beta.multivariate_normal.mean);
+
+  armadraw.imbue([]() -> double { return R::norm_rand(); });
+
+  // posterior betas
+  beta = postmean + postpreccholinv * armadraw;
+}
+
+// Single update accoring to general SV.
+// See documentation above the declaration
 void update_general_sv(
     const arma::vec& data,
     const arma::vec& log_data2,
     const arma::ivec& sign_data,
     double& mu,
     double& phi,
-    double& sigma2,
+    double& sigma,
     double& rho,
     double& h0,
     arma::vec& h,
     AdaptationCollection& adaptation_collection,
     const PriorSpec& prior_spec,  // prior_mu, prior_phi, prior_sigma2, prior_rho, gammaprior, dontupdatemu feed into this (plus priorlatent0, truncnormal nyi)
     const ExpertSpec_GeneralSV& expert) {  // strategy, correct, use_mala feed into this
-
-  const arma::vec& y = data,
-                 & y_star = log_data2;
-  const arma::ivec& d = sign_data;
   double ht0;
   arma::vec ht;
-  {
-    const double sigma = std::sqrt(sigma2);
-    ht0 = centered_to_noncentered(mu, sigma, h0);
-    ht = centered_to_noncentered(mu, sigma, h);
-  }
+  ht0 = centered_to_noncentered(mu, sigma, h0);
+  ht = centered_to_noncentered(mu, sigma, h);
 
-  // PriorSpec
-  const arma::vec prior_mu {prior_spec.mu.normal.mean, prior_spec.mu.normal.sd},  // invalid if prior_spec.mu.distribution != NORMAL
-                  prior_phi {prior_spec.phi.beta.alpha, prior_spec.phi.beta.beta},  // invalid if prior_spec.phi.distribution != BETA
-                  prior_sigma2 = [&prior_spec]() -> arma::vec2 {
-                    switch (prior_spec.sigma2.distribution) {
-                      case PriorSpec::Sigma2::GAMMA:
-                        return {prior_spec.sigma2.gamma.shape, prior_spec.sigma2.gamma.rate};
-                      case PriorSpec::Sigma2::INVERSE_GAMMA:
-                        return {prior_spec.sigma2.inverse_gamma.shape, prior_spec.sigma2.inverse_gamma.scale};
-                      default:
-                        return {};
-                    }
-                  }(),
-                  prior_rho {prior_spec.rho.beta.alpha, prior_spec.rho.beta.beta};  // invalid if prior_spec.rho.distribution != BETA
-  const bool dontupdatemu = prior_spec.mu.distribution == PriorSpec::Mu::CONSTANT,
-             gammaprior = prior_spec.sigma2.distribution == PriorSpec::Sigma2::GAMMA;
-  
-  // ExpertSpec
-  const bool correct = expert.correct_latent_draws;
-  const std::vector<Parameterization>& strategy = expert.strategy;
-  const bool use_mala = expert.proposal_para == ExpertSpec_GeneralSV::ProposalPara::METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM;  // TODO remove, only 'proposal' is needed
-  const bool adapt = expert.adapt;
-
-  // only centered
-  {
-    const LatentVector h_full = draw_latent(y, y_star, d, h0, h, ht, phi, rho, sigma2, mu, correct);
+  if (expert.update.latent_vector) {  // Sample the latent states
+    //const  // not const to be able to std::move
+    LatentVector h_full = general_sv::draw_latent(data, log_data2, sign_data, mu, phi, sigma, rho, h, ht, prior_spec, expert);
     h0 = h_full.h0;
     h = std::move(h_full.h);
-  }
-  {
-    const double sigma = std::sqrt(sigma2);
     ht0 = centered_to_noncentered(mu, sigma, h0);
     ht = centered_to_noncentered(mu, sigma, h);
   }
-  arma::vec exp_h_half = arma::exp(.5 * h);  // cache exp() calculations
-  arma::vec exp_h_half_proposal_nc;
 
-  const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;
-  for (const Parameterization par : strategy) {
-    Adaptation& adaptation = par == Parameterization::CENTERED ? adaptation_collection.centered : adaptation_collection.noncentered;
-    const ProposalDiffusionKen& adapted_proposal = adapt ? adaptation.get_proposal() : expert.proposal_diffusion_ken;
-    bool theta_updated = false;
-    if (dontupdatemu) {
-      theta_updated = draw_thetamu_rwMH(
-          phi, rho, sigma2, mu,
-          y, h0, ht0, h, ht,
-          exp_h_half, exp_h_half_proposal_nc,
-          prior_phi,
-          prior_rho,
-          prior_sigma2,
-          par,
-          adapted_proposal,
-          gammaprior);
-      if (adapt) {
-        adaptation.register_sample(theta_updated, theta_transform_inv(phi, rho, sigma2, mu).head(3));
-      }
-    } else {
-      theta_updated = draw_theta(
-          phi, rho, sigma2, mu,
-          y, h0, ht0, h, ht,
-          exp_h_half, exp_h_half_proposal_nc,
-          prior_phi,
-          prior_rho,
-          prior_sigma2,
-          prior_mu,
-          par,
-          adapted_proposal,
-          gammaprior,
-          proposal);
-      if (adapt) {
-        adaptation.register_sample(theta_updated, theta_transform_inv(phi, rho, sigma2, mu));
-      }
-    }
+  if (expert.update.parameters) {  // Sample the parameters
+    const arma::uvec update_indicator {
+          prior_spec.mu.distribution != PriorSpec::Mu::CONSTANT,
+          prior_spec.phi.distribution != PriorSpec::Phi::CONSTANT,
+          prior_spec.sigma2.distribution != PriorSpec::Sigma2::CONSTANT,
+          prior_spec.rho.distribution != PriorSpec::Rho::CONSTANT};
 
-    if (theta_updated) {
-      const double sigma = std::sqrt(sigma2);
-      switch (par) {
-        case Parameterization::CENTERED:
-          ht0 = centered_to_noncentered(mu, sigma, h0);
-          ht = centered_to_noncentered(mu, sigma, h);
-          break;
-        case Parameterization::NONCENTERED:
-          h = noncentered_to_centered(mu, sigma, ht);
-          h0 = noncentered_to_centered(mu, sigma, ht0);
-          exp_h_half = std::move(exp_h_half_proposal_nc);
-          break;
+    arma::vec exp_h_half {arma::exp(.5 * h)};  // cache exp() calculations
+    arma::vec exp_h_half_proposal_nc;
+    //const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;  TODO delete
+    for (const Parameterization par : expert.strategy) {
+      Adaptation& adaptation = adaptation_collection[par];
+      const ProposalDiffusionKen& adapted_proposal = expert.adapt ? adaptation.get_proposal() : expert.proposal_diffusion_ken;
+      const auto theta = general_sv::draw_theta(
+          data,
+          mu, phi, sigma, rho,
+          h0, ht0, h, ht,
+          exp_h_half, exp_h_half_proposal_nc,
+          update_indicator,
+          prior_spec, expert,
+          adapted_proposal,
+          par);
+      mu = theta.mu, phi = theta.phi, sigma = theta.sigma, rho = theta.rho;
+      const bool accepted = theta.mu_accepted or theta.phi_accepted or theta.sigma_accepted or theta.rho_accepted;  // was anything accepted?
+      if (expert.adapt) {
+        adaptation.register_sample(
+            accepted,
+            general_sv::theta_transform_inv(mu, phi, sigma, rho).elem(arma::find(update_indicator)));  // current sample
+      }
+
+      if (accepted) {
+        switch (par) {
+          case Parameterization::CENTERED:
+            ht0 = centered_to_noncentered(mu, sigma, h0);
+            ht = centered_to_noncentered(mu, sigma, h);
+            break;
+          case Parameterization::NONCENTERED:
+            h = noncentered_to_centered(mu, sigma, ht);
+            h0 = noncentered_to_centered(mu, sigma, ht0);
+            exp_h_half = std::move(exp_h_half_proposal_nc);
+            break;
+        }
       }
     }
   }

@@ -12,3 +12,5 @@ speedtest_sessioninfo.txt
 .undodir
 pre-commit.sh
 
+^.*\.Rproj$
+^\.Rproj\.user$

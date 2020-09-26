@@ -1,3 +1,26 @@
+#  #####################################################################################
+#  R package stochvol by
+#     Gregor Kastner Copyright (C) 2013-2020
+#     Darjus Hosszejni Copyright (C) 2019-2020
+#  
+#  This file is part of the R package stochvol: Efficient Bayesian
+#  Inference for Stochastic Volatility Models.
+#  
+#  The R package stochvol is free software: you can redistribute it
+#  and/or modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation, either version 2 or
+#  any later version of the License.
+#  
+#  The R package stochvol is distributed in the hope that it will be
+#  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+#  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#  General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with the R package stochvol. If that is not the case, please
+#  refer to <http://www.gnu.org/licenses/>.
+#  #####################################################################################
+
 #' Graphical Summary of the Posterior Predictive Distribution
 #' 
 #' \code{plot.svpredict} and \code{plot.svlpredict} generate some plots
@@ -14,7 +37,6 @@
 #' used within \code{\link{plot.svdraws}} for a possibly more useful
 #' visualization. See the examples in \code{\link{predict.svdraws}} and
 #' those below for use cases.
-#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @family plotting
 #' @keywords hplot
 #' @examples
@@ -57,12 +79,6 @@ plot.svpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
   invisible(x)
 }
 
-#' @rdname plot.svpredict
-#' @export
-plot.svlpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
-  plot.svpredict(x, quantiles, ...)
-}
-
 #' Probability Density Function Plot for the Parameter Posteriors
 #' 
 #' Displays a plot of the density estimate for the posterior distribution of
@@ -97,7 +113,6 @@ plot.svlpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
 #' @return Called for its side effects. Returns argument \code{x} invisibly.
 #' @note You can call this function directly, but it is more commonly called by
 #' the \code{\link{plot.svdraws}} method.
-#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @family plotting
 #' @keywords hplot
 #' @export
@@ -112,23 +127,33 @@ paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
   oldpar <- par(mar=mar)
   paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), rho=quote(rho), nu=quote(nu))
   cutat1 <- c(mu=FALSE, phi=TRUE, sigma=FALSE, rho=TRUE, nu=FALSE)
+  params <- sampled_parameters(x)
   for (i in 1:ncol(x$para)) {
     parastring <- colnames(x$para)[i]
-    mydensplot(x$para[,parastring], show.obs=showobs, main=paste("Density of", paranames[parastring]),
-               cutat1=cutat1[parastring], showxlab=showxlab, mgp = mgp, ...)
-    if (isTRUE(showprior)) {
-      paras <- x$priors[[parastring]]
-      vals <- seq(from=par('usr')[1], to=par('usr')[2], len=1000)
-      if (parastring == "mu") lines(vals, dnorm(vals, paras[1], paras[2]), col=8, lty=2)
-      else if (parastring == "phi") lines(vals, .5*dbeta((vals+1)/2, paras[1], paras[2]), col=8, lty=2)
-      else if (parastring == "sigma") {
-        if (x$priors$gammaprior) lines(vals, 2*dnorm(vals, 0, sqrt(paras[1])), col=8, lty=2)
-        else lines(vals, 2*vals^(-3)*dgamma(1/vals^2, 3, 3), col=8, lty=2)
-      }
-      else if (parastring == "rho") lines(vals, .5*dbeta((vals+1)/2, paras[1], paras[2]), col=8, lty=2)
-      else if (parastring == "nu") lines(vals, dexp(vals - 2, rate = paras), col = 8, lty = 2)
-      if (sim && parastring %in% names(simobj$para)) {
-        points(simobj$para[[parastring]], 0, col = 3, cex = 2, pch = 16)
+    if (parastring %in% params) {
+      mydensplot(x$para[,parastring], show.obs=showobs, main=paste("Density of", paranames[parastring]),
+                 cutat1=cutat1[parastring], showxlab=showxlab, mgp = mgp, ...)
+      if (isTRUE(showprior)) {
+        vals <- seq(from=par('usr')[1], to=par('usr')[2], len=1000)
+        if (parastring == "mu") {
+          prior <- x$priors[[parastring]]
+          lines(vals, density(prior)(vals), col = 8, lty = 2)
+        } else if (parastring == "phi") {
+          prior <- x$priors[[parastring]]
+          lines(vals, .5*density(prior)((vals+1)/2), col = 8, lty = 2)
+        } else if (parastring == "sigma") {
+          prior <- x$priors[["sigma2"]]
+          lines(vals, 2 * vals * density(prior)(vals^2), col = 8, lty = 2)
+        } else if (parastring == "rho") {
+          prior <- x$priors[[parastring]]
+          lines(vals, .5*density(prior)((vals+1)/2), col = 8, lty = 2)
+        } else if (parastring == "nu") {
+          prior <- x$priors[[parastring]]
+          lines(vals, density(prior)(vals - 2), col = 8, lty = 2)
+        }
+        if (sim && parastring %in% names(simobj$para)) {
+          points(simobj$para[[parastring]], 0, col = 3, cex = 2, pch = 16)
+        }
       }
     }
   }
@@ -160,7 +185,6 @@ paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
 #' @return Called for its side effects. Returns argument \code{x} invisibly.
 #' @note You can call this function directly, but it is more commonly called by
 #' the \code{\link{plot.svdraws}} method.
-#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @family plotting
 #' @keywords hplot
 #' @export
@@ -172,12 +196,16 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
   } else sim <- FALSE
   oldpar <- par(mar=mar)
   paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), nu=quote(nu), rho=quote(rho))
+  params <- sampled_parameters(x)
   for (i in 1:ncol(x$para)) {
     parastring <- colnames(x$para)[i]
-    mytraceplot(x$para[,parastring], xlab="", mgp = mgp,
-                main=paste("Trace of ", paranames[parastring], " (thin = ", x$thinning$para,")", sep=''), ...)
-    if (sim && parastring %in% names(simobj$para)) {
-      abline(h = simobj$para[[parastring]], col = 3, lty = 2)
+    if (parastring %in% params) {
+      parastring <- colnames(x$para)[i]
+      mytraceplot(x$para[,parastring], xlab="", mgp = mgp,
+                  main=paste("Trace of ", paranames[parastring], " (thin = ", x$thinning$para,")", sep=''), ...)
+      if (sim && parastring %in% names(simobj$para)) {
+        abline(h = simobj$para[[parastring]], col = 3, lty = 2)
+      }
     }
   }
   par(oldpar)
@@ -277,7 +305,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
   if (is.null(forecastlty)) forecastlty <- 2
 
   if (inherits(forecast, "svpredict") || (is.numeric(forecast) && length(forecast) == 1 && all(forecast != 0))) { # also draw future values
-    lasth <- as.integer(gsub("h_", "", dimnames(x$latent)[[2]][dim(x$latent)[2]]))
+    lasth <- as.integer(gsub("h_", "", tail(dimnames(x$latent)[[2]], 1)))
     if (length(x$y) > lasth) {  # should never happen
       stop("The last log variance, h_n, has not been stored during sampling. Aborting.")
     }
@@ -305,7 +333,8 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
     }
   } else xlim <- NULL
 
-  if(exists("sd", x$summary)) {  # heavy-tailed innovation
+  terr <- "nu" %in% sampled_parameters(x)  # heavy-tailed innovation
+  if(terr) {
     mymain <- paste("Estimated scaling in percent (", paste(dimnames(volquants)[[1]], collapse=' / '),
                     " posterior quantiles)", sep = '')
   } else {
@@ -348,7 +377,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
   }
   axis(1, at=ax, labels=dates[ax+1], mgp=mgp, tcl=tcl)
 
-  if(exists("sd", x$summary)) {  # only for t-distributed residuals
+  if(terr) {  # only for t-distributed residuals
     where <- grep("%", dimnames(x$summary$latent)[[2]])
     ts.plot(100*x$summary$sd[,where], gpars=list(xlim=xlim, col=cols, xlab='', xaxt='n', mgp=mgp, tcl=tcl,
                                                  main = paste("Estimated volatilities in percent (",
@@ -461,9 +490,10 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
 			 mar = c(1.9, 1.9, 1.7, .5), mgp = c(2, .6, 0),
 			 simobj = NULL, newdata = NULL, ...) {
   # Helper values
-  heavy_tailed_sv <- "nu" %in% colnames(para(x))
+  params <- sampled_parameters(x)
+  heavy_tailed_sv <- "nu" %in% params
   plot_volatility_series <- thinning(x)$time == "all"
-  npara <- NCOL(para(x))
+  npara <- length(params)
   
   # Set layout
   index <- 1L

@@ -1,3 +1,26 @@
+#  #####################################################################################
+#  R package stochvol by
+#     Gregor Kastner Copyright (C) 2013-2020
+#     Darjus Hosszejni Copyright (C) 2019-2020
+#  
+#  This file is part of the R package stochvol: Efficient Bayesian
+#  Inference for Stochastic Volatility Models.
+#  
+#  The R package stochvol is free software: you can redistribute it
+#  and/or modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation, either version 2 or
+#  any later version of the License.
+#  
+#  The R package stochvol is distributed in the hope that it will be
+#  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+#  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#  General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with the R package stochvol. If that is not the case, please
+#  refer to <http://www.gnu.org/licenses/>.
+#  #####################################################################################
+
 #' @rdname extractors
 #' @export
 para <- function(x) {
@@ -37,6 +60,41 @@ thinning <- function(x) {
 #' @export
 runtime <- function(x) {
  x$runtime
+}
+
+#' @rdname extractors
+#' @export
+sampled_parameters <- function(x) {
+  res <- c()
+  pr <- priors(x)
+  if (!inherits(pr$mu, "sv_constant")) {
+    res <- c(res, "mu")
+  }
+  if (!inherits(pr$phi, "sv_constant")) {
+    res <- c(res, "phi")
+  }
+  if (!inherits(pr$sigma2, "sv_constant")) {
+    res <- c(res, "sigma")
+  }
+  if (!inherits(pr$nu, "sv_constant") && !inherits(pr$nu, "sv_infinity")) {
+    res <- c(res, "nu")
+  }
+  if (!inherits(pr$rho, "sv_constant")) {
+    res <- c(res, "rho")
+  }
+  res
+}
+
+contains_beta <- function(x) {
+  NROW(x$beta) > 0
+}
+
+contains_tau <- function(x) {
+  NROW(x$tau) > 0
+}
+
+contains_indicators <- function(x) {
+  NROW(x$indicators) > 0
 }
 
 
@@ -116,9 +174,9 @@ runtime <- function(x) {
 #' 
 #' @export
 updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslatent = FALSE) {
-
+  sampled_para <- sampled_parameters(x)
   # Check if conditional t errors are used
-  terr <- "nu" %in% colnames(x$para)
+  terr <- "nu" %in% sampled_para
 
   summaryfunction <- function(x, quants = quantiles, ess = TRUE) {
     if (ess) {
@@ -131,12 +189,23 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
 
   res <- list()
 
-  res$para <- t(apply(x$para, 2, summaryfunction, ess = esspara))
-  toadd <- rbind("exp(mu/2)" = c(summaryfunction(exp(x$para[,"mu"]/2), ess=FALSE)),
-                 "sigma^2" = c(summaryfunction(x$para[,"sigma"]^2, ess=FALSE)))
-  if (esspara)
-    toadd <- cbind(toadd, ESS = c(res$para["mu", "ESS"], res$para["sigma", "ESS"]))
-  res$para <- rbind(res$para, toadd)
+  res$para <- t(apply(x$para[, sampled_para, drop=FALSE], 2, summaryfunction, ess = esspara))
+  if ("mu" %in% sampled_para) {
+    toadd <- c(summaryfunction(exp(x$para[,"mu"]/2), ess=FALSE))
+    if (esspara) {
+      toadd <- c(toadd, res$para["mu", "ESS"])
+    }
+    toadd <- matrix(toadd, nrow = 1, dimnames = list("exp(mu/2)", NULL))
+    res$para <- rbind(res$para, toadd)
+  }
+  if ("sigma" %in% sampled_para) {
+    toadd <- c(summaryfunction(x$para[,"sigma"]^2, ess=FALSE))
+    if (esspara) {
+      toadd <- c(toadd, res$para["sigma", "ESS"])
+    }
+    toadd <- matrix(toadd, nrow = 1, dimnames = list("sigma^2", NULL))
+    res$para <- rbind(res$para, toadd)
+  }
 
   res$latent <- t(apply(x$latent, 2, summaryfunction, ess = esslatent))
   vol <- exp(x$latent/2)
@@ -151,7 +220,7 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
     rownames(res$sd) <- gsub("h", "sd", rownames(res$latent))
   }
 
-  if (exists("beta", x)) res$beta <- t(apply(x$beta, 2, summaryfunction, ess = esspara))
+  if (contains_beta(x)) res$beta <- t(apply(x$beta, 2, summaryfunction, ess = esspara))
 
   x$summary <- res
   x
@@ -174,25 +243,12 @@ summary.svdraws <- function (object, showpara = TRUE, showlatent = TRUE, ...) {
   ret
 }
 
-#' @export
-summary.svldraws <- function(object, showpara = TRUE, showlatent = TRUE, ...) {
-  ret <- summary.svdraws(object, showpara = showpara, showlatent = showlatent)
-  class(ret) <- c("summary.svldraws", class(ret))
-  ret
-}
-
 #' @method print summary.svdraws
 #' @export
 print.summary.svdraws <- function(x, ...) { 
   cat("\nSummary of ", x$mcp[2]-x$mcp[1]+x$mcp[3], " MCMC draws after a burn-in of ", x$mcp[1]-x$mcp[3], ".\n", sep="")
-  cat("Prior distributions:\n")
-  cat("mu        ~ Normal(mean = ", x$priors$mu[1], ", sd = ", x$priors$mu[2], ")\n", sep="")
-  cat("(phi+1)/2 ~ Beta(a0 = ", x$priors$phi[1], ", b0 = ", x$priors$phi[2], ")\n", sep="")
-  cat("sigma^2   ~ ", x$priors$sigma, " * Chisq(df = 1)\n", sep="")
-
-  if ("nu" %in% names(x$priors)) cat("nu        ~ Exp(rate = ", x$priors$nu, ")\n", sep="")
-  if ("rho" %in% names(x$priors)) cat("(rho+1)/2 ~ Beta(a0 = ", x$priors$rho[1], ", b0 = ", x$priors$rho[2], ")\n", sep="")
-
+  print(x$priors)
+  
   if (exists("para", x)) {
     cat("\nPosterior draws of parameters (thinning = ", x$mcp[3], "):\n", sep='')
     print(x$para, digits=2, ...)
@@ -229,6 +285,9 @@ residuals.svdraws <- function(object, type = "mean", ...) {
   if (object$thinning$time != 'all') stop("Not every point in time has been stored ('keeptime' was not set to 'all' during sampling), thus residuals cannot be extracted.")
 
   y <- as.vector(object$y)
+  if (contains_beta(x)) {
+    y <- y - object$designmatrix %*% t(object$beta)
+  }
 
   if (type == "mean") {
     res <- rowMeans(y[seq(1, length(y))] / exp(t(object$latent)/2))
@@ -243,15 +302,10 @@ residuals.svdraws <- function(object, type = "mean", ...) {
   attr(res, "type") <- type
 
   # Also return posterior mean/median of df parameter if terr = TRUE
-  if ("nu" %in% colnames(object$para)) attr(res, "nu") <- get(type)(object$para[,"nu"])
+  if ("nu" %in% sampled_parameters(object)) {
+    attr(res, "nu") <- get(type)(object$para[,"nu"])
+  }
 
-  res
-}
-
-#' @export
-residuals.svldraws <- function (object, type = "mean", ...) {
-  res <- residuals.svdraws(object = object, type = type, ...)
-  class(res) <- c("svlresid", "svresid")
   res
 }
 
@@ -270,7 +324,7 @@ residuals.svldraws <- function (object, type = "mean", ...) {
 #' @param newdata \emph{only in case d) of the description} corresponds to input
 #' parameter \code{designmatrix} in \code{\link{svsample}}.
 #' A matrix of regressors with number of rows equal to parameter \code{steps}.
-#' @param \dots  currently ignored.
+#' @param \dots currently ignored.
 #' @return Returns an object of class \code{svpredict}, a list containing
 #' two elements:
 #' \item{h}{\code{mcmc} object of simulations from the predictive density of \code{h_(n+1),...,h_(n+steps)}}
@@ -403,7 +457,7 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   rho <- if ("rho" %in% colnames(object$para)) object$para[, "rho"][usepara] else 0
   nu <- if ("nu" %in% colnames(object$para)) object$para[, "nu"][usepara] else Inf
   standardizer <- if ("nu" %in% colnames(object$para)) sqrt((nu-2)/nu) else 1
-  betacoeff <- if (exists("beta", object)) {
+  betacoeff <- if (contains_beta(x)) {
     if (arorder > 0) object$beta[usepara, c(1, rev(seq_len(NCOL(object$beta)-1))+1), drop=FALSE]
     else object$beta[usepara, , drop=FALSE]
   } else matrix(0)
@@ -435,102 +489,4 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
 
   class(ret) <- c("svpredict")
   ret
-}
-
-#' @rdname predict.svdraws
-#' @export
-predict.svldraws <- function (object, steps = 1L, newdata = NULL, ...) {
-  ret <- predict.svdraws(object = object, steps = steps, newdata = newdata, ...)
-  class(ret) <- c("svlpredict", "svpredict")
-  ret
-}
-
-
-#' Dynamic prediction for the AR-SV model (deprecated)
-#' 
-#' Simulates draws from the posterior predictive density of a fitted AR-SV
-#' model.
-#' DEPRECATED: please use \code{predict.svdraws} on \code{svdraws} objects
-#' resulting from model estimation with an autoregressive mean structure.
-#' 
-#' 
-#' @param object \code{svdraws} object as returned from \code{\link{svsample}}.
-#' @param volpred \code{svpredict} object as returned from
-#' \code{\link{predict.svdraws}}.
-#' @return Returns an object of class \code{c("distpredict", "mcmc")}
-#' containing simulations from the posterior predictive density of
-#' \code{y_(n+1),...,y_(n+steps)}.
-#' @note You can use the usual \code{coda} methods for \code{mcmc} objects to
-#' print, plot, or summarize the predictions.
-#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
-#' @seealso \code{\link{predict.svdraws}}.
-#' @keywords ts
-#' @examples
-#' \dontrun{
-#' data(exrates)
-#' y <- exrates$USD
-#' 
-#' ## Fit AR(1)-SV model to EUR-USD exchange rates
-#' res <- svsample(y, designmatrix = "ar1")
-#' 
-#' ## Use predict.svdraws to obtain predictive volatilities
-#' ahead <- 100
-#' preds <- predict(res, steps = ahead)
-#' predvol <- preds$h
-#' class(predvol) <- "svpredict"
-#' 
-#' ## Use arpredict to obtain draws from the posterior predictive
-#' preddraws <- arpredict(res, predvol)
-#' 
-#' ## Calculate predictive quantiles
-#' predquants <- apply(preddraws, 2, quantile, c(.1, .5, .9))
-#' 
-#' ## Visualize
-#' ts.plot(y, xlim = c(length(y) - ahead, length(y) + ahead),
-#' 	ylim = range(predquants))
-#' for (i in 1:3) {
-#'  lines((length(y) + 1):(length(y) + ahead), predquants[i,],
-#'        col = 3, lty = c(2, 1, 2)[i])
-#' }
-#' }
-#' @export
-arpredict <- function(object, volpred) {
- .Deprecated("predict.svdraws")
- if (!inherits(object, "svdraws")) stop("Argument 'object' must be of class 'svdraws'.")
- if (!inherits(volpred, "svpredict")) stop("Argument 'volpred' must be of class 'svpredict'.")
- if (colnames(object$priors$designmatrix)[1] == "const") dynamic <- TRUE else stop("Probably not an AR-specification.")
- order <- ncol(object$priors$designmatrix) - 1
-
- len <- nrow(volpred)
- steps <- ncol(volpred)
- fromtoby <- attr(volpred, "mcpar")
- usepara <- seq(from = fromtoby[1], to = fromtoby[2], by = fromtoby[3])
-
- if (ncol(object$para) == 4) {
-  nu <- object$para[,"nu"][usepara]
- } else {
-  nu <- Inf  # corresponds to conditional normality
- }
-
- if (ncol(object$beta) > 1) {
-  betarev <- object$beta[usepara,c(1,ncol(object$beta):2)]
-  lastX <- matrix(c(1, object$y[length(object$y) - order:1 + 1]), nrow = 1)
- } else {
-  betarev <- object$beta[usepara,,drop=FALSE]
-  lastX <- matrix(1, nrow = 1)
- }
-
- meanpred <- mcmc(matrix(as.numeric(NA), nrow = len, ncol = steps),
-		  start = fromtoby[1], end = fromtoby[2], thin = fromtoby[3])
- meanpred[,1] <- tcrossprod(lastX, betarev) + exp(volpred[,1]/2)*rt(len, df = nu)
- if (steps > 1) {
-  lastX <- matrix(rep(lastX, len), nrow = len, byrow = TRUE)
-  for (i in (seq.int(steps-1) + 1)) {
-   if (ncol(object$beta) > 1)
-    lastX <- cbind(lastX[,-2, drop = FALSE], meanpred[,i-1])
-   meanpred[,i] <- rowSums(lastX*betarev) + exp(volpred[,i]/2)*rt(len, df = nu)
-  }
- }
- class(meanpred) <- c("distpredict", "mcmc")
- meanpred
 }

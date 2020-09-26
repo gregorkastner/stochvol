@@ -1,3 +1,26 @@
+#  #####################################################################################
+#  R package stochvol by
+#     Gregor Kastner Copyright (C) 2013-2020
+#     Darjus Hosszejni Copyright (C) 2019-2020
+#  
+#  This file is part of the R package stochvol: Efficient Bayesian
+#  Inference for Stochastic Volatility Models.
+#  
+#  The R package stochvol is free software: you can redistribute it
+#  and/or modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation, either version 2 or
+#  any later version of the License.
+#  
+#  The R package stochvol is distributed in the hope that it will be
+#  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+#  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#  General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with the R package stochvol. If that is not the case, please
+#  refer to <http://www.gnu.org/licenses/>.
+#  #####################################################################################
+
 # Functions that assert some properties of the inputs
 
 sv_stop <- function (what, name, should, and_not) {
@@ -149,7 +172,7 @@ validate_thinning <- function (thinpara, thinlatent, keeptime) {
 
   name_keeptime <- "Argument 'keeptime'"
   assert_single(keeptime, name_keeptime)
-  assert_element(keeptime, c("all", "last"))
+  assert_element(keeptime, c("all", "last"), name_keeptime, "'all' or 'last'")
 }
 
 validate_initial_values <- function (startpara, startlatent, y, x) {
@@ -191,7 +214,7 @@ validate_expert <- function (expert) {
   assert_logical(expert$interweave, "Expert argument 'interweave'")
   assert_single(expert$interweave, "Expert argument 'interweave'")
 
-  ### fast SV arguments UNDOCUMENTED (expert use!)
+  ### fast SV arguments
   assert_element(expert$fast_sv$baseline_parameterization, c("centered", "noncentered"),
                  "Fast SV expert argument 'baseline_parameterization'",
                  "the allowed values")
@@ -236,11 +259,26 @@ validate_expert <- function (expert) {
   assert_single(expert$fast_sv$store_indicators,
                 "Fast SV expert argument 'store_indicators'")
 
+  assert_logical(expert$fast_sv$update$parameters,
+                 "Fast SV expert argument 'update$parameters'")
+  assert_single(expert$fast_sv$update$parameters,
+                "Fast SV expert argument 'update$parameters'")
+
+  assert_logical(expert$fast_sv$update$latent_vector,
+                 "Fast SV expert argument 'update$latent_vector'")
+  assert_single(expert$fast_sv$update$parameters,
+                "Fast SV expert argument 'update$latent_vector'")
+
+  assert_logical(expert$fast_sv$update$mixture_indicators,
+                 "Fast SV expert argument 'update$mixture_indicators'")
+  assert_single(expert$fast_sv$update$mixture_indicators,
+                "Fast SV expert argument 'update$mixture_indicators'")
+
   assert_element(expert$fast_sv$init_indicators, 1:10,
                  "Fast SV expert argument 'init_indicators'",
                  "the allowed values")
 
-  ### general SV arguments UNDOCUMENTED (expert use!)
+  ### general SV arguments
   assert_positive(expert$general_sv$multi_asis,
                   "General SV expert argument 'multi_asis'")
   assert_single(expert$general_sv$multi_asis,
@@ -251,12 +289,6 @@ validate_expert <- function (expert) {
                  "the allowed values")
   assert_single(expert$general_sv$starting_parameterization,
                 "General SV expert argument 'starting_parameterization'")
-
-  assert_element(expert$general_sv$proposal_para, c("random walk", "metropolis-adjusted langevin algorithm"),
-                 "General SV expert argument 'proposal_para'",
-                 "among the allowed values")
-  assert_single(expert$general_sv$proposal_para,
-                "General SV expert argument 'proposal_para'")
 
   if (isTRUE(is.list(expert$general_sv$proposal_diffusion_ken))) {
     assert_length(expert$general_sv$proposal_diffusion_ken, 2,

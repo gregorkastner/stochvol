@@ -1,53 +1,90 @@
+/*
+ * R package stochvol by
+ *     Gregor Kastner Copyright (C) 2013-2020
+ *     Darjus Hosszejni Copyright (C) 2019-2020
+ *  
+ *  This file is part of the R package stochvol: Efficient Bayesian
+ *  Inference for Stochastic Volatility Models.
+ *  
+ *  The R package stochvol is free software: you can redistribute it
+ *  and/or modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation, either version 2 or
+ *  any later version of the License.
+ *  
+ *  The R package stochvol is distributed in the hope that it will be
+ *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with the R package stochvol. If that is not the case, please
+ *  refer to <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * utils_latent_states.cc
+ * 
+ * Definitions of the functions declared in utils_latent_states.h.
+ * Documentation can also be found in utils_latent_states.h.
+ */
+
 #include <RcppArmadillo.h>
+#include "utils.h"
 #include "utils_latent_states.h"
 #include "densities.h"
 #include <cmath>
 
 namespace stochvol {
 
-void cholesky_tridiagonal(
+namespace fast_sv {
+
+CholeskyTridiagonal cholesky_tridiagonal(
     const arma::vec& omega_diag,
-    const double omega_offdiag,
-    arma::vec& chol_diag,
-    arma::vec& chol_offdiag) {
+    const double omega_offdiag) {
+  const int T = omega_diag.n_elem - 1;
+  arma::vec chol_diag(T+1);
+  arma::vec chol_offdiag(T+1);
   chol_diag[0] = std::sqrt(omega_diag[0]);
-  for (int j = 1; j < int(omega_diag.size()); j++) {
+  for (int j = 1; j < T+1; j++) {
     chol_offdiag[j-1] = omega_offdiag/chol_diag[j-1];
     chol_diag[j] = std::sqrt(omega_diag[j]-chol_offdiag[j-1]*chol_offdiag[j-1]);
   }
+  return {std::move(chol_diag), std::move(chol_offdiag)};
 }
 
-void forward_algorithm(
+arma::vec forward_algorithm(
     const arma::vec& chol_diag,
     const arma::vec& chol_offdiag,
-    const arma::vec& covector,
-    arma::vec& htmp) {
+    const arma::vec& covector) {
+  const int T = chol_diag.n_elem - 1;
+  arma::vec htmp(T+1);
   htmp[0] = covector[0]/chol_diag[0];
-  for (int j = 1; j < int(chol_diag.size()); j++) {
+  for (int j = 1; j < T+1; j++) {
     htmp[j] = (covector[j] - chol_offdiag[j-1]*htmp[j-1])/chol_diag[j];
   }
+  return htmp;
 }
 
-void backward_algorithm(
+arma::vec backward_algorithm(
     const arma::vec& chol_diag,
     const arma::vec& chol_offdiag,
-    const arma::vec& htmp,
-    arma::vec& h) {
+    const arma::vec& htmp) {
   const int T = chol_diag.size() - 1;
+  arma::vec h(T+1);
   h[T] = htmp[T] / chol_diag[T];
   for (int j = T-1; j >= 0; j--) {
     h[j] = (htmp[j] - chol_offdiag[j] * h[j+1]) / chol_diag[j];
   }
+  return h;
 }
 
-void inverse_transform_sampling(
+arma::uvec inverse_transform_sampling(
     const arma::vec& mixprob,
-    arma::ivec& r,
     const int T) {
-  const arma::vec innov = Rcpp::runif(T);  // TODO imbue
+  arma::uvec r(T);
   for (int j = 0; j < T; j++) {
     int index = (10-1)/2;  // start searching in the middle
-    const double unnorm_cdf_value = innov[j]*mixprob[9 + 10*j];  // current (non-normalized) value
+    const double unnorm_cdf_value = R::unif_rand()*mixprob[9 + 10*j];  // current (non-normalized) value
     bool larger = false;  // indicates that we already went up
     bool smaller = false; // indicates that we already went down
     while(true) {
@@ -67,12 +104,13 @@ void inverse_transform_sampling(
     }
     r[j] = index;
   }
+  return r;
 }
 
-void find_mixture_indicator_cdf(
-    arma::vec& mixprob,
+arma::vec find_mixture_indicator_cdf(
     const arma::vec& datanorm)  {
-  const int T = datanorm.size();
+  const int T = datanorm.n_elem;
+  arma::vec mixprob(10 * T);
   for (int j = 0; j < T; j++) {  // TODO slow (10*T calls to exp)!
     const int first_index = 10*j;
     mixprob[first_index] = std::exp(mix_pre[0]-(datanorm[j]-mix_mean[0])*(datanorm[j]-mix_mean[0])*mix_2varinv[0]);
@@ -80,17 +118,21 @@ void find_mixture_indicator_cdf(
       mixprob[first_index+r] = mixprob[first_index+r-1] + std::exp(mix_pre[r]-(datanorm[j]-mix_mean[r])*(datanorm[j]-mix_mean[r])*mix_2varinv[r]);
     }
   }
+  return mixprob;
 }
+
+}  // END namespace fast_sv
+
+namespace general_sv {
 
 double h_log_posterior(
     const arma::vec& h,  // centered
     const arma::vec& y,
     const double phi,
     const double rho,
-    const double sigma2,
+    const double sigma,
     const double mu,
     const double h0) {
-  const double sigma = std::sqrt(sigma2);
   const double rho_const = std::sqrt(1 - rho * rho);
   const int n = y.size();
   const arma::vec exp_h_half = arma::exp(0.5 * h);  // TODO cached?
@@ -109,12 +151,12 @@ double h_aux_log_posterior(
     const arma::ivec& d,
     const double phi,
     const double rho,
-    const double sigma2,
+    const double sigma,
     const double mu,
     const double h0) {
   const int n = y_star.size();
   static const int mix_count = mix_a.n_elem;
-  const double sigma = std::sqrt(sigma2);
+  const double sigma2 = std::pow(sigma, 2);
   static const arma::vec::fixed<10> exp_m_half = arma::exp(mix_mean * .5);
   const arma::vec C = rho * sigma * exp_m_half;  // re-used constant
 
@@ -140,6 +182,8 @@ double h_aux_log_posterior(
 
   return result;
 }
+
+}  // END namespace general_sv
 
 }
 

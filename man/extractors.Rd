@@ -8,6 +8,7 @@
 \alias{priors}
 \alias{thinning}
 \alias{runtime}
+\alias{sampled_parameters}
 \title{Common Extractors for 'svdraws' Objects}
 \usage{
 para(x)
@@ -21,6 +22,8 @@ priors(x)
 thinning(x)
 
 runtime(x)
+
+sampled_parameters(x)
 }
 \arguments{
 \item{x}{\code{svdraws} object.}
@@ -43,8 +46,5 @@ a \code{list}.}
 \description{
 Some simple extractors returning the corresponding element of an
 \code{svdraws} object.
-}
-\author{
-Gregor Kastner \email{gregor.kastner@wu.ac.at}
 }
 \keyword{utilities}

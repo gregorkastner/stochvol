@@ -2,12 +2,9 @@
 % Please edit documentation in R/utilities_svdraws.R
 \name{predict.svdraws}
 \alias{predict.svdraws}
-\alias{predict.svldraws}
 \title{Prediction of Future Returns and Log-Volatilities}
 \usage{
 \method{predict}{svdraws}(object, steps = 1L, newdata = NULL, ...)
-
-\method{predict}{svldraws}(object, steps = 1L, newdata = NULL, ...)
 }
 \arguments{
 \item{object}{\code{svdraws} or \code{svldraws} object.}

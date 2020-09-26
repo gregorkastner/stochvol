@@ -1,13 +1,20 @@
 Changes in Version *:
+  - 'svsample', 'svtsample', and 'svlsample' are united into 'svsample',
+    different code bases are executed depending on the prior settings
+  - Entirely refactored C++ backend
+  - New, rethought set of exported C++ functions: 'update_fast_sv',
+    'update_general_sv', 'update_regression', and 'update_t_error';
+    each of which is documented
+  - New, optional API for specifying prior distributions
   - The prior distribution for the degrees of freedom parameter 'nu'
     is an exponential distribution and not a uniform distribution
-  - 'svlsample' and the exported C++ function 'update_svl' use
-    adaptive Metropolis-Hastings for sampling mu, phi, sigma, and rho
-  - 'svlsample' can make use of either a Random Walk or the Metropolis
-    Adjusted Langevin Algorithm (MALA) for its proposal during sampling
-  - Similar to 'svsample', 'svlsample' results include the draws of 'latent0'
-  - Test suite extended
-  - Vastly improved the computational efficiency of 'svlsample'
+  - The exported C++ function 'update_general_sv' and, depending on the
+    prior and expert settings, sometimes 'svample' make use of adaptive
+    Metropolis-Hastings for sampling 'mu', 'phi', 'sigma', and 'rho'
+  - SV with heavy tails _and_ leverage effect is allowed
+  - Test suite greatly extended
+  - Vastly improved the computational efficiency of the former
+    'svlsample' code
 
 Changes in Version 2.0.5:
   - Bugfix in predict when a constant mean model is used for prediction

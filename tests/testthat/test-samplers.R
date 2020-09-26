@@ -1,6 +1,7 @@
-context("Samplers behave well")
+context("Samplers are correct")
 
 test_that("vanilla SV passes Geweke test", {
+  skip_on_cran()
   skip_if_not_installed(pkg = "magrittr", minimum_version = "1.5")
   library("magrittr")
 
@@ -51,7 +52,7 @@ test_that("vanilla SV passes Geweke test", {
     fast_sv <- default_fast_sv
     fast_sv$store_indicators <- TRUE
     fast_sv$baseline_parameterization <- if (centered) "centered" else "noncentered"
-    fast_sv$init_indicators <- sample.int(10, len, replace = TRUE, prob = p) - 1
+    fast_sv$init_indicators <- sample.int(10, len, replace = TRUE, prob = p)
 
     draws <- 20000L
     store_para <- matrix(NA_real_, draws, 4, dimnames = list(NULL, c("mu", "phi", "sigma", "h0")))
@@ -60,36 +61,36 @@ test_that("vanilla SV passes Geweke test", {
     store_r <- matrix(NA_real_, draws, len)
 
     for (tt in seq_len(draws)) {
-      z <- fast_sv$init_indicators + 1
+      z <- fast_sv$init_indicators
       y <- sample(c(-1, 1), len, replace = TRUE) * exp(0.5 * rnorm(len, m[z], v[z])) * exp(0.5 * startlatent)
-      res <- svsample_cpp(y, 1L, 0L, designmatrix, priorspec,
-                          1L, 1L, "all",
-                          startpara, startlatent, FALSE, TRUE,
-                          correct_model_misspecification = FALSE,
-                          interweave = FALSE,
-                          myoffset = 0,
-                          fast_sv = fast_sv)
+      res <- svsample_fast_cpp(y, 1L, 30L, designmatrix, priorspec,
+                               1L, 1L, "all",
+                               startpara, startlatent, FALSE, TRUE,
+                               correct_model_misspecification = FALSE,
+                               interweave = FALSE,
+                               myoffset = 0,
+                               fast_sv = fast_sv)
       param <- para(res)[1, ]
       startpara$mu <- param["mu"]
       startpara$phi <- param["phi"]
       startpara$sigma <- param["sigma"]
       if (TRUE) {  # correct way
         startpara$latent0 <- latent0(res)[1]
-        fast_sv$init_indicators <- res$indicators[, 1]
-        startlatent <- latent(res)[, 1]
+        fast_sv$init_indicators <- res$indicators[1, ]
+        startlatent <- latent(res)[1, ]
       } else {  # wrong way
         startpara$latent0 <- rnorm(1, startpara$mu, startpara$sigma / sqrt(1 - startpara$phi^2))
         fast_sv$init_indicators <- sample.int(10, len, replace = TRUE, prob = p)
         startlatent <- generate_h(len, increment_fun(startpara$mu, startpara$phi, startpara$sigma), startpara$latent0)
       }
-      store_para[tt, 1:3] <- para(res)[1, ]
+      store_para[tt, c("mu", "phi", "sigma")] <- para(res)[1, c("mu", "phi", "sigma")]
       store_para[tt, 4] <- latent0(res)[1]
       store_y[tt, ] <- y
       store_h[tt, ] <- latent(res)[, 1]
       store_r[tt, ] <- res$indicators[, 1]
     }
 
-    thin_skip <- ceiling(draws / min(apply(store_para, 2, coda::effectiveSize)))
+    thin_skip <- ceiling(draws / min(c(4500, apply(store_para, 2, coda::effectiveSize))))
     thin_index <- seq(1, draws, by = thin_skip)
 
     expect_gt(shapiro.test((sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate))[thin_index])$p.value, 1e-5)
@@ -120,8 +121,6 @@ test_that("vanilla SV passes Geweke test", {
 
 test_that("general SV passes Geweke test", {
   skip_on_cran()
-  skip_if_not_installed(pkg = "magrittr", minimum_version = "1.5")
-  library("magrittr")
 
   for (centered in c(FALSE, TRUE)) {
     priorspec <-
@@ -148,11 +147,11 @@ test_that("general SV passes Geweke test", {
     data <- svsim(len, mu = startpara$mu, phi = startpara$phi, sigma = startpara$sigma, rho = startpara$rho)
     startlatent <- 2 * log(data$vol)
     y <- data$y
-    res <- svlsample_cpp(y, 60000L, 0L, designmatrix, priorspec,
-                         1L, 1L, "all",
-                         startpara, startlatent, FALSE, TRUE,
-                         FALSE, TRUE,
-                         0, general_sv)
+    res <- svsample_general_cpp(y, 60000L, 0L, designmatrix, priorspec,
+                                1L, 1L, "all",
+                                startpara, startlatent, FALSE, TRUE,
+                                FALSE, TRUE,
+                                0, general_sv)
 
     expect_gt(tail(res$adaptation[[general_sv$starting_parameterization]]$history[, "Acceptance Rate"], 1), 0.05)
 
@@ -169,13 +168,13 @@ test_that("general SV passes Geweke test", {
       for (ttt in seq_len(100)) {
         y[seq_len(len-1)] <- exp(0.5 * head(startlatent, -1)) * (startpara$rho * (tail(startlatent, -1) - startpara$mu - startpara$phi * (head(startlatent, -1) - startpara$mu)) / startpara$sigma + sqrt(1 - startpara$rho^2) * rnorm(len - 1))
         y[len] <- exp(0.5 * tail(startlatent, 1)) * rnorm(1)
-        res <- svlsample_cpp(y, 1L, 0L, designmatrix, priorspec,
-                             1L, 1L, "all",
-                             startpara, startlatent, FALSE, TRUE,
-                             correct_model_misspecification = TRUE,
-                             interweave = FALSE,
-                             myoffset = 0,
-                             general_sv = general_sv)
+        res <- svsample_general_cpp(y, 1L, 0L, designmatrix, priorspec,
+                                    1L, 1L, "all",
+                                    startpara, startlatent, FALSE, TRUE,
+                                    correct_model_misspecification = TRUE,
+                                    interweave = FALSE,
+                                    myoffset = 0,
+                                    general_sv = general_sv)
         param <- para(res)[1, ]
         startpara$mu <- param["mu"]
         startpara$phi <- param["phi"]
@@ -188,10 +187,10 @@ test_that("general SV passes Geweke test", {
       store_para[tt, c("mu", "phi", "sigma", "rho")] <- para(res)[1, c("mu", "phi", "sigma", "rho")]
       store_para[tt, "h0"] <- latent0(res)[1]
       store_y[tt, ] <- y
-      store_h[tt, ] <- latent(res)[, 1]
+      store_h[tt, ] <- latent(res)[1, ]
     }
 
-    thin_skip <- ceiling(draws / min(apply(store_para, 2, coda::effectiveSize)))
+    thin_skip <- ceiling(draws / min(c(4500, apply(store_para, 2, coda::effectiveSize))))
     thin_index <- seq(1, draws, by = thin_skip)
 
     expect_gt(shapiro.test((sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate))[thin_index])$p.value, 1e-5)

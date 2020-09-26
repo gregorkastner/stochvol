@@ -1,3 +1,33 @@
+/*
+ * R package stochvol by
+ *     Gregor Kastner Copyright (C) 2013-2020
+ *     Darjus Hosszejni Copyright (C) 2019-2020
+ *  
+ *  This file is part of the R package stochvol: Efficient Bayesian
+ *  Inference for Stochastic Volatility Models.
+ *  
+ *  The R package stochvol is free software: you can redistribute it
+ *  and/or modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation, either version 2 or
+ *  any later version of the License.
+ *  
+ *  The R package stochvol is distributed in the hope that it will be
+ *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with the R package stochvol. If that is not the case, please
+ *  refer to <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * utils_main.cc
+ * 
+ * Definitions of the functions declared in utils_main.h.
+ * Documentation can also be found in utils_main.h.
+ */
+
 #include <RcppArmadillo.h>
 #include "utils_main.h"
 #include "densities.h"
@@ -7,40 +37,117 @@ using namespace Rcpp;
 
 namespace stochvol {
 
-List cleanup(
-    const arma::vec& mu,
-    const arma::vec& phi,
-    const arma::vec& sigma,
-    const arma::mat& h_store,
-    const arma::vec& h0_store,
-    const arma::vec& nu_store,
-    const arma::mat& tau_store,
-    const arma::mat& beta_store,
-    const arma::imat& r_store) {
-  int paracols;
-  if (nu_store.size() > 0) paracols = 4; else paracols = 3;
+void transpose_and_rename(
+    const int T,
+    NumericMatrix& para,
+    NumericMatrix& latent0,
+    NumericMatrix& latent,
+    NumericMatrix& tau,
+    NumericMatrix& betas) {
+  para = Rcpp::transpose(para);
+  latent = Rcpp::transpose(latent);
+  tau = Rcpp::transpose(tau);
+  betas = Rcpp::transpose(betas);
 
-  CharacterVector coln(paracols);
-  NumericMatrix res(mu.n_elem, paracols);
-  arma::mat res_arma(res.begin(), mu.n_elem, paracols, false, false); 
-  res_arma.col(0) = mu; coln.at(0) = "mu";
-  res_arma.col(1) = phi; coln.at(1) = "phi";
-  res_arma.col(2) = sigma; coln.at(2) = "sigma";
-  if (nu_store.size() > 0) {
-    res_arma.col(3) = nu_store; coln.at(3) = "nu";
+  {  // colnames in para
+    const Rcpp::CharacterVector col_names {"mu", "phi", "sigma", "nu", "rho"};
+    colnames(para) = col_names;
   }
-  colnames(res) = coln;
+  {  // colnames in latent0
+    colnames(latent0) = Rcpp::CharacterVector({"h_0"});
+  }
+  {  // colnames in latent
+    const int ncol = latent.ncol();
+    Rcpp::CharacterVector col_names(T);
+    for (unsigned int c = 1; c <= ncol; c++) {
+      std::string name = "h_";
+      name += std::to_string(T-ncol+c);
+      col_names[c-1] = name;
+    }
+    colnames(latent) = col_names;
+  }
+  {  // colnames in betas
+    const int ncol = betas.ncol();
+    Rcpp::CharacterVector col_names(ncol);
+    for (unsigned int c = 0; c < ncol; c++) {
+      std::string name = "beta_";
+      name += std::to_string(c);
+      col_names[c] = name;
+    }
+    colnames(betas) = col_names;
+  }
+  {  // colnames in tau
+    const int ncol = tau.ncol();
+    Rcpp::CharacterVector col_names(T);
+    for (unsigned int c = 1; c <= ncol; c++) {
+      std::string name = "tau_";
+      name += std::to_string(T-ncol+c);
+      col_names[c-1] = name;
+    }
+    colnames(tau) = col_names;
+  }
+}
+
+List cleanup(
+    const int T,
+    NumericMatrix& para,
+    NumericMatrix& latent0,
+    NumericMatrix& latent,
+    NumericMatrix& tau,
+    NumericMatrix& betas,
+    IntegerMatrix& mixture_indicators) {
+  transpose_and_rename(T, para, latent0, latent, tau, betas);
+
+  mixture_indicators = Rcpp::transpose(mixture_indicators);
+
+  {  // colnames in mixture_indicators
+    const int ncol = mixture_indicators.ncol();
+    Rcpp::CharacterVector col_names(ncol);
+    for (unsigned int c = 1; c <= ncol; c++) {
+      std::string name = "r_";
+      name += std::to_string(T-ncol+c);
+      col_names[c-1] = name;
+    }
+    colnames(mixture_indicators) = col_names;
+  }
 
   List val = List::create(
-      _["para"] = res,
-      _["latent"] = h_store,
-      _["latent0"] = h0_store,
-      _["beta"] = beta_store,
-      _["tau"] = tau_store,
-      _["indicators"] = r_store);
+      _["para"] = para,
+      _["latent"] = latent,
+      _["latent0"] = latent0,
+      _["beta"] = betas,
+      _["tau"] = tau,
+      _["indicators"] = mixture_indicators + 1u);
 
   return val;
 }
+
+List cleanup(
+    const int T,
+    NumericMatrix& para,
+    NumericMatrix& latent0,
+    NumericMatrix& latent,
+    NumericMatrix& tau,
+    NumericMatrix& betas,
+    AdaptationCollection& adaptation_collection) {
+  transpose_and_rename(T, para, latent0, latent, tau, betas);
+
+  return List::create(
+      _["para"] = para,
+      _["adaptation"] = List::create(
+        _["centered"] = List::create(
+          _["history"] = adaptation_collection.centered.get_storage(),
+          _["scale"] = wrap(adaptation_collection.centered.get_proposal().get_scale()),
+          _["covariance"] = wrap(adaptation_collection.centered.get_proposal().get_covariance())),
+        _["noncentered"] = List::create(
+          _["history"] = adaptation_collection.noncentered.get_storage(),
+          _["scale"] = wrap(adaptation_collection.noncentered.get_proposal().get_scale()),
+          _["covariance"] = wrap(adaptation_collection.noncentered.get_proposal().get_covariance()))),
+      _["latent"] = latent,
+      _["latent0"] = latent0,
+      _["tau"] = tau,
+      _["beta"] = betas);
+}  // END namespace general_sv
 
 int progressbar_init(
     const int N) {
@@ -69,7 +176,7 @@ void progressbar_finish(
 PriorSpec list_to_priorspec(
     const Rcpp::List& list) {
   PriorSpec priorspec;
-  const SEXP priorlatent0_sexp = list["latent0"];
+  const SEXP priorlatent0_sexp = list["latent0_variance"];
   const List priormu = list["mu"],
              priorphi = list["phi"],
              priorsigma2 = list["sigma2"],
@@ -83,9 +190,9 @@ PriorSpec list_to_priorspec(
     if (priorlatent0 == "stationary") {
       priorspec.latent0.variance = PriorSpec::Latent0::STATIONARY;
     } else {
-      ::Rf_error("The prior specification of latent0 should be either the string \"stationary\" or an sv_constant object; got string \"%s\". See function specify_priors", priorlatent0.c_str());
+      ::Rf_error("The prior specification for the variance of latent0 should be either the string \"stationary\" or an sv_constant object; got string \"%s\". See function specify_priors", priorlatent0.c_str());
     }
-  } else if (::Rf_isList(priorlatent0_sexp)) {
+  } else if (::Rf_isVectorList(priorlatent0_sexp)) {
     const List priorlatent0 = priorlatent0_sexp;
     if (priorlatent0.inherits("sv_constant")) {
       priorspec.latent0.variance = PriorSpec::Latent0::CONSTANT;
@@ -93,10 +200,10 @@ PriorSpec list_to_priorspec(
     } else {
       const CharacterVector classes_rcpp = priorlatent0.attr("class");
       const std::string classes = as<std::string>(classes_rcpp.at(0));
-      ::Rf_error("The prior specification of latent0 should be either the string \"stationary\" or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
+      ::Rf_error("The prior specification for the variance of latent0 should be either the string \"stationary\" or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
     }
   } else {
-    ::Rf_error("The prior specification of latent0 should be either the string \"stationary\" or an sv_constant object; got type number %d. See function specify_priors", TYPEOF(priorlatent0_sexp));
+    ::Rf_error("The prior specification for the variance of latent0 should be either the string \"stationary\" or an sv_constant object; got type number %d. See function specify_priors", TYPEOF(priorlatent0_sexp));
   }
   // mu
   if (priormu.inherits("sv_normal")) {
@@ -149,7 +256,7 @@ PriorSpec list_to_priorspec(
     priorspec.nu.distribution = PriorSpec::Nu::CONSTANT;
     priorspec.nu.constant.value = priornu["value"];
   } else if (priornu.inherits("sv_infinity")) {
-    priorspec.nu.distribution = PriorSpec::Nu::INIFINITY;
+    priorspec.nu.distribution = PriorSpec::Nu::INFINITE;
   } else {
     const CharacterVector classes_rcpp = priornu.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
@@ -169,23 +276,28 @@ PriorSpec list_to_priorspec(
     ::Rf_error("The prior specification of rho should be either an sv_beta object or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
   }
   // beta
-  if (priorbeta.inherits("sv_normal")) {
-    priorspec.beta.distribution = PriorSpec::Covariates::NORMAL;
-    priorspec.beta.normal.mean = priorbeta["mean"];
-    priorspec.beta.normal.sd = priorbeta["sd"];
-  } else if (priorbeta.inherits("sv_constant")) {
-    priorspec.beta.distribution = PriorSpec::Covariates::CONSTANT;
-    priorspec.beta.constant.value = priorbeta["value"];
+  if (priorbeta.inherits("sv_multinormal")) {
+    try {
+      priorspec.beta.multivariate_normal.mean = as<arma::vec>(priorbeta["mean"]);
+      priorspec.beta.multivariate_normal.precision = as<arma::mat>(priorbeta["precision"]);
+    } catch (...) {
+      //Rcout << "Received prior specification for beta:" << std::endl << priorbeta << std::endl;
+      ::Rf_error("Unable to convert priorspec$priorbeta to a mean vector and a precision matrix");
+    }
+    if (!priorspec.beta.multivariate_normal.precision.is_sympd()) {
+      //Rcout << "Received precision matrix as the prior specification for beta:" << std::endl << priorspec.beta.multivariate_normal.precision << std::endl;
+      ::Rf_error("The precision matrix of the prior specification for beta is not symmetric and/or positive definite.");
+    }
   } else {
     const CharacterVector classes_rcpp = priorbeta.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
-    ::Rf_error("The prior specification of beta should be either an sv_normal object or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
+    ::Rf_error("The prior specification of beta should be an sv_multinormal object; got list with class %s. See function specify_priors", classes.c_str());
   }
 
   return priorspec;
 }
 
-ExpertSpec_VanillaSV list_to_vanilla_sv(
+ExpertSpec_FastSV list_to_fast_sv(
     const Rcpp::List& list,
     const bool interweave) {
   const std::string baseline_parameterization_str = as<std::string>(list["baseline_parameterization"]),
@@ -195,6 +307,7 @@ ExpertSpec_VanillaSV list_to_vanilla_sv(
                proposal_phi_var = list["proposal_phi_var"],
                proposal_sigma2_rw_scale = list["proposal_sigma2_rw_scale"];
   const int mh_blocking_steps = as<int>(list["mh_blocking_steps"]);
+  const Rcpp::List update_list = list["update"];
 
   Parameterization baseline_parameterization;
   if (baseline_parameterization_str == "centered") {
@@ -205,23 +318,28 @@ ExpertSpec_VanillaSV list_to_vanilla_sv(
     ::Rf_error("Unknown value of baseline_parameterization in expert$fast_sv == \"%s\"; should be either \"centered\" or \"noncentered\"", baseline_parameterization_str.c_str());
   }
 
-  ExpertSpec_VanillaSV::ProposalPhi proposal_phi;
+  ExpertSpec_FastSV::ProposalPhi proposal_phi;
   if (proposal_phi_str == "immediate acceptance-rejection") {
-    proposal_phi = ExpertSpec_VanillaSV::ProposalPhi::IMMEDIATE_ACCEPT_REJECT_NORMAL;
+    proposal_phi = ExpertSpec_FastSV::ProposalPhi::IMMEDIATE_ACCEPT_REJECT_NORMAL;
   } else if (proposal_phi_str == "repeated acceptance-rejection") {
-    proposal_phi = ExpertSpec_VanillaSV::ProposalPhi::REPEATED_ACCEPT_REJECT_NORMAL;
+    proposal_phi = ExpertSpec_FastSV::ProposalPhi::REPEATED_ACCEPT_REJECT_NORMAL;
   } else {
     ::Rf_error("Unknown value of proposal_phi in expert$fast_sv == \"%s\"; should be either \"immediate acceptance-rejection\" or \"repeated acceptance-rejection\"", proposal_phi_str.c_str());
   }
 
-  ExpertSpec_VanillaSV::ProposalSigma2 proposal_sigma2;
+  ExpertSpec_FastSV::ProposalSigma2 proposal_sigma2;
   if (proposal_sigma2_str == "independence") {
-    proposal_sigma2 = ExpertSpec_VanillaSV::ProposalSigma2::INDEPENDENCE;
+    proposal_sigma2 = ExpertSpec_FastSV::ProposalSigma2::INDEPENDENCE;
   } else if (proposal_sigma2_str == "log random walk") {
-    proposal_sigma2 = ExpertSpec_VanillaSV::ProposalSigma2::LOG_RANDOM_WALK;
+    proposal_sigma2 = ExpertSpec_FastSV::ProposalSigma2::LOG_RANDOM_WALK;
   } else {
     ::Rf_error("Unknown value of proposal_sigma2 in expert$fast_sv == \"%s\"; should be either \"independence\" or \"log random walk\"", proposal_sigma2_str.c_str());
   }
+
+  ExpertSpec_FastSV::Update update;
+  update.latent_vector = update_list["latent_vector"];
+  update.mixture_indicators = update_list["mixture_indicators"];
+  update.parameters = update_list["parameters"];
 
   return {
     interweave,
@@ -231,7 +349,8 @@ ExpertSpec_VanillaSV list_to_vanilla_sv(
     mh_blocking_steps,
     proposal_sigma2,
     proposal_sigma2_rw_scale,
-    proposal_phi
+    proposal_phi,
+    update
   };
 }
 
@@ -241,8 +360,8 @@ ExpertSpec_GeneralSV list_to_general_sv(
     const bool interweave) {
   const int multi_asis = as<int>(list["multi_asis"]);
   const std::string starting_parameterization_str = as<std::string>(list["starting_parameterization"]);
-  const std::string proposal_para_str = as<std::string>(list["proposal_para"]);
   const SEXP proposal_diffusion_ken_sexp = list["proposal_diffusion_ken"];
+  const Rcpp::List update_list = list["update"];
 
   // starting parameterization
   Parameterization starting_parameterization;
@@ -256,14 +375,7 @@ ExpertSpec_GeneralSV list_to_general_sv(
   const Parameterization other_parameterization = starting_parameterization == Parameterization::CENTERED ? Parameterization::NONCENTERED : Parameterization::CENTERED;
 
   // proposal strategy for the parameters
-  ExpertSpec_GeneralSV::ProposalPara proposal_para;
-  if (proposal_para_str == "random walk") {
-    proposal_para = ExpertSpec_GeneralSV::ProposalPara::RANDOM_WALK;
-  } else if (proposal_para_str == "metropolis-adjusted langevin algorithm") {
-    proposal_para = ExpertSpec_GeneralSV::ProposalPara::METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM;
-  } else {
-    ::Rf_error("Unknown proposal setting in expert$general_sv$proposal_para == \"%s\"; should be \"random walk\" or \"metropolis-adjusted langevin algorithm\"", proposal_para_str.c_str());
-  }
+  ExpertSpec_GeneralSV::ProposalPara proposal_para = ExpertSpec_GeneralSV::ProposalPara::RANDOM_WALK;
 
   // parameterization strategy
   std::vector<Parameterization> strategy;
@@ -291,12 +403,17 @@ ExpertSpec_GeneralSV list_to_general_sv(
         as<arma::mat>(proposal_diffusion_ken_rcpp["covariance"]));
   }
 
+  ExpertSpec_GeneralSV::Update update;
+  update.latent_vector = update_list["latent_vector"];
+  update.parameters = update_list["parameters"];
+
   return {
     strategy,
     correct_latent_draws,
     proposal_para,
     adapt,
-    proposal_diffusion_ken
+    proposal_diffusion_ken,
+    update
   };
 }
 

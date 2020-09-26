@@ -1,11 +1,41 @@
+/*
+ * R package stochvol by
+ *     Gregor Kastner Copyright (C) 2013-2020
+ *     Darjus Hosszejni Copyright (C) 2019-2020
+ *  
+ *  This file is part of the R package stochvol: Efficient Bayesian
+ *  Inference for Stochastic Volatility Models.
+ *  
+ *  The R package stochvol is free software: you can redistribute it
+ *  and/or modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation, either version 2 or
+ *  any later version of the License.
+ *  
+ *  The R package stochvol is distributed in the hope that it will be
+ *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with the R package stochvol. If that is not the case, please
+ *  refer to <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * densities.h
+ * 
+ * Inline definition of some non-normalized densities and transformations
+ * thereof such as acceptance rates or other proportions.
+ * These implementations are more efficient than their Rmath.h counterparts
+ * because there is no validation, no normalization, and some expressions can
+ * be pre-computed for these functions.
+ */
+
 #ifndef _DENSITIES_H_
 #define _DENSITIES_H_
 
 #include <Rmath.h>
 #include <limits>
-
-// Some (non-normalized) densities and transformations thereof
-// (such as acceptance rates or other proportions)
 
 namespace stochvol {
 
