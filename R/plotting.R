@@ -120,40 +120,28 @@ paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
                          mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL, ...) {
   if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (!is.logical(showobs)) stop("If provided, argument 'showobs' must be TRUE or FALSE.")
-  if (!is.null(simobj)) {
-    if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
-    sim <- TRUE
-  } else sim <- FALSE
-  oldpar <- par(mar=mar)
-  paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), rho=quote(rho), nu=quote(nu))
-  cutat1 <- c(mu=FALSE, phi=TRUE, sigma=FALSE, rho=TRUE, nu=FALSE)
+  sim <- !is.null(simobj)
+  if (sim && !inherits(simobj, "svsim")) {
+    stop("If provided, simobj must be an 'svsim' object.")
+  }
+  oldpar <- par(mar = mar)
+  para_names <- c(mu = quote(mu), phi = quote(phi), sigma = quote(sigma), rho = quote(rho), nu = quote(nu))
+  para_prior_names <- c(mu = "mu", phi = "phi", sigma = "sigma2", rho = "rho", nu = "nu")
   params <- sampled_parameters(x)
-  for (i in 1:ncol(x$para)) {
-    parastring <- colnames(x$para)[i]
-    if (parastring %in% params) {
-      mydensplot(x$para[,parastring], show.obs=showobs, main=paste("Density of", paranames[parastring]),
-                 cutat1=cutat1[parastring], showxlab=showxlab, mgp = mgp, ...)
-      if (isTRUE(showprior)) {
-        vals <- seq(from=par('usr')[1], to=par('usr')[2], len=1000)
-        if (parastring == "mu") {
-          prior <- x$priors[[parastring]]
-          lines(vals, density(prior)(vals), col = 8, lty = 2)
-        } else if (parastring == "phi") {
-          prior <- x$priors[[parastring]]
-          lines(vals, .5*density(prior)((vals+1)/2), col = 8, lty = 2)
-        } else if (parastring == "sigma") {
-          prior <- x$priors[["sigma2"]]
-          lines(vals, 2 * vals * density(prior)(vals^2), col = 8, lty = 2)
-        } else if (parastring == "rho") {
-          prior <- x$priors[[parastring]]
-          lines(vals, .5*density(prior)((vals+1)/2), col = 8, lty = 2)
-        } else if (parastring == "nu") {
-          prior <- x$priors[[parastring]]
-          lines(vals, density(prior)(vals - 2), col = 8, lty = 2)
-        }
-        if (sim && parastring %in% names(simobj$para)) {
-          points(simobj$para[[parastring]], 0, col = 3, cex = 2, pch = 16)
-        }
+  for (para_name in params) {
+    prior <- x$priors[[para_prior_names[para_name] ]]
+    cutat <- x$para_inv_transform[[para_name]](range(prior))
+    mydensplot(x$para[,para_name], show.obs=showobs, main=paste("Density of", para_names[para_name]),
+               cutat=cutat,
+               showxlab=showxlab, mgp = mgp, ...)
+    if (isTRUE(showprior)) {
+      eps <- diff(par('usr'))[1] / 999
+      vals <- seq(from=max(c(par('usr')[1], cutat[1]+eps)), to=min(c(par('usr')[2], cutat[2]-eps)), len=1000)
+      lines(vals,
+            x$para_transform_det[[para_name]](vals) * density(prior)(x$para_transform[[para_name]](vals)),
+            col = 8, lty = 2)
+      if (sim) {
+        points(simobj$para[[para_name]], 0, col = 3, cex = 2, pch = 16)
       }
     }
   }
@@ -494,6 +482,10 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
   heavy_tailed_sv <- "nu" %in% params
   plot_volatility_series <- thinning(x)$time == "all"
   npara <- length(params)
+  if (is.null(simobj) && !is.null(x$simobj)) {
+    message("Simulation object extracted from input")
+    simobj <- x$simobj
+  }
   
   # Set layout
   index <- 1L
@@ -527,63 +519,46 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
 }
 
 # modified density plot (from coda package)
-mydensplot <- function(x, show.obs = TRUE, bwf, main = "", ylim, cutat1=FALSE, showxlab=TRUE, mgp = c(2,.6,0), tcl=-.4, ...) {
+mydensplot <- function(x, show.obs = TRUE, bwf, main = "", ylim, cutat=c(-Inf, Inf), showxlab=TRUE, mgp = c(2,.6,0), tcl=-.4, ...) {
   for (i in 1:nvar(x)) {
-    x.i <- as.matrix(x)[, i, drop = TRUE]
+    x_i <- as.matrix(x)[, i, drop = TRUE]
+    range_x_i <- range(x_i)
+    if (range_x_i[1] < cutat[1] || range_x_i[2] > cutat[2]) {
+      stop("Argument 'cutat' does not include range of variable.")
+    }
     if (missing(bwf)) 
       bwf <- function(xx) {
         xx <- xx[!is.na(as.vector(xx))]
         return(1.06 * min(sd(xx), IQR(xx)/1.34) * length(xx)^-0.2)
       }
-    bw <- bwf(x.i)
+    bw <- bwf(x_i)
     width <- 4 * bw
-    if (max(abs(x.i - floor(x.i))) == 0 || bw == 0) {
-      hist(x.i, prob = TRUE, main = main, ...)
+    if (max(abs(x_i - floor(x_i))) == 0 || bw == 0) {
+      hist(x_i, prob = TRUE, main = main, ...)
     } else {
-      density.scale <- "open"
-      if (isTRUE(cutat1)) {
-        if (1-max(x.i) < 2*bw) {
-          density.scale <- "cutat1"
-          x.i <- c(x.i, 2 - x.i)
-          if (1+min(x.i) < 2*bw) {
-            density.scale <- "cutatboth"
-            x.i <- c(x.i, -2 - x.i, 2 - x.i)
-          }
-        } else if (1+min(x.i) < 2*bw) {
-          density.scale <- "cutat-1"
-          x.i <- c(x.i, -2 - x.i)
-        }
-      } else if (max(x.i) <= 1 && 1 - max(x.i) < 2 * bw) {
-        if (min(x.i) >= 0 && min(x.i) < 2 * bw) {
-          density.scale <- "proportion"
-          x.i <- c(x.i, -x.i, 2 - x.i)
-        }
-      } else if (min(x.i) >= 0 && min(x.i) < 2 * bw) {
-        density.scale <- "positive"
-        x.i <- c(x.i, -x.i)
+      density_scale <- "open"
+      cut_at_bottom <- isTRUE(is.finite(cutat[1]) && range_x_i[1]-cutat[1] < 2*bw)
+      cut_at_top <- isTRUE(is.finite(cutat[2]) && cutat[2]-range_x_i[2] < 2*bw)
+      x_i <- if (cut_at_bottom && cut_at_top) {
+        c(x_i, 2*cutat[1] - x_i, 2*cutat[2] - x_i)
+      } else if (cut_at_bottom) {
+        c(x_i, 2*cutat[1] - x_i)
+      } else if (cut_at_top) {
+        c(x_i, 2*cutat[2] - x_i)
+      } else {
+        x_i
       }
-      dens <- density(x.i, width = width)
-
-      if (density.scale == "proportion") {
-        dens$y <- 3 * dens$y[dens$x >= 0 & dens$x <= 1]
-        dens$x <- dens$x[dens$x >= 0 & dens$x <= 1]
+      upscale <- if (cut_at_bottom && cut_at_top) {
+        3
+      } else if (cut_at_bottom || cut_at_top) {
+        2
+      } else {
+        1
       }
-      else if (density.scale == "positive") {
-        dens$y <- 2 * dens$y[dens$x >= 0]
-        dens$x <- dens$x[dens$x >= 0]
-      }
-      else if (density.scale == "cutat1") {
-        dens$y <- 2 * dens$y[dens$x <= 1]
-        dens$x <- dens$x[dens$x <= 1]
-      }
-      else if (density.scale == "cutat-1") {
-        dens$y <- 2 * dens$y[dens$x >= -1]
-        dens$x <- dens$x[dens$x >= -1]
-      }
-      else if (density.scale == "cutatboth") {
-        dens$y <- 3 * dens$y[dens$x >= -1 & dens$x <= 1]
-        dens$x <- dens$x[dens$x >= -1 & dens$x <= 1]
-      }
+      dens <- density(x_i, width = width)
+      index <- dens$x >= cutat[1] & dens$x <= cutat[2]
+      dens$x <- dens$x[index]
+      dens$y <- upscale * dens$y[index]
 
       if (missing(ylim)) 
         ylim <- c(0, max(dens$y))
@@ -600,7 +575,7 @@ mydensplot <- function(x, show.obs = TRUE, bwf, main = "", ylim, cutat1=FALSE, s
         }
       }
       if (show.obs) 
-        lines(x.i[1:niter(x)], rep(max(dens$y)/100, niter(x)), 
+        lines(x_i[1:niter(x)], rep(max(dens$y)/100, niter(x)), 
               type = "h")
     }
     if (!is.null(varnames(x)) && is.null(list(...)$main)) 

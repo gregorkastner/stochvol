@@ -89,7 +89,8 @@ specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
 #' 
 #' The functions below can be supplied to \link{specify_priors}
 #' to overwrite the default set of prior distributions in \link{svsample}.
-#' The functions have \code{mean}, \code{density} and \code{print} methods.
+#' The functions have \code{mean}, \code{range}, \code{density}, and
+#' \code{print} methods.
 #' @rdname sv_prior
 #' @family priors
 #' @export
@@ -119,6 +120,10 @@ density.sv_constant <- function (x, ...) {
     as.numeric(abs(x - dist$value) < sqrt(.Machine$double.eps))
   }
 }
+#' @export
+range.sv_constant <- function (x, na.rm = FALSE, ...) {
+  rep_len(x$value, length.out = 2)
+}
 
 #' @rdname sv_prior
 #' @family priors
@@ -147,6 +152,10 @@ density.sv_normal <- function (x, ...) {
   function (x) {
     dnorm(x, mean = dist$mean, sd = dist$sd)
   }
+}
+#' @export
+range.sv_normal <- function (x, na.rm = FALSE, ...) {
+  c(-Inf, Inf)
 }
 
 #' @section Multivariate Normal:
@@ -231,6 +240,10 @@ density.sv_multinormal <- function (x, ...) {
     }
   }
 }
+#' @export
+range.sv_multinormal <- function (x, na.rm = FALSE, ...) {
+  stop("Function 'range' undefined for class 'sv_multinormal'")
+}
 
 #' @rdname sv_prior
 #' @family priors
@@ -259,6 +272,10 @@ density.sv_gamma <- function (x, ...) {
   function (x) {
     dgamma(x, shape = dist$shape, rate = dist$rate)
   }
+}
+#' @export
+range.sv_gamma <- function (x, na.rm = FALSE, ...) {
+  c(0, Inf)
 }
 
 #' @rdname sv_prior
@@ -318,6 +335,10 @@ density.sv_beta <- function (x, ...) {
     dbeta(x, shape1 = dist$alpha, shape2 = dist$beta)
   }
 }
+#' @export
+range.sv_beta <- function (x, na.rm = FALSE, ...) {
+  c(0, 1)
+}
 
 #' @rdname sv_prior
 #' @family priors
@@ -344,6 +365,10 @@ density.sv_exponential <- function (x, ...) {
     dexp(x, rate = dist$rate)
   }
 }
+#' @export
+range.sv_exponential <- function (x, na.rm = FALSE, ...) {
+  c(0, Inf)
+}
 
 #' @rdname sv_prior
 #' @family priors
@@ -366,6 +391,10 @@ density.sv_infinity <- function (x, ...) {
   function (x) {
     ifelse(x == Inf, 1, 0)
   }
+}
+#' @export
+range.sv_infinity <- function (x, na.rm = FALSE, ...) {
+  c(Inf, Inf)
 }
 
 #' @export

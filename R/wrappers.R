@@ -287,8 +287,11 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   # Validation
   ## y
   if (inherits(y, "svsim")) {
-    y <- y[["y"]]
+    simobj <- y
+    y <- simobj[["y"]]
     message("Extracted data vector from 'svsim'-object.")
+  } else {
+    simobj <- NULL
   }
   assert_numeric(y, "Argument 'y'")
   assert_gt(length(y), 1, "The length of the input time series 'y'")
@@ -469,6 +472,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   # store results:
   res$runtime <- runtime
   res$y <- if (arorder == 0) y_orig else tail(y_orig, -arorder)
+  res$simobj <- simobj
   res$para <- coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)
   res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
   res$latent0 <- coda::mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
@@ -481,6 +485,21 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     res$beta <- NULL
   }
   res$meanmodel <- meanmodel
+  res$para_transform <- list(mu = function (x) {x},
+                             phi = function (x) {(x+1)/2},
+                             sigma = function (x) {x^2},
+                             nu = function (x) {x-2},
+                             rho = function (x) {(x+1)/2})
+  res$para_inv_transform <- list(mu = function (x) {x},
+                                 phi = function (x) {2*x-1},
+                                 sigma = function (x) {sqrt(x)},
+                                 nu = function (x) {x+2},
+                                 rho = function (x) {2*x-1})
+  res$para_transform_det <- list(mu = function (x) {1},
+                                 phi = function (x) {.5},
+                                 sigma = function (x) {2*x},
+                                 nu = function (x) {1},
+                                 rho = function (x) {.5})
 
   if (keeptau) {
     res$tau <- coda::mcmc(t(res$tau), burnin+thinlatent, burnin+draws, thinlatent)
