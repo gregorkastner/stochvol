@@ -44,5 +44,11 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 
+# vim and vim plugin related
+.undodir
+.ycm_extra_conf.py
+Session.vim
+
 # other
 todelete*
+
