@@ -98,11 +98,9 @@ summary(forereg$y)
 plot(forereg)
 plot(drawsreg, forecast = forereg)
 }
+
 }
 \seealso{
 \code{\link{plot.svdraws}}, \code{\link{volplot}}.
-}
-\author{
-Gregor Kastner \email{gregor.kastner@wu.ac.at}
 }
 \keyword{ts}

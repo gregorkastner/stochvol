@@ -72,28 +72,7 @@
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @seealso \code{\link{svsample}}
 #' @keywords datagen ts
-#' @examples
-#' 
-#' ## Simulate a highly persistent SV process of length 500
-#' sim <- svsim(500, phi = 0.99, sigma = 0.1)
-#' 
-#' print(sim)
-#' summary(sim)
-#' plot(sim)
-#' 
-#' ## Simulate an SV process with leverage
-#' sim <- svsim(200, phi = 0.94, sigma = 0.15, rho = -0.6)
-#' 
-#' print(sim)
-#' summary(sim)
-#' plot(sim)
-#' 
-#' ## Simulate an SV process with conditionally heavy-tails
-#' sim <- svsim(250, phi = 0.91, sigma = 0.05, nu = 5)
-#' 
-#' print(sim)
-#' summary(sim)
-#' plot(sim)
+#' @example inst/examples/svsim.R
 #' @export
 svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
 
@@ -130,28 +109,34 @@ svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
   
   len <- as.integer(len)
 
-  h <- rep(as.numeric(NA), len)
+  h <- rep_len(as.numeric(NA), length.out=len)
   h0 <- rnorm(1, mean=mu, sd=sigma/sqrt(1-phi^2))
-  standardizer <- if (is.finite(nu)) sqrt((nu-2)/nu) else 1
-  eps <- rt(len, df = nu)
-  eta <- rho * eps * standardizer + sqrt(1-rho^2) * rnorm(len)
+  tau <- if (is.finite(nu)) {
+    1/rgamma(len, shape=nu/2, rate=nu/2-1)
+  } else {
+    rep_len(1, length.out=len)
+  }
+  eta <- rnorm(len)
+  eps <- rho*eta + sqrt(1-rho^2)*rnorm(len)
 
   # simulate w/ simple loop
   h[1] <- mu + phi*(h0-mu) + sigma*rnorm(1)  # same marginal distribution as h0
   for (i in seq_len(len-1)) {
     h[i+1] <- mu + phi*(h[i]-mu) + sigma*eta[i]
   }
-  y <- exp(h / 2) * eps  # "log-returns"
+  y <- exp(h/2) * sqrt(tau) * eps  # "log-returns"
 
   ret <- list(y = y,
-              vol0 = exp(h0 / 2),
-              vol = exp(h / 2),
+              vol0 = exp(h0/2),
+              vol = exp(h/2) * sqrt(tau),
               para = list(mu = mu,
                           phi = phi,
                           sigma = sigma,
                           rho = rho,
                           nu = nu),
-              correction = 1/standardizer)
+              latent = h,
+              latent0 = h0,
+              tau = tau)
   class(ret) <- "svsim"
   ret
 }
@@ -176,7 +161,7 @@ plot.svsim <- function(x, mar = c(3, 2, 2, 1), mgp = c(1.8, .6, 0), ...) {
   op <- par(mfrow = c(2, 1), mar = mar, mgp = mgp)
   plot.ts(100*x$y, ylab = "", ...)
   mtext("Simulated data: 'log-returns' (in %)", cex = 1.2, line = .4, font = 2)
-  plot.ts(100*x$vol*x$correction, ylab = "", ...)
+  plot.ts(100*x$vol, ylab = "", ...)
   mtext("Simulated volatilities (in %)", cex = 1.2, line = .4, font = 2)
   par(op)
 }
@@ -188,10 +173,8 @@ summary.svsim <- function(object, ...) {
   ret$len <- length(object$y)
   ret$para <- object$para
   ret$vol <- summary(100*object$vol)
-  ret$vol.corrected <- summary(100*object$vol*object$correction)
   ret$y <- summary(100*object$y)
   ret$vol0 <- 100*object$vol0
-  ret$vol0.corrected <- 100*object$vol0*object$correction
   ret
 }
 
@@ -205,9 +188,9 @@ print.summary.svsim  <- function(x, ...) {
       "\n            degrees of freedom parameter              nu = ", x$para$nu,
       "\n            leverage effect parameter                rho = ", x$para$rho, "\n", sep="")
   cat("\nSimulated initial volatility (in %): ")
-  cat(x$vol0.corrected, "\n")
+  cat(x$vol0, "\n")
   cat("\nSummary of simulated volatilities (in %):\n")
-  print(x$vol.corrected)
+  print(x$vol)
   cat("\nSummary of simulated data (in %):\n")
   print(x$y)
   invisible(x)

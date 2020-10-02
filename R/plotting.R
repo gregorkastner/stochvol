@@ -281,8 +281,9 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
     sim <- TRUE
   } else sim <- FALSE
   oldpar <- par(mar = mar)
-  where <- grep("%", dimnames(x$summary$latent)[[2]])
-  volquants <- t(100*exp(x$summary$latent[,where,drop=FALSE]/2))  # monotone transformation!
+  to_plot <- x$summary$sd
+  where <- grep("%", dimnames(to_plot)[[2]])
+  volquants <- t(100*to_plot[,where,drop=FALSE])
   nvolquants <- dim(volquants)[1]
   timelen <- dim(volquants)[2]
   if (is.null(nvolquants) || all(is.na(volquants))) stop("No quantiles to plot.")
@@ -307,7 +308,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
       show0 <- FALSE
     }
 
-    volpred <- forecast$h
+    volpred <- forecast$h  # TODO heavy tails
     futlen <- NCOL(volpred)
 
     xs <- matrix(rep(seq(timelen, timelen + futlen, len=futlen+1), nvolquants), nrow=futlen+1)
@@ -321,17 +322,10 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
     }
   } else xlim <- NULL
 
-  terr <- "nu" %in% sampled_parameters(x)  # heavy-tailed innovation
-  if(terr) {
-    mymain <- paste("Estimated scaling in percent (", paste(dimnames(volquants)[[1]], collapse=' / '),
-                    " posterior quantiles)", sep = '')
-  } else {
-    mymain <- paste("Estimated volatilities in percent (", paste(dimnames(volquants)[[1]], collapse=' / '),
-                    " posterior quantiles)", sep = '')
-  }
-
   ts.plot(t(volquants), gpars=list(xlim=xlim, col=cols, xlab='', xaxt='n', mgp=mgp, tcl=tcl,
-                                   main = mymain, ...))
+                                   main = paste("Estimated volatilities in percent (", paste(dimnames(volquants)[[1]], collapse=' / '),
+                                                " posterior quantiles)", sep = ''),
+                                   ...))
 
   if (sim) {
     lines(100*simobj$vol, col = 3)
@@ -364,29 +358,6 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
     ax <- ax[ax != 0]  # avoid "zero" tick
   }
   axis(1, at=ax, labels=dates[ax+1], mgp=mgp, tcl=tcl)
-
-  if(terr) {  # only for t-distributed residuals
-    where <- grep("%", dimnames(x$summary$latent)[[2]])
-    ts.plot(100*x$summary$sd[,where], gpars=list(xlim=xlim, col=cols, xlab='', xaxt='n', mgp=mgp, tcl=tcl,
-                                                 main = paste("Estimated volatilities in percent (",
-                                                              paste(dimnames(volquants)[[1]], collapse=' / '),
-                                                              " posterior quantiles)", sep=''), ...))
-
-    if (sim) {
-      standardizer <- sqrt(simobj$para$nu / (simobj$para$nu - 2))
-      lines(100*simobj$vol*standardizer, col = 3)
-    }
-
-    if (inherits(forecast, "svpredict")) {
-      standardizer <- sqrt(x$para[,"nu"] / (x$para[,"nu"] - 2))
-      where <- grep("%", dimnames(x$summary$latent)[[2]])
-      ys <- rbind(100*x$summary$sd[timelen,where,drop=FALSE],
-                  t(matrix(apply(100*exp(volpred/2)*standardizer, 2, quantile, quants), nrow=nvolquants)))
-
-      for (i in 1:nvolquants) lines(xs[,i], ys[,i], lty=forecastlty, col=cols[i])
-    }
-    axis(1, at=ax, labels=dates[ax+1], mgp=mgp, tcl=tcl)
-  }
 
   par(oldpar)
   invisible(x)
@@ -493,10 +464,6 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
   if (plot_volatility_series) {  # volatility chart(s)
     chart_indices <- c(chart_indices, rep_len(index, length.out = npara))
     index <- index + 1L
-    if (heavy_tailed_sv) {
-      chart_indices <- c(chart_indices, rep_len(index, length.out = npara))
-      index <- index + 1L
-    }
   }
   chart_indices <- c(chart_indices, index - 1L + seq_len(npara))  # parameter trace plots
   index <- index + npara
@@ -639,10 +606,11 @@ plot.svresid <- function(x, origdata = NA,
   if (!terr) abline(h=qnorm(c(.025, .975)), lty=2)
   where <- seq(1, length(x), length=min(7, length(x)))
   axis(1, at = where, labels = gsub("r_", "", names(x)[where]))
-  qqplot(qt(ppoints(length(x)), df = nu), x,
+  qqplot(qt(ppoints(length(x)), df = nu), sqrt(nu / (nu-2))*x,
          main=paste(mains[2], "for", attr(x, "type"), "standardized residuals"),
          xlab = xlab, ylab = "Sample quantiles")
   qqline(x, probs = c(0.01, 0.99), distribution = function(x) qt(x, df = nu))
   par(oldpar)
   invisible(x)
 }
+

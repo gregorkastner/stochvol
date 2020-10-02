@@ -44,7 +44,7 @@ namespace stochvol {
 
 double newton_raphson(
     const double startval,
-    const double sumtau,
+    const double sum_tau,
     const int n,
     const double lambda,
     const double tol,
@@ -54,7 +54,7 @@ double newton_raphson(
   double xnew;
   bool converged = false;
   for (int i = 0; not converged and i < maxiter; i++) {
-    xnew = x - dlogdnu(x, sumtau, lambda, n) / ddlogdnu(x, n);
+    xnew = x - dlogdnu(x, sum_tau, lambda, n) / ddlogdnu(x, n);
     error = std::abs(xnew - x);
     x = xnew;
     converged = error < tol;

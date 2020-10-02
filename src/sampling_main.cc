@@ -34,6 +34,7 @@
 #include "single_update.h"
 #include "type_definitions.h"
 #include "utils_main.h"
+#include "utils_latent_states.h"
 #include "utils.h"
 
 using namespace Rcpp;
@@ -75,10 +76,11 @@ List svsample_fast_cpp(
   const int T = data.size();
   const int p = X.n_cols;
 
-  // should we model the mean as well?
-  const bool regression = !::ISNA(X.at(0,0));
   const PriorSpec prior_spec = list_to_priorspec(priorspec_in);
   const ExpertSpec_FastSV expert = list_to_fast_sv(expert_in, interweave);
+
+  const bool is_regression = !::ISNA(X.at(0,0)),
+             is_heavy_tail = prior_spec.nu.distribution != PriorSpec::Nu::INFINITE;
 
   if (prior_spec.mu.distribution == PriorSpec::Mu::CONSTANT && expert.mh_blocking_steps == 1) { // not implemented (would be easy, though)
     ::Rf_error("Single block update leaving mu constant is not yet implemented");
@@ -93,9 +95,6 @@ List svsample_fast_cpp(
   // verbosity control
   const bool verbose = !quiet;
 
-  // t-errors:
-  const bool terr = prior_spec.nu.distribution != PriorSpec::Nu::INFINITE;
-
   // initialize the variables:
   double mu = startpara["mu"],
          phi = startpara["phi"],
@@ -104,7 +103,7 @@ List svsample_fast_cpp(
   arma::vec h = startlatent;  // contains h1 to hT, but not h0!
   double h0 = startpara["latent0"];
   arma::vec beta = startpara["beta"];
-
+  arma::vec tau(T, arma::fill::ones);
   const bool keep_r = expert_in["store_indicators"];
   arma::uvec r = expert_in["init_indicators"];  // mixture indicators
   if (r.n_elem == 1) {
@@ -117,18 +116,17 @@ List svsample_fast_cpp(
   r -= 1u;
   R_assert(arma::all(r <= 9u), "Initial values of the mixture indicators need to be between 1 and 10 inclusive.");
 
-  // other forms of data
-  arma::vec data_demean {data};
-  arma::vec log_data2 = arma::log(arma::square(data) + offset);  // commonly used transformation
-  arma::vec log_data2_normal = log_data2;  // standardized "data" (different for t-errors, "normal data")
-
-  // some stuff for the t-errors
-  arma::vec tau(T, arma::fill::ones);
+  // keep some arrays cached
+  arma::vec data_demean = is_regression ? data - X * beta : data,
+            log_data2_normal = arma::log(arma::square(data_demean) / tau),  // standardized "data" (different for t-errors, "normal data")
+            exp_h_half_inv;
+  const arma::vec conditional_mean(data.n_elem, arma::fill::zeros),
+                  conditional_sd(data.n_elem, arma::fill::ones);
 
   // storage
   const int para_draws = draws / thinpara + 1;
   Rcpp::NumericMatrix para_store(5, para_draws);
-  Rcpp::NumericMatrix beta_store(p, regression * para_draws);
+  Rcpp::NumericMatrix beta_store(p, is_regression * para_draws);
   const int latent_length = T / thintime;  // thintime must be either 1 or T
   const int latent_draws = draws / thinlatent + 1;
   Rcpp::NumericVector latent0_store(latent_draws);
@@ -152,30 +150,46 @@ List svsample_fast_cpp(
     // print a progress sign every "show" iterations
     if (verbose && (i % show == 0)) progressbar_print();
 
-    if (regression) {
-      data_demean = data - X*beta;
-      log_data2_normal = log_data2 = arma::log(arma::square(data_demean));
-    }
-
-    if (terr) {
-      update_t_error(data_demean % arma::exp(-0.5 * h), tau, nu, prior_spec);
-      log_data2_normal = log_data2 - arma::log(tau);
-    }
-
     // a single MCMC update: update indicators, latent volatilities,
     // and parameters ONCE
     update_fast_sv(log_data2_normal, mu, phi, sigma, h0, h, r, prior_spec, expert);
-
-    if (regression) { // update betas (regression)
-      update_regressors(data, X, beta, tau, arma::exp(-0.5 * h), nu, prior_spec);
+    if (is_regression or is_heavy_tail) {
+      exp_h_half_inv = arma::exp(-.5 * h);
     }
+
+    // update tau and nu
+    if (is_heavy_tail) {
+      update_t_error(data_demean % exp_h_half_inv, tau, conditional_mean, conditional_sd, nu, prior_spec, false);
+      // update cached data arrays after the regression
+    }
+
+    // update beta
+    if (is_regression) {
+      const arma::vec normalizer = exp_h_half_inv / arma::sqrt(tau);
+      update_regressors(
+          data % normalizer,
+          X.each_col() % normalizer,
+          beta, prior_spec);
+      // update cached data arrays
+      data_demean = data - X * beta;
+      if (is_heavy_tail) {
+        log_data2_normal = arma::log(arma::square(data_demean) / tau);
+      } else {
+        log_data2_normal = arma::log(arma::square(data_demean));
+      }
+    } else if (is_heavy_tail) {
+      log_data2_normal = arma::log(arma::square(data_demean) / tau);
+    } else {
+      ;  // no update needed
+    }
+
 
     // store draws
     if ((i >= 1) && !thinpara_round) {
-      save_para_sample(i / thinpara - 1, mu, phi, sigma, nu, beta, para_store, beta_store, regression);
+      save_para_sample(i / thinpara - 1, mu, phi, sigma, nu, beta, para_store, beta_store, is_regression);
     }
     if ((i >= 1) && !thinlatent_round) {
-      save_latent_sample(i / thinlatent - 1, h0, h, tau, r, thintime, latent_length, latent0_store, latent_store, tau_store, r_store, keep_tau and terr, keep_r);
+      save_latent_sample(i / thinlatent - 1, h0, h, tau, r, thintime, latent_length, latent0_store, latent_store, tau_store, r_store, keep_tau and is_heavy_tail, keep_r);
     }
   }  // END main MCMC loop
 
@@ -214,23 +228,20 @@ List svsample_general_cpp(
     const Rcpp::List& expert_in) {
 
   const int N = burnin + draws;
-  const bool regression = !::ISNA(X.at(0,0));
   const int T = data.size();
   const int p = X.n_cols;
 
   const PriorSpec prior_spec = list_to_priorspec(priorspec_in);
   const ExpertSpec_GeneralSV expert = list_to_general_sv(expert_in, correct_model_specification, interweave);
 
+  const bool is_regression = !::ISNA(X.at(0,0)),
+             is_heavy_tail = prior_spec.nu.distribution != PriorSpec::Nu::INFINITE,
+             is_leverage = not(prior_spec.rho.distribution == PriorSpec::Rho::CONSTANT and prior_spec.rho.constant.value == 0);
+
   const bool verbose = !quiet;
   const int thintime = determine_thintime(T, keeptime_in);
 
-  arma::vec data_demean {data};
-  arma::vec log_data2 = arma::log(arma::square(data) + offset);  // commonly used transformation
-  arma::vec log_data2_normal = log_data2;  // standardized "data" (different for t-errors, "normal data")
-  arma::ivec d = arma_sign(data);
-
   // t-errors:
-  const bool terr = prior_spec.nu.distribution != PriorSpec::Nu::INFINITE;
   arma::vec tau(T, arma::fill::ones);
 
   // starting values
@@ -240,13 +251,21 @@ List svsample_general_cpp(
   double nu = startpara["nu"];
   double rho = startpara["rho"];
   double h0 = startpara["latent0"];
-  arma::vec h = startlatent, ht = centered_to_noncentered(mu, sigma, h);
+  arma::vec h = startlatent;
   arma::vec beta = startpara["beta"];
+
+  // keep some arrays cached
+  arma::vec data_demean = is_regression ? data - X * beta : data,
+            data_demean_normal = data_demean / arma::sqrt(tau),  // standardized "data" (different for t-errors, "normal data")
+            log_data2_normal = arma::log(arma::square(data_demean_normal)),
+            exp_h_half_inv;
+  arma::ivec d = arma_sign(data_demean);
+  auto conditional_moments = decorrelate(mu, phi, sigma, rho, h);
 
   // storage
   const int para_draws = draws / thinpara + 1;
   Rcpp::NumericMatrix para_store(5, para_draws);
-  Rcpp::NumericMatrix beta_store(p, regression * para_draws);
+  Rcpp::NumericMatrix beta_store(p, is_regression * para_draws);
   const int latent_length = T / thintime;  // thintime must be either 1 or T
   const int latent_draws = draws / thinlatent + 1;
   Rcpp::NumericVector latent0_store(latent_draws);
@@ -279,43 +298,55 @@ List svsample_general_cpp(
       ::R_CheckUserInterrupt();
     }
 
-    const bool thinpara_round = (thinpara > 1) and (i % thinpara != 0);  // is this a parameter thinning round?
-    const bool thinlatent_round = (thinlatent > 1) and (i % thinlatent != 0);  // is this a latent thinning round?
+    const bool thinpara_round = (thinpara > 1) and (i % thinpara != 0),  // is this a parameter thinning round?
+               thinlatent_round = (thinlatent > 1) and (i % thinlatent != 0);  // is this a latent thinning round?
 
     // print a progress sign every "show" iterations
     if (verbose && (i % show == 0)) progressbar_print();
 
-    if (regression) {
-      data_demean = data - X*beta;
-      log_data2_normal = log_data2 = arma::log(arma::square(data_demean));
-      d = arma_sign(data_demean);
-    }
-
-    if (terr) {
-      update_t_error(data_demean % arma::exp(-0.5 * h), tau, nu, prior_spec);  // TODO correct for rho
-      log_data2_normal = log_data2 - arma::log(tau);
-    }
-
     // update theta and h
-    update_general_sv(data_demean, log_data2_normal, d, mu, phi, sigma, rho, h0, h, adaptation_collection, prior_spec, expert);
-    ht = centered_to_noncentered(mu, sigma, h);
+    update_general_sv(data_demean_normal, log_data2_normal, d, mu, phi, sigma, rho, h0, h, adaptation_collection, prior_spec, expert);
+    if (is_regression or is_heavy_tail) {
+      exp_h_half_inv = arma::exp(-.5 * h);
+      if (is_leverage) {
+        conditional_moments = decorrelate(mu, phi, sigma, rho, h);
+      }
+    }
+
+    // update tau and nu
+    if (is_heavy_tail) {
+      update_t_error(data_demean % exp_h_half_inv, tau, conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec);
+      // update cached data arrays after the regression
+    }
 
     // update beta
-    if (regression) {
-      arma::vec normalizer = arma::exp(-h/2);
-      normalizer.head(T-1) /= std::sqrt(1 - std::pow(rho, 2));
-      arma::vec data_reg = data;
-      data_reg.head(T-1) -= rho * (arma::exp(h.head(T-1)/2) % (ht.tail(T-1) - phi*ht.head(T-1)));
-
-      update_regressors(data_reg, X, beta, tau, normalizer, nu, prior_spec);
+    if (is_regression) {
+      const arma::vec normalizer = exp_h_half_inv / (arma::sqrt(tau) % conditional_moments.conditional_sd);
+      update_regressors(
+          data % normalizer - conditional_moments.conditional_mean / conditional_moments.conditional_sd,
+          X.each_col() % normalizer,
+          beta, prior_spec);
+      // update cached data arrays
+      data_demean = data - X * beta;
+      d = arma_sign(data_demean);
+      if (is_heavy_tail) {
+        log_data2_normal = arma::log(arma::square(data_demean) / tau);
+      } else {
+        log_data2_normal = arma::log(arma::square(data_demean));
+      }
+    } else if (is_heavy_tail) {
+      data_demean_normal = data_demean / arma::sqrt(tau);
+      log_data2_normal = arma::log(arma::square(data_demean_normal));
+    } else {
+      ;  // no update needed
     }
 
     // store draws
     if ((i >= 1) && !thinpara_round) {
-      save_para_sample(i / thinpara - 1, mu, phi, sigma, nu, rho, beta, para_store, beta_store, regression);
+      save_para_sample(i / thinpara - 1, mu, phi, sigma, nu, rho, beta, para_store, beta_store, is_regression);
     }
     if ((i >= 1) && !thinlatent_round) {
-      save_latent_sample(i / thinlatent - 1, h0, h, tau, thintime, latent_length, latent0_store, latent_store, tau_store, keep_tau and terr);
+      save_latent_sample(i / thinlatent - 1, h0, h, tau, thintime, latent_length, latent0_store, latent_store, tau_store, keep_tau and is_heavy_tail);
     }
   }
 

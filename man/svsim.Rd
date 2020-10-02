@@ -66,7 +66,6 @@ formatted manner. The \code{summary} method provides some summary statistics
 \code{y} along with the corresponding volatilities \code{vol}.
 }
 \examples{
-
 ## Simulate a highly persistent SV process of length 500
 sim <- svsim(500, phi = 0.99, sigma = 0.1)
 
@@ -87,6 +86,7 @@ sim <- svsim(250, phi = 0.91, sigma = 0.05, nu = 5)
 print(sim)
 summary(sim)
 plot(sim)
+
 }
 \seealso{
 \code{\link{svsample}}

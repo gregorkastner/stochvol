@@ -46,6 +46,7 @@ const arma::vec::fixed<10> mix_mean {1.92677, 1.34744, .73504, .02266, -.85173, 
 const arma::vec::fixed<10> mix_var {.11265, .17788, .26768, .40611, .62699, .98583, 1.57469, 2.54498, 4.16591, 7.33342};
 const arma::vec::fixed<10> mix_a {1.01418, 1.02248, 1.03403, 1.05207, 1.08153, 1.13114, 1.21754, 1.37454, 1.68327, 2.50097};
 const arma::vec::fixed<10> mix_b {0.50710, 0.51124, 0.51701, 0.52604, 0.54076, 0.56557, 0.60877, 0.68728, 0.84163, 1.25049};
+const arma::vec::fixed<10> mix_sd {arma::sqrt(mix_var)};
 const arma::vec::fixed<10> mix_varinv {1 / mix_var};
 const arma::vec::fixed<10> mix_2varinv {0.5 * mix_varinv};
 const arma::vec::fixed<10> mix_pre {  // TODO what are these numbers?

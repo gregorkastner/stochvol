@@ -38,6 +38,46 @@
 
 namespace stochvol {
 
+// De-correlate the observations
+//
+// This function is relevant when rho is non-zero. Any regression
+// conditional on the asymmetric SV model, e.g. when asymmetric SV
+// is embedded in a Bayesian linear regression, needs to correct
+// both the observations and the error weights. That is so because
+// conditional on rho and h, the observation errors can be decomposed
+// and thus the conditional errors have non-zero mean and modified
+// variance (1-rho^2).
+//
+// The function 'decorrelate' stands for "removing" rho from
+// the model. It returns the conditional mean and the conditional
+// standard deviation.
+struct AsymmetricConditionalMoments {
+  arma::vec conditional_mean;
+  arma::vec conditional_sd;
+};
+inline
+AsymmetricConditionalMoments decorrelate (  // TODO update for new t-errors
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const arma::vec& h) {
+  arma::vec mean(h.n_elem, arma::fill::zeros);
+  arma::vec sd(h.n_elem, arma::fill::ones);
+  sd.head(sd.n_elem - 1) *= std::sqrt(1 - std::pow(rho, 2));
+  
+  const double rho_div_sigma = rho / sigma;
+  auto it_mean = mean.begin();
+  auto it_h = h.cbegin();
+  for (int t = 0; t < h.n_elem-1; t++) {
+    *it_mean = rho_div_sigma * ((*(it_h+1)) - mu - phi * ((*it_h) - mu));
+    // Step
+    it_mean++;
+    it_h++;
+  }
+  return {std::move(mean), std::move(sd)};
+}
+
 // Save a single sample in the storage objects
 inline
 void save_para_sample(

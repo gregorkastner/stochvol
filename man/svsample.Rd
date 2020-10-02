@@ -21,7 +21,6 @@ svsample(
   thinpara = 1,
   thinlatent = 1,
   keeptime = "all",
-  keeptau = FALSE,
   quiet = FALSE,
   startpara = NULL,
   startlatent = NULL,
@@ -112,12 +111,6 @@ draws, i.e. every draw is kept.}
 \item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent
 volatility draws should be stored.}
 
-\item{keeptau}{logical value indicating whether the 'variance inflation
-factors' should be stored (used for the sampler with conditional t
-innovations only). This may be useful to check at what point(s) in time the
-normal disturbance had to be 'upscaled' by a mixture factor and when the
-series behaved 'normally'.}
-
 \item{quiet}{logical value indicating whether the progress bar and other
 informative output during sampling should be omitted. The default value is
 \code{FALSE}, implying verbose output.}
@@ -134,6 +127,20 @@ t-innovations). The default value is equal to the prior mean.}
 \item{startlatent}{\emph{optional} vector of length \code{length(y)},
 containing the starting values for the latent log-volatility draws. The
 default value is \code{rep(-10, length(y))}.}
+
+\item{expert}{\emph{optional} named list of expert parameters. For most
+applications, the default values probably work best. Interested users are
+referred to the literature provided in the References section. If
+\code{expert} is provided, it may contain the following named elements:
+\code{interweave}: Logical value. If \code{TRUE} (the default),
+then ancillarity-sufficiency interweaving strategy (ASIS) is applied
+to improve on the sampling efficiency for the parameters.
+Otherwise one parameterization is used.
+\code{correct_model_misspecification}: Logical value. If \code{FALSE}
+(the default), then auxiliary mixture sampling is used to sample the latent
+states. If \code{TRUE}, extra computations are made to correct for model
+misspecification either ex-post by reweighting or on-line using a
+Metropolis-Hastings step.}
 
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated
@@ -285,6 +292,7 @@ for (i in 1:3) {
 lines(len:(len+ahead), c(tail(priceUSD, 1), expost),
       col = 2)
 }
+
 }
 \references{
 Kastner, G. and Frühwirth-Schnatter, S. (2014).

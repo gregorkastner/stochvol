@@ -2,24 +2,46 @@
 % Please edit documentation in R/stochvol-cpp-doc.R
 \name{update_t_error}
 \alias{update_t_error}
-\title{Single MCMC Update of Student's t-Distribution}
+\title{Single MCMC update to Student's t-distribution}
 \usage{
-update_t_error(homosked_data, tau, nu, prior_spec)
+update_t_error(
+  homosked_data,
+  tau,
+  mean,
+  sd,
+  nu,
+  prior_spec,
+  do_tau_acceptance_rejection = TRUE
+)
 }
 \arguments{
 \item{homosked_data}{de-meaned and homoskedastic observations}
 
 \item{tau}{the vector of the latent states used in MDA. Updated in place}
 
+\item{mean}{the vector of the conditional means  // TODO update docs in R}
+
+\item{sd}{the vector of the conditional standard deviations}
+
 \item{nu}{parameter nu. The degrees of freedom for the t-distribution. Updated in place}
 
 \item{prior_spec}{prior specification object. See type_definitions.h}
+
+\item{do_tau_acceptance_rejection}{boolean. If \code{TRUE}, there is a correction for non-zero \code{mean} and non-unit \code{sd}, otherwise the proposal distribution is used}
 }
 \description{
-Samples the degrees of freedom parameter of de-meaned and homoskedastic
+Samples the degrees of freedom parameter of standardized and homoskedastic
 t-distributed input variates. Marginal data augmentation (MDA) is applied, tau
 is the vector of auxiliary latent states.
 Depending on the prior specification, nu might not be updated, just tau.
+}
+\details{
+The function samples tau and nu from the following hierarchical model:
+  homosked_data_i = sqrt(tau_i) * (mean_i + sd_i * N(0, 1))
+  tau_i ~ InvGamma(.5*nu, .5*(nu-2))
+Naming: The data is homoskedastic ex ante in the model, mean_i and sd_i are conditional
+on some other parameter in the model.
+The prior on tau corresponds to a standardized t-distributed heavy tail on the data.
 }
 \seealso{
 Other stochvol_cpp: 

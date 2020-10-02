@@ -13,7 +13,7 @@ test_that("summary(sv) works", {
   }
 })
 
-test_that("summary(svt) works", {
+test_that("summary(sv with nu) works", {
   expect_warning(summary(svsample(y, draws = draws, burnin = burnin, priornu = 0.1, quiet = TRUE)), NA) %>%
     expect_is("summary.svdraws")
   for (dm in designmatrix_values) {
@@ -26,7 +26,7 @@ test_that("summary(svt) works", {
   }
 })
 
-test_that("summary(svl) works", {
+test_that("summary(sv with rho) works", {
   expect_warning(summary(svsample(y, draws = draws, burnin = burnin, priorrho = c(4, 4), quiet = TRUE)), NA) %>%
     expect_is("summary.svdraws")
   for (dm in designmatrix_values) {
@@ -53,7 +53,7 @@ test_that("predict(sv) works", {
   }
 })
 
-test_that("predict(svt) works", {
+test_that("predict(sv with nu) works", {
   expect_warning(predict(svsample(y, draws = draws, burnin = burnin, priornu = 0.1, quiet = TRUE), pred_steps, NULL), NA) %>%
     expect_is("svpredict")
   for (dm in designmatrix_values) {
@@ -67,7 +67,7 @@ test_that("predict(svt) works", {
   }
 })
 
-test_that("predict(sv) works", {
+test_that("predict(sv with rho) works", {
   expect_warning(predict(svsample(y, draws = draws, burnin = burnin, priorrho = c(4, 4), quiet = TRUE), pred_steps, NULL), NA) %>%
     expect_is("svpredict")
   for (dm in designmatrix_values) {

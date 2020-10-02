@@ -6,11 +6,11 @@
 \usage{
 specify_priors(
   mu = sv_normal(mean = 0, sd = 100),
-  phi = sv_beta(alpha = 15, beta = 0.5),
+  phi = sv_beta(shape1 = 15, shape2 = 0.5),
   sigma2 = sv_gamma(shape = 0.5, rate = 0.5),
   nu = sv_infinity(),
   rho = sv_constant(0),
-  latent0 = "stationary",
+  latent0_variance = "stationary",
   beta = sv_multinormal(mean = 0, sd = 100, dim = 1)
 )
 }
@@ -25,7 +25,7 @@ specify_priors(
 
 \item{rho}{one of sv_beta and sv_constant}
 
-\item{latent0}{one of \code{"stationary"} and sv_normal}
+\item{latent0_variance}{one of \code{"stationary"} and sv_normal}
 
 \item{beta}{an sv_multinormal object}
 }

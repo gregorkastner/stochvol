@@ -24,11 +24,11 @@ test_that("vanilla SV passes Geweke test", {
     priorspec <-
       if (centered) {  # pro-centered
         specify_priors(mu = sv_normal(mean = -9, sd = 0.1),
-                       phi = sv_beta(alpha = 10, beta = 3),
+                       phi = sv_beta(shape1 = 10, shape2 = 3),
                        sigma2 = sv_gamma(shape = 0.5, rate = 0.5 / 0.1))
       } else {  # pro-noncentered
         specify_priors(mu = sv_normal(mean = -9, sd = 0.1),
-                       phi = sv_beta(alpha = 10, beta = 1),
+                       phi = sv_beta(shape1 = 10, shape2 = 1),
                        sigma2 = sv_gamma(shape = 0.5, rate = 0.5 / 0.01))
       }
 
@@ -95,7 +95,7 @@ test_that("vanilla SV passes Geweke test", {
 
     expect_gt(shapiro.test((sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate))[thin_index])$p.value, 1e-5)
     expect_gt(shapiro.test(((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$sd)[thin_index])$p.value, 1e-5)
-    expect_gt(shapiro.test((qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$alpha, priorspec$phi$beta)))[thin_index])$p.value, 1e-5)
+    expect_gt(shapiro.test((qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2)))[thin_index])$p.value, 1e-5)
 
     # visual tests for manual checks
     if (FALSE) {
@@ -113,7 +113,7 @@ test_that("vanilla SV passes Geweke test", {
       opar <- par(mfrow = c(1, 3), mgp = c(1.6, 0.6, 0), mar = c(1.5, 1.5, 2, 0.5))
       qqnorm(sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate)); abline(0, 1, col = "blue")
       qqnorm((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$sd); abline(0, 1, col = "blue")
-      qqnorm(qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$alpha, priorspec$phi$beta))); abline(0, 1, col = "blue")
+      qqnorm(qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2))); abline(0, 1, col = "blue")
       par(opar)
     }
   }
@@ -125,9 +125,9 @@ test_that("general SV passes Geweke test", {
   for (centered in c(FALSE, TRUE)) {
     priorspec <-
       specify_priors(mu = sv_normal(mean = -9, sd = 0.1),
-                     phi = sv_beta(alpha = 10, beta = 5),
+                     phi = sv_beta(shape1 = 10, shape2 = 5),
                      sigma2 = sv_gamma(shape = 0.5, rate = 0.5 / 1),
-                     rho = sv_beta(alpha = 10, beta = 10))
+                     rho = sv_beta(shape1 = 10, shape2 = 10))
     set.seed(61)
     startpara <- list(mu = mean(priorspec$mu),
                       phi = -1 + 2*mean(priorspec$phi),
@@ -195,8 +195,8 @@ test_that("general SV passes Geweke test", {
 
     expect_gt(shapiro.test((sample(c(-1, 1), draws, replace = TRUE) * store_para[, "sigma"] * sqrt(2 * priorspec$sigma2$rate))[thin_index])$p.value, 1e-5)
     expect_gt(shapiro.test(((store_para[, "mu"] - priorspec$mu$mean) / priorspec$mu$sd)[thin_index])$p.value, 1e-5)
-    expect_gt(shapiro.test((qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$alpha, priorspec$phi$beta)))[thin_index])$p.value, 1e-5)
-    expect_gt(shapiro.test((qnorm(pbeta(0.5 * (1 + store_para[, "rho"]), priorspec$rho$alpha, priorspec$rho$beta)))[thin_index])$p.value, 1e-5)
+    expect_gt(shapiro.test((qnorm(pbeta(0.5 * (1 + store_para[, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2)))[thin_index])$p.value, 1e-5)
+    expect_gt(shapiro.test((qnorm(pbeta(0.5 * (1 + store_para[, "rho"]), priorspec$rho$shape1, priorspec$rho$shape2)))[thin_index])$p.value, 1e-5)
 
     # visual tests for manual checks
     if (FALSE) {
@@ -215,8 +215,8 @@ test_that("general SV passes Geweke test", {
       opar <- par(mfrow = c(2, 2), mgp = c(1.6, 0.6, 0), mar = c(1.5, 1.5, 2, 0.5))
       qqnorm(sample(c(-1, 1), length(idx), replace = TRUE) * store_para[idx, "sigma"] * sqrt(2 * priorspec$sigma2$rate)); abline(0, 1, col = "blue")
       qqnorm((store_para[idx, "mu"] - priorspec$mu$mean) / priorspec$mu$sd); abline(0, 1, col = "blue")
-      qqnorm(qnorm(pbeta(0.5 * (1 + store_para[idx, "phi"]), priorspec$phi$alpha, priorspec$phi$beta))); abline(0, 1, col = "blue")
-      qqnorm(qnorm(pbeta(0.5 * (1 + store_para[idx, "rho"]), priorspec$rho$alpha, priorspec$rho$beta))); abline(0, 1, col = "red")
+      qqnorm(qnorm(pbeta(0.5 * (1 + store_para[idx, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2))); abline(0, 1, col = "blue")
+      qqnorm(qnorm(pbeta(0.5 * (1 + store_para[idx, "rho"]), priorspec$rho$shape1, priorspec$rho$shape2))); abline(0, 1, col = "red")
       par(opar)
     }
   }

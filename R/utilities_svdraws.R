@@ -148,35 +148,12 @@ contains_indicators <- function(x) {
 #' summary, but in fact creates a new object with an updated summary. Thus,
 #' don't forget to overwrite the old object if this is want you intend to do.
 #' See the examples below for more details.
-#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @seealso \code{\link{svsample}}
 #' @keywords utilities
-#' @examples
-#' 
-#' ## Here is a baby-example to illustrate the idea.
-#' ## Simulate an SV time series of length 51 with default parameters:
-#' sim <- svsim(51)
-#' 
-#' ## Draw from the posterior:
-#' res <- svsample(sim$y, draws = 7000, priorphi = c(10, 1.5))
-#' 
-#' ## Check out the results:
-#' summary(res)
-#' plot(res)
-#' 
-#' ## Look at other quantiles and calculate ESS of latents:
-#' newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
-#' res <- updatesummary(res, quantiles = newquants, esslatent = TRUE)
-#' 
-#' ## See the difference?
-#' summary(res)
-#' plot(res)
-#' 
+#' @example inst/examples/updatesummary.R
 #' @export
 updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslatent = FALSE) {
   sampled_para <- sampled_parameters(x)
-  # Check if conditional t errors are used
-  terr <- "nu" %in% sampled_para
 
   summaryfunction <- function(x, quants = quantiles, ess = TRUE) {
     if (ess) {
@@ -214,11 +191,13 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
 
   res$latent0 <- c(summaryfunction(x$latent0, ess = esslatent), "mean(exp(h_t/2))" = mean(exp(x$latent0/2)), "sd(exp(h_t/2))" = sd(exp(x$latent0/2)))
 
-  if (terr && x$thinning$para == x$thinning$latent) {
-    vol <- sqrt((exp(x$latent) * x$para[,"nu"]) / (x$para[,"nu"] - 2))
-    res$sd <- t(apply(vol, 2, summaryfunction, ess = esslatent))
-    rownames(res$sd) <- gsub("h", "sd", rownames(res$latent))
+  if (!is.null(x$tau)) {
+    vol <- vol * sqrt(x$tau)
   }
+  res$sd <- t(apply(vol, 2, summaryfunction, ess = esslatent))
+  rownames(res$sd) <- gsub("h", "sd", rownames(vol))
+  res$sd <- cbind(res$sd, "mean(vol)" = colMeans(vol))
+  res$sd <- cbind(res$sd, "sd(vol)" = apply(vol, 2, sd))
 
   if (contains_beta(x)) res$beta <- t(apply(x$beta, 2, summaryfunction, ess = esspara))
 
@@ -285,7 +264,7 @@ residuals.svdraws <- function(object, type = "mean", ...) {
   if (object$thinning$time != 'all') stop("Not every point in time has been stored ('keeptime' was not set to 'all' during sampling), thus residuals cannot be extracted.")
 
   y <- as.vector(object$y)
-  if (contains_beta(x)) {
+  if (contains_beta(object)) {
     y <- y - object$designmatrix %*% t(object$beta)
   }
 
@@ -332,75 +311,12 @@ residuals.svdraws <- function(object, type = "mean", ...) {
 #' @note You can use the resulting object within \code{\link{plot.svdraws}} (see example below), or use
 #' the list items in the usual \code{coda} methods for \code{mcmc} objects to
 #' print, plot, or summarize the predictions.
-#' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}
 #' @seealso \code{\link{plot.svdraws}}, \code{\link{volplot}}.
 #' @keywords ts
-#' @examples
-#' # Example 1
-#' ## Simulate a short and highly persistent SV process 
-#' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
-#' 
-#' ## Obtain 5000 draws from the sampler (that's not a lot)
-#' draws <- svsample(sim$y, draws = 5000, burnin = 100,
-#'   priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
-#' 
-#' ## Predict 10 days ahead
-#' fore <- predict(draws, 10)
-#' 
-#' ## Check out the results
-#' summary(fore$h)
-#' summary(fore$y)
-#' plot(draws, forecast = fore)
-#' 
-#' 
-#' # Example 2
-#' ## Simulate now an SV process with an AR(1) mean structure
-#' len <- 109L
-#' simar <- svsim(len, phi = 0.93, sigma = 0.15, mu = -9)
-#' for (i in 2:len) {
-#'   simar$y[i] <- 0.1 - 0.7 * simar$y[i-1] + simar$vol[i] * rnorm(1)
-#' }
-#' 
-#' ## Obtain 7000 draws
-#' drawsar <- svsample(simar$y, draws = 7000, burnin = 300,
-#'   designmatrix = "ar1", priormu = c(-10, 1), priorphi = c(20, 1.5),
-#'   priorsigma = 0.2)
-#' 
-#' ## Predict 7 days ahead (using AR(1) mean for the returns)
-#' forear <- predict(drawsar, 7)
-#' 
-#' ## Check out the results
-#' plot(forear)
-#' plot(drawsar, forecast = forear)
-#' 
-#' \dontrun{
-#' # Example 3
-#' ## Simulate now an SV process with leverage and with non-zero mean
-#' len <- 96L
-#' regressors <- cbind(rep_len(1, len), rgamma(len, 0.5, 0.25))
-#' betas <- rbind(-1.1, 2)
-#' simreg <- svsim(len, rho = -0.42)
-#' simreg$y <- simreg$y + as.numeric(regressors %*% betas)
-#' 
-#' ## Obtain 12000 draws
-#' drawsreg <- svsample(simreg$y, draws = 12000, burnin = 3000,
-#'   designmatrix = regressors, priormu = c(-10, 1), priorphi = c(20, 1.5),
-#'   priorsigma = 0.2, priorrho = c(4, 4))
-#' 
-#' ## Predict 5 days ahead using new regressors
-#' predlen <- 5L
-#' predregressors <- cbind(rep_len(1, predlen), rgamma(predlen, 0.5, 0.25))
-#' forereg <- predict(drawsreg, predlen, predregressors)
-#' 
-#' ## Check out the results
-#' summary(forereg$h)
-#' summary(forereg$y)
-#' plot(forereg)
-#' plot(drawsreg, forecast = forereg)
-#' }
+#' @example inst/examples/predict.R
 #' @export
 predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
-  if (!(inherits(object, "svdraws"))) stop("Argument 'object' must be of class 'svdraws' or 'svldraws'.")
+  if (!(inherits(object, "svdraws"))) stop("Argument 'object' must be of class 'svdraws'.")
 
   steps <- as.integer(steps)
   if (steps < 1) stop("Argument 'steps' must be greater or equal to 1.")
@@ -413,7 +329,7 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
     if (is.null(newdata)) stop("Regressors needed for prediction. Please provide regressors through parameter 'newdata'.")
     newdata <- as.matrix(newdata)
     if (is.null(object$beta) || NCOL(object$beta) != NCOL(newdata)) stop(paste0("The number of fitted regression coefficients (", NCOL(object$beta), ") does not equal the number of given regressors (", NCOL(newdata), ")."))
-    if (NROW(newdata) != steps) stop("The size of the design matrix does not match the number of steps to predict.")
+    if (NROW(newdata) != steps) stop("The size of the design matrix (", NROW(newdata), " rows) does not match the number of steps to predict (", steps, ").")
     regressors <- function (y, newdata, stepind) matrix(newdata[stepind, ], nrow = NROW(y), ncol = NCOL(newdata), byrow = TRUE)  # matches the format in the ar* case
   } else if (object$meanmodel == "constant") {
     if (!is.null(newdata)) warning("Constant mean was assumed when estimating the model. Omitting 'newdata'.")
@@ -429,7 +345,7 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   thinlatent <- object$thinning$latent
   thinpara <- object$thinning$para
   if (thinpara != thinlatent) {
-    warning("Thinning of parameters is different from thinning of latent variables. Trying to sort this out.")
+    warning("Thinning of parameters is different from thinning of latent variables. Trying to sort this out.")  # TODO use lowest common multiple
     if (thinpara %% thinlatent == 0) {
       usepara <- 1:(dim(object$para)[1])
       uselatent <- seq(thinpara/thinlatent, dim(object$latent)[1], by=thinpara/thinlatent)
@@ -441,43 +357,46 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
     usepara <- uselatent <- seq.int(dim(object$para)[1])
   }
 
-  mu <- object$para[,"mu"][usepara]
-  phi <- object$para[,"phi"][usepara]
-  sigma <- object$para[,"sigma"][usepara]
-  hlast <- object$latent[,dim(object$latent)[2]][uselatent]
+  mu <- object$para[usepara,"mu"]
+  phi <- object$para[usepara,"phi"]
+  sigma <- object$para[usepara,"sigma"]
+  rho <- object$para[usepara,"rho"]
+  nu <- object$para[usepara,"nu"]
+  heavy_tailed <- is.finite(tail(nu, 1))
+  hlast <- object$latent[uselatent,NCOL(object$latent)]
+  taulast <- if (heavy_tailed) object$tau[uselatent,NCOL(object$tau)] else 1
   ylast <- as.vector(tail(object$y, 1))
 
   mythin <- max(thinpara, thinlatent)
-  len <- length(sigma)
+  len <- length(usepara)
   volpred <- matrix(as.numeric(NA), nrow=len, ncol=steps)
   ypred <- matrix(as.numeric(NA), nrow=len, ncol=steps+arorder)
 
   ypred[,seq_len(arorder)] <- matrix(as.vector(tail(object$y, arorder)), nrow=len, ncol=arorder, byrow=TRUE)  # AR(x) helper columns
 
-  rho <- if ("rho" %in% colnames(object$para)) object$para[, "rho"][usepara] else 0
-  nu <- if ("nu" %in% colnames(object$para)) object$para[, "nu"][usepara] else Inf
-  standardizer <- if ("nu" %in% colnames(object$para)) sqrt((nu-2)/nu) else 1
-  betacoeff <- if (contains_beta(x)) {
+  betacoeff <- if (contains_beta(object)) {
     if (arorder > 0) object$beta[usepara, c(1, rev(seq_len(NCOL(object$beta)-1))+1), drop=FALSE]
     else object$beta[usepara, , drop=FALSE]
   } else matrix(0)
 
   resilast <- if (object$meanmodel == "none") {  # last fitted residual
-    ylast*exp(-hlast/2)
+    ylast*exp(-hlast/2)/sqrt(taulast)
   } else {  # if mean regression
-    (ylast - colSums(object$priors$designmatrix[NROW(object$priors$designmatrix),]*t(betacoeff)))*exp(-hlast/2)  # recycles the last row of the design matrix
+    (ylast - colSums(object$designmatrix[NROW(object$designmatrix),]*t(betacoeff)))*exp(-hlast/2)/sqrt(taulast)  # recycles the last row of the design matrix
   }
 
-  volpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*resilast*standardizer + sqrt(1-rho^2)*rnorm(len))
+  volpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*resilast + sqrt(1-rho^2)*rnorm(len))
   if (steps > 1) {
     for (i in seq.int(from=2, to=steps)) {
-      resi <- rt(len, df=nu)  # either rho == 0 or nu == Inf
-      incr <- rho*resi*standardizer + sqrt(1-rho^2)*rnorm(len)
-      ypred[,i-1+arorder] <- rowSums(regressors(ypred, newdata, i-1) * betacoeff) + exp(volpred[,i-1]/2)*resi
+      tau <- if (heavy_tailed) 1/rgamma(len, shape=.5*nu, rate=.5*(nu-2)) else 1
+      resi <- rnorm(len)
+      incr <- rho*resi + sqrt(1-rho^2)*rnorm(len)
+      ypred[,i-1+arorder] <- rowSums(regressors(ypred, newdata, i-1) * betacoeff) + sqrt(tau)*exp(volpred[,i-1]/2)*resi
       volpred[,i] <- mu + phi*(volpred[,i-1] - mu) + sigma*incr
     }
   }
-  ypred[,steps+arorder] <- rowSums(regressors(ypred, newdata, steps) * betacoeff) + exp(volpred[,steps]/2)*rt(len, df=nu)
+  tau <- if (heavy_tailed) 1/rgamma(len, shape=.5*nu, rate=.5*(nu-2)) else 1
+  ypred[,steps+arorder] <- rowSums(regressors(ypred, newdata, steps) * betacoeff) + sqrt(tau)*exp(volpred[,steps]/2)*rnorm(len)
 
   ypred <- ypred[, setdiff(seq_len(NCOL(ypred)), seq_len(arorder)), drop=FALSE]  # remove temporary AR(x) helper columns
   lastname <- tail(colnames(object$latent), 1)
@@ -490,3 +409,4 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   class(ret) <- c("svpredict")
   ret
 }
+

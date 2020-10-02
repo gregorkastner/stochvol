@@ -102,11 +102,6 @@
 #' draws, i.e. every draw is kept.
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #' volatility draws should be stored.
-#' @param keeptau logical value indicating whether the 'variance inflation
-#' factors' should be stored (used for the sampler with conditional t
-#' innovations only). This may be useful to check at what point(s) in time the
-#' normal disturbance had to be 'upscaled' by a mixture factor and when the
-#' series behaved 'normally'.
 #' @param quiet logical value indicating whether the progress bar and other
 #' informative output during sampling should be omitted. The default value is
 #' \code{FALSE}, implying verbose output.
@@ -133,7 +128,7 @@
 #' (the default), then auxiliary mixture sampling is used to sample the latent
 #' states. If \code{TRUE}, extra computations are made to correct for model
 #' misspecification either ex-post by reweighting or on-line using a
-#' Metropolis-Hastings step.}
+#' Metropolis-Hastings step.
 #' @param \dots Any extra arguments will be forwarded to
 #' \code{\link{updatesummary}}, controlling the type of statistics calculated
 #' for the posterior draws.
@@ -183,105 +178,14 @@
 #' Data Analysis}, \bold{76}, 408--423,
 #' \url{http://dx.doi.org/10.1016/j.csda.2013.01.002}.
 #' @keywords models ts
-#' @examples
-#' # Example 1
-#' ## Simulate a short and highly persistent SV process 
-#' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
-#' 
-#' ## Obtain 5000 draws from the sampler (that's not a lot)
-#' draws <- svsample(sim$y, draws = 5000, burnin = 100,
-#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
-#' 
-#' ## Check out the results
-#' summary(draws)
-#' plot(draws, simobj = sim)
-#' 
-#' 
-#' # Example 2
-#' ## Simulate a short and conditionally heavy-tailed SV process
-#' sim <- svsim(100, mu = -10, phi = 0.96, sigma = 0.3, nu = 2.5)
-#' 
-#' ## Obtain 5000 draws from the sampler
-#' tdraws <- svsample(sim$y, draws = 5000, burnin = 100,
-#' 		  priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.5,
-#'      priornu = 0.2)
-#' 
-#' ## Check out the results
-#' summary(tdraws)
-#' plot(tdraws, simobj = sim)
-#' 
-#' 
-#' \dontrun{
-#' # Example 3
-#' ## AR(1) structure for the mean
-#' data(exrates)
-#' len <- 3000
-#' ahead <- 100
-#' y <- head(exrates$USD, len)
-#' 
-#' ## Fit AR(1)-SVL model to EUR-USD exchange rates
-#' res <- svsample(y, designmatrix = "ar1")
-#' 
-#' ## Use predict.svdraws to obtain predictive distributions
-#' preddraws <- predict(res, steps = ahead)
-#' 
-#' ## Calculate predictive quantiles
-#' predquants <- apply(preddraws$y, 2, quantile, c(.1, .5, .9))
-#' 
-#' ## Visualize
-#' expost <- tail(head(exrates$USD, len+ahead), ahead)
-#' ts.plot(y, xlim = c(length(y)-4*ahead, length(y)+ahead),
-#' 	       ylim = range(c(predquants, expost, tail(y, 4*ahead))))
-#' for (i in 1:3) {
-#'   lines((length(y)+1):(length(y)+ahead), predquants[i,],
-#'         col = 3, lty = c(2, 1, 2)[i])
-#' }
-#' lines((length(y)+1):(length(y)+ahead), expost,
-#'       col = 2)
-#' 
-#' 
-#' # Example 4
-#' ## Predicting USD based on JPY and GBP in the mean
-#' data(exrates)
-#' len <- 3000
-#' ahead <- 30
-#' ## Calculate log-returns
-#' logreturns <- apply(exrates[, c("USD", "JPY", "GBP")], 2,
-#'                     function (x) diff(log(x)))
-#' logretUSD <- logreturns[2:(len+1), "USD"]
-#' regressors <- cbind(1, as.matrix(logreturns[1:len, ]))  # lagged by 1 day
-#' 
-#' ## Fit SV model to EUR-USD exchange rates
-#' res <- svsample(logretUSD, designmatrix = regressors)
-#' 
-#' ## Use predict.svdraws to obtain predictive distributions
-#' predregressors <- cbind(1, as.matrix(logreturns[(len+1):(len+ahead), ]))
-#' preddraws <- predict(res, steps = ahead,
-#'                      newdata = predregressors)
-#' predprice <- exrates[len+2, "USD"] * exp(t(apply(preddraws$y, 1, cumsum)))
-#' 
-#' ## Calculate predictive quantiles
-#' predquants <- apply(predprice, 2, quantile, c(.1, .5, .9))
-#' 
-#' ## Visualize
-#' priceUSD <- exrates[3:(len+2), "USD"]
-#' expost <- exrates[(len+3):(len+ahead+2), "USD"]
-#' ts.plot(priceUSD, xlim = c(len-4*ahead, len+ahead+1),
-#' 	       ylim = range(c(expost, predquants, tail(priceUSD, 4*ahead))))
-#' for (i in 1:3) {
-#'   lines(len:(len+ahead), c(tail(priceUSD, 1), predquants[i,]),
-#'         col = 3, lty = c(2, 1, 2)[i])
-#' }
-#' lines(len:(len+ahead), c(tail(priceUSD, 1), expost),
-#'       col = 2)
-#' }
+#' @example inst/examples/svsample.R
 #' @export
 svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                      priornu = 0, priorrho = NA,
                      priorbeta = c(0, 10000), priorlatent0 = "stationary",
                      priorspec = NULL,
-                     thinpara = 1, thinlatent = 1, keeptime = "all", keeptau = FALSE,
+                     thinpara = 1, thinlatent = 1, keeptime = "all",
                      quiet = FALSE, startpara = NULL, startlatent = NULL, expert = NULL, ...) {
 
   # Validation
@@ -359,15 +263,16 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     validate_sv_priors(priormu, priorphi, priorsigma, priornu, priorrho, priorbeta, priorlatent0)
     priorspec <-
       specify_priors(mu = sv_normal(mean = priormu[1], sd = priormu[2]),
-                     phi = sv_beta(alpha = priorphi[1], beta = priorphi[2]),
+                     phi = sv_beta(shape1 = priorphi[1], shape2 = priorphi[2]),
                      sigma2 = sv_gamma(shape = 0.5, rate = 0.5 / priorsigma),
                      nu = if (priornu == 0) sv_infinity() else sv_exponential(rate = priornu),
-                     rho = if (isTRUE(is.na(priorrho))) sv_constant(value = 0) else sv_beta(alpha = priorrho[1], beta = priorrho[2]),
+                     rho = if (isTRUE(is.na(priorrho))) sv_constant(value = 0) else sv_beta(shape1 = priorrho[1], shape2 = priorrho[2]),
                      beta = sv_multinormal(mean = priorbeta[1], sd = priorbeta[2], dim = NCOL(designmatrix)),
-                     latent0 = priorlatent0)
+                     latent0_variance = priorlatent0)
   } else if (!inherits(priorspec, "sv_priorspec")) {
     stop("Received argument 'priorspec' but it does not have the correct form. Please refer to the function called 'specify_priors'.")
   }
+  keeptau <- !isTRUE(inherits(priorspec$nu, "sv_infinity"))
 
   ## thinning parameters
   validate_thinning(thinpara, thinlatent, keeptime)
@@ -399,7 +304,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
          sigma = sqrt(mean(priorspec$sigma2)),
          nu = 2 + mean(priorspec$nu),
          rho = if (inherits(priorspec$rho, "sv_beta")) 2 * mean(priorspec$rho) - 1 else mean(priorspec$rho),
-         beta = rep.int(mean(priorspec$beta), NCOL(designmatrix)),
+         beta = mean(priorspec$beta),
          latent0 = -10)
   startlatentdefault <- rep.int(-10, length(y))
   startpara <- apply_default_list(startpara, startparadefault)
@@ -502,7 +407,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  rho = function (x) {.5})
 
   if (keeptau) {
-    res$tau <- coda::mcmc(t(res$tau), burnin+thinlatent, burnin+draws, thinlatent)
+    res$tau <- coda::mcmc(res$tau, burnin+thinlatent, burnin+draws, thinlatent)
   } else {
     res$tau <- NULL
   }
@@ -537,3 +442,4 @@ default_general_sv <-
        starting_parameterization = "centered",  # "centered" or "noncentered"
        update = list(latent_vector = TRUE, parameters = TRUE),
        proposal_diffusion_ken = FALSE)  # FALSE turns on adaptation
+

@@ -71,7 +71,6 @@ don't forget to overwrite the old object if this is want you intend to do.
 See the examples below for more details.
 }
 \examples{
-
 ## Here is a baby-example to illustrate the idea.
 ## Simulate an SV time series of length 51 with default parameters:
 sim <- svsim(51)
@@ -94,8 +93,5 @@ plot(res)
 }
 \seealso{
 \code{\link{svsample}}
-}
-\author{
-Gregor Kastner \email{gregor.kastner@wu.ac.at}
 }
 \keyword{utilities}

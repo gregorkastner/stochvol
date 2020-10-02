@@ -125,22 +125,24 @@ double propBeta(
 inline
 double logdnu(
     const double nu,
-    const double sumtau,
+    const double sum_tau,
     const double lambda,
     const int n) {
   using nl = std::numeric_limits<double>;
   static constexpr double negative_infinity = nl::has_infinity ? -nl::infinity() : nl::lowest();
-  return nu > 2 ? .5 * nu * (n * std::log(.5 * nu) - sumtau) - n * std::lgamma(.5 * nu) - (nu - 2) * lambda : negative_infinity;
+  return nu > 2 ?
+    .5 * nu * (-sum_tau + n * std::log(.5*(nu-2))) - n*std::lgamma(.5*nu) - (nu-2)*lambda:
+    negative_infinity;
 }
 
 // first derivative of logdnu
 inline
 double dlogdnu(
     const double nu,
-    const double sumtau,
+    const double sum_tau,
     const double lambda,
     const int n) {
-  return .5 * (n * (1 + std::log(.5 * nu) - ::Rf_digamma(.5 * nu)) - sumtau) - lambda;
+  return .5 * (n*(nu/(nu-2) + std::log(.5*(nu-2)) - ::Rf_digamma(.5*nu)) - sum_tau) - lambda;
 }
 
 // second derivative of logdnu
@@ -148,7 +150,7 @@ inline
 double ddlogdnu(
     const double nu,
     const int n) {
-  return .25 * n * (2 / nu - ::Rf_trigamma(.5 * nu));
+  return .25 * n * (2*(nu-4) * std::pow(nu-2, -2) - ::Rf_trigamma(.5*nu));
 }
 
 }

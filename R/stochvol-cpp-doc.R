@@ -58,25 +58,38 @@ update_fast_sv <- function(
   stop("This is a dummy R function showcasing a C++ function in stochvol.")
 }
 
-#' Single MCMC Update of Student's t-Distribution
+#' Single MCMC update to Student's t-distribution
 #' 
-#' Samples the degrees of freedom parameter of de-meaned and homoskedastic
+#' Samples the degrees of freedom parameter of standardized and homoskedastic
 #' t-distributed input variates. Marginal data augmentation (MDA) is applied, tau
 #' is the vector of auxiliary latent states.
 #' Depending on the prior specification, nu might not be updated, just tau.
+#'
+#' The function samples tau and nu from the following hierarchical model:
+#'   homosked_data_i = sqrt(tau_i) * (mean_i + sd_i * N(0, 1))
+#'   tau_i ~ InvGamma(.5*nu, .5*(nu-2))
+#' Naming: The data is homoskedastic ex ante in the model, mean_i and sd_i are conditional
+#' on some other parameter in the model.
+#' The prior on tau corresponds to a standardized t-distributed heavy tail on the data.
 #' 
 #' @param homosked_data de-meaned and homoskedastic observations
 #' @param tau the vector of the latent states used in MDA. Updated in place
+#' @param mean the vector of the conditional means  // TODO update docs in R
+#' @param sd the vector of the conditional standard deviations
 #' @param nu parameter nu. The degrees of freedom for the t-distribution. Updated in place
 #' @param prior_spec prior specification object. See type_definitions.h
+#' @param do_tau_acceptance_rejection boolean. If \code{TRUE}, there is a correction for non-zero \code{mean} and non-unit \code{sd}, otherwise the proposal distribution is used
 #' @family stochvol_cpp
 #' @keywords update
 #' @export
 update_t_error <- function(
-  homosked_data,
-  tau,
-  nu,
-  prior_spec) {
+    homosked_data,
+    tau,
+    mean,
+    sd,
+    nu,
+    prior_spec,
+    do_tau_acceptance_rejection = TRUE) {
   stop("This is a dummy R function showcasing a C++ function in stochvol.")
 }
 
@@ -124,30 +137,24 @@ update_general_sv <- function(
   stop("This is a dummy R function showcasing a C++ function in stochvol.")
 }
 
-#' Single MCMC Update of Weighted Robust Bayesian Regression
+#' Single MCMC update of Bayesian linear regression
 #' 
-#' Samples the coefficients of a linear regression with known weights for the errors.
-#' The errors might be t-distributed with known degrees of freedom; hence robust. Marginal data
-#' augmentation (MDA) is applied in that case, and tau is the vector of auxiliary
-#' latent states.
+#' Samples the coefficients of a linear regression. The prior
+#' distribution is multivariate normal and it is specified in
+#' prior_spec.
 #' 
 #' @param dependent_variable the left hand side
 #' @param independent_variables the matrix of the independent variables. Has to be of same height as the length of the dependent variable
 #' @param beta the vector of the latent states used in MDA. Updated in place
-#' @param tau the vector of the latent states used in MDA. Updated in place
-#' @param normalizer the reciprocal of the error weights. E.g. the reciprocal of the known standard deviations given df.
-#' @param df the degrees of freedom for the t-distribution. If large, then a standard/normal linear regression is conducted
 #' @param prior_spec prior specification object. See type_definitions.h
 #' @family stochvol_cpp
 #' @keywords update
 #' @export
 update_regressors <- function(
-  dependent_variable,
-  independent_variables,
-  beta,
-  tau,
-  normalizer,
-  df,
-  prior_spec) {
+    dependent_variable,
+    independent_variables,
+    beta,
+    prior_spec) {
   stop("This is a dummy R function showcasing a C++ function in stochvol.")
 }
+

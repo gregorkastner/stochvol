@@ -136,16 +136,34 @@ void update_fast_sv(
   }
 }
 
-// Single update of the marginal data augmentation for the degrees of freedom.
-void update_tau(
-    const arma::vec& homosked_data,
-    arma::vec& tau,
-    const double nu) {
+// Single update of a single tau: the marginal data augmentation for the degrees of freedom.
+double update_single_tau(
+    const double homosked_data_i,
+    const double tau_i,
+    const double mean_i,
+    const double sd_i,
+    const double nu,
+    const bool do_tau_acceptance_rejection) {
   // Watch out, R::rgamma(shape, scale), not Rf_rgamma(shape, rate)
-  std::transform(
-      homosked_data.cbegin(), homosked_data.cend(),
-      tau.begin(),
-      [nu](const double homosked_data_i) -> double { return 1./R::rgamma((nu + 1.) / 2., 2. / (nu + std::pow(homosked_data_i, 2))); });
+  const double proposal_shape = (nu + 1) / 2,
+               proposal_scale = (nu - 2 + std::pow(homosked_data_i, 2)) / 2,
+               tau_proposal_i = 1./R::rgamma(proposal_shape, 1 / proposal_scale);  // non-parallelizable
+  if (do_tau_acceptance_rejection) {
+    const double log_ar =
+                   (logdnorm(homosked_data_i / std::sqrt(tau_proposal_i), mean_i, sd_i) +
+                    logdinvgamma(tau_proposal_i, .5 * nu, .5 * (nu - 2)) -
+                    logdinvgamma(tau_proposal_i, proposal_shape, proposal_scale)) -
+                   (logdnorm(homosked_data_i / std::sqrt(tau_i), mean_i, sd_i) +
+                    logdinvgamma(tau_i, .5 * nu, .5 * (nu - 2)) -
+                    logdinvgamma(tau_i, proposal_shape, proposal_scale));
+    if (log_ar >= 0 or R::unif_rand() < std::exp(log_ar)) {
+      return tau_proposal_i;
+    } else {
+      return tau_i;
+    }
+  } else {
+    return tau_proposal_i;
+  }
 }
 
 // Single update of the degrees of freedom.
@@ -153,29 +171,31 @@ void update_tau(
 void update_t_error(
     const arma::vec& homosked_data,
     arma::vec& tau,
+    const arma::vec& mean,
+    const arma::vec& sd,
     double& nu,
-    const PriorSpec& prior_spec) {
+    const PriorSpec& prior_spec,
+    const bool do_tau_acceptance_rejection) {
   R_assert(prior_spec.nu.distribution != PriorSpec::Nu::INFINITE, "Call to update_t_error: Non-matching model specification. Prior for nu should not be infinity.");
 
-  update_tau(homosked_data, tau, nu);
-  // TODO since C++17 this can be done with transform_reduce (in parallel)
-  const double sumtau = std::accumulate(
-      tau.cbegin(), tau.cend(),
-      0.,
-      [](const double partial_sum, const double tau_i) -> double { return partial_sum + std::log(tau_i) + 1. / tau_i;});
+  const int T = homosked_data.n_elem;
 
-  const int T = homosked_data.size();
+  double sum_tau = 0;
+  for (int i = 0; i < T; i++) {
+    tau[i] = update_single_tau(homosked_data[i], tau[i], mean[i], sd[i], nu, do_tau_acceptance_rejection);
+    sum_tau += std::log(tau[i]) + 1. / tau[i];
+  }
 
   if (prior_spec.nu.distribution == PriorSpec::Nu::EXPONENTIAL) {
     const double lambda = prior_spec.nu.exponential.rate;
-    const double numean = newton_raphson(nu, sumtau, T, lambda);
+    const double numean = newton_raphson(nu, sum_tau, T, lambda);
     const double auxsd = std::sqrt(-1/ddlogdnu(numean, T)); 
     const double nuprop = R::rnorm(numean, auxsd);
-    const double logR =
-      logdnu(nuprop, sumtau, lambda, T) - logdnorm(nuprop, numean, auxsd) -
-      (logdnu(nu, sumtau, lambda, T) - logdnorm(nu, numean, auxsd));
+    const double log_ar =
+      logdnu(nuprop, sum_tau, lambda, T) - logdnorm(nuprop, numean, auxsd) -
+      (logdnu(nu, sum_tau, lambda, T) - logdnorm(nu, numean, auxsd));
 
-    if (logR >= 0 or std::log(R::unif_rand()) < logR) {
+    if (log_ar >= 0 or R::unif_rand() < std::exp(log_ar)) {
       nu = nuprop;
     }
   }
@@ -184,21 +204,10 @@ void update_t_error(
 // Single update of the coefficients in a Bayesian linear regression.
 // See documentation above the declaration
 void update_regressors(
-    arma::vec dependent_variable,  // by value on purpose
-    arma::mat independent_variables,  // by value on purpose
+    const arma::vec& dependent_variable,
+    const arma::mat& independent_variables,
     arma::vec& beta,
-    arma::vec& tau,
-    const arma::vec& normalizer,  // inverse of heteroskedastic scales
-    const double df,
     const PriorSpec& prior_spec) {
-  dependent_variable %= normalizer;
-  independent_variables.each_col() %= normalizer;
-  if (df < 10000) {  // heavy-tailed
-    update_tau(dependent_variable - independent_variables * beta, tau, df);
-    dependent_variable /= tau;
-    independent_variables.each_col() /= tau;
-  }
-
   const int p = independent_variables.n_cols;
   arma::mat postprecchol;
   arma::mat postpreccholinv;

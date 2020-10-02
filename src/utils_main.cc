@@ -58,7 +58,7 @@ void transpose_and_rename(
   }
   {  // colnames in latent
     const int ncol = latent.ncol();
-    Rcpp::CharacterVector col_names(T);
+    Rcpp::CharacterVector col_names(ncol);
     for (unsigned int c = 1; c <= ncol; c++) {
       std::string name = "h_";
       name += std::to_string(T-ncol+c);
@@ -78,7 +78,7 @@ void transpose_and_rename(
   }
   {  // colnames in tau
     const int ncol = tau.ncol();
-    Rcpp::CharacterVector col_names(T);
+    Rcpp::CharacterVector col_names(ncol);
     for (unsigned int c = 1; c <= ncol; c++) {
       std::string name = "tau_";
       name += std::to_string(T-ncol+c);
@@ -221,8 +221,8 @@ PriorSpec list_to_priorspec(
   // phi
   if (priorphi.inherits("sv_beta")) {
     priorspec.phi.distribution = PriorSpec::Phi::BETA;
-    priorspec.phi.beta.alpha = priorphi["alpha"];
-    priorspec.phi.beta.beta = priorphi["beta"];
+    priorspec.phi.beta.alpha = priorphi["shape1"];
+    priorspec.phi.beta.beta = priorphi["shape2"];
   } else if (priorphi.inherits("sv_constant")) {
     priorspec.phi.distribution = PriorSpec::Phi::CONSTANT;
     priorspec.phi.constant.value = priorphi["value"];
@@ -265,8 +265,8 @@ PriorSpec list_to_priorspec(
   // rho
   if (priorrho.inherits("sv_beta")) {
     priorspec.rho.distribution = PriorSpec::Rho::BETA;
-    priorspec.rho.beta.alpha = priorrho["alpha"];
-    priorspec.rho.beta.beta = priorrho["beta"];
+    priorspec.rho.beta.alpha = priorrho["shape1"];
+    priorspec.rho.beta.beta = priorrho["shape2"];
   } else if (priorrho.inherits("sv_constant")) {
     priorspec.rho.distribution = PriorSpec::Rho::CONSTANT;
     priorspec.rho.constant.value = priorrho["value"];

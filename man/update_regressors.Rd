@@ -2,17 +2,9 @@
 % Please edit documentation in R/stochvol-cpp-doc.R
 \name{update_regressors}
 \alias{update_regressors}
-\title{Single MCMC Update of Weighted Robust Bayesian Regression}
+\title{Single MCMC update of Bayesian linear regression}
 \usage{
-update_regressors(
-  dependent_variable,
-  independent_variables,
-  beta,
-  tau,
-  normalizer,
-  df,
-  prior_spec
-)
+update_regressors(dependent_variable, independent_variables, beta, prior_spec)
 }
 \arguments{
 \item{dependent_variable}{the left hand side}
@@ -21,19 +13,12 @@ update_regressors(
 
 \item{beta}{the vector of the latent states used in MDA. Updated in place}
 
-\item{tau}{the vector of the latent states used in MDA. Updated in place}
-
-\item{normalizer}{the reciprocal of the error weights. E.g. the reciprocal of the known standard deviations given df.}
-
-\item{df}{the degrees of freedom for the t-distribution. If large, then a standard/normal linear regression is conducted}
-
 \item{prior_spec}{prior specification object. See type_definitions.h}
 }
 \description{
-Samples the coefficients of a linear regression with known weights for the errors.
-The errors might be t-distributed with known degrees of freedom; hence robust. Marginal data
-augmentation (MDA) is applied in that case, and tau is the vector of auxiliary
-latent states.
+Samples the coefficients of a linear regression. The prior
+distribution is multivariate normal and it is specified in
+prior_spec.
 }
 \seealso{
 Other stochvol_cpp: 

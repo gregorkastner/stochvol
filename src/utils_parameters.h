@@ -43,7 +43,7 @@ namespace stochvol {
 // Find the root of a function (Newton-Raphson)
 double newton_raphson(
     const double startval,
-    const double sumtau,
+    const double sum_tau,
     const int n,
     const double lambda,
     const double tol = 1e-03,

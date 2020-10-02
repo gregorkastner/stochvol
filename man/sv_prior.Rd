@@ -21,16 +21,38 @@ sv_gamma(shape, rate)
 
 sv_inverse_gamma(shape, scale)
 
-sv_beta(alpha, beta)
+sv_beta(shape1, shape2)
 
 sv_exponential(rate)
 
 sv_infinity()
 }
+\arguments{
+\item{value}{The constant value for the degenerate constant distribution}
+
+\item{mean}{Expected value for the univariate normal distribution or mean vector of the multivariate normal distribution}
+
+\item{sd}{Standard deviation for the univariate normal distribution or constant scale of the multivariate normal distribution}
+
+\item{precision}{Precision matrix for the multivariate normal distribution}
+
+\item{dim}{(optional) Dimension of the multivariate distribution}
+
+\item{shape}{Shape parameter for the distribution}
+
+\item{rate}{Rate parameter for the distribution}
+
+\item{scale}{Scale parameter for the distribution}
+
+\item{shape1}{First shape parameter for the distribution}
+
+\item{shape2}{Second shape parameter for the distribution}
+}
 \description{
 The functions below can be supplied to \link{specify_priors}
 to overwrite the default set of prior distributions in \link{svsample}.
-The functions have \code{mean}, \code{density} and \code{print} methods.
+The functions have \code{mean}, \code{range}, \code{density}, and
+\code{print} methods.
 }
 \section{Multivariate Normal}{
 

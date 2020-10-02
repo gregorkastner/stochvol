@@ -45,7 +45,7 @@ logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
 #' @family priors
 #' @export
 specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
-                            phi = sv_beta(alpha = 15, beta = 0.5),
+                            phi = sv_beta(shape1 = 15, shape2 = 0.5),
                             sigma2 = sv_gamma(shape = 0.5, rate = 0.5),
                             nu = sv_infinity(),
                             rho = sv_constant(0),
@@ -72,6 +72,21 @@ specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
   if (inherits(rho, "sv_constant") && (rho$value <= -1 || rho$value >= 1)) {
     stop("Fixed rho needs to be in range (-1, 1); got rho = ", rho$value)
   }
+  ## Check constant values
+  if (sv_inherits(phi, "sv_constant")) {
+    assert_gt(phi$value, -1, "The provided constant value for phi")
+    assert_lt(phi$value, 1, "The provided constant value for phi")
+  }
+  if (sv_inherits(sigma2, "sv_constant")) {
+    assert_positive(sigma2$value, "The provided constant value for sigma2")
+  }
+  if (sv_inherits(nu, "sv_constant")) {
+    assert_gt(nu$value, 2, "The provided constant value for nu")
+  }
+  if (sv_inherits(rho, "sv_constant")) {
+    assert_gt(rho$value, -1, "The provided constant value for rho")
+    assert_lt(rho$value, 1, "The provided constant value for rho")
+  }
   ## Check latent0_variance
   if (sv_inherits(latent0_variance, "sv_constant")) {
     assert_positive(latent0_variance$value, "The provided variance for latent0")
@@ -91,6 +106,7 @@ specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
 #' to overwrite the default set of prior distributions in \link{svsample}.
 #' The functions have \code{mean}, \code{range}, \code{density}, and
 #' \code{print} methods.
+#' @param value The constant value for the degenerate constant distribution
 #' @rdname sv_prior
 #' @family priors
 #' @export
@@ -125,6 +141,8 @@ range.sv_constant <- function (x, na.rm = FALSE, ...) {
   rep_len(x$value, length.out = 2)
 }
 
+#' @param mean Expected value for the univariate normal distribution or mean vector of the multivariate normal distribution
+#' @param sd Standard deviation for the univariate normal distribution or constant scale of the multivariate normal distribution
 #' @rdname sv_prior
 #' @family priors
 #' @export
@@ -164,6 +182,8 @@ range.sv_normal <- function (x, na.rm = FALSE, ...) {
 #' arguments. Constant mean vectors and constant diagonal precision matrices of dimension \code{D}
 #' can be created two ways: either \code{sv_multinormal(mean, sd, dim = D)} or
 #' \code{rep(sv_normal(mean, sd), length.out = D)}.
+#' @param precision Precision matrix for the multivariate normal distribution
+#' @param dim (optional) Dimension of the multivariate distribution
 #' @rdname sv_prior
 #' @family priors
 #' @export
@@ -227,7 +247,7 @@ print.sv_multinormal <- function (x, ...) {
 }
 #' @export
 density.sv_multinormal <- function (x, ...) {
-  if (!require("mvtnorm")) {
+  if (!requireNamespace("mvtnorm")) {
     warning("'density.sv_multinormal' needs the 'mvtnorm' package to be installed")
     function (x) {
       NA_real_
@@ -245,6 +265,8 @@ range.sv_multinormal <- function (x, na.rm = FALSE, ...) {
   stop("Function 'range' undefined for class 'sv_multinormal'")
 }
 
+#' @param shape Shape parameter for the distribution
+#' @param rate Rate parameter for the distribution
 #' @rdname sv_prior
 #' @family priors
 #' @export
@@ -278,6 +300,7 @@ range.sv_gamma <- function (x, na.rm = FALSE, ...) {
   c(0, Inf)
 }
 
+#' @param scale Scale parameter for the distribution
 #' @rdname sv_prior
 #' @family priors
 #' @export
@@ -306,33 +329,39 @@ density.sv_inverse_gamma <- function (x, ...) {
     ifelse(x == 0, 0, dgamma(1/x, shape = dist$shape, rate = dist$scale) * x^{-2})
   }
 }
+#' @export
+range.sv_inverse_gamma <- function (x, na.rm = FALSE, ...) {
+  c(0, Inf)
+}
 
+#' @param shape1 First shape parameter for the distribution
+#' @param shape2 Second shape parameter for the distribution
 #' @rdname sv_prior
 #' @family priors
 #' @export
-sv_beta <- function (alpha, beta) {
-  assert_single(alpha, "shape of sv_beta")
-  assert_positive(alpha, "shape of sv_beta")
+sv_beta <- function (shape1, shape2) {  # rename 2beta_m1
+  assert_single(shape1, "shape of sv_beta")
+  assert_positive(shape1, "shape of sv_beta")
 
-  assert_single(beta, "rate of sv_beta")
-  assert_positive(beta, "rate of sv_beta")
+  assert_single(shape2, "rate of sv_beta")
+  assert_positive(shape2, "rate of sv_beta")
 
-  structure(list(alpha = alpha, beta = beta),
+  structure(list(shape1 = shape1, shape2 = shape2),
             class = c("sv_beta", "sv_distribution"))
 }
 #' @export
 mean.sv_beta <- function (x, ...) {
-  x$alpha / (x$alpha + x$beta)
+  x$shape1 / (x$shape1 + x$shape2)
 }
 #' @export
 print.sv_beta <- function (x, ...) {
-  cat("Beta(a = ", x$alpha, ", b = ", x$beta, ")\n", sep = "")
+  cat("Beta(a = ", x$shape1, ", b = ", x$shape2, ")\n", sep = "")
 }
 #' @export
 density.sv_beta <- function (x, ...) {
   dist <- x
   function (x) {
-    dbeta(x, shape1 = dist$alpha, shape2 = dist$beta)
+    dbeta(x, shape1 = dist$shape1, shape2 = dist$shape2)
   }
 }
 #' @export
@@ -340,6 +369,7 @@ range.sv_beta <- function (x, na.rm = FALSE, ...) {
   c(0, 1)
 }
 
+#' @param rate Rate parameter for the distribution
 #' @rdname sv_prior
 #' @family priors
 #' @export
