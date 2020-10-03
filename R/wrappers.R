@@ -318,8 +318,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     # mu is either 0 or normal
     ((inherits(priorspec$mu, "sv_constant") && isTRUE(priorspec$mu$value == 0)) ||
        inherits(priorspec$mu, "sv_normal")) &&
-    # keeptime == "last" && correct_model_misspecification can't be done as of yet
-    (keeptime == "all" || !correct_model_misspecification) &&
+    # fast SV can't correct for misspecification and also do t-errors and/or regression
+    (!correct_model_misspecification || (inherits(priorspec$nu, "sv_infinity") && meanmodel == "none")) &&
     # prior for phi is beta
     inherits(priorspec$phi, "sv_beta") &&
     # prior for sigma is gamma(0.5, _)
@@ -342,6 +342,21 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                         startpara, startlatent, keeptau, myquiet,
                         correct_model_misspecification, interweave,
                         myoffset, fast_sv))
+    if (correct_model_misspecification) {
+      para_indices <- sample.int(n = NROW(res$para), size = NROW(res$para), replace = TRUE, prob = res$correction_weight_para, useHash = FALSE)
+      res$para <- res$para[para_indices, , drop = FALSE]
+      latent_indices <- if (thinpara == thinlatent) {  # same re-sampling if thinning is the same
+        para_indices
+      } else {  # separate re-sampling if thinning is different => WARNING! joint distribution of para and latent is gone!
+        sample.int(n = NROW(res$latent), size = NROW(res$latent), replace = TRUE, prob = res$correction_weight_latent, useHash = FALSE)
+      }
+      res$latent <- res$latent[latent_indices, , drop = FALSE]
+
+      # Re-sample para and latent
+      res$resampled <- TRUE
+    } else {
+      res$resampled <- FALSE
+    }
   } else {
     strategies <- if (interweave) c("centered", "noncentered") else expert$general_sv$starting_parameterization
     parameterization <- rep(strategies, general_sv$multi_asis)
@@ -358,6 +373,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                            startpara, startlatent, keeptau, quiet,
                            correct_model_misspecification, interweave,
                            myoffset, general_sv))
+    res$resampled <- FALSE
   }
   class(res) <- "svdraws"
 
@@ -416,7 +432,12 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     cat("Done!\n", file=stderr())
     cat("Summarizing posterior draws... ", file=stderr())
   }
-  res <- updatesummary(res, ...)
+  res <- if (res$resampled) {
+    message("No computation of effective sample size after re-sampling")
+    updatesummary(res, esspara = FALSE, esslatent = FALSE, ...)
+  } else {
+    updatesummary(res, ...)
+  }
 
   if (!quiet) cat("Done!\n\n", file=stderr())
   res

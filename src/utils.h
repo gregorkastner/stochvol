@@ -60,6 +60,21 @@ double determine_Bh0inv(
   }
 }
 
+// Determine parameter 'thintime'
+inline
+int determine_thintime(
+    const int T,
+    const Rcpp::CharacterVector& keeptime_in) {
+  const std::string keeptime = Rcpp::as<std::string>(keeptime_in);
+  if (keeptime == "all") {
+    return 1;
+  } else if (keeptime == "last") {
+    return T;
+  } else {
+    Rf_error("Unknown value for 'keeptime'; got \"%s\"", keeptime.c_str());
+  }
+}
+
 // Transform the latent vector from centered to
 // noncentered.
 template<typename T>

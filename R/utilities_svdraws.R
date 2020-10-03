@@ -219,12 +219,25 @@ summary.svdraws <- function (object, showpara = TRUE, showlatent = TRUE, ...) {
     ret$latent <- latent(object$summary)
     ret$latent <- rbind("h_0" = latent0(object$summary), ret$latent)
   }
+  if (isTRUE(object$resampled)) {
+    ret$resampled <- list(para = list(max_entropy = log(length(object$correction_weight_para)),
+                                      entropy = -sum(object$correction_weight_para * log(object$correction_weight_para))),
+                          latent = list(max_entropy = log(length(object$correction_weight_latent)),
+                                        entropy = -sum(object$correction_weight_latent * log(object$correction_weight_latent))),
+                          same_resampling = object$thinning$para == object$thinning$latent)
+  }
   ret
+}
+
+#' @export
+print.svdraws <- function (x, showpara = TRUE, showlatent = FALSE, ...) {
+  print(summary(x, showpara = showpara, showlatent = showlatent), ...)
+  invisible(x)
 }
 
 #' @method print summary.svdraws
 #' @export
-print.summary.svdraws <- function(x, ...) { 
+print.summary.svdraws <- function (x, ...) { 
   cat("\nSummary of ", x$mcp[2]-x$mcp[1]+x$mcp[3], " MCMC draws after a burn-in of ", x$mcp[1]-x$mcp[3], ".\n", sep="")
   print(x$priors)
   
@@ -237,21 +250,23 @@ print.summary.svdraws <- function(x, ...) {
     cat("\nPosterior draws of initial and contemporaneous latents (thinning = ", x$mcl[3], "):\n", sep='')
     print(x$latent, digits=2, ...)
   }
-  invisible(x)
-}
 
-#' @export
-print.svdraws <- function(x, showpara = TRUE, showlatent = TRUE, ...) {
-  if (isTRUE(showpara)) {
-    cat("\n*** Posterior draws of parameters ***\n")
-    print(para(x), ...)
-  }
-
-  if (isTRUE(showlatent)) {
-    cat("\n*** Posterior draws of initial latent variable h_0 ***\n")
-    print(latent0(x), ...)
-    cat("\n*** Posterior draws of contemporaneous latent variables h_t ***\n")
-    print(latent(x), ...)
+  if (exists("resampled", x)) {
+    cat("\nPosterior draws from the auxiliary SV model were re-sampled after the MCMC\nprocedure ended to correct for model mis-specification.\n")
+    print_resampling <- function (entropy_list, text) {
+      if (entropy_list$entropy >= entropy_list$max_entropy*0.99) {
+        cat("  Re-sampling of ", text, " was of little practical importance:\n", sep = "")
+      } else {
+        cat("  Re-sampling of ", text, " might have made practical a difference:\n", sep = "")
+      }
+      cat("    - max reachable entropy for this sample size: ", entropy_list$max_entropy, ",\n    - entropy of the re-sampling weight distribution: ", entropy_list$entropy, "\n", sep = "")
+    }
+    if (x$resampled$same_resampling) {
+      print_resampling(x$resampled$para, "parameters and latents")
+    } else {
+      print_resampling(x$resampled$para, "parameters")
+      print_resampling(x$resampled$latent, "latents")
+    }
   }
   invisible(x)
 }

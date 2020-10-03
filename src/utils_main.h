@@ -78,6 +78,18 @@ AsymmetricConditionalMoments decorrelate (  // TODO update for new t-errors
   return {std::move(mean), std::move(sd)};
 }
 
+namespace fast_sv {
+
+// Compute log-weight for fast SV re-sampling.
+// Relevant when correcting for model mis-specification.
+double compute_correction_weight(
+    const arma::vec& data,
+    const arma::vec& log_data2,
+    const arma::vec& h,
+    const arma::vec& exp_h_half);
+
+}  // END namespace fast_sv
+
 // Save a single sample in the storage objects
 inline
 void save_para_sample(
@@ -179,7 +191,9 @@ Rcpp::List cleanup(
     Rcpp::NumericMatrix& latent,
     Rcpp::NumericMatrix& tau,
     Rcpp::NumericMatrix& betas,
-    Rcpp::IntegerMatrix& mixture_indicators);
+    Rcpp::IntegerMatrix& mixture_indicators,
+    Rcpp::NumericVector& correction_weight_para,
+    Rcpp::NumericVector& correction_weight_latent);
 
 // Sums up results and prepares return value
 Rcpp::List cleanup(

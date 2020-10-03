@@ -30,12 +30,37 @@
 
 #include <RcppArmadillo.h>
 #include "utils_main.h"
+#include "utils_latent_states.h"
 #include "densities.h"
 #include <type_definitions.h>
 
 using namespace Rcpp;
 
 namespace stochvol {
+
+namespace fast_sv {
+
+double compute_correction_weight(
+    const arma::vec& data,
+    const arma::vec& log_data2,
+    const arma::vec& h,
+    const arma::vec& exp_h_half) {
+  static const arma::vec::fixed<10> log_mix_sd {arma::log(mix_sd)};
+  const unsigned int T = data.n_elem;
+  double exact_log_lik = 0,
+         aux_log_lik = 0;
+  for (unsigned int i = 0; i < T; i++) {
+    exact_log_lik += logdnorm2(data[i], 0, exp_h_half[i], .5 * h[i]);
+    double aux_lik_i = 0;
+    for (unsigned int j = 0; j < mix_prob.n_elem; j++) {
+      aux_lik_i += std::exp(logdnorm2(log_data2[i], h[i] + mix_mean[j], mix_sd[j], log_mix_sd[j])) * mix_prob[j];
+    }
+    aux_log_lik += std::log(aux_lik_i);
+  }
+  return exact_log_lik - aux_log_lik;
+}
+
+}  // END namespace fast_sv
 
 void transpose_and_rename(
     const int T,
@@ -95,7 +120,9 @@ List cleanup(
     NumericMatrix& latent,
     NumericMatrix& tau,
     NumericMatrix& betas,
-    IntegerMatrix& mixture_indicators) {
+    IntegerMatrix& mixture_indicators,
+    NumericVector& correction_weight_para,
+    NumericVector& correction_weight_latent) {
   transpose_and_rename(T, para, latent0, latent, tau, betas);
 
   mixture_indicators = Rcpp::transpose(mixture_indicators);
@@ -111,13 +138,24 @@ List cleanup(
     colnames(mixture_indicators) = col_names;
   }
 
+  if (correction_weight_para.size() > 0) {
+    correction_weight_para = Rcpp::exp(correction_weight_para - Rcpp::max(correction_weight_para));
+    correction_weight_para = correction_weight_para / Rcpp::sum(correction_weight_para);
+  }
+  if (correction_weight_latent.size() > 0) {
+    correction_weight_latent = Rcpp::exp(correction_weight_latent - Rcpp::max(correction_weight_latent));
+    correction_weight_latent = correction_weight_latent / Rcpp::sum(correction_weight_latent);
+  }
+
   List val = List::create(
       _["para"] = para,
       _["latent"] = latent,
       _["latent0"] = latent0,
       _["beta"] = betas,
       _["tau"] = tau,
-      _["indicators"] = mixture_indicators + 1u);
+      _["indicators"] = mixture_indicators + 1u,
+      _["correction_weight_para"] = correction_weight_para,
+      _["correction_weight_latent"] = correction_weight_latent);
 
   return val;
 }

@@ -435,7 +435,6 @@ print.sv_priorspec <- function(x, ...) {
   cat("sigma^2   ~ "); print(x$sigma2)
   cat("nu        ~ "); print(x$nu)
   cat("(rho+1)/2 ~ "); print(x$rho)
-  cat("\n")
 }
 
 # Find a good initial value for mu

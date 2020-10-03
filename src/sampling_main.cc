@@ -41,19 +41,6 @@ using namespace Rcpp;
 
 namespace stochvol {
 
-int determine_thintime(
-    const int T,
-    const Rcpp::CharacterVector& keeptime_in) {
-  const std::string keeptime = as<std::string>(keeptime_in);
-  if (keeptime == "all") {
-    return 1;
-  } else if (keeptime == "last") {
-    return T;
-  } else {
-    Rf_error("Unknown value for 'keeptime'; got \"%s\"", keeptime.c_str());
-  }
-}
-
 // Wrapper function around fast SV.
 // See documentation above the declaration
 List svsample_fast_cpp(
@@ -133,6 +120,13 @@ List svsample_fast_cpp(
   Rcpp::NumericMatrix latent_store(latent_length, latent_draws);
   Rcpp::NumericMatrix tau_store(latent_length, keep_tau * latent_draws);
   Rcpp::IntegerMatrix r_store(latent_length, keep_r * latent_draws);
+  Rcpp::NumericVector correction_weight_latent(correct_model_specification * latent_draws);
+  Rcpp::NumericVector correction_weight_para(correct_model_specification * para_draws);
+
+  // a warning about intended use
+  if (correct_model_specification and (is_regression or is_heavy_tail)) {
+    Rcpp::warning("Function 'svsample_fast_cpp' is not meant to do correction for model misspecification along with regression/heavy tails. Function 'svsample_general_cpp' can do this correction.");
+  }
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
@@ -144,8 +138,8 @@ List svsample_fast_cpp(
       ::R_CheckUserInterrupt();
     }
 
-    const bool thinpara_round = (thinpara > 1) && (i % thinpara != 0);  // is this a parameter thinning round?
-    const bool thinlatent_round = (thinlatent > 1) && (i % thinlatent != 0);  // is this a latent thinning round?
+    const bool thinpara_round = (thinpara > 1) and (i % thinpara != 0);  // is this a parameter thinning round?
+    const bool thinlatent_round = (thinlatent > 1) and (i % thinlatent != 0);  // is this a latent thinning round?
 
     // print a progress sign every "show" iterations
     if (verbose && (i % show == 0)) progressbar_print();
@@ -153,7 +147,7 @@ List svsample_fast_cpp(
     // a single MCMC update: update indicators, latent volatilities,
     // and parameters ONCE
     update_fast_sv(log_data2_normal, mu, phi, sigma, h0, h, r, prior_spec, expert);
-    if (is_regression or is_heavy_tail) {
+    if (correct_model_specification or is_regression or is_heavy_tail) {
       exp_h_half_inv = arma::exp(-.5 * h);
     }
 
@@ -185,11 +179,21 @@ List svsample_fast_cpp(
 
 
     // store draws
-    if ((i >= 1) && !thinpara_round) {
-      save_para_sample(i / thinpara - 1, mu, phi, sigma, nu, beta, para_store, beta_store, is_regression);
+    double correction_weight_i = 1;
+    if ((not thinpara_round or not thinlatent_round) and correct_model_specification) {
+      correction_weight_i = fast_sv::compute_correction_weight(data_demean, log_data2_normal, h, 1/exp_h_half_inv);
     }
-    if ((i >= 1) && !thinlatent_round) {
+    if (i >= 1 and not thinpara_round) {
+      save_para_sample(i / thinpara - 1, mu, phi, sigma, nu, beta, para_store, beta_store, is_regression);
+      if (correct_model_specification) {
+        correction_weight_para[i / thinpara - 1] = correction_weight_i;
+      }
+    }
+    if (i >= 1 and not thinlatent_round) {
       save_latent_sample(i / thinlatent - 1, h0, h, tau, r, thintime, latent_length, latent0_store, latent_store, tau_store, r_store, keep_tau and is_heavy_tail, keep_r);
+      if (correct_model_specification) {
+        correction_weight_latent[i / thinlatent - 1] = correction_weight_i;
+      }
     }
   }  // END main MCMC loop
 
@@ -197,7 +201,7 @@ List svsample_fast_cpp(
 
   Rcpp::NumericMatrix latent0_store_mat(latent0_store.length(), 1);
   latent0_store_mat(_, 0) = latent0_store;
-  return cleanup(T, para_store, latent0_store_mat, latent_store, tau_store, beta_store, r_store);
+  return cleanup(T, para_store, latent0_store_mat, latent_store, tau_store, beta_store, r_store, correction_weight_para, correction_weight_latent);
 }
 
 arma::ivec arma_sign(

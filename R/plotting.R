@@ -465,8 +465,10 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
     chart_indices <- c(chart_indices, rep_len(index, length.out = npara))
     index <- index + 1L
   }
-  chart_indices <- c(chart_indices, index - 1L + seq_len(npara))  # parameter trace plots
-  index <- index + npara
+  if (!x$resampled) {
+    chart_indices <- c(chart_indices, index - 1L + seq_len(npara))  # parameter trace plots
+    index <- index + npara
+  }
   chart_indices <- c(chart_indices, index - 1L + seq_len(npara))  # parameter density plots
   index <- index + npara
   oldpar <- par(mfrow=c(1,1))  # 'layout' and 'par' do not play well together
@@ -478,7 +480,10 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
             forecastlty = forecastlty, col = col, tcl = tcl, mar = mar,
             mgp = mgp, simobj = simobj, newdata = newdata, ...)
   }
-  paratraceplot(x, mar = mar, mgp = mgp, simobj = simobj, ...)
+  if (!x$resampled) {
+    message("Traceplots are not shown after re-sampling")
+    paratraceplot(x, mar = mar, mgp = mgp, simobj = simobj, ...)
+  }
   paradensplot(x, showobs = showobs, showprior = showprior,
                showxlab = FALSE, mar = mar, mgp = mgp, simobj = simobj, ...)
   par(oldpar)
