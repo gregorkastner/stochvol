@@ -431,9 +431,14 @@ range.sv_infinity <- function (x, na.rm = FALSE, ...) {
 print.sv_priorspec <- function(x, ...) {
   cat("Prior distributions:\n")
   cat("mu        ~ "); print(x$mu)
-  cat("(phi+1)/2 ~ "); print(x$phi)
+  if (inherits(x$phi, "sv_beta")) {
+    cat("(phi+1)/2 ~ ")
+  } else {
+    cat("phi       ~ ")
+  }
+  print(x$phi)
   cat("sigma^2   ~ "); print(x$sigma2)
-  cat("nu        ~ "); print(x$nu)
+  cat("nu-2      ~ "); print(x$nu)
   cat("(rho+1)/2 ~ "); print(x$rho)
 }
 
