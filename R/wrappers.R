@@ -407,20 +407,20 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
   res$meanmodel <- meanmodel
   res$para_transform <- list(mu = function (x) {x},
-                             phi = function (x) {(x+1)/2},
+                             phi = if (inherits(priorspec$phi, "sv_beta")) function (x) {(x+1)/2} else function (x) {x},
                              sigma = function (x) {x^2},
-                             nu = function (x) {x-2},
-                             rho = function (x) {(x+1)/2})
+                             nu = if (inherits(priorspec$nu, "sv_exponential")) function (x) {x-2} else function (x) {x},
+                             rho = if (inherits(priorspec$rho, "sv_beta")) function (x) {(x+1)/2} else function (x) {x})
   res$para_inv_transform <- list(mu = function (x) {x},
-                                 phi = function (x) {2*x-1},
+                                 phi = if (inherits(priorspec$phi, "sv_beta")) function (x) {2*x-1} else function (x) {x},
                                  sigma = function (x) {sqrt(x)},
-                                 nu = function (x) {x+2},
-                                 rho = function (x) {2*x-1})
+                                 nu = if (inherits(priorspec$nu, "sv_exponential")) function (x) {x+2} else function (x) {x},
+                                 rho = if (inherits(priorspec$rho, "sv_beta")) function (x) {2*x-1} else function (x) {x})
   res$para_transform_det <- list(mu = function (x) {1},
-                                 phi = function (x) {.5},
+                                 phi = if (inherits(priorspec$phi, "sv_beta")) function (x) {.5} else function (x) {1},
                                  sigma = function (x) {2*x},
                                  nu = function (x) {1},
-                                 rho = function (x) {.5})
+                                 rho = if (inherits(priorspec$rho, "sv_beta")) function (x) {.5} else function (x) {1})
 
   if (keeptau) {
     res$tau <- coda::mcmc(res$tau, burnin+thinlatent, burnin+draws, thinlatent)
