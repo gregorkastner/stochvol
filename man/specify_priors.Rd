@@ -17,15 +17,17 @@ specify_priors(
 \arguments{
 \item{mu}{one of sv_normal and sv_constant}
 
-\item{phi}{one of sv_beta and sv_constant. If sv_beta, then the specified beta distribution is the prior on (phi+1)/2}
+\item{phi}{one of sv_beta, sv_normal, and sv_constant. If sv_beta, then the specified beta distribution is the prior for (phi+1)/2}
 
 \item{sigma2}{one of sv_gamma, sv_inverse_gamma, and sv_constant}
 
-\item{nu}{one of sv_infinity, sv_exponential, and sv_constant}
+\item{nu}{one of sv_infinity, sv_exponential, and sv_constant. If sv_exponential, then the specified exponential distribution is the prior for nu-2}
 
-\item{rho}{one of sv_beta and sv_constant}
+\item{rho}{one of sv_beta and sv_constant. If sv_beta, then the specified beta distribution is the prior for (rho+1)/2}
 
-\item{latent0_variance}{one of \code{"stationary"} and sv_normal}
+\item{latent0_variance}{either the character string \code{"stationary"} or an sv_constant object.
+If \code{"stationary"}, then h0 ~ N(\code{mu}, \code{sigma^2/(1-phi^2)}). If an sv_constant object with value \code{v}, then h0 ~ N(\code{mu}, \code{v}).
+Here, N(b, B) stands for mean b and variance B}
 
 \item{beta}{an sv_multinormal object}
 }

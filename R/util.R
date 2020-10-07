@@ -36,11 +36,13 @@ logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
 #' This function gives access to a larger set of prior distributions
 #' in case the default choice is unsatisfactory.
 #' @param mu one of sv_normal and sv_constant
-#' @param phi one of sv_beta and sv_constant. If sv_beta, then the specified beta distribution is the prior on (phi+1)/2
+#' @param phi one of sv_beta, sv_normal, and sv_constant. If sv_beta, then the specified beta distribution is the prior for (phi+1)/2
 #' @param sigma2 one of sv_gamma, sv_inverse_gamma, and sv_constant
-#' @param nu one of sv_infinity, sv_exponential, and sv_constant
-#' @param rho one of sv_beta and sv_constant
-#' @param latent0_variance one of \code{"stationary"} and sv_normal
+#' @param nu one of sv_infinity, sv_exponential, and sv_constant. If sv_exponential, then the specified exponential distribution is the prior for nu-2
+#' @param rho one of sv_beta and sv_constant. If sv_beta, then the specified beta distribution is the prior for (rho+1)/2
+#' @param latent0_variance either the character string \code{"stationary"} or an sv_constant object.
+#' If \code{"stationary"}, then h0 ~ N(\code{mu}, \code{sigma^2/(1-phi^2)}). If an sv_constant object with value \code{v}, then h0 ~ N(\code{mu}, \code{v}).
+#' Here, N(b, B) stands for mean b and variance B
 #' @param beta an sv_multinormal object
 #' @family priors
 #' @export
@@ -58,7 +60,7 @@ specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
   }
   enabled_distributions <-
     list(list(x = mu, name = "mu", whatlist = c("sv_constant", "sv_normal", "sv_constant")),
-         list(x = phi, name = "phi", whatlist = c("sv_constant", "sv_beta")),
+         list(x = phi, name = "phi", whatlist = c("sv_constant", "sv_beta", "sv_normal")),
          list(x = sigma2, name = "sigma2", whatlist = c("sv_constant", "sv_gamma", "sv_inverse_gamma")),
          list(x = nu, name = "nu", whatlist = c("sv_constant", "sv_infinity", "sv_exponential")),
          list(x = rho, name = "rho", whatlist = c("sv_constant", "sv_beta")),

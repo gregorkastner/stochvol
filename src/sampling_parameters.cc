@@ -140,7 +140,7 @@ SampledTheta draw_theta(
     const ExpertSpec_GeneralSV& expert,
     const ProposalDiffusionKen& diffusion_ken,
     const Parameterization parameterization) {
-  const std::array<double, 6> proposed = theta_propose_rwmh(mu, phi, sigma, rho, diffusion_ken, update_indicator);
+  const std::array<double, 6> proposed = theta_propose_rwmh(mu, phi, sigma, rho, prior_spec, diffusion_ken, update_indicator);
   const double mu_prop = proposed[0], phi_prop = proposed[1], sigma_prop = proposed[2],
     rho_prop = proposed[3], prop_old_logdens = proposed[4], prop_new_logdens = proposed[5];
   if (parameterization == Parameterization::NONCENTERED) {

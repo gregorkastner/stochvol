@@ -220,16 +220,18 @@ arma::vec4 theta_transform_inv(
     const double mu,
     const double phi,
     const double sigma,
-    const double rho);
+    const double rho,
+    const PriorSpec& prior_spec);
 
-// The transformation that is used to pull mu, phi,
-// sigma, and rho into the initial bounded space.
-// The inverse transformation of theta_transform_inv.
+// Propose the next value for vector <mu, phi, sigma, rho>
+// in the unbounded space. Also computes the log density
+// of the old and new parameter values.
 std::array<double, 6> theta_propose_rwmh(
     const double mu,
     const double phi,
     const double sigma,
     const double rho,
+    const PriorSpec& prior_spec,
     const ProposalDiffusionKen& diffusion_ken,
     const arma::uvec& update_indicator);
 

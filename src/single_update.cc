@@ -290,7 +290,7 @@ void update_general_sv(
       if (expert.adapt) {
         adaptation.register_sample(
             accepted,
-            general_sv::theta_transform_inv(mu, phi, sigma, rho).elem(arma::find(update_indicator)));  // current sample
+            general_sv::theta_transform_inv(mu, phi, sigma, rho, prior_spec).elem(arma::find(update_indicator)));  // current sample
       }
 
       if (accepted) {

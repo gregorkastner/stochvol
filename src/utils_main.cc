@@ -261,6 +261,10 @@ PriorSpec list_to_priorspec(
     priorspec.phi.distribution = PriorSpec::Phi::BETA;
     priorspec.phi.beta.alpha = priorphi["shape1"];
     priorspec.phi.beta.beta = priorphi["shape2"];
+  } else if (priorphi.inherits("sv_normal")) {
+    priorspec.phi.distribution = PriorSpec::Phi::NORMAL;
+    priorspec.phi.normal.mean = priorphi["mean"];
+    priorspec.phi.normal.sd = priorphi["sd"];
   } else if (priorphi.inherits("sv_constant")) {
     priorspec.phi.distribution = PriorSpec::Phi::CONSTANT;
     priorspec.phi.constant.value = priorphi["value"];

@@ -712,58 +712,55 @@ double theta_log_prior(
   return mu_density + phi_density + sigma_density + rho_density;
 }
 
-/*
-double thetamu_log_prior(
-    const double phi,
-    const double sigma,
-    const double rho,
-    const PriorSpec& prior_spec,
-    const ExpertSpec_GeneralSV& expert) {
-  // use variable names to clear the confusion about Gamma and InvGamma
-  //const double gammarate = prior_sigma2(1);
-  //const double gammascale = 1/gammarate;
-  //const double invgammascale = gammarate;
-  // Wikipedia notation: prior_sigma2(1) is beta in both the case of Gamma and of InvGamma
-  return 
-    
-    (gammaprior ?
-     sigma * logdgamma(std::pow(sigma, 2), prior_sigma2[0], prior_sigma2[1]) :  // WATCH OUT, sigma is the parameter!
-     // moment matched InvGamma
-     (-2. * std::log(sigma2) + logdinvgamma(1 / sigma2, prior_sigma2[0] + 2, prior_sigma2[1] / (prior_sigma2[0] * (prior_sigma2[0] + 1.)))));  // TODO I think this has been changed too fast; should be simply logdinvgamma(sigma2, ...)
-}
-*/
-
 arma::vec4 theta_transform(
     const double m,
     const double f,
     const double s,
-    const double r) {
-  return {m, 1 - 2/(std::exp(2 * f) + 1), std::exp(s), 1 - 2/(std::exp(2 * r) + 1)};
+    const double r,
+    const PriorSpec& prior_spec) {
+  return {
+    m,
+    prior_spec.phi.distribution == PriorSpec::Phi::BETA ? 1 - 2/(std::exp(2 * f) + 1) : f,
+    std::exp(s),
+    prior_spec.rho.distribution == PriorSpec::Rho::BETA ? 1 - 2/(std::exp(2 * r) + 1) : r};
 }
 
 arma::vec4 theta_transform_inv(
     const double mu,
     const double phi,
     const double sigma,
-    const double rho) {
-  return {mu, 0.5 * std::log(2. / (1 - phi) - 1), std::log(sigma), 0.5 * std::log(2. / (1 - rho) - 1)};
+    const double rho,
+    const PriorSpec& prior_spec) {
+  return {
+    mu,
+    prior_spec.phi.distribution == PriorSpec::Phi::BETA ? 0.5 * std::log(2. / (1 - phi) - 1) : phi,
+    std::log(sigma),
+    prior_spec.rho.distribution == PriorSpec::Rho::BETA ? 0.5 * std::log(2. / (1 - rho) - 1) : rho};
 }
 
 double theta_transform_log_det_jac(
     const double m,
     const double f,
     const double s,
-    const double r) {
+    const double r,
+    const PriorSpec& prior_spec) {
   static const double log4 = std::log(4.);
-  return 2 * (log4 + f + 0.5 * s + r - std::log((std::exp(2. * f) + 1.) * (std::exp(2. * r) + 1.)));
+  const double phi_part1 = prior_spec.phi.distribution == PriorSpec::Phi::BETA ? f : 0,
+               phi_part2 = prior_spec.phi.distribution == PriorSpec::Phi::BETA ? std::exp(2. * f) + 1. : 1;
+  const double rho_part1 = prior_spec.rho.distribution == PriorSpec::Rho::BETA ? r : 0,
+               rho_part2 = prior_spec.rho.distribution == PriorSpec::Rho::BETA ? std::exp(2. * r) + 1. : 1;
+  return 2 * (log4 + phi_part1 + 0.5 * s + rho_part1 - std::log(phi_part2 * rho_part2));
 }
 
 double theta_transform_inv_log_det_jac(
     const double mu,
     const double phi,
     const double sigma,
-    const double rho) {
-  return -(std::log((1. - std::pow(phi, 2)) * sigma * (1. - std::pow(rho, 2))));
+    const double rho,
+    const PriorSpec& prior_spec) {
+  const double phi_part = prior_spec.phi.distribution == PriorSpec::Phi::BETA ? 1. - std::pow(phi, 2) : 1,
+               rho_part = prior_spec.rho.distribution == PriorSpec::Rho::BETA ? 1. - std::pow(rho, 2) : 1;
+  return -std::log(phi_part * sigma * rho_part);
 }
 
 arma::vec rnorm_arma (const size_t size) {
@@ -777,11 +774,12 @@ std::array<double, 6> theta_propose_rwmh(
     const double phi,
     const double sigma,
     const double rho,
+    const PriorSpec& prior_spec,
     const ProposalDiffusionKen& diffusion_ken,
     const arma::uvec& update_indicator) {
   const arma::uvec update_index = arma::find(update_indicator);
   const arma::vec4 theta_old_full {mu, phi, sigma, rho};
-  const arma::vec4 theta_old_t_full = theta_transform_inv(mu, phi, sigma, rho);
+  const arma::vec4 theta_old_t_full = theta_transform_inv(mu, phi, sigma, rho, prior_spec);
 
   const arma::vec theta_old_t = theta_old_t_full.elem(update_index);
 
@@ -792,7 +790,7 @@ std::array<double, 6> theta_propose_rwmh(
     proposal_mean_old;
   arma::vec4 theta_new_t_full {theta_old_t_full};
   theta_new_t_full.elem(update_index) = theta_new_t;
-  const arma::vec4 theta_new_full = update_indicator % theta_transform(theta_new_t_full[0], theta_new_t_full[1], theta_new_t_full[2], theta_new_t_full[3]) +
+  const arma::vec4 theta_new_full = update_indicator % theta_transform(theta_new_t_full[0], theta_new_t_full[1], theta_new_t_full[2], theta_new_t_full[3], prior_spec) +
     (1u - update_indicator) % theta_old_full;
   
   const double mu_new = theta_new_full[0],
@@ -801,7 +799,7 @@ std::array<double, 6> theta_propose_rwmh(
                rho_new = theta_new_full[3];
 
   // Proposal density for theta_new given theta_old
-  const double theta_density_new = theta_transform_inv_log_det_jac(mu_new, phi_new, sigma_new, rho_new) +
+  const double theta_density_new = theta_transform_inv_log_det_jac(mu_new, phi_new, sigma_new, rho_new, prior_spec) +
     (-0.5) * arma::sum(arma::square(theta_new_t_standardized));
 
   // Proposal density for theta_old given theta_new
@@ -809,158 +807,11 @@ std::array<double, 6> theta_propose_rwmh(
   const arma::vec theta_old_t_standardized =
     1 / std::sqrt(diffusion_ken.get_scale()) * diffusion_ken.get_covariance_chol_inv() *
     (theta_old_t - proposal_mean_new);
-  const double theta_density_old = theta_transform_inv_log_det_jac(mu, phi, sigma, rho) +
+  const double theta_density_old = theta_transform_inv_log_det_jac(mu, phi, sigma, rho, prior_spec) +
     (-0.5) * arma::sum(arma::square(theta_old_t_standardized));
 
   return {mu_new, phi_new, sigma_new, rho_new, theta_density_old, theta_density_new};
 }
-
-/* 
-double dmvnorm_mala(
-    const arma::vec4& x_prime,
-    const arma::vec4& x,
-    const arma::vec4& grad_log_posterior,
-    const arma::mat44& A,  // preconditioning matrix
-    const arma::mat44& A_inv,
-    const double tau,
-    const bool log = false) {
-  const auto mean = x + tau * A * grad_log_posterior;
-  const arma::vec4 demeaned = x_prime - mean;
-  const double log_density = -0.25 * arma::as_scalar(demeaned.t() * A_inv * demeaned) / tau;
-  return log ? log_density : std::exp(log_density);
-}
-
-arma::mat44 crossprod(const arma::mat44 m) { return m.t() * m; }
-arma::mat44 tcrossprod(const arma::mat44 m) { return m * m.t(); }
-
-arma::vec6 theta_propose_mala(
-    const double phi,
-    const double rho,
-    const double sigma2,
-    const double mu,
-    const arma::vec& y,
-    const double h0,
-    const arma::vec& h,
-    const arma::vec2& prior_phi,
-    const arma::vec2& prior_rho,
-    const arma::vec2& prior_sigma2,
-    const arma::vec2& prior_mu,
-    const ProposalDiffusionKen& diffusion_ken) {
-  const arma::vec4 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu);
-
-  const arma::vec4 grad_old = grad_theta_log_posterior(phi, rho, sigma2, mu, y, h0, h, prior_phi, prior_rho, prior_sigma2, prior_mu) %
-    arma::vec4({1 - std::pow(phi, 2), 1 - std::pow(rho, 2), sigma2, 1});
-  const arma::vec4 proposal_mean_old =
-    theta_old_t +
-    diffusion_ken.get_scale() * diffusion_ken.get_covariance() * grad_old;
-  const arma::vec4 theta_new_t =
-    std::sqrt(2.) * std::sqrt(diffusion_ken.get_scale()) * diffusion_ken.get_covariance_chol() * rnorm_arma<4>() +
-    proposal_mean_old;
-  const arma::vec4 theta_new = theta_transform(theta_new_t(0), theta_new_t(1), theta_new_t(2), theta_new_t(3));
-  const double phi_new = theta_new(0), rho_new = theta_new(1), sigma2_new = theta_new(2), mu_new = theta_new(3);
-  const arma::vec4 grad_new = grad_theta_log_posterior(phi_new, rho_new, sigma2_new, mu_new, y, h0, h, prior_phi, prior_rho, prior_sigma2, prior_mu) %
-    arma::vec4({1 - std::pow(phi_new, 2), 1 - std::pow(rho_new, 2), sigma2_new, 1});
-
-  double theta_density_new = theta_transform_inv_log_det_jac(phi_new, rho_new, sigma2_new, mu_new) +
-    dmvnorm_mala(theta_new_t, theta_old_t, grad_old,
-        diffusion_ken.get_covariance(), diffusion_ken.get_precision(), diffusion_ken.get_scale(), true);
-  double theta_density_old = theta_transform_inv_log_det_jac(phi, rho, sigma2, mu) +
-    dmvnorm_mala(theta_old_t, theta_new_t, grad_new,
-        diffusion_ken.get_covariance(), diffusion_ken.get_precision(), diffusion_ken.get_scale(), true);
-
-  return {phi_new, rho_new, sigma2_new, mu_new, theta_density_old, theta_density_new};
-}
-
-arma::vec thetamu_propose(
-    const double phi,
-    const double rho,
-    const double sigma2,
-    const ProposalDiffusionKen& adaptation_proposal) {
-  const double mu = 0;
-  const arma::vec3 theta_old_t = theta_transform_inv(phi, rho, sigma2, mu).head(3);
-
-  const arma::vec3 &proposal_mean_old = theta_old_t;
-  const arma::vec3 theta_new_t_standardized = rnorm_arma<3>();
-  const arma::vec3 theta_new_t =
-    std::sqrt(adaptation_proposal.get_scale()) * adaptation_proposal.get_covariance_chol() * theta_new_t_standardized +
-    proposal_mean_old;
-  const arma::vec3 theta_new = theta_transform(theta_new_t[0], theta_new_t[1], theta_new_t[2], mu).head(3);
-  const double phi_new = theta_new[0], rho_new = theta_new[1], sigma2_new = theta_new[2];
-  double theta_density_new = theta_transform_inv_log_det_jac(phi_new, rho_new, sigma2_new, mu);
-  for (int i = 0; i < 3; i++) {
-    theta_density_new += -.5 * std::pow(theta_new_t_standardized[i], 2);  // dnorm(x, 0, 1, true)
-  }
-
-  const arma::vec &proposal_mean_new = theta_new_t;
-  const arma::vec theta_old_t_standardized =
-    1 / std::sqrt(adaptation_proposal.get_scale()) * adaptation_proposal.get_covariance_chol_inv() *
-    (theta_old_t - proposal_mean_new);
-  double theta_density_old = theta_transform_inv_log_det_jac(phi, rho, sigma2, mu);
-  for (int i = 0; i < 3; i++) {
-    theta_density_old += -.5 * std::pow(theta_old_t_standardized[i], 2);  // dnorm(x, 0, 1, true)
-  }
-
-  return {phi_new, rho_new, sigma2_new, theta_density_old, theta_density_new};
-}
-
-arma::vec4 grad_theta_log_posterior(
-    const double phi,
-    const double rho,
-    const double sigma2,
-    const double mu,
-    const arma::vec& y,
-    const double h0,  // TODO implement
-    const arma::vec& h,
-    const arma::vec2& prior_phi,
-    const arma::vec2& prior_rho,
-    const arma::vec2& prior_sigma2,
-    const arma::vec2& prior_mu) {
-  const int n = y.n_elem;
-  const double sigma = sqrt(sigma2);
-  // Grad of log likelihood
-  double d_phi = 0,
-         d_rho = 0,
-         d_sigma2 = 0,
-         d_mu = 0;
-  {  // p(h_0 | theta) and p(h_1 | h_0, theta)
-    const double h_tilde = (h0 - mu) / sigma;
-    d_phi += phi * (std::pow(h_tilde, 2) - 1 / (1 - std::pow(phi, 2)));
-    d_rho += 0;
-    d_sigma2 += .5 / sigma2 * ((1 - std::pow(phi, 2)) * std::pow(h_tilde, 2) - 1);
-    d_mu += (1 - std::pow(phi, 2)) * h_tilde / sigma;
-    const double delta = (h[0] - mu) / sigma - phi * h_tilde;
-    d_phi += h_tilde * delta;
-    d_rho += 0;
-    d_sigma2 += .5 / sigma2 * (std::pow(delta, 2) - 1);
-    d_mu += (1 - phi) * delta / sigma;
-  }
-  // p(h_{t+1} | h_t, theta) and p(y_t | h_{t+1}, h_t, theta)
-  const double rho2 = std::pow(rho, 2);
-  const double rho_const = 1 / (1 - rho2);
-  for (int t = 0; t < n-1; t++) {
-    const double y_h_const = y[t] * std::exp(-h[t] / 2),
-                 h_tilde = (h[t] - mu) / sigma,
-                 delta = (h[t+1] - mu) / sigma - phi * h_tilde,
-                 delta2 = std::pow(delta, 2),
-                 yhrd = -y_h_const + rho * delta;
-    d_phi += h_tilde * delta;
-    d_rho += 0;
-    d_sigma2 += .5 * (delta2 - 1) / sigma2;
-    d_mu += (1 - phi) * delta / sigma;
-    d_phi += rho_const * h_tilde * rho * yhrd;
-    d_rho += std::pow(rho_const, 2) * (-rho * std::pow(y_h_const, 2) + (1 + rho2) * y_h_const * delta - rho * delta2) - rho * rho_const;
-    d_sigma2 += .5 * rho_const * (rho * delta * yhrd) / sigma2;
-    d_mu += rho_const * (1 - phi) * rho * yhrd / sigma;
-  }
-  // Grad of log prior
-  const double phi_beta = .5 * (phi + 1), rho_beta = .5 * (rho + 1);
-  d_phi += .5 * ((prior_phi[0] - 1) / phi_beta - (prior_phi[1] - 1) / (1 - phi_beta));
-  d_rho += .5 * ((prior_rho[0] - 1) / rho_beta - (prior_rho[1] - 1) / (1 - rho_beta));
-  d_sigma2 += (prior_sigma2[0] - 1) / sigma2 - prior_sigma2[1];
-  d_mu += -(mu - prior_mu[0]) / std::pow(prior_mu[1], 2);
-  return {d_phi, d_rho, d_sigma2, d_mu};
-}
-*/
 
 }  // END namespace general_sv
 
