@@ -21,13 +21,11 @@
 #  refer to <http://www.gnu.org/licenses/>.
 #  #####################################################################################
 
-# R wrapper functions for the main MCMC loop
-
 #' Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility (SV)
 #' Model
 #' 
 #' \code{svsample} simulates from the joint posterior distribution of the SV
-#' parameters \code{mu}, \code{phi}, \code{sigma} (and potentially \code{nu}),
+#' parameters \code{mu}, \code{phi}, \code{sigma} (and potentially \code{nu} and \code{rho}),
 #' along with the latent log-volatilities \code{h_0,...,h_n} and returns the
 #' MCMC draws. If a design matrix is provided, simple Bayesian regression can
 #' also be conducted.
@@ -571,12 +569,14 @@ default_fast_sv <-
        mh_blocking_steps = 2,  # 1/2/3
        store_indicators = FALSE,
        update = list(latent_vector = TRUE, parameters = TRUE, mixture_indicators = TRUE),
-       init_indicators = 5)
+       init_indicators = 5,
+       init_tau = 1)
 #' @rdname svsample_cpp
 #' @export
 default_general_sv <-
   list(multi_asis = 5,  # positive integer
        starting_parameterization = "centered",  # "centered" or "noncentered"
        update = list(latent_vector = TRUE, parameters = TRUE),
+       init_tau = 1,
        proposal_diffusion_ken = FALSE)  # FALSE turns on adaptation
 

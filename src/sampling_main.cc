@@ -94,8 +94,14 @@ List svsample_fast_cpp(
   arma::vec h = startlatent;  // contains h1 to hT, but not h0!
   double h0 = startpara["latent0"];
   arma::vec beta = startpara["beta"];
-  arma::vec tau(T, arma::fill::ones);
-  const bool keep_r = expert_in["store_indicators"];
+  arma::vec tau = expert_in["init_tau"];
+  if (tau.n_elem == 1) {
+    const double tau_elem = tau[0];
+    tau.set_size(T);
+    tau.fill(tau_elem);
+  } else if (tau.n_elem != T) {
+    ::Rf_error("Bad initialization for the vector tau. Should have length %d, received length %d, first element %f", T, tau.n_elem, tau[0]);
+  }
   arma::uvec r = expert_in["init_indicators"];  // mixture indicators
   if (r.n_elem == 1) {
     const double r_elem = r[0];
@@ -116,6 +122,7 @@ List svsample_fast_cpp(
                   conditional_sd(data.n_elem, arma::fill::ones);
 
   // storage
+  const bool keep_r = expert_in["store_indicators"];
   const int para_draws = draws / thinpara + 1;
   Rcpp::NumericMatrix para_store(5, para_draws);
   Rcpp::NumericMatrix beta_store(p, is_regression * para_draws);
@@ -285,7 +292,14 @@ List svsample_general_cpp(
   double h0 = startpara["latent0"];
   arma::vec h = startlatent;
   arma::vec beta = startpara["beta"];
-  arma::vec tau(T, arma::fill::ones);
+  arma::vec tau = expert_in["init_tau"];
+  if (tau.n_elem == 1) {
+    const double tau_elem = tau[0];
+    tau.set_size(T);
+    tau.fill(tau_elem);
+  } else if (tau.n_elem != T) {
+    ::Rf_error("Bad initialization for the vector tau. Should have length %d, received length %d, first element %f", T, tau.n_elem, tau[0]);
+  }
 
   // keep some arrays cached
   arma::vec data_demean = is_regression ? data - X * beta : data,
@@ -362,7 +376,7 @@ List svsample_general_cpp(
 
     // update tau and nu
     if (is_heavy_tail) {
-      update_t_error(data_demean % exp_h_half_inv, tau, conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec);
+      update_t_error(data_demean % exp_h_half_inv, tau, conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec, false);  // TODO remove false
       // update cached data arrays after the regression
     }
 

@@ -290,6 +290,9 @@ validate_expert <- function (expert) {
                  "Fast SV expert argument 'init_indicators'",
                  "the allowed values")
 
+  assert_positive(expert$fast_sv$init_tau,
+                 "Fast SV expert argument 'init_tau'")
+
   ### general SV arguments
   assert_positive(expert$general_sv$multi_asis,
                   "General SV expert argument 'multi_asis'")
@@ -329,6 +332,9 @@ validate_expert <- function (expert) {
   } else if (!isTRUE(is.logical(expert$general_sv$proposal_diffusion_ken)) && !expert$general_sv$proposal_diffusion_ken) {
     stop("General SV expert argument 'proposal_diffusion_ken' (the second moment of the random proposal) should be either FALSE or a list with elements 'scale' and 'covariance'; received type ", typeof(expert$general_sv$proposal_diffusion_ken))
   }
+
+  assert_positive(expert$general_sv$init_tau,
+                 "General SV expert argument 'init_tau'")
 
   invisible(NULL)
 }

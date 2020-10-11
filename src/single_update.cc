@@ -145,8 +145,8 @@ double update_single_tau(
     const double nu,
     const bool do_tau_acceptance_rejection) {
   // Watch out, R::rgamma(shape, scale), not Rf_rgamma(shape, rate)
-  const double proposal_shape = (nu + 1) / 2,
-               proposal_scale = (nu - 2 + std::pow(homosked_data_i, 2)) / 2,
+  const double proposal_shape = (nu + 1) / 2.,
+               proposal_scale = (nu - 2 + std::pow(homosked_data_i, 2)) / 2.,
                tau_proposal_i = 1./R::rgamma(proposal_shape, 1 / proposal_scale);  // non-parallelizable
   if (do_tau_acceptance_rejection) {
     const double log_ar =
