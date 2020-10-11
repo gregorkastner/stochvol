@@ -69,8 +69,15 @@
 #' innovations only). This may be useful to check at what point(s) in time the
 #' normal disturbance had to be 'upscaled' by a mixture factor and when the
 #' series behaved 'normally'.
-#' @param quiet Logical value indicating whether the progress bar and other
-#' informative output during sampling should be omitted.
+#' @param print_settings List of three elements:
+#'  * quiet: logical value indicating whether the progress bar and other
+#' informative output during sampling should be omitted
+#'  * n_chains: number of independent MCMC chains
+#'  * chain: index of this chain
+#' Please note that this function does not run multiple independent chains
+#' but \code{svsample} offers different printing functionality depending on
+#' whether it is executed as part of several MCMC chains in parallel
+#' (chain specific messages) or simply as a single chain (progress bar).
 #' @param correct_model_misspecification Logical value. If \code{FALSE},
 #' then auxiliary mixture sampling is used to sample the latent
 #' states. If \code{TRUE}, extra computations are made to correct for model
@@ -113,13 +120,13 @@
 #' more general prior distributions are allowed in this case.
 #' @rdname svsample_cpp
 #' @export
-svsample_fast_cpp <- function(y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, quiet, correct_model_misspecification, interweave, myoffset, fast_sv) {
-    .Call(`_stochvol_svsample_fast_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, quiet, correct_model_misspecification, interweave, myoffset, fast_sv, PACKAGE = "stochvol")
+svsample_fast_cpp <- function(y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, fast_sv) {
+    .Call(`_stochvol_svsample_fast_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, fast_sv, PACKAGE = "stochvol")
 }
 #' @rdname svsample_cpp
 #' @export
-svsample_general_cpp <- function(y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, quiet, correct_model_misspecification, interweave, myoffset, general_sv) {
-    .Call(`_stochvol_svsample_general_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, quiet, correct_model_misspecification, interweave, myoffset, general_sv, PACKAGE = "stochvol")
+svsample_general_cpp <- function(y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, general_sv) {
+    .Call(`_stochvol_svsample_general_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, general_sv, PACKAGE = "stochvol")
 }
 
 get_omori_constants <- function() {

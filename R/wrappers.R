@@ -113,9 +113,22 @@
 #' \code{priornu} is not \code{0}, \code{startpara} must also contain an
 #' element named \code{nu} (the degrees of freedom parameter for the
 #' t-innovations). The default value is equal to the prior mean. 
+#' In case of parallel execution with \code{cl} provided, \code{startpara} can be a list of
+#' named lists that initialize the parallel chains.
 #' @param startlatent \emph{optional} vector of length \code{length(y)},
 #' containing the starting values for the latent log-volatility draws. The
 #' default value is \code{rep(-10, length(y))}.
+#' In case of parallel execution with \code{cl} provided, \code{startlatent} can be a list of
+#' named lists that initialize the parallel chains.
+#' @param parallel one of \code{"no"} (default), \code{"multicore"}, or \code{"snow"},
+#' indicating what type of parallellism is to be applied. Option
+#' \code{"multicore"} is not available on Windows.
+#' @param n_cpus \emph{optional} positive integer, the number of CPUs to be used in case of
+#' parallel computations. Defaults to \code{1L}. Ignored if parameter
+#' \code{cl} is supplied and \code{parallel != "snow"}.
+#' @param cl \emph{optional} so-called SNOW cluster object as implemented in package
+#' \code{parallel}. Ignored unless \code{parallel == "snow"}.
+#' @param n_chains positive integer specifying the number of independent MCMC chains
 #' @param expert \emph{optional} named list of expert parameters. For most
 #' applications, the default values probably work best. Interested users are
 #' referred to the literature provided in the References section. If
@@ -186,7 +199,10 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      priorbeta = c(0, 10000), priorlatent0 = "stationary",
                      priorspec = NULL,
                      thinpara = 1, thinlatent = 1, keeptime = "all",
-                     quiet = FALSE, startpara = NULL, startlatent = NULL, expert = NULL, ...) {
+                     quiet = FALSE, startpara = NULL, startlatent = NULL,
+                     parallel = c("no", "multicore", "snow"),
+                     n_cpus = 1L, cl = NULL, n_chains = 1L,
+                     expert = NULL, ...) {
 
   # Validation
   ## y
@@ -282,6 +298,52 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      all = 1L,
                      last = length(y))
 
+  ## parallel (strongly influenced by package 'boot')
+  parallel <- match.arg(parallel)
+  have_mc <- FALSE
+  have_snow <- FALSE
+  if (parallel != "no") {
+    if (parallel == "multicore") {
+      have_mc <- .Platform$OS.type != "windows"
+    } else if (parallel == "snow") {
+      have_snow <- TRUE
+    }
+    if (!have_mc && !have_snow) {
+      n_cpus <- 1L
+    }
+    requireNamespace("parallel")
+  }
+  create_cluster <- isTRUE(is.null(cl))
+  have_cluster <- isTRUE(inherits(cl, "SOCKcluster"))
+  if (have_snow && !create_cluster && !have_cluster) {
+    warning("Unknown type of input in parameter 'cl'. Should be either NULL or of class 'cluster' created by the parallel package. Turning off parallelism")
+    cl <- NULL
+    have_mc <- FALSE
+    have_snow <- FALSE
+    n_cpus <- 1L
+  }
+  if (have_snow && n_cpus == 1L && !have_cluster) {
+    warning("Inconsistent settings for parallel execution: snow parallelism combined with n_cpus == 1 and no supplied cluster object. Turning off parallelism")
+    have_snow <- FALSE
+  }
+  if (have_mc && n_cpus == 1L) {
+    warning("Inconsistent settings for parallel execution: multicore parallelism combined with n_cpus == 1. Turning off parallelism")
+    have_mc <- FALSE
+  }
+  n_workers <- if (have_snow) {
+    if (have_cluster) {
+      length(cl)
+    } else {
+      n_cpus
+    }
+  } else {
+    1L
+  }
+  assert_single(n_chains, "Parameter for number of chains")
+  assert_numeric(n_chains, "Parameter for number of chains")
+  n_chains <- as.integer(n_chains)
+  assert_positive(n_chains, "Parameter for number of chains")
+
   ## expert
   expertdefault <-
     list(correct_model_misspecification = FALSE,  # online correction for general_sv and post-correction for fast_sv
@@ -298,6 +360,14 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   general_sv <- expert$general_sv
 
   # Initial values
+  have_parallel_startpara <- !is.null(startpara) && isTRUE(all(sapply(startpara, is.list)))
+  have_parallel_startlatent <- !is.null(startlatent) && isTRUE(is.list(startlatent))
+  if (have_parallel_startpara && length(startpara) != n_chains) {
+    stop("Got list of lists for parameter 'startpara' of length ", length(startpara), " but the number of chains is ", n_chains, ". The two numbers should match.")
+  }
+  if (have_parallel_startlatent && length(startlatent) != n_chains) {
+    stop("Got list for parameter 'startlatent' of length ", length(startlatent), " but the number of chains is ", n_chains, ". The two numbers should match.")
+  }
   startparadefault <-
     list(mu = mean(priorspec$mu),  # init_mu
          phi = if (inherits(priorspec$phi, "sv_beta")) 2 * mean(priorspec$phi) - 1 else mean(priorspec$phi),
@@ -306,9 +376,17 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
          rho = if (inherits(priorspec$rho, "sv_beta")) 2 * mean(priorspec$rho) - 1 else mean(priorspec$rho),
          beta = mean(priorspec$beta),
          latent0 = -10)
-  startlatentdefault <- rep.int(-10, length(y))
-  startpara <- apply_default_list(startpara, startparadefault)
-  startlatent <- apply_default_list(startlatent, startlatentdefault)
+  startlatentdefault <- rep.int(startparadefault$mu, length(y))
+  startpara <- if (have_parallel_startpara) {
+    lapply(startpara, function (x, def) apply_default_list(x, def), def = startparadefault)
+  } else {
+    replicate(n_chains, apply_default_list(startpara, startparadefault), simplify = FALSE)
+  }
+  startlatent <- if (have_parallel_startlatent) {
+    lapply(startlatent, function (x, def) apply_default_list(x, def), def = startlatentdefault)
+  } else {
+    replicate(n_chains, apply_default_list(startlatent, startlatentdefault), simplify = FALSE)
+  }
   validate_initial_values(startpara, startlatent, y, designmatrix)
 
   # Decision about the sampler
@@ -325,8 +403,38 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     # prior for sigma is gamma(0.5, _)
     (inherits(priorspec$sigma2, "sv_gamma") && priorspec$sigma2$shape == 0.5)
 
-  # Call sampler
+  # Pick sampling function
   myquiet <- (.Platform$OS.type != "unix") || quiet  # Hack to prevent console flushing problems with Windows
+  sampling_function <- if (use_fast_sv) {
+    function (chain) {
+      res <- stochvol::svsample_fast_cpp(y, draws, burnin, designmatrix, priorspec,
+                                         thinpara, thinlatent, keeptime,
+                                         startpara[[chain]], startlatent[[chain]], keeptau,
+                                         list(quiet = myquiet, chain = chain, n_chains = n_chains),
+                                         correct_model_misspecification, interweave, myoffset, fast_sv)
+      if (correct_model_misspecification) {
+        para_indices <- sample.int(n = NROW(res$para), size = NROW(res$para), replace = TRUE, prob = res$correction_weight_para, useHash = FALSE)
+        res$para <- res$para[para_indices, , drop = FALSE]
+        latent_indices <- if (thinpara == thinlatent) {  # same re-sampling if thinning is the same
+          para_indices
+        } else {  # separate re-sampling if thinning is different => WARNING! joint distribution of para and latent is gone!
+          sample.int(n = NROW(res$latent), size = NROW(res$latent), replace = TRUE, prob = res$correction_weight_latent, useHash = FALSE)
+        }
+        res$latent <- res$latent[latent_indices, , drop = FALSE]
+      }
+      res
+    }
+  } else {
+    function (chain) {
+      stochvol::svsample_general_cpp(y, draws, burnin, designmatrix, priorspec,
+                                     thinpara, thinlatent, keeptime,
+                                     startpara[[chain]], startlatent[[chain]], keeptau,
+                                     list(quiet = myquiet, chain = chain, n_chains = n_chains),
+                                     correct_model_misspecification, interweave, myoffset, general_sv)
+    }
+  }
+
+  # Print sampling info
   if (use_fast_sv) {
     para <- 1 + (fast_sv$baseline_parameterization == "noncentered") + 2 * interweave
     parameterization <- c("centered", "noncentered", "GIS_C", "GIS_NC")[para]
@@ -334,28 +442,6 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     if (!quiet) {
       cat(paste("\nCalling ", parameterization, " MCMC sampler with ", draws+burnin, " iter. Series length is ", length(y), ".\n",sep=""), file=stderr())
       flush.console()
-    }
-
-    runtime <- system.time(res <-
-      svsample_fast_cpp(y, draws, burnin, designmatrix, priorspec,
-                        thinpara, thinlatent, keeptime,
-                        startpara, startlatent, keeptau, myquiet,
-                        correct_model_misspecification, interweave,
-                        myoffset, fast_sv))
-    if (correct_model_misspecification) {
-      para_indices <- sample.int(n = NROW(res$para), size = NROW(res$para), replace = TRUE, prob = res$correction_weight_para, useHash = FALSE)
-      res$para <- res$para[para_indices, , drop = FALSE]
-      latent_indices <- if (thinpara == thinlatent) {  # same re-sampling if thinning is the same
-        para_indices
-      } else {  # separate re-sampling if thinning is different => WARNING! joint distribution of para and latent is gone!
-        sample.int(n = NROW(res$latent), size = NROW(res$latent), replace = TRUE, prob = res$correction_weight_latent, useHash = FALSE)
-      }
-      res$latent <- res$latent[latent_indices, , drop = FALSE]
-
-      # Re-sample para and latent
-      res$resampled <- TRUE
-    } else {
-      res$resampled <- FALSE
     }
   } else {
     strategies <- if (interweave) c("centered", "noncentered") else expert$general_sv$starting_parameterization
@@ -366,15 +452,40 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
       cat(paste("\nCalling ", asisprint(renameparam[parameterization], renameparam), " MCMC sampler with ", draws+burnin, " iter. Series length is ", length(y), ".\n",sep=""), file=stderr())
       flush.console()
     }
-
-    runtime <- system.time(res <-
-      svsample_general_cpp(y, draws, burnin, designmatrix, priorspec,
-                           thinpara, thinlatent, keeptime,
-                           startpara, startlatent, keeptau, quiet,
-                           correct_model_misspecification, interweave,
-                           myoffset, general_sv))
-    res$resampled <- FALSE
   }
+
+  # Call sampler
+  runtime <- system.time(reslist <-
+    if ((n_cpus > 1L || have_cluster) && (have_mc || have_snow)) {
+      if (have_mc) {
+        parallel::mclapply(seq_len(n_chains), sampling_function, mc.cores = n_cpus)
+      } else if (have_snow) {
+        list(...) # evaluate any promises
+        if (create_cluster) {
+          cl <- parallel::makePSOCKcluster(rep("localhost", n_workers), outfile = NULL)
+        }
+        RNGkind(kind = "L'Ecuyer-CMRG")
+        parallel::clusterSetRNGStream(cl)
+        parallel::clusterExport(cl, c("y", "draws", "burnin", "designmatrix", "priorspec",
+                                      "thinpara", "thinlatent", "keeptime",
+                                      "startpara", "startlatent", "keeptau",
+                                      "myquiet", "n_chains",
+                                      "correct_model_misspecification", "interweave", "myoffset",
+                                      "fast_sv", "general_sv"),
+                                envir = environment())
+        if (create_cluster) {
+          reslist <- tryCatch(parallel::parLapply(cl, seq_len(n_chains), sampling_function),
+                              finally = parallel::stopCluster(cl))
+          reslist
+        } else {
+          parallel::parLapply(cl, seq_len(n_chains), sampling_function)
+        }
+      }
+    } else {
+      lapply(seq_len(n_chains), sampling_function)
+    }
+  )
+  res <- list()
   class(res) <- "svdraws"
 
   # Process results
@@ -386,7 +497,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     cat("Timing (elapsed): ", file=stderr())
     cat(runtime["elapsed"], file=stderr())
     cat(" seconds.\n", file=stderr())
-    cat(round((draws+burnin)/runtime[3]), "iterations per second.\n\n", file=stderr())
+    cat(round((draws+burnin)*n_chains/runtime[3]), "iterations per second.\n\n", file=stderr())
     cat("Converting results to coda objects... ", file=stderr())
   }
 
@@ -395,19 +506,19 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   res$y <- y
   res$y_orig <- y_orig
   res$simobj <- simobj
-  res$para <- coda::mcmc.list(list(coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)))
-  res$latent <- coda::mcmc.list(list(coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)))
-  res$latent0 <- coda::mcmc.list(list(coda::mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)))
+  res$para <- coda::mcmc.list(lapply(reslist, function (x, d, b, th) coda::mcmc(x$para, b+th, b+d, th), d=draws, b=burnin, th=thinpara))
+  res$latent <- coda::mcmc.list(lapply(reslist, function (x, d, b, th) coda::mcmc(x$latent, b+th, b+d, th), d=draws, b=burnin, th=thinlatent))
+  res$latent0 <- coda::mcmc.list(lapply(reslist, function (x, d, b, th) coda::mcmc(x$latent0, b+th, b+d, th), d=draws, b=burnin, th=thinlatent))
   res$thinning <- list(para = thinpara, latent = thinlatent, time = keeptime)
   res$priors <- priorspec
   if (!any(is.na(designmatrix))) {
-    res$beta <- coda::mcmc.list(list(coda::mcmc(res$beta, burnin+thinpara, burnin+draws, thinpara)))
+    res$beta <- coda::mcmc.list(lapply(reslist, function (x, d, b, th) coda::mcmc(x$beta, b+th, b+d, th), d=draws, b=burnin, th=thinpara))
     res$designmatrix <- designmatrix
   } else {
     res$beta <- NULL
   }
   if (keeptau) {
-    res$tau <- coda::mcmc.list(list(coda::mcmc(res$tau, burnin+thinlatent, burnin+draws, thinlatent)))
+    res$tau <- coda::mcmc.list(lapply(reslist, function (x, d, b, th) coda::mcmc(x$tau, b+th, b+d, th), d=draws, b=burnin, th=thinlatent))
   } else {
     res$tau <- NULL
   }
@@ -427,6 +538,11 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  sigma = function (x) {2*x},
                                  nu = function (x) {1},
                                  rho = if (inherits(priorspec$rho, "sv_beta")) function (x) {.5} else function (x) {1})
+  res$resampled <- use_fast_sv && correct_model_misspecification
+  if (res$resampled) {
+    res$correction_weight_para <- lapply(reslist, function (x) x$correction_weight_para)
+    res$correction_weight_latent <- lapply(reslist, function (x) x$correction_weight_latent)
+  }
 
   if (!quiet) {
     cat("Done!\n", file=stderr())

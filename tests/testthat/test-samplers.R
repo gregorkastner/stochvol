@@ -65,7 +65,8 @@ test_that("vanilla SV passes Geweke test", {
       y <- sample(c(-1, 1), len, replace = TRUE) * exp(0.5 * rnorm(len, m[z], v[z])) * exp(0.5 * startlatent)
       res <- svsample_fast_cpp(y, 1L, 30L, designmatrix, priorspec,
                                1L, 1L, "all",
-                               startpara, startlatent, FALSE, TRUE,
+                               startpara, startlatent, keeptau = FALSE,
+                               print_settings = list(quiet = TRUE, chain = 1, n_chains = 1),
                                correct_model_misspecification = FALSE,
                                interweave = FALSE,
                                myoffset = 0,
@@ -144,14 +145,17 @@ test_that("general SV passes Geweke test", {
     general_sv$starting_parameterization <- if (centered) "centered" else "noncentered"
 
     # pre-run to get a good proposal
+    print_settings <- list(quiet = TRUE, chain = 1, n_chains = 1)
     data <- svsim(len, mu = startpara$mu, phi = startpara$phi, sigma = startpara$sigma, rho = startpara$rho)
     startlatent <- 2 * log(data$vol)
     y <- data$y
     res <- svsample_general_cpp(y, 60000L, 0L, designmatrix, priorspec,
                                 1L, 1L, "all",
-                                startpara, startlatent, FALSE, TRUE,
-                                FALSE, TRUE,
-                                0, general_sv)
+                                startpara, startlatent, keeptau = FALSE,
+                                print_settings = print_settings,
+                                correct_model_misspecification = FALSE,
+                                interweave = TRUE,
+                                myoffset = 0, general_sv = general_sv)
 
     expect_gt(tail(res$adaptation[[general_sv$starting_parameterization]]$history[, "Acceptance Rate"], 1), 0.05)
 
@@ -170,7 +174,9 @@ test_that("general SV passes Geweke test", {
         y[len] <- exp(0.5 * tail(startlatent, 1)) * rnorm(1)
         res <- svsample_general_cpp(y, 1L, 0L, designmatrix, priorspec,
                                     1L, 1L, "all",
-                                    startpara, startlatent, FALSE, TRUE,
+                                    startpara, startlatent,
+                                    keeptau = FALSE,
+                                    print_settings = print_settings,
                                     correct_model_misspecification = TRUE,
                                     interweave = FALSE,
                                     myoffset = 0,

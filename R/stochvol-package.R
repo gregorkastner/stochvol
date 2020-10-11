@@ -100,6 +100,7 @@ NULL
 #' @importFrom stats cov rt rgamma rnorm sd IQR density time lowess dnorm dbeta dgamma dexp qnorm qt ppoints ts.plot median quantile predict plot.ts qqline qqnorm qqplot
 #' @importFrom coda mcmc nvar niter varnames traceplot mcmc.list nvar nchain effectiveSize mcpar
 #' @importFrom Rcpp sourceCpp
+#' @importFrom parallel parLapply stopCluster clusterSetRNGStream makePSOCKcluster mclapply makeCluster clusterExport
 #' @note This package is currently in active development. Your comments,
 #' suggestions and requests are warmly welcome!
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}, Darjus Hosszejni \email{darjus.hosszejni@@wu.ac.at}

@@ -176,34 +176,46 @@ validate_thinning <- function (thinpara, thinlatent, keeptime) {
 }
 
 validate_initial_values <- function (startpara, startlatent, y, x) {
-  assert_element(names(startpara), c("mu", "phi", "sigma", "nu", "rho", "beta", "latent0"),
-                 "Elements of argument 'startpara'", "parameters of the model")
+  if (!isTRUE(is.list(startpara))) stop("Failed validation: startpara should be a list.")
+  if (!isTRUE(all(sapply(startpara, is.list)))) stop("Failed validation: startpara should be a list of lists.")
 
-  assert_single(startpara$mu, "Provided initial value for parameter mu in 'startpara'")
-  assert_numeric(startpara$mu, "Provided initial value for parameter mu in 'startpara'")
+  if (!isTRUE(is.list(startlatent))) stop("Failed validation: startlatent should be a list.")
+  if (!isTRUE(all(sapply(startlatent, length) == length(startlatent[[1]])))) stop("Failed validation: elements of startlatent should be of same length.")
 
-  assert_single(startpara$phi, "Provided initial value for parameter phi in 'startpara'")
-  assert_gt(startpara$phi, -1, "Provided initial value for parameter phi in 'startpara'")
-  assert_lt(startpara$phi, 1, "Provided initial value for parameter phi in 'startpara'")
+  lapply(startpara, function (startpara_i, designmatrix) {
+    assert_element(names(startpara_i), c("mu", "phi", "sigma", "nu", "rho", "beta", "latent0"),
+                   "Elements of argument 'startpara'", "parameters of the model")
 
-  assert_single(startpara$sigma, "Provided initial value for parameter sigma in 'startpara'")
-  assert_positive(startpara$sigma, "Provided initial value for parameter sigma in 'startpara'")
+    assert_single(startpara_i$mu, "Provided initial value for parameter mu in 'startpara'")
+    assert_numeric(startpara_i$mu, "Provided initial value for parameter mu in 'startpara'")
 
-  assert_single(startpara$nu, "Provided initial value for parameter nu in 'startpara'")
-  assert_gt(startpara$nu, 2, "Provided initial value for parameter nu in 'startpara'")
+    assert_single(startpara_i$phi, "Provided initial value for parameter phi in 'startpara'")
+    assert_gt(startpara_i$phi, -1, "Provided initial value for parameter phi in 'startpara'")
+    assert_lt(startpara_i$phi, 1, "Provided initial value for parameter phi in 'startpara'")
 
-  assert_single(startpara$rho, "Provided initial value for parameter rho in 'startpara'")
-  assert_gt(startpara$rho, -1, "Provided initial value for parameter rho in 'startpara'")
-  assert_lt(startpara$rho, 1, "Provided initial value for parameter rho in 'startpara'")
+    assert_single(startpara_i$sigma, "Provided initial value for parameter sigma in 'startpara'")
+    assert_positive(startpara_i$sigma, "Provided initial value for parameter sigma in 'startpara'")
 
-  assert_length(startpara$beta, NCOL(x), "Provided initial values for the regressors beta in 'startpara'")
-  assert_numeric(startpara$beta, "Provided initial values for the regressors beta in 'startpara'")
+    assert_single(startpara_i$nu, "Provided initial value for parameter nu in 'startpara'")
+    assert_gt(startpara_i$nu, 2, "Provided initial value for parameter nu in 'startpara'")
 
-  assert_single(startpara$latent0, "Provided initial value for parameter latent0 in 'startpara'")
-  assert_numeric(startpara$latent0, "Provided initial value for parameter latent0 in 'startpara'")
+    assert_single(startpara_i$rho, "Provided initial value for parameter rho in 'startpara'")
+    assert_gt(startpara_i$rho, -1, "Provided initial value for parameter rho in 'startpara'")
+    assert_lt(startpara_i$rho, 1, "Provided initial value for parameter rho in 'startpara'")
 
-  assert_length(startlatent, length(y), "Argument 'startlatent'")
-  assert_numeric(startlatent, "Argument 'startlatent'")
+    assert_length(startpara_i$beta, NCOL(designmatrix), "Provided initial values for the regressors beta in 'startpara'")
+    assert_numeric(startpara_i$beta, "Provided initial values for the regressors beta in 'startpara'")
+
+    assert_single(startpara_i$latent0, "Provided initial value for parameter latent0 in 'startpara'")
+    assert_numeric(startpara_i$latent0, "Provided initial value for parameter latent0 in 'startpara'")
+  }, designmatrix = x)
+
+  lapply(startlatent, function (startlatent_i, observations) {
+    assert_length(startlatent_i, length(observations), "Argument 'startlatent'")
+    assert_numeric(startlatent_i, "Argument 'startlatent'")
+  }, observations = y)
+
+  invisible(NULL)
 }
 
 validate_expert <- function (expert) {
@@ -317,5 +329,7 @@ validate_expert <- function (expert) {
   } else if (!isTRUE(is.logical(expert$general_sv$proposal_diffusion_ken)) && !expert$general_sv$proposal_diffusion_ken) {
     stop("General SV expert argument 'proposal_diffusion_ken' (the second moment of the random proposal) should be either FALSE or a list with elements 'scale' and 'covariance'; received type ", typeof(expert$general_sv$proposal_diffusion_ken))
   }
+
+  invisible(NULL)
 }
 

@@ -55,7 +55,7 @@ List svsample_fast_cpp(
     const Rcpp::List& startpara,
     const arma::vec& startlatent,
     const bool keep_tau,
-    const bool quiet,
+    const Rcpp::List print_settings,
     const bool correct_model_specification,
     const bool interweave,
     const double offset,
@@ -80,7 +80,11 @@ List svsample_fast_cpp(
   const int N = burnin + draws;
 
   // verbosity control
-  const bool verbose = !quiet;
+  const int chain = print_settings["chain"],
+            n_chains = print_settings["n_chains"];
+  const bool quiet = print_settings["quiet"],
+             verbose = !quiet,
+             single_chain = n_chains == 1;
 
   // initialize the variables:
   double mu = startpara["mu"],
@@ -107,6 +111,7 @@ List svsample_fast_cpp(
   arma::vec data_demean = is_regression ? data - X * beta : data,
             log_data2_normal = arma::log(arma::square(data_demean) / tau),  // standardized "data" (different for t-errors, "normal data")
             exp_h_half_inv;
+  clamp_log_data2(log_data2_normal);
   const arma::vec conditional_mean(data.n_elem, arma::fill::zeros),
                   conditional_sd(data.n_elem, arma::fill::ones);
 
@@ -131,7 +136,13 @@ List svsample_fast_cpp(
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
   int show = 0;
-  if (verbose) show = progressbar_init(N);
+  if (verbose) {
+    if (single_chain) {
+      show = progressbar_init(N);
+    } else {
+      show = chain_print_init(chain, burnin, draws);
+    }
+  }
 
   for (int i = -burnin + 1; i < draws + 1; i++) {  // BEGIN main MCMC loop
     if (i % 20 == 0) {
@@ -142,7 +153,13 @@ List svsample_fast_cpp(
     const bool thinlatent_round = (thinlatent > 1) and (i % thinlatent != 0);  // is this a latent thinning round?
 
     // print a progress sign every "show" iterations
-    if (verbose && (i % show == 0)) progressbar_print();
+    if (verbose and i % show == 0) {
+      if (single_chain) {
+        progressbar_print();
+      } else {
+        show = chain_print(chain, i, burnin, draws);
+      }
+    }
 
     // a single MCMC update: update indicators, latent volatilities,
     // and parameters ONCE
@@ -171,8 +188,10 @@ List svsample_fast_cpp(
       } else {
         log_data2_normal = arma::log(arma::square(data_demean));
       }
+      clamp_log_data2(log_data2_normal);
     } else if (is_heavy_tail) {
       log_data2_normal = arma::log(arma::square(data_demean) / tau);
+      clamp_log_data2(log_data2_normal);
     } else {
       ;  // no update needed
     }
@@ -197,7 +216,13 @@ List svsample_fast_cpp(
     }
   }  // END main MCMC loop
 
-  if (verbose) progressbar_finish(N);  // finalize progress bar
+  if (verbose) {
+    if (single_chain) {
+      progressbar_finish(N);  // finalize progress bar
+    } else {
+      chain_print_finish(chain);
+    }
+  }
 
   Rcpp::NumericMatrix latent0_store_mat(latent0_store.length(), 1);
   latent0_store_mat(_, 0) = latent0_store;
@@ -225,7 +250,7 @@ List svsample_general_cpp(
     const Rcpp::List& startpara,
     const arma::vec& startlatent,
     const bool keep_tau,
-    const bool quiet,
+    const Rcpp::List print_settings,
     const bool correct_model_specification,
     const bool interweave,
     const double offset,
@@ -242,11 +267,14 @@ List svsample_general_cpp(
              is_heavy_tail = prior_spec.nu.distribution != PriorSpec::Nu::INFINITE,
              is_leverage = not(prior_spec.rho.distribution == PriorSpec::Rho::CONSTANT and prior_spec.rho.constant.value == 0);
 
-  const bool verbose = !quiet;
   const int thintime = determine_thintime(T, keeptime_in);
 
-  // t-errors:
-  arma::vec tau(T, arma::fill::ones);
+  // verbosity control
+  const int chain = print_settings["chain"],
+            n_chains = print_settings["n_chains"];
+  const bool quiet = print_settings["quiet"],
+             verbose = !quiet,
+             single_chain = n_chains == 1;
 
   // starting values
   double mu = startpara["mu"];
@@ -257,12 +285,14 @@ List svsample_general_cpp(
   double h0 = startpara["latent0"];
   arma::vec h = startlatent;
   arma::vec beta = startpara["beta"];
+  arma::vec tau(T, arma::fill::ones);
 
   // keep some arrays cached
   arma::vec data_demean = is_regression ? data - X * beta : data,
             data_demean_normal = data_demean / arma::sqrt(tau),  // standardized "data" (different for t-errors, "normal data")
             log_data2_normal = arma::log(arma::square(data_demean_normal)),
             exp_h_half_inv;
+  clamp_log_data2(log_data2_normal);
   arma::ivec d = arma_sign(data_demean);
   auto conditional_moments = decorrelate(mu, phi, sigma, rho, h);
 
@@ -295,7 +325,14 @@ List svsample_general_cpp(
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
-  const int show = verbose ? progressbar_init(N) : 0;
+  int show = 0;
+  if (verbose) {
+    if (single_chain) {
+      show = progressbar_init(N);
+    } else {
+      show = chain_print_init(chain, burnin, draws);
+    }
+  }
 
   for (int i = -burnin+1; i < draws+1; i++) {
     if (i % 20 == 0) {
@@ -306,7 +343,13 @@ List svsample_general_cpp(
                thinlatent_round = (thinlatent > 1) and (i % thinlatent != 0);  // is this a latent thinning round?
 
     // print a progress sign every "show" iterations
-    if (verbose && (i % show == 0)) progressbar_print();
+    if (verbose and i % show == 0) {
+      if (single_chain) {
+        progressbar_print();
+      } else {
+        show = chain_print(chain, i, burnin, draws);
+      }
+    }
 
     // update theta and h
     update_general_sv(data_demean_normal, log_data2_normal, d, mu, phi, sigma, rho, h0, h, adaptation_collection, prior_spec, expert);
@@ -338,9 +381,11 @@ List svsample_general_cpp(
       } else {
         log_data2_normal = arma::log(arma::square(data_demean));
       }
+      clamp_log_data2(log_data2_normal);
     } else if (is_heavy_tail) {
       data_demean_normal = data_demean / arma::sqrt(tau);
       log_data2_normal = arma::log(arma::square(data_demean_normal));
+      clamp_log_data2(log_data2_normal);
     } else {
       ;  // no update needed
     }
@@ -354,7 +399,13 @@ List svsample_general_cpp(
     }
   }
 
-  if (verbose) progressbar_finish(N);  // finalize progress bar
+  if (verbose) {
+    if (single_chain) {
+      progressbar_finish(N);  // finalize progress bar
+    } else {
+      chain_print_finish(chain);
+    }
+  }
 
   Rcpp::NumericMatrix latent0_store_mat(latent0_store.length(), 1);
   latent0_store_mat(_, 0) = latent0_store;

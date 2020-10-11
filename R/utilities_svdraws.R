@@ -299,10 +299,10 @@ summary.svdraws <- function (object, showpara = TRUE, showlatent = TRUE, ...) {
     ret$latent <- rbind("h_0" = latent0(object$summary), ret$latent)
   }
   if (isTRUE(object$resampled)) {
-    ret$resampled <- list(para = list(max_entropy = log(length(object$correction_weight_para)),
-                                      entropy = -sum(object$correction_weight_para * log(object$correction_weight_para))),
-                          latent = list(max_entropy = log(length(object$correction_weight_latent)),
-                                        entropy = -sum(object$correction_weight_latent * log(object$correction_weight_latent))),
+    ret$resampled <- list(para = list(max_entropy = log(length(object$correction_weight_para[[1]])),
+                                      entropy = min(sapply(object$correction_weight_para, function (w) -sum(w * log(w))))),
+                          latent = list(max_entropy = log(length(object$correction_weight_latent[[1]])),
+                                        entropy = min(sapply(object$correction_weight_latent, function (w) -sum(w * log(w))))),
                           same_resampling = object$thinning$para == object$thinning$latent)
   }
   ret

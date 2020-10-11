@@ -56,7 +56,7 @@ struct AsymmetricConditionalMoments {
   arma::vec conditional_sd;
 };
 inline
-AsymmetricConditionalMoments decorrelate (  // TODO update for new t-errors
+AsymmetricConditionalMoments decorrelate (
     const double mu,
     const double phi,
     const double sigma,
@@ -76,6 +76,15 @@ AsymmetricConditionalMoments decorrelate (  // TODO update for new t-errors
     it_h++;
   }
   return {std::move(mean), std::move(sd)};
+}
+
+// Avoid values of -inf
+inline
+void clamp_log_data2(
+    arma::vec& log_data2) {
+  // -100 ~= log(4e-44)
+  static const auto my_clamp { [](double& value) { value = std::max(value, -100.0); } };
+  std::for_each(log_data2.begin(), log_data2.end(), my_clamp);
 }
 
 namespace fast_sv {
@@ -219,6 +228,66 @@ void progressbar_print() {
 // Finalizes progress bar
 void progressbar_finish(
     const int N);
+
+// Sets up parallel print
+inline
+int chain_print_init(
+    const int chain,
+    const int burnin,
+    const int draws) {
+  ::REprintf("Chain %d starting\n", chain);
+  ::R_FlushConsole();
+  const int next_big_checkpoint = burnin <= 0 ? draws : burnin;
+  if (next_big_checkpoint < 50) {
+    return next_big_checkpoint;
+  } else if (next_big_checkpoint < 200) {
+    return next_big_checkpoint / 2;
+  } else if (next_big_checkpoint < 500) {
+    return next_big_checkpoint / 5;
+  } else {
+    return next_big_checkpoint / 10;
+  }
+}
+
+// Prints progress for parallel chains
+inline
+int chain_print(
+    const int chain,
+    const int i,
+    const int burnin,
+    const int draws) {
+  if (i < 0) {
+    ::REprintf("Chain %d at iteration %d / %d (warmup)\n", chain, i+burnin, burnin+draws);
+  } else {
+    ::REprintf("Chain %d at iteration %d / %d (sampling)\n", chain, i+burnin, burnin+draws);
+  }
+  ::R_FlushConsole();
+  const int next_big_checkpoint = i < 0 ? burnin : draws,
+            remaining = std::abs(next_big_checkpoint - i);
+  int step;
+  if (next_big_checkpoint < 50) {
+    step = next_big_checkpoint;
+  } else if (next_big_checkpoint < 200) {
+    step = next_big_checkpoint / 2;
+  } else if (next_big_checkpoint < 500) {
+    step = next_big_checkpoint / 5;
+  } else {
+    step = next_big_checkpoint / 10;
+  }
+  if (remaining <= step) {
+    return remaining;
+  } else {
+    return step;
+  }
+}
+
+// Finalizes parallel print
+inline
+void chain_print_finish(
+    const int chain) {
+  ::REprintf("Chain %d done\n", chain);
+  ::R_FlushConsole();
+}
 
 // Transform an R priorspec list to its corresponding
 // C++ object

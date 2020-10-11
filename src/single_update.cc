@@ -272,7 +272,6 @@ void update_general_sv(
 
     arma::vec exp_h_half {arma::exp(.5 * h)};  // cache exp() calculations
     arma::vec exp_h_half_proposal_nc;
-    //const Proposal proposal = use_mala ? Proposal::MALA : Proposal::RWMH;  TODO delete
     for (const Parameterization par : expert.strategy) {
       Adaptation& adaptation = adaptation_collection[par];
       const ProposalDiffusionKen& adapted_proposal = expert.adapt ? adaptation.get_proposal() : expert.proposal_diffusion_ken;

@@ -25,7 +25,7 @@ svsample_fast_cpp(
   startpara,
   startlatent,
   keeptau,
-  quiet,
+  print_settings,
   correct_model_misspecification,
   interweave,
   myoffset,
@@ -44,7 +44,7 @@ svsample_general_cpp(
   startpara,
   startlatent,
   keeptau,
-  quiet,
+  print_settings,
   correct_model_misspecification,
   interweave,
   myoffset,
@@ -105,8 +105,15 @@ innovations only). This may be useful to check at what point(s) in time the
 normal disturbance had to be 'upscaled' by a mixture factor and when the
 series behaved 'normally'.}
 
-\item{quiet}{Logical value indicating whether the progress bar and other
-informative output during sampling should be omitted.}
+\item{print_settings}{List of three elements:
+ * quiet: logical value indicating whether the progress bar and other
+informative output during sampling should be omitted
+ * n_chains: number of independent MCMC chains
+ * chain: index of this chain
+Please note that this function does not run multiple independent chains
+but \code{svsample} offers different printing functionality depending on
+whether it is executed as part of several MCMC chains in parallel
+(chain specific messages) or simply as a single chain (progress bar).}
 
 \item{correct_model_misspecification}{Logical value. If \code{FALSE},
 then auxiliary mixture sampling is used to sample the latent

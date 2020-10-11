@@ -47,7 +47,7 @@ RcppExport SEXP _stochvol_svsample_fast_cpp(
     SEXP startparaSEXP,
     SEXP startlatentSEXP,
     SEXP keeptauSEXP,
-    SEXP quietSEXP,
+    SEXP print_settingsSEXP,
     SEXP correct_model_specificationSEXP,
     SEXP interweaveSEXP,
     SEXP offsetSEXP,
@@ -66,7 +66,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List& >::type startpara(startparaSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type startlatent(startlatentSEXP);
     Rcpp::traits::input_parameter< const bool >::type keeptau(keeptauSEXP);
-    Rcpp::traits::input_parameter< const bool >::type quiet(quietSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type print_settings(print_settingsSEXP);
     Rcpp::traits::input_parameter< const bool >::type correct_model_specification(correct_model_specificationSEXP);
     Rcpp::traits::input_parameter< const bool >::type interweave(interweaveSEXP);
     Rcpp::traits::input_parameter< const double >::type offset(offsetSEXP);
@@ -83,7 +83,7 @@ BEGIN_RCPP
           startpara,
           startlatent,
           keeptau,
-          quiet,
+          print_settings,
           correct_model_specification,
           interweave,
           offset,
@@ -105,7 +105,7 @@ RcppExport SEXP _stochvol_svsample_general_cpp(
     SEXP startparaSEXP,
     SEXP startlatentSEXP,
     SEXP keeptauSEXP,
-    SEXP quietSEXP,
+    SEXP print_settingsSEXP,
     SEXP correct_model_specificationSEXP,
     SEXP interweaveSEXP,
     SEXP offsetSEXP,
@@ -124,7 +124,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List& >::type startpara(startparaSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type startlatent(startlatentSEXP);
     Rcpp::traits::input_parameter< const bool >::type keeptau(keeptauSEXP);
-    Rcpp::traits::input_parameter< const bool >::type quiet(quietSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type print_settings(print_settingsSEXP);
     Rcpp::traits::input_parameter< const bool >::type correct_model_specification(correct_model_specificationSEXP);
     Rcpp::traits::input_parameter< const bool >::type interweave(interweaveSEXP);
     Rcpp::traits::input_parameter< const double >::type offset(offsetSEXP);
@@ -141,7 +141,7 @@ BEGIN_RCPP
           startpara,
           startlatent,
           keeptau,
-          quiet,
+          print_settings,
           correct_model_specification,
           interweave,
           offset,
