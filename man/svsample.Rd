@@ -148,16 +148,16 @@ for the posterior draws.}
 }
 \value{
 The value returned is a list object of class \code{svdraws} holding
-\item{para}{\code{mcmc} object containing the \emph{parameter} draws from
+\item{para}{\code{mcmc.list} object containing the \emph{parameter} draws from
 the posterior distribution.}
-\item{latent}{\code{mcmc} object containing the
+\item{latent}{\code{mcmc.list} object containing the
 \emph{latent instantaneous log-volatility} draws from the posterior
 distribution.}
-\item{latent0}{\code{mcmc} object containing the \emph{latent
+\item{latent0}{\code{mcmc.list} object containing the \emph{latent
 initial log-volatility} draws from the posterior distribution.}
-\item{tau}{\code{mcmc} object containing the \emph{latent variance inflation
+\item{tau}{\code{mcmc.list} object containing the \emph{latent variance inflation
 factors} for the sampler with conditional t-innovations \emph{(optional)}.}
-\item{beta}{\code{mcmc} object containing the \emph{regression coefficient}
+\item{beta}{\code{mcmc.list} object containing the \emph{regression coefficient}
 draws from the posterior distribution \emph{(optional)}.}
 \item{y}{the left hand side of the observation equation, usually
 the argument \code{y}. In case of an AR(\code{k}) specification, the

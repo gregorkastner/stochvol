@@ -54,6 +54,13 @@ Other plotting:
 \code{\link{paratraceplot}()},
 \code{\link{plot.svdraws}()},
 \code{\link{volplot}()}
+
+Other plotting: 
+\code{\link{paradensplot}()},
+\code{\link{paratraceplot.svdraws}()},
+\code{\link{paratraceplot}()},
+\code{\link{plot.svdraws}()},
+\code{\link{volplot}()}
 }
 \concept{plotting}
 \keyword{hplot}

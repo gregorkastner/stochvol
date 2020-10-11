@@ -20,9 +20,10 @@ A matrix of regressors with number of rows equal to parameter \code{steps}.}
 }
 \value{
 Returns an object of class \code{svpredict}, a list containing
-two elements:
-\item{h}{\code{mcmc} object of simulations from the predictive density of \code{h_(n+1),...,h_(n+steps)}}
-\item{y}{\code{mcmc} object of simulations from the predictive density of \code{y_(n+1),...,y_(n+steps)}}
+three elements:
+\item{vol}{\code{mcmc.list} object of simulations from the predictive density of the standard deviations \code{sd_(n+1),...,sd_(n+steps)}}
+\item{h}{\code{mcmc.list} object of simulations from the predictive density of \code{h_(n+1),...,h_(n+steps)}}
+\item{y}{\code{mcmc.list} object of simulations from the predictive density of \code{y_(n+1),...,y_(n+steps)}}
 }
 \description{
 Simulates draws from the predictive density of the returns and the latent log-volatility

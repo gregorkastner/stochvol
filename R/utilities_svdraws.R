@@ -27,13 +27,11 @@ para <- function(x) {
  x$para
 }
 
-
 #' @rdname extractors
 #' @export
 latent <- function(x) {
  x$latent
 }
-
 
 #' @rdname extractors
 #' @export
@@ -41,20 +39,17 @@ latent0 <- function(x) {
  x$latent0
 }
 
-
 #' @rdname extractors
 #' @export
 priors <- function(x) {
  x$priors
 }
 
-
 #' @rdname extractors
 #' @export
 thinning <- function(x) {
  x$thinning
 }
-
 
 #' @rdname extractors
 #' @export
@@ -85,6 +80,62 @@ sampled_parameters <- function(x) {
   res
 }
 
+#' @export
+"[.svdraws" <- function (x, n, drop=FALSE) {
+  if (drop) {
+    stop("Parameter 'drop' is only allowed to be FALSE")
+  }
+  res <- x
+  mcmcnames <- c("para", "latent", "latent0", "beta", "tau")
+  for (mcmcname in mcmcnames) {
+    if (!is.null(res[[mcmcname]])) {
+      if (length(n) > 1) {
+        res[[mcmcname]] <- mcmc.list(res[[mcmcname]][n])
+      } else {
+        res[[mcmcname]] <- mcmc.list(list(res[[mcmcname]][[n]]))
+      }
+    }
+  }
+  res
+}
+
+#' @export
+"[.svpredict" <- function (x, n, drop=FALSE) {
+  if (drop) {
+    stop("Parameter 'drop' is only allowed to be FALSE")
+  }
+  res <- x
+  mcmcnames <- c("y", "h")
+  for (mcmcname in mcmcnames) {
+    if (!is.null(res[[mcmcname]])) {
+      if (length(n) > 1) {
+        res[[mcmcname]] <- mcmc.list(res[[mcmcname]][n])
+      } else {
+        res[[mcmcname]] <- mcmc.list(list(res[[mcmcname]][[n]]))
+      }
+    }
+  }
+  res
+}
+
+#' @rdname extractors
+#' @export
+vola <- function (x) {
+  vol <- list()
+  for (chain in seq_len(coda::nchain(x$latent))) {
+    tau_chain <- if (!is.null(x$tau)) x$tau[[chain]] else 1
+    pars <- mcpar(x$latent[[chain]])
+    vol[[chain]] <- coda::mcmc(exp(x$latent[[chain]]/2) * sqrt(tau_chain), pars[1], pars[2], pars[3])
+  }
+  coda::mcmc.list(vol)
+}
+
+#' @method as.array svdraws
+#' @export
+as.array.svdraws <- function (x, ...) {
+# TODO 
+}
+
 contains_beta <- function(x) {
   NROW(x$beta) > 0
 }
@@ -97,6 +148,23 @@ contains_indicators <- function(x) {
   NROW(x$indicators) > 0
 }
 
+join_mcmclist <- function (x) {
+  do.call(rbind, x)
+}
+
+# x is svdraws with a single chain
+# output: svdraws-like object but with mcmc objects instead of the mcmc.list objects
+flatten <- function (x) {
+  res <- x
+  mcmcnames <- c("para", "latent", "latent0", "beta", "tau")
+  for (mcmcname in mcmcnames) {
+    if (!is.null(res[[mcmcname]])) {
+      res[[mcmcname]] <- res[[mcmcname]][[1]]
+    }
+  }
+  class(res) <- NULL
+  res
+}
 
 #' Updating the Summary of MCMC Draws
 #' 
@@ -155,51 +223,62 @@ contains_indicators <- function(x) {
 updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslatent = FALSE) {
   sampled_para <- sampled_parameters(x)
 
-  summaryfunction <- function(x, quants = quantiles, ess = TRUE) {
+  matrixsummary <- function (x, quants = quantiles) {
+    cbind(mean = colMeans(x), sd = apply(x, 2, sd), t(apply(x, 2, quantile, prob = quants)))
+  }
+
+  # x is an mcmc.list object containing matrices
+  # transformation is a singleton named list with a vectorized function of interest for the variable(s)
+  summaryfunction <- function(x, quants = quantiles, ess = TRUE, transformation = NULL) {
+    stopifnot(inherits(x, "mcmc.list"))
+    x_join <- join_mcmclist(x)
+    res <- matrixsummary(x_join, quants = quants)
     if (ess) {
-      c(mean = mean(x), sd = sd(x), quantile(x, quantiles),
-        ESS = as.numeric(coda::effectiveSize(x)))
-    } else {
-      c(mean = mean(x), sd = sd(x), quantile(x, quantiles))
+      res <- cbind(res, ESS = as.numeric(coda::effectiveSize(x)))  # computes the sum of effective sample sizes over the chains
     }
+    if (!is.null(transformation)) {
+      stopifnot(length(transformation) == 1)
+      name <- names(transformation)
+      stopifnot(length(name) == 1)
+      x_trans <- transformation[[name]](x_join)
+      toadd <- colMeans(x_trans)
+      toadd <- cbind(toadd, apply(x_trans, 2, sd))
+      colnames(toadd) <- paste0(c("mean", "sd"), "(", name, ")")
+      res <- cbind(res, toadd)
+    }
+    res
   }
 
   res <- list()
 
-  res$para <- t(apply(x$para[, sampled_para, drop=FALSE], 2, summaryfunction, ess = esspara))
+  res$para <- summaryfunction(x$para[, sampled_para, drop=FALSE], ess = esspara)
   if ("mu" %in% sampled_para) {
-    toadd <- c(summaryfunction(exp(x$para[,"mu"]/2), ess=FALSE))
+    toadd <- matrixsummary(exp(join_mcmclist(x$para[, "mu", drop=FALSE])/2))
     if (esspara) {
-      toadd <- c(toadd, res$para["mu", "ESS"])
+      toadd <- cbind(toadd, ESS = res$para["mu", "ESS"])
     }
-    toadd <- matrix(toadd, nrow = 1, dimnames = list("exp(mu/2)", NULL))
+    rownames(toadd) <- "exp(mu/2)"
     res$para <- rbind(res$para, toadd)
   }
   if ("sigma" %in% sampled_para) {
-    toadd <- c(summaryfunction(x$para[,"sigma"]^2, ess=FALSE))
+    toadd <- matrixsummary(join_mcmclist(x$para[, "sigma", drop=FALSE])^2)
     if (esspara) {
-      toadd <- c(toadd, res$para["sigma", "ESS"])
+      toadd <- cbind(toadd, ESS = res$para["sigma", "ESS"])
     }
-    toadd <- matrix(toadd, nrow = 1, dimnames = list("sigma^2", NULL))
+    rownames(toadd) <- "sigma^2"
     res$para <- rbind(res$para, toadd)
   }
 
-  res$latent <- t(apply(x$latent, 2, summaryfunction, ess = esslatent))
-  vol <- exp(x$latent/2)
-  res$latent <- cbind(res$latent, "mean(exp(h_t/2))" = colMeans(vol))
-  res$latent <- cbind(res$latent, "sd(exp(h_t/2))" = apply(vol, 2, sd))
+  res$latent0 <- summaryfunction(x$latent0, ess = esslatent, transformation = list("exp(h_t/2)" = function (x) exp(x/2)))
+  res$latent <- summaryfunction(x$latent, ess = esslatent, transformation = list("exp(h_t/2)" = function (x) exp(x/2)))
 
-  res$latent0 <- c(summaryfunction(x$latent0, ess = esslatent), "mean(exp(h_t/2))" = mean(exp(x$latent0/2)), "sd(exp(h_t/2))" = sd(exp(x$latent0/2)))
-
-  if (!is.null(x$tau)) {
-    vol <- vol * sqrt(x$tau)
-  }
-  res$sd <- t(apply(vol, 2, summaryfunction, ess = esslatent))
+  vol <- vola(x)
+  res$sd <- summaryfunction(vol, ess = esslatent)
   rownames(res$sd) <- gsub("h", "sd", rownames(vol))
-  res$sd <- cbind(res$sd, "mean(vol)" = colMeans(vol))
-  res$sd <- cbind(res$sd, "sd(vol)" = apply(vol, 2, sd))
 
-  if (contains_beta(x)) res$beta <- t(apply(x$beta, 2, summaryfunction, ess = esspara))
+  if (contains_beta(x)) {
+    res$beta <- summaryfunction(x$beta, ess = esspara)
+  }
 
   x$summary <- res
   x
@@ -209,8 +288,8 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
 summary.svdraws <- function (object, showpara = TRUE, showlatent = TRUE, ...) {
   ret <- vector("list")
   class(ret) <- "summary.svdraws"
-  ret$mcp <- mcpar(para(object))
-  ret$mcl <- mcpar(latent(object))
+  ret$mcp <- mcpar(para(object)[[1]])
+  ret$mcl <- mcpar(latent(object)[[1]])
   ret$priors <- priors(object)
   if (isTRUE(showpara)) {
     ret$para <- para(object$summary)
@@ -274,6 +353,7 @@ print.summary.svdraws <- function (x, ...) {
 #' @export
 residuals.svdraws <- function(object, type = "mean", ...) {
   if (!inherits(object, "svdraws")) stop("This function expects an 'svdraws' object.")
+  if (coda::nchain(para(object)) > 1) stop("Multiple chains in the svdraws object: not yet implemented")
   if (!type %in% c("mean", "median")) stop("Argument 'type' must currently be either 'mean' or 'median'.")
 
   if (object$thinning$time != 'all') stop("Not every point in time has been stored ('keeptime' was not set to 'all' during sampling), thus residuals cannot be extracted.")
@@ -320,9 +400,10 @@ residuals.svdraws <- function(object, type = "mean", ...) {
 #' A matrix of regressors with number of rows equal to parameter \code{steps}.
 #' @param \dots currently ignored.
 #' @return Returns an object of class \code{svpredict}, a list containing
-#' two elements:
-#' \item{h}{\code{mcmc} object of simulations from the predictive density of \code{h_(n+1),...,h_(n+steps)}}
-#' \item{y}{\code{mcmc} object of simulations from the predictive density of \code{y_(n+1),...,y_(n+steps)}}
+#' three elements:
+#' \item{vol}{\code{mcmc.list} object of simulations from the predictive density of the standard deviations \code{sd_(n+1),...,sd_(n+steps)}}
+#' \item{h}{\code{mcmc.list} object of simulations from the predictive density of \code{h_(n+1),...,h_(n+steps)}}
+#' \item{y}{\code{mcmc.list} object of simulations from the predictive density of \code{y_(n+1),...,y_(n+steps)}}
 #' @note You can use the resulting object within \code{\link{plot.svdraws}} (see example below), or use
 #' the list items in the usual \code{coda} methods for \code{mcmc} objects to
 #' print, plot, or summarize the predictions.
@@ -343,7 +424,7 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   } else if (object$meanmodel == "matrix") {
     if (is.null(newdata)) stop("Regressors needed for prediction. Please provide regressors through parameter 'newdata'.")
     newdata <- as.matrix(newdata)
-    if (is.null(object$beta) || NCOL(object$beta) != NCOL(newdata)) stop(paste0("The number of fitted regression coefficients (", NCOL(object$beta), ") does not equal the number of given regressors (", NCOL(newdata), ")."))
+    if (is.null(object$beta) || coda::nvar(object$beta[[1]]) != NCOL(newdata)) stop(paste0("The number of fitted regression coefficients (", coda::nvar(object$beta[[1]]), ") does not equal the number of given regressors (", NCOL(newdata), ")."))
     if (NROW(newdata) != steps) stop("The size of the design matrix (", NROW(newdata), " rows) does not match the number of steps to predict (", steps, ").")
     regressors <- function (y, newdata, stepind) matrix(newdata[stepind, ], nrow = NROW(y), ncol = NCOL(newdata), byrow = TRUE)  # matches the format in the ar* case
   } else if (object$meanmodel == "constant") {
@@ -357,71 +438,93 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
     stop("Unknown mean model. Please contact the developer.")
   }
 
-  thinlatent <- object$thinning$latent
-  thinpara <- object$thinning$para
+  object_1 <- flatten(object[1])
+  thinlatent <- object_1$thinning$latent
+  thinpara <- object_1$thinning$para
   if (thinpara != thinlatent) {
     warning("Thinning of parameters is different from thinning of latent variables. Trying to sort this out.")  # TODO use lowest common multiple
     if (thinpara %% thinlatent == 0) {
-      usepara <- 1:(dim(object$para)[1])
-      uselatent <- seq(thinpara/thinlatent, dim(object$latent)[1], by=thinpara/thinlatent)
+      usepara <- seq_len(NROW(para(object_1)))
+      uselatent <- seq(thinpara %/% thinlatent, NROW(latent(object_1)), by = thinpara %/% thinlatent)
     } else if (thinlatent %% thinpara == 0) {
-      uselatent <- 1:(dim(object$latent)[1])
-      usepara <- seq(thinlatent/thinpara, dim(object$para)[1], by=thinlatent/thinpara)
+      uselatent <- seq_len(NROW(latent(object_1)))
+      usepara <- seq(thinlatent %/% thinpara, NROW(para(object_1)), by = thinlatent %/% thinpara)
     } else stop("Incompatible thinning parameters. Prediction currently not implemented.")
   } else {
-    usepara <- uselatent <- seq.int(dim(object$para)[1])
+    usepara <- uselatent <- seq.int(NROW(para(object_1)))
   }
 
-  mu <- object$para[usepara,"mu"]
-  phi <- object$para[usepara,"phi"]
-  sigma <- object$para[usepara,"sigma"]
-  rho <- object$para[usepara,"rho"]
-  nu <- object$para[usepara,"nu"]
-  heavy_tailed <- is.finite(tail(nu, 1))
-  hlast <- object$latent[uselatent,NCOL(object$latent)]
-  taulast <- if (heavy_tailed) object$tau[uselatent,NCOL(object$tau)] else 1
-  ylast <- as.vector(tail(object$y, 1))
+  ret <- list(y = list(), h = list(), vol = list())
+  for (chain in seq_len(coda::nchain(para(object)))) {
+    object_i <- flatten(object[chain])
+    mu <- object_i$para[usepara,"mu"]
+    phi <- object_i$para[usepara,"phi"]
+    sigma <- object_i$para[usepara,"sigma"]
+    rho <- object_i$para[usepara,"rho"]
+    nu <- object_i$para[usepara,"nu"]
+    heavy_tailed <- is.finite(tail(nu, 1))
+    hlast <- object_i$latent[uselatent,NCOL(object_i$latent)]
+    taulast <- if (heavy_tailed) object_i$tau[uselatent,NCOL(object_i$tau)] else 1
+    ylast <- as.vector(tail(object_i$y, 1))
 
-  mythin <- max(thinpara, thinlatent)
-  len <- length(usepara)
-  volpred <- matrix(as.numeric(NA), nrow=len, ncol=steps)
-  ypred <- matrix(as.numeric(NA), nrow=len, ncol=steps+arorder)
+    mythin <- max(thinpara, thinlatent)
+    len <- length(usepara)
+    volpred <- matrix(as.numeric(NA), nrow=len, ncol=steps)
+    hpred <- matrix(as.numeric(NA), nrow=len, ncol=steps)
+    ypred <- matrix(as.numeric(NA), nrow=len, ncol=steps+arorder)
 
-  ypred[,seq_len(arorder)] <- matrix(as.vector(tail(object$y, arorder)), nrow=len, ncol=arorder, byrow=TRUE)  # AR(x) helper columns
+    ypred[,seq_len(arorder)] <- matrix(as.vector(tail(object_i$y, arorder)), nrow=len, ncol=arorder, byrow=TRUE)  # AR(x) helper columns
 
-  betacoeff <- if (contains_beta(object)) {
-    if (arorder > 0) object$beta[usepara, c(1, rev(seq_len(NCOL(object$beta)-1))+1), drop=FALSE]
-    else object$beta[usepara, , drop=FALSE]
-  } else matrix(0)
+    betacoeff <- if (contains_beta(object_i)) {
+      if (arorder > 0) object_i$beta[usepara, c(1, rev(seq_len(NCOL(object_i$beta)-1))+1), drop=FALSE]
+      else object_i$beta[usepara, , drop=FALSE]
+    } else matrix(0)
 
-  resilast <- if (object$meanmodel == "none") {  # last fitted residual
-    ylast*exp(-hlast/2)/sqrt(taulast)
-  } else {  # if mean regression
-    (ylast - colSums(object$designmatrix[NROW(object$designmatrix),]*t(betacoeff)))*exp(-hlast/2)/sqrt(taulast)  # recycles the last row of the design matrix
-  }
-
-  volpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*resilast + sqrt(1-rho^2)*rnorm(len))
-  if (steps > 1) {
-    for (i in seq.int(from=2, to=steps)) {
-      tau <- if (heavy_tailed) 1/rgamma(len, shape=.5*nu, rate=.5*(nu-2)) else 1
-      resi <- rnorm(len)
-      incr <- rho*resi + sqrt(1-rho^2)*rnorm(len)
-      ypred[,i-1+arorder] <- rowSums(regressors(ypred, newdata, i-1) * betacoeff) + sqrt(tau)*exp(volpred[,i-1]/2)*resi
-      volpred[,i] <- mu + phi*(volpred[,i-1] - mu) + sigma*incr
+    resilast <- if (object_i$meanmodel == "none") {  # last fitted residual
+      ylast*exp(-hlast/2)/sqrt(taulast)
+    } else {  # if mean regression
+      (ylast - colSums(object_i$designmatrix[NROW(object_i$designmatrix),]*t(betacoeff)))*exp(-hlast/2)/sqrt(taulast)  # recycles the last row of the design matrix
     }
+
+    hpred[,1] <- mu+phi*(hlast-mu) + sigma*(rho*resilast + sqrt(1-rho^2)*rnorm(len))
+    tau <- if (heavy_tailed) 1/rgamma(len, shape=.5*nu, rate=.5*(nu-2)) else 1
+    volpred[,1] <- sqrt(tau) * exp(hpred[,1]/2)
+    if (steps > 1) {
+      for (i in seq.int(from=2, to=steps)) {
+        resi <- rnorm(len)
+        incr <- rho*resi + sqrt(1-rho^2)*rnorm(len)
+        ypred[,i-1+arorder] <- rowSums(regressors(ypred, newdata, i-1) * betacoeff) + volpred[,i-1]*resi
+        hpred[,i] <- mu + phi*(hpred[,i-1] - mu) + sigma*incr
+        tau <- if (heavy_tailed) 1/rgamma(len, shape=.5*nu, rate=.5*(nu-2)) else 1
+        volpred[,i] <- sqrt(tau) * exp(hpred[,i]/2)
+      }
+    }
+    ypred[,steps+arorder] <- rowSums(regressors(ypred, newdata, steps) * betacoeff) + volpred[,steps]*rnorm(len)
+
+    ypred <- ypred[, setdiff(seq_len(NCOL(ypred)), seq_len(arorder)), drop=FALSE]  # remove temporary AR(x) helper columns
+    lastname <- tail(colnames(object_i$latent), 1)
+    lastnumber <- as.integer(gsub("h_", "", lastname))
+    colnames(volpred) <- paste0("sd_", seq(lastnumber + 1, lastnumber + steps))
+    colnames(hpred) <- paste0("h_", seq(lastnumber + 1, lastnumber + steps))
+    colnames(ypred) <- paste0("y_", seq(lastnumber + 1, lastnumber + steps))
+    ret$vol[[chain]] <- coda::mcmc(volpred, start=mythin, end=len*mythin, thin=mythin)
+    ret$h[[chain]] <- coda::mcmc(hpred, start=mythin, end=len*mythin, thin=mythin)
+    ret$y[[chain]] <- coda::mcmc(ypred, start=mythin, end=len*mythin, thin=mythin)
   }
-  tau <- if (heavy_tailed) 1/rgamma(len, shape=.5*nu, rate=.5*(nu-2)) else 1
-  ypred[,steps+arorder] <- rowSums(regressors(ypred, newdata, steps) * betacoeff) + sqrt(tau)*exp(volpred[,steps]/2)*rnorm(len)
 
-  ypred <- ypred[, setdiff(seq_len(NCOL(ypred)), seq_len(arorder)), drop=FALSE]  # remove temporary AR(x) helper columns
-  lastname <- tail(colnames(object$latent), 1)
-  lastnumber <- as.integer(gsub("h_", "", lastname))
-  colnames(volpred) <- paste0("h_", seq(lastnumber + 1, lastnumber + steps))
-  colnames(ypred) <- paste0("y_", seq(lastnumber + 1, lastnumber + steps))
-  ret <- list(h = coda::mcmc(volpred, start=mythin, end=len*mythin, thin=mythin),
-              y = coda::mcmc(ypred, start=mythin, end=len*mythin, thin=mythin))
-
+  ret$vol <- mcmc.list(ret$vol)
+  ret$h <- mcmc.list(ret$h)
+  ret$y <- mcmc.list(ret$y)
   class(ret) <- c("svpredict")
   ret
+}
+
+#' @export
+print.svpredict <- function (x, ...) {
+  cat("'svpredict' object containing predicted values for variables:\n")
+  cat("  - predicted observations:        ", paste(coda::varnames(x$y[[1]]), collapse = ", "), "\n", sep = "")
+  cat("  - predicted standard deviations: ", paste(coda::varnames(x$vol[[1]]), collapse = ", "), "\n", sep = "")
+  cat("  - predicted latent variables:    ", paste(coda::varnames(x$h[[1]]), collapse = ", "), "\n", sep = "")
+  invisible(x)
 }
 

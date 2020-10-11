@@ -133,16 +133,16 @@
 #' \code{\link{updatesummary}}, controlling the type of statistics calculated
 #' for the posterior draws.
 #' @return The value returned is a list object of class \code{svdraws} holding
-#' \item{para}{\code{mcmc} object containing the \emph{parameter} draws from
+#' \item{para}{\code{mcmc.list} object containing the \emph{parameter} draws from
 #' the posterior distribution.}
-#' \item{latent}{\code{mcmc} object containing the
+#' \item{latent}{\code{mcmc.list} object containing the
 #' \emph{latent instantaneous log-volatility} draws from the posterior
 #' distribution.}
-#' \item{latent0}{\code{mcmc} object containing the \emph{latent
+#' \item{latent0}{\code{mcmc.list} object containing the \emph{latent
 #' initial log-volatility} draws from the posterior distribution.}
-#' \item{tau}{\code{mcmc} object containing the \emph{latent variance inflation
+#' \item{tau}{\code{mcmc.list} object containing the \emph{latent variance inflation
 #' factors} for the sampler with conditional t-innovations \emph{(optional)}.}
-#' \item{beta}{\code{mcmc} object containing the \emph{regression coefficient}
+#' \item{beta}{\code{mcmc.list} object containing the \emph{regression coefficient}
 #' draws from the posterior distribution \emph{(optional)}.}
 #' \item{y}{the left hand side of the observation equation, usually
 #' the argument \code{y}. In case of an AR(\code{k}) specification, the
@@ -392,18 +392,24 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   # store results:
   res$runtime <- runtime
-  res$y <- if (arorder == 0) y_orig else tail(y_orig, -arorder)
+  res$y <- y
+  res$y_orig <- y_orig
   res$simobj <- simobj
-  res$para <- coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)
-  res$latent <- coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)
-  res$latent0 <- coda::mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)
+  res$para <- coda::mcmc.list(list(coda::mcmc(res$para, burnin+thinpara, burnin+draws, thinpara)))
+  res$latent <- coda::mcmc.list(list(coda::mcmc(res$latent, burnin+thinlatent, burnin+draws, thinlatent)))
+  res$latent0 <- coda::mcmc.list(list(coda::mcmc(res$latent0, burnin+thinlatent, burnin+draws, thinlatent)))
   res$thinning <- list(para = thinpara, latent = thinlatent, time = keeptime)
   res$priors <- priorspec
   if (!any(is.na(designmatrix))) {
-    res$beta <- coda::mcmc(res$beta, burnin+thinpara, burnin+draws, thinpara)
+    res$beta <- coda::mcmc.list(list(coda::mcmc(res$beta, burnin+thinpara, burnin+draws, thinpara)))
     res$designmatrix <- designmatrix
   } else {
     res$beta <- NULL
+  }
+  if (keeptau) {
+    res$tau <- coda::mcmc.list(list(coda::mcmc(res$tau, burnin+thinlatent, burnin+draws, thinlatent)))
+  } else {
+    res$tau <- NULL
   }
   res$meanmodel <- meanmodel
   res$para_transform <- list(mu = function (x) {x},
@@ -421,12 +427,6 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                                  sigma = function (x) {2*x},
                                  nu = function (x) {1},
                                  rho = if (inherits(priorspec$rho, "sv_beta")) function (x) {.5} else function (x) {1})
-
-  if (keeptau) {
-    res$tau <- coda::mcmc(res$tau, burnin+thinlatent, burnin+draws, thinlatent)
-  } else {
-    res$tau <- NULL
-  }
 
   if (!quiet) {
     cat("Done!\n", file=stderr())

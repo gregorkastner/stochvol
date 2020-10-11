@@ -11,7 +11,6 @@
   show0 = FALSE,
   showobs = TRUE,
   showprior = TRUE,
-  col = NULL,
   forecastlty = NULL,
   tcl = -0.4,
   mar = c(1.9, 1.9, 1.7, 0.5),
@@ -22,7 +21,7 @@
 )
 }
 \arguments{
-\item{x}{\code{svdraws} or \code{svldraws} object.}
+\item{x}{\code{svdraws} object.}
 
 \item{forecast}{nonnegative integer or object of class \code{svpredict}, as
 returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
@@ -44,10 +43,6 @@ to try setting \code{showobs} to \code{FALSE}.}
 
 \item{showprior}{logical value, indicating whether the prior distribution
 should be displayed. The default value is \code{TRUE}.}
-
-\item{col}{vector of color values (see \code{\link[graphics]{par}}) used for
-plotting the quantiles. The default value \code{NULL} results in gray lines
-for all quantiles expect the median, which is displayed in black.}
 
 \item{forecastlty}{vector of line type values (see
 \code{\link[graphics]{par}}) used for plotting quantiles of predictive
@@ -111,7 +106,7 @@ plot(draws, forecast = 10)
 newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
 draws <- updatesummary(draws, quantiles = newquants)
 
-plot(draws, forecast = 20, showobs = FALSE, col = seq(along = newquants),
+plot(draws, forecast = 20, showobs = FALSE,
      forecastlty = 3, showprior = FALSE)
 
 }

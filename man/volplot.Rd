@@ -9,7 +9,6 @@ volplot(
   forecast = 0,
   dates = NULL,
   show0 = FALSE,
-  col = NULL,
   forecastlty = NULL,
   tcl = -0.4,
   mar = c(1.9, 1.9, 1.9, 0.5),
@@ -20,7 +19,7 @@ volplot(
 )
 }
 \arguments{
-\item{x}{\code{svdraws} or \code{svldraws} object.}
+\item{x}{\code{svdraws} object.}
 
 \item{forecast}{nonnegative integer or object of class \code{svpredict}, as
 returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
@@ -34,10 +33,6 @@ case, the axis will be labeled with numbers.}
 \item{show0}{logical value, indicating whether the initial volatility
 \code{exp(h_0/2)} should be displayed. The default value is \code{FALSE}.
 Only available for inputs \code{x} of class \code{svdraws}.}
-
-\item{col}{vector of color values (see \code{\link[graphics]{par}}) used for
-plotting the quantiles. The default value \code{NULL} results in gray lines
-for all quantiles expect the median, which is displayed in black.}
 
 \item{forecastlty}{vector of line type values (see
 \code{\link[graphics]{par}}) used for plotting quantiles of predictive

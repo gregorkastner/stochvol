@@ -9,6 +9,7 @@
 \alias{thinning}
 \alias{runtime}
 \alias{sampled_parameters}
+\alias{vola}
 \title{Common Extractors for 'svdraws' Objects}
 \usage{
 para(x)
@@ -24,6 +25,8 @@ thinning(x)
 runtime(x)
 
 sampled_parameters(x)
+
+vola(x)
 }
 \arguments{
 \item{x}{\code{svdraws} object.}

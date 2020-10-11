@@ -56,25 +56,34 @@
 #' ## Plot the latent volatilities and some forecasts
 #' plot(draws, forecast = pred)
 #' 
+#' @family plotting
+#' @keywords hplot
 #' @export
 plot.svpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
+  nvar <- coda::nvar(x$h[[1]])
   oldpar <- par(mfrow = c(2, 1), mgp = c(1.8, .8, 0), mar = c(3, 3, 3, 1))
-  if (ncol(x$h) == 1L) {
-    boxplot(apply(exp(x$h / 2), 2, quantile, quantiles), names = "1 period ahead",
-	    show.names = TRUE, ...)
+  if (nvar == 1L) {
+    boxplot(simplify2array(x$vol, higher = FALSE),  # previous solution only worked with length(quantiles) == 5
+            names = paste("Next period / chain", seq_along(x$vol)),
+            show.names = TRUE, ...)
+    title("Predicted volatility")
   } else {
-    ts.plot(t(apply(exp(x$h / 2), 2, quantile, quantiles)), xlab = "Periods ahead", ...)
+    ts.plot(matrix(aperm(simplify2array(lapply(x$vol, apply, 2, quantile, quantiles)), c(2, 1, 3)), nrow = nvar),
+            xlab = "Periods ahead", ...)
+    title(paste0("Predicted volatility (", paste0(100*quantiles, collapse = '% / '),
+                 "% quantiles)"))
   }
-  title(paste0("Predicted volatility (", paste0(100*quantiles, collapse = '% / '),
-	       "% quantiles)"))
-  if (ncol(x$h) == 1L) {
-    boxplot(apply(x$y, 2, quantile, quantiles), names = "1 period ahead",
-	    show.names = TRUE, ...)
+  if (nvar == 1L) {
+    boxplot(simplify2array(x$y, higher = FALSE),
+            names = paste("Next period / chain", seq_along(x$y)),
+            show.names = TRUE, ...)
+    title("Predicted volatility")
   } else {
-    ts.plot(t(apply(x$y, 2, quantile, quantiles)), xlab = "Periods ahead", ...)
+    ts.plot(matrix(aperm(simplify2array(lapply(x$y, apply, 2, quantile, quantiles)), c(2, 1, 3)), nrow = nvar),
+            xlab = "Periods ahead", ...)
+    title(paste0("Predicted data (", paste0(100*quantiles, collapse = '% / '),
+                 "% quantiles)"))
   }
-  title(paste0("Predicted data (", paste0(100*quantiles, collapse = '% / '),
-	       "% quantiles)"))
   par(oldpar)
   invisible(x)
 }
@@ -89,7 +98,7 @@ plot.svpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
 #' \code{coda} package, with some modifications for parameters that have
 #' (half-)bounded support.
 #' 
-#' @param x \code{svdraws} or \code{svldraws} object.
+#' @param x \code{svdraws} object.
 #' @param showobs logical value, indicating whether the observations should be
 #' displayed along the x-axis. If many draws have been obtained, the default
 #' (\code{TRUE}) can render the plotting to be quite slow, and you might want
@@ -158,7 +167,7 @@ paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
 #' \code{paratraceplot} is modeled after \code{\link[coda]{traceplot}} in the
 #' \code{coda} package, with very minor modifications.
 #' 
-#' @param x \code{svdraws} or \code{svldraws} object.
+#' @param x \code{svdraws} object.
 #' @param mar numerical vector of length 4, indicating the plot margins. See
 #' \code{\link[graphics]{par}} for details. The default value is \code{c(1.9,
 #' 1.9, 1.9, 0.5)}, which is slightly smaller than the R-defaults.
@@ -185,15 +194,11 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
   oldpar <- par(mar=mar)
   paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), nu=quote(nu), rho=quote(rho))
   params <- sampled_parameters(x)
-  for (i in 1:ncol(x$para)) {
-    parastring <- colnames(x$para)[i]
-    if (parastring %in% params) {
-      parastring <- colnames(x$para)[i]
-      mytraceplot(x$para[,parastring], xlab="", mgp = mgp,
-                  main=paste("Trace of ", paranames[parastring], " (thin = ", x$thinning$para,")", sep=''), ...)
-      if (sim && parastring %in% names(simobj$para)) {
-        abline(h = simobj$para[[parastring]], col = 3, lty = 2)
-      }
+  for (para_name in params) {
+    mytraceplot(para(x)[,para_name], xlab="", mgp = mgp,
+                main=paste0("Trace of ", paranames[para_name], " (thin = ", x$thinning$para,")"), ...)
+    if (sim && para_name %in% names(simobj$para)) {
+      abline(h = simobj$para[[para_name]], col = 3, lty = 2)
     }
   }
   par(oldpar)
@@ -206,7 +211,7 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
 #' time as well as predictive distributions of future volatilities.
 #' 
 #' 
-#' @param x \code{svdraws} or \code{svldraws} object.
+#' @param x \code{svdraws} object.
 #' @param forecast nonnegative integer or object of class \code{svpredict}, as
 #' returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
 #' provided, \code{\link{predict.svdraws}} is invoked to obtain the
@@ -217,9 +222,6 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
 #' @param show0 logical value, indicating whether the initial volatility
 #' \code{exp(h_0/2)} should be displayed. The default value is \code{FALSE}.
 #' Only available for inputs \code{x} of class \code{svdraws}.
-#' @param col vector of color values (see \code{\link[graphics]{par}}) used for
-#' plotting the quantiles. The default value \code{NULL} results in gray lines
-#' for all quantiles expect the median, which is displayed in black.
 #' @param forecastlty vector of line type values (see
 #' \code{\link[graphics]{par}}) used for plotting quantiles of predictive
 #' distributions. The default value \code{NULL} results in dashed lines.
@@ -271,10 +273,10 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
 #' 
 #' @export
 volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
-                    col = NULL, forecastlty = NULL, tcl = -.4,
+                    forecastlty = NULL, tcl = -.4,
                     mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 0), simobj = NULL,
                     newdata = NULL, ...) {
-  if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' or an 'svldraws' object.")
+  if (!inherits(x, "svdraws")) stop("This function expects an 'svdraws' object.")
   if (x$thinning$time != "all") stop("This function requires that all volatilities have been stored during sampling.")
   if (!is.null(simobj)) {
     if (!inherits(simobj, "svsim")) stop("If provided, simobj must be an 'svsim' object.")
@@ -282,24 +284,26 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
   } else sim <- FALSE
   oldpar <- par(mar = mar)
   to_plot <- x$summary$sd
-  where <- grep("%", dimnames(to_plot)[[2]])
+  where <- grep("%", colnames(to_plot))
   volquants <- t(100*to_plot[,where,drop=FALSE])
-  nvolquants <- dim(volquants)[1]
-  timelen <- dim(volquants)[2]
+  nvolquants <- NROW(volquants)
+  timelen <- NCOL(volquants)
   if (is.null(nvolquants) || all(is.na(volquants))) stop("No quantiles to plot.")
-  if (is.null(col)) {
-    cols <- rep(8, nvolquants)
-    cols[dimnames(volquants)[[1]] == "50%"] <- 1
-  } else cols <- col
+  alphas <- 1 - 1.2 * abs(0.5 - as.numeric(gsub("%", "", colnames(to_plot)[grep("%", colnames(to_plot))]))/100)
+  # set alpha for colors
+  cols <- cbind(1, alphas)
+  cols <- apply(cols, 1, function (x) {
+                  rgb_cols <- as.vector(col2rgb(x[1]))/255
+                  rgb(rgb_cols[1], rgb_cols[2], rgb_cols[3], alpha=x[2])})
   if (is.null(forecastlty)) forecastlty <- 2
 
   if (inherits(forecast, "svpredict") || (is.numeric(forecast) && length(forecast) == 1 && all(forecast != 0))) { # also draw future values
-    lasth <- as.integer(gsub("h_", "", tail(dimnames(x$latent)[[2]], 1)))
+    lasth <- as.integer(gsub("h_", "", tail(coda::varnames(x$latent[[1]]), 1)))
     if (length(x$y) > lasth) {  # should never happen
       stop("The last log variance, h_n, has not been stored during sampling. Aborting.")
     }
 
-    if(is.numeric(forecast) && length(forecast) == 1 && all(forecast >= 1)) {
+    if(is.numeric(forecast) && length(forecast) == 1 && isTRUE(forecast >= 1)) {
       forecast <- predict(x, forecast, newdata)
     }
     if(!inherits(forecast, "svpredict")) stop("Argument 'forecast' must be a single nonnegative integer, or of class type 'svpredict' or 'svlpredict'.")
@@ -308,12 +312,12 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
       show0 <- FALSE
     }
 
-    volpred <- forecast$h  # TODO heavy tails
+    volpred <- join_mcmclist(forecast$vol)
     futlen <- NCOL(volpred)
 
     xs <- matrix(rep(seq(timelen, timelen + futlen, len=futlen+1), nvolquants), nrow=futlen+1)
-    quants <- as.numeric(gsub("%", "", dimnames(volquants)[[1]]))/100
-    ys <- rbind(volquants[,timelen], t(matrix(apply(100*exp(volpred/2), 2, quantile, quants), nrow=nvolquants)))
+    quants <- as.numeric(gsub("%", "", rownames(volquants)))/100
+    ys <- rbind(volquants[,timelen], t(matrix(apply(100*volpred, 2, quantile, quants), nrow=nvolquants)))
 
     if (futlen > .01*timelen) {  # increase xlim to give space for forecast
       xlim <- c(0, timelen + futlen)
@@ -332,7 +336,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
   }
 
   if (inherits(forecast, "svpredict")) {
-    for (i in 1:nvolquants) lines(xs[,i], ys[,i], lty=forecastlty, col=cols[i])
+    for (i in seq_len(nvolquants)) lines(xs[,i], ys[,i], lty=forecastlty, col=cols[i])
   }
 
   ax <- axis(1, tick=FALSE, labels=FALSE)  # just automagic axis ticks, don't draw yet
@@ -341,18 +345,18 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
     xs <- matrix(rep(c(0, 1), nvolquants), nrow=2)
     where <- grep("%", names(x$summary$latent0))
     ys <- rbind(100*exp(x$summary$latent0[where]/2), volquants[,1])
-    for (i in 1:nvolquants) lines(xs[,i], ys[,i], lty=forecastlty, col=cols[i])
+    for (i in seq_len(nvolquants)) lines(xs[,i], ys[,i], lty=forecastlty, col=cols[i])
   }
 
   if (is.null(dates)) {
-    dates <- c(0L, as.integer(gsub("h_", "", dimnames(x$latent)[[2]])))
+    dates <- c(0L, as.integer(gsub("h_", "", coda::varnames(latent(x)[[1]]))))
     if (max(ax) > length(dates)) {  # means we are probably forecasting and need extra axis labels
       dates <- c(dates, seq(length(dates), max(ax), by=dates[2]-dates[1]))
     }
   } else {
     if (inherits(dates, "Date")) dates <- as.character(dates)
-    if (length(dates) != ncol(x$latent)) {
-      stop("Length of argument 'dates' differs from ncol(x$latent).")
+    if (length(dates) != NCOL(latent(x)[[1]])) {
+      stop("Length of argument 'dates' differs from NCOL(latent(x)[[1]]).")
     }
     dates <- c('', dates)
     ax <- ax[ax != 0]  # avoid "zero" tick
@@ -373,7 +377,7 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 #' These functions set up the page layout and call \code{\link{volplot}},
 #' \code{\link{paratraceplot}} and \code{\link{paradensplot}}.
 #' 
-#' @param x \code{svdraws} or \code{svldraws} object.
+#' @param x \code{svdraws} object.
 #' @param forecast nonnegative integer or object of class \code{svpredict}, as
 #' returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
 #' provided, \code{\link{predict.svdraws}} is invoked to obtain the
@@ -390,9 +394,6 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 #' to try setting \code{showobs} to \code{FALSE}.
 #' @param showprior logical value, indicating whether the prior distribution
 #' should be displayed. The default value is \code{TRUE}.
-#' @param col vector of color values (see \code{\link[graphics]{par}}) used for
-#' plotting the quantiles. The default value \code{NULL} results in gray lines
-#' for all quantiles expect the median, which is displayed in black.
 #' @param forecastlty vector of line type values (see
 #' \code{\link[graphics]{par}}) used for plotting quantiles of predictive
 #' distributions. The default value \code{NULL} results in dashed lines.
@@ -439,12 +440,12 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 #' newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
 #' draws <- updatesummary(draws, quantiles = newquants)
 #' 
-#' plot(draws, forecast = 20, showobs = FALSE, col = seq(along = newquants),
+#' plot(draws, forecast = 20, showobs = FALSE,
 #'      forecastlty = 3, showprior = FALSE)
 #' 
 #' @export
 plot.svdraws <- function(x, forecast = NULL, dates = NULL,
-			 show0 = FALSE, showobs = TRUE, showprior = TRUE, col = NULL,
+			 show0 = FALSE, showobs = TRUE, showprior = TRUE,
 			 forecastlty = NULL, tcl = -0.4,
 			 mar = c(1.9, 1.9, 1.7, .5), mgp = c(2, .6, 0),
 			 simobj = NULL, newdata = NULL, ...) {
@@ -477,12 +478,13 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
   # Plotting
   if (plot_volatility_series) {
     volplot(x, dates = dates, show0 = show0, forecast = forecast,
-            forecastlty = forecastlty, col = col, tcl = tcl, mar = mar,
+            forecastlty = forecastlty, tcl = tcl, mar = mar,
             mgp = mgp, simobj = simobj, newdata = newdata, ...)
   }
   if (!x$resampled) {
-    message("Traceplots are not shown after re-sampling")
     paratraceplot(x, mar = mar, mgp = mgp, simobj = simobj, ...)
+  } else {
+    message("Traceplots are not shown after re-sampling")
   }
   paradensplot(x, showobs = showobs, showprior = showprior,
                showxlab = FALSE, mar = mar, mgp = mgp, simobj = simobj, ...)
@@ -491,22 +493,26 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
 }
 
 # modified density plot (from coda package)
+# x is an mcmc.list with a single variable
 mydensplot <- function(x, show.obs = TRUE, bwf, main = "", ylim, cutat=c(-Inf, Inf), showxlab=TRUE, mgp = c(2,.6,0), tcl=-.4, ...) {
-  for (i in 1:nvar(x)) {
-    x_i <- as.matrix(x)[, i, drop = TRUE]
+  varname <- coda::varnames(x[[1]])
+  draws <- coda::niter(x[[1]])
+  for (i in seq_along(x)) {
+    x_i <- as.vector(x[[i]])
     range_x_i <- range(x_i)
     if (range_x_i[1] < cutat[1] || range_x_i[2] > cutat[2]) {
       stop("Argument 'cutat' does not include range of variable.")
     }
-    if (missing(bwf)) 
+    if (missing(bwf)) {
       bwf <- function(xx) {
         xx <- xx[!is.na(as.vector(xx))]
         return(1.06 * min(sd(xx), IQR(xx)/1.34) * length(xx)^-0.2)
       }
+    }
     bw <- bwf(x_i)
     width <- 4 * bw
     if (max(abs(x_i - floor(x_i))) == 0 || bw == 0) {
-      hist(x_i, prob = TRUE, main = main, ...)
+      hist(x_i, prob = TRUE, main = main, col = i, ...)
     } else {
       density_scale <- "open"
       cut_at_bottom <- isTRUE(is.finite(cutat[1]) && range_x_i[1]-cutat[1] < 2*bw)
@@ -520,59 +526,47 @@ mydensplot <- function(x, show.obs = TRUE, bwf, main = "", ylim, cutat=c(-Inf, I
       } else {
         x_i
       }
-      upscale <- if (cut_at_bottom && cut_at_top) {
-        3
-      } else if (cut_at_bottom || cut_at_top) {
-        2
-      } else {
-        1
-      }
+      upscale <- 1 + cut_at_bottom + cut_at_top
       dens <- density(x_i, width = width)
       index <- dens$x >= cutat[1] & dens$x <= cutat[2]
       dens$x <- dens$x[index]
       dens$y <- upscale * dens$y[index]
 
-      if (missing(ylim)) 
+      if (missing(ylim)) {
         ylim <- c(0, max(dens$y))
-
-      plot(dens, ylab = "", main = main, type = "l", 
-           ylim = ylim, xlab="", mgp = mgp, tcl = tcl, ...)
-      if(isTRUE(showxlab)) {
-        if (is.R()) {
-          mtext(paste("N =", niter(x), "  Bandwidth =",
-                      formatC(dens$bw)), side=1, line=2.7, cex=.7)
-        } else {
-          mtext(paste("N =", niter(x), "  Bandwidth =",
-                      formatC(bw)), side=1, line=2.7, cex=.7)
-        }
       }
-      if (show.obs) 
-        lines(x_i[1:niter(x)], rep(max(dens$y)/100, niter(x)), 
-              type = "h")
+      if (i == 1) {
+        plot(dens, ylab = "", main = main, type = "l", 
+             ylim = ylim, xlab="", mgp = mgp, tcl = tcl, col = i, ...)
+      } else {
+        lines(dens$x, dens$y, type = "l", col = i)
+      }
+      if (show.obs) {
+        lines(x_i[seq_len(draws)], rep(max(dens$y)/100, draws),
+              type = "h", col = i)
+      }
     }
-    if (!is.null(varnames(x)) && is.null(list(...)$main)) 
-      title(paste("Density of", varnames(x)[i]))
+  }
+  if(isTRUE(showxlab)) {
+    if (is.R()) {
+      mtext(paste("N =", coda::niter(x[[1]]), "  Bandwidth =",
+                  formatC(dens$bw)), side=1, line=2.7, cex=.7)
+    } else {
+      mtext(paste("N =", coda::niter(x[[1]]), "  Bandwidth =",
+                  formatC(bw)), side=1, line=2.7, cex=.7)
+    }
   }
   invisible(x)
 }
 
 # modified traceplot (from coda)
-mytraceplot <- function (x, smooth = FALSE, col = 1:6, type = "l", ylab = "", xlab = "Iterations", mgp = c(2,.6,0), tcl = -.4, ...) {
-  x <- mcmc.list(x)
-  for (j in 1:nvar(x)) {
-    xp <- as.vector(time(x))
-    yp <- if (nvar(x) > 1) x[, j, drop = TRUE] else x
-    yp <- do.call("cbind", yp)
-    matplot(xp, yp, xlab = xlab, ylab = ylab, type = type, 
-            col = col, mgp = mgp, tcl = tcl, ...)
-    if (!is.null(varnames(x)) && is.null(list(...)$main)) 
-      title(paste("Trace of ", varnames(x)[j], " (thin = ", attr(x, "thinning")$thinpara,")", sep=''))
-    if (smooth) {
-      scol <- rep(col, length = nchain(x))
-      for (k in 1:nchain(x))
-        lines(lowess(xp, yp[, k]), col = scol[k])
-    }
-  }
+# x is an mcmc.list with a single variable
+mytraceplot <- function (x, type = "l", ylab = "", xlab = "Iterations", mgp = c(2,.6,0), tcl = -.4, ...) {
+  varname <- coda::varnames(x[[1]])
+  xp <- as.vector(time(x[[1]]))
+  yp <- simplify2array(x)
+  graphics::matplot(xp, yp, xlab = xlab, ylab = ylab, type = type, 
+                    col = seq_along(x), mgp = mgp, tcl = tcl, ...)
   invisible(x)
 }
 

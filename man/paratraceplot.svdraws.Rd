@@ -13,7 +13,7 @@
 )
 }
 \arguments{
-\item{x}{\code{svdraws} or \code{svldraws} object.}
+\item{x}{\code{svdraws} object.}
 
 \item{mar}{numerical vector of length 4, indicating the plot margins. See
 \code{\link[graphics]{par}} for details. The default value is \code{c(1.9,

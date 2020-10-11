@@ -16,7 +16,7 @@ paradensplot(
 )
 }
 \arguments{
-\item{x}{\code{svdraws} or \code{svldraws} object.}
+\item{x}{\code{svdraws} object.}
 
 \item{showobs}{logical value, indicating whether the observations should be
 displayed along the x-axis. If many draws have been obtained, the default
