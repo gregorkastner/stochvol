@@ -145,5 +145,8 @@ plot(res)
 # Use functionality from package 'coda'
 ## E.g. Geweke's convergence diagnostics
 coda::geweke.diag(para(res)[, c("mu", "phi", "sigma")])
+
+# Use functionality from package 'bayesplot'
+bayesplot::mcmc_pairs(res, pars = c("sigma", "mu", "phi", "h_0", "h_15"))
 }
 

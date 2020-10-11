@@ -133,7 +133,7 @@ vola <- function (x) {
 #' @method as.array svdraws
 #' @export
 as.array.svdraws <- function (x, ...) {
-# TODO 
+  aperm(simplify2array(lapply(seq_along(para(x)), function (i) cbind(x$para[[i]], x$latent0[[i]], x$latent[[i]], x$tau[[i]], x$beta[[i]])), higher = TRUE), c(1, 3, 2))
 }
 
 contains_beta <- function(x) {
