@@ -149,11 +149,13 @@ double update_single_tau(
                proposal_scale = (nu - 2 + std::pow(homosked_data_i, 2)) / 2.,
                tau_proposal_i = 1./R::rgamma(proposal_shape, 1 / proposal_scale);  // non-parallelizable
   if (do_tau_acceptance_rejection) {
-    const double log_ar =
-                   (logdnorm(homosked_data_i / std::sqrt(tau_proposal_i), mean_i, sd_i) +
+    const double sqrt_tau_prop = std::sqrt(tau_proposal_i),
+                 sqrt_tau = std::sqrt(tau_i),
+                 log_ar =
+                   (logdnorm(homosked_data_i, sqrt_tau_prop * mean_i, sqrt_tau_prop * sd_i) +
                     logdinvgamma(tau_proposal_i, .5 * nu, .5 * (nu - 2)) -
                     logdinvgamma(tau_proposal_i, proposal_shape, proposal_scale)) -
-                   (logdnorm(homosked_data_i / std::sqrt(tau_i), mean_i, sd_i) +
+                   (logdnorm(homosked_data_i, sqrt_tau * mean_i, sqrt_tau * sd_i) +
                     logdinvgamma(tau_i, .5 * nu, .5 * (nu - 2)) -
                     logdinvgamma(tau_i, proposal_shape, proposal_scale));
     if (log_ar >= 0 or R::unif_rand() < std::exp(log_ar)) {

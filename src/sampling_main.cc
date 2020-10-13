@@ -376,7 +376,7 @@ List svsample_general_cpp(
 
     // update tau and nu
     if (is_heavy_tail) {
-      update_t_error(data_demean % exp_h_half_inv, tau, conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec, false);  // TODO remove false
+      update_t_error(data_demean % exp_h_half_inv, tau, conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec);
       // update cached data arrays after the regression
     }
 
