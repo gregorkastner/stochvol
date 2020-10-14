@@ -1,4 +1,4 @@
-Changes in Version *:
+Changes in Version 3.0.0:
   - 'svsample', 'svtsample', and 'svlsample' are united into 'svsample',
     different code bases are executed depending on the prior settings
   - Entirely refactored C++ backend
@@ -9,12 +9,13 @@ Changes in Version *:
   - The prior distribution for the degrees of freedom parameter 'nu'
     is an exponential distribution and not a uniform distribution
   - The exported C++ function 'update_general_sv' and, depending on the
-    prior and expert settings, sometimes 'svample' make use of adaptive
+    prior and expert settings, sometimes 'svsample' make use of adaptive
     Metropolis-Hastings for sampling 'mu', 'phi', 'sigma', and 'rho'
   - SV with heavy tails _and_ leverage effect is allowed
   - Test suite greatly extended
   - Vastly improved the computational efficiency of the former
     'svlsample' code
+  - CITATION file updated
 
 Changes in Version 2.0.5:
   - Bugfix in predict when a constant mean model is used for prediction

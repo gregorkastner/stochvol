@@ -5,7 +5,7 @@ if(!exists("meta") || is.null(meta)) meta <- packageDescription("stochvol")
 year <- sub("-.*", "", meta$Packaged)
 note <- sprintf("R package version %s", meta$Version)
 
-bibentry(bibtype = "Article",
+bibentry(bibtype = "article",
   header       = "To cite stochvol in publications use:",
   title        = "Dealing with Stochastic Volatility in Time Series Using the {R} Package {stochvol}",
   author       = person(given = "Gregor",
@@ -18,13 +18,13 @@ bibentry(bibtype = "Article",
   pages        = "1--30",
   doi          = "10.18637/jss.v069.i05",
   textVersion  =
-  paste("Gregor Kastner (2016).",
+  paste("Kastner, Gregor (2016).",
         "Dealing with Stochastic Volatility in Time Series Using the R Package stochvol.",
         "Journal of Statistical Software, 69(5), 1-30.",
-        "doi:10.18637/jss.v069.i05")
+        "https://doi.org/10.18637/jss.v069.i05")
 )
 
-bibentry(bibtype = "Article",
+bibentry(bibtype = "article",
   header       = "When using the sampler that allows for leverage (svlsample) please cite:",
   title        = "Modeling Univariate and Multivariate Stochastic Volatility in {R} with {stochvol} and {factorstochvol}",
   author       = personList(
@@ -38,28 +38,13 @@ bibentry(bibtype = "Article",
   year         = "2019",
   url          = "https://CRAN.R-project.org/package=stochvol/vignettes/paper.pdf",
   textVersion  =
-  paste("Hosszejni, Darjus and Gregor Kastner (2019).",
+  paste("Hosszejni, Darjus and Kastner, Gregor (2019).",
         "Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol.",
         "R package vignette.",
         "URL: https://CRAN.R-project.org/package=stochvol/vignettes/paper.pdf")
 )
 
-#citEntry(header = "To refer to the current version of the package you could use:",
-#         entry = "manual",
-#         title = "{stochvol}: Efficient Bayesian Inference for Stochastic Volatility ({SV}) Models",
-#         author = personList(as.person("Gregor Kastner"), as.person("Darjus Hosszejni")),
-#         year = year,
-#         note = note,
-#         url = "https://CRAN.R-project.org/package=stochvol",
-#         textVersion =
-#         paste("Gregor Kastner, Darjus Hosszejni",
-#   	       sprintf("(%s).", year),	 
-#               "stochvol: Efficient Bayesian inference for stochastic volatility (SV) models.",
-#	       paste(note, ".", sep = ""),
-#               "URL: https://CRAN.R-project.org/package=stochvol")
-#)
-
-citEntry(header = "To refer to the sampling methodology used by the svsample function please cite:",
+citEntry(header = "To refer to the sampling methodology used by the sampler without leverage (svsample) please cite:",
          entry = "article",
          title = "Ancillarity-Sufficiency Interweaving Strategy ({ASIS}) for Boosting {MCMC} Estimation of Stochastic Volatility Models",
          author = personList(as.person("Gregor Kastner"),
@@ -69,7 +54,31 @@ citEntry(header = "To refer to the sampling methodology used by the svsample fun
          volume = "76", 
          pages = "408--423",
          doi = "10.1016/j.csda.2013.01.002",
-         textVersion = "Gregor Kastner, Sylvia Frühwirth-Schnatter (2014). Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC estimation of stochastic volatility models. Computational Statistics & Data Analysis 76, 408-423. doi:10.1016/j.csda.2013.01.002"
+         textVersion = "Kastner, Gregor and Frühwirth-Schnatter, Sylvia (2014). Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC estimation of stochastic volatility models. Computational Statistics & Data Analysis 76, 408-423. https://doi.org/10.1016/j.csda.2013.01.002"
+)
+
+citEntry(header = "To refer to the sampling methodology used by the sampler that allows for leverage (svlsample) please cite:",
+         entry = "inproceedings",
+         title = "Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage",
+         author = personList(
+                   person(given = "Darjus",
+                          family = "Hosszejni",
+                          email = "darjus.hosszejni@wu.ac.at"),
+                   person(given = "Gregor",
+                          family = "Kastner",
+                          email = "gregor.kastner@wu.ac.at")),
+         booktitle = "Bayesian Statistics and New Generations. BAYSM 2018",
+         year = "2019",
+         series = "Springer Proceedings in Mathematics \\& Statistics",
+         volume = "296",
+         pages = "75--83",
+         editor = personList(as.person("Raffaele Argiento"),
+                             as.person("Daniele Durante"),
+                             as.person("Sara Wade")),
+         doi = "10.1007/978-3-030-30611-3_8",
+         publisher = "Springer",
+         address = "Cham",
+         textVersion = "Hosszejni, Darjus and Kastner, Gregor (2019). Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage. In: Argiento R., Durante D., Wade S. (eds). Bayesian Statistics and New Generations. BAYSM 2018. Springer Proceedings in Mathematics & Statistics, vol 296. Springer, Cham. https://doi.org/10.1007/978-3-030-30611-3_8"
 )
 
 citEntry(header = "If you want to specifically refer to the conditional Student's t sampler, use:",
@@ -80,7 +89,5 @@ citEntry(header = "If you want to specifically refer to the conditional Student'
          institution = "CRAN",
          year = "2015",
          url = "https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf",
-         textVersion = "Gregor Kastner (2015). Heavy-Tailed Innovations in the R Package stochvol. R Package Vignette. URL: https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf"
+         textVersion = "Kastner, Gregor (2015). Heavy-Tailed Innovations in the R Package stochvol. R Package Vignette. URL: https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf"
 )
-
-citFooter("BibTeX entries of the above can be obtained by", sQuote('toBibtex(citation("stochvol"))'))
