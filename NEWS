@@ -8,11 +8,6 @@ Changes in Version 3.0.0:
   - New, optional API for specifying prior distributions
   - The prior distribution for the degrees of freedom parameter 'nu'
     is an exponential distribution and not a uniform distribution
-  - The exported C++ function 'update_general_sv' and, depending on the
-    prior and expert settings, sometimes 'svsample' make use of adaptive
-    Metropolis-Hastings for sampling 'mu', 'phi', 'sigma', and 'rho'
-  - SV with heavy tails _and_ leverage effect is allowed
-  - Test suite greatly extended
   - Vastly improved the computational efficiency of the former
     'svlsample' code
   - CITATION file updated
