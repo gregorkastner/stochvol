@@ -71,23 +71,23 @@ test_that("vanilla SV passes Geweke test", {
                                interweave = FALSE,
                                myoffset = 0,
                                fast_sv = fast_sv)
-      param <- para(res)[1, ]
+      param <- res$para[1, ]
       startpara$mu <- param["mu"]
       startpara$phi <- param["phi"]
       startpara$sigma <- param["sigma"]
       if (TRUE) {  # correct way
-        startpara$latent0 <- latent0(res)[1]
+        startpara$latent0 <- res$latent0[1]
         fast_sv$init_indicators <- res$indicators[1, ]
-        startlatent <- latent(res)[1, ]
+        startlatent <- res$latent[1, ]
       } else {  # wrong way
         startpara$latent0 <- rnorm(1, startpara$mu, startpara$sigma / sqrt(1 - startpara$phi^2))
         fast_sv$init_indicators <- sample.int(10, len, replace = TRUE, prob = p)
         startlatent <- generate_h(len, increment_fun(startpara$mu, startpara$phi, startpara$sigma), startpara$latent0)
       }
-      store_para[tt, c("mu", "phi", "sigma")] <- para(res)[1, c("mu", "phi", "sigma")]
-      store_para[tt, 4] <- latent0(res)[1]
+      store_para[tt, c("mu", "phi", "sigma")] <- res$para[1, c("mu", "phi", "sigma")]
+      store_para[tt, 4] <- res$latent0[1]
       store_y[tt, ] <- y
-      store_h[tt, ] <- latent(res)[, 1]
+      store_h[tt, ] <- res$latent[, 1]
       store_r[tt, ] <- res$indicators[, 1]
     }
 
@@ -125,20 +125,20 @@ test_that("general SV passes Geweke test", {
 
   for (centered in c(FALSE, TRUE)) {
     priorspec <-
-      specify_priors(mu = sv_constant(0),  #sv_normal(mean = -9, sd = 0.1),
-                     phi = sv_constant(0),  #sv_beta(shape1 = 10, shape2 = 5),
-                     sigma2 = sv_constant(1),  #sv_gamma(shape = 0.5, rate = 0.5 / 1),
-                     rho = sv_constant(0),  #sv_beta(shape1 = 10, shape2 = 10),
+      specify_priors(mu = sv_normal(mean = -9, sd = 0.1),
+                     phi = sv_beta(shape1 = 10, shape2 = 5),
+                     sigma2 = sv_gamma(shape = 0.5, rate = 0.5 / 1),
+                     rho = sv_beta(shape1 = 10, shape2 = 10),
                      nu = sv_exponential(rate = 0.05))
     set.seed(61)
     startpara <- list(mu = mean(priorspec$mu),
-                      #phi = -1 + 2*mean(priorspec$phi),
-                      phi = mean(priorspec$phi),
                       sigma = sqrt(mean(priorspec$sigma2)),
-                      #rho = -1 + 2*mean(priorspec$rho),
-                      rho = mean(priorspec$rho),
-                      #nu = mean(priorspec$nu)+2,
+                      phi = -1 + 2*mean(priorspec$phi),
+                      rho = -1 + 2*mean(priorspec$rho),
                       nu = mean(priorspec$nu),
+                      #phi = mean(priorspec$phi),
+                      #rho = mean(priorspec$rho),
+                      #nu = mean(priorspec$nu)+2,
                       beta = mean(priorspec$beta),
                       latent0 = mean(priorspec$mu))
 
@@ -168,8 +168,6 @@ test_that("general SV passes Geweke test", {
       res$adaptation[[general_sv$starting_parameterization]][c("scale", "covariance")]
     general_sv$multi_asis <- 2
 
-    general_sv$update <- list(parameters = FALSE, latent_vector = FALSE)
-
     draws <- 20000L
     store_para <- matrix(NA_real_, draws, 6, dimnames = list(NULL, c("mu", "phi", "sigma", "nu", "rho", "h0")))
     store_y <- matrix(NA_real_, draws, len)
@@ -190,22 +188,22 @@ test_that("general SV passes Geweke test", {
                                     interweave = FALSE,
                                     myoffset = 0,
                                     general_sv = general_sv)
-        param <- para(res)[1, ]
+        param <- res$para[1, ]
         startpara$mu <- param["mu"]
         startpara$phi <- param["phi"]
         startpara$sigma <- param["sigma"]
         startpara$nu <- param["nu"]
         startpara$rho <- param["rho"]
-        startpara$latent0 <- latent0(res)[1]
-        startlatent <- latent(res)[1, ]
+        startpara$latent0 <- res$latent0[1]
+        startlatent <- res$latent[1, ]
         tau <- res$tau[1, ]
         general_sv$init_tau <- res$tau[1, ]
       }
 
-      store_para[tt, c("mu", "phi", "sigma", "nu", "rho")] <- para(res)[1, c("mu", "phi", "sigma", "nu", "rho")]
-      store_para[tt, "h0"] <- latent0(res)[1]
+      store_para[tt, c("mu", "phi", "sigma", "nu", "rho")] <- res$para[1, c("mu", "phi", "sigma", "nu", "rho")]
+      store_para[tt, "h0"] <- res$latent0[1]
       store_y[tt, ] <- y
-      store_h[tt, ] <- latent(res)[1, ]
+      store_h[tt, ] <- res$latent[1, ]
       store_tau[tt, ] <- res$tau[1, ]
     }
 
@@ -239,24 +237,9 @@ test_that("general SV passes Geweke test", {
       qqnorm(qnorm(pbeta(0.5 * (1 + store_para[idx, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2))); abline(0, 1, col = "blue")
       qqnorm(qnorm(pbeta(0.5 * (1 + store_para[idx, "rho"]), priorspec$rho$shape1, priorspec$rho$shape2))); abline(0, 1, col = "red")
       qqnorm(qnorm(pexp(store_para[idx, "nu"] - 2, rate = priorspec$nu$rate))); abline(0, 1, col = "red")
-      qqplot(store_tau[idx, 2], 1/rgamma(2*length(idx), shape = .5*store_para[idx, "nu"], rate = .5*(store_para[idx, "nu"]-2))); abline(0, 1, col = "red")
+      qqplot(store_tau[idx, 9], 1/rgamma(2*length(idx), shape = .5*store_para[idx, "nu"], rate = .5*(store_para[idx, "nu"]-2))); abline(0, 1, col = "red")
       par(opar)
     }
-  }
-  if (FALSE) {
-    nu <- 50
-    y <- 3
-    draws <- 30000L
-    store_tau <- rep(NA, draws)
-    store_y <- rep(NA, draws)
-    for (i in seq_len(draws)) {
-      tau <- 1/rgamma(1, .5*(nu+1), rate = .5*(nu-2+y^2))
-      y <- sqrt(tau) * rnorm(1)
-      store_tau[i] <- tau
-      store_y[i] <- y
-    }
-    sd(store_y)
-    qqplot(store_tau, 1/rgamma(3*draws, .5*nu, rate = .5*(nu-2))); abline(0, 1, col = "red")
   }
 })
 

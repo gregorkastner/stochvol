@@ -440,8 +440,16 @@ print.sv_priorspec <- function(x, ...) {
   }
   print(x$phi)
   cat("sigma^2   ~ "); print(x$sigma2)
-  cat("nu-2      ~ "); print(x$nu)
-  cat("(rho+1)/2 ~ "); print(x$rho)
+  if (inherits(x$nu, "sv_exponential")) {
+    cat("nu-2      ~ "); print(x$nu)
+  } else {
+    cat("nu        ~ "); print(x$nu)
+  }
+  if (inherits(x$nu, "sv_beta")) {
+    cat("(rho+1)/2 ~ "); print(x$rho)
+  } else {
+    cat("rho       ~ "); print(x$rho)
+  }
 }
 
 # Find a good initial value for mu

@@ -195,7 +195,7 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
   paranames <- c(mu=quote(mu), phi=quote(phi), sigma=quote(sigma), nu=quote(nu), rho=quote(rho))
   params <- sampled_parameters(x)
   for (para_name in params) {
-    mytraceplot(para(x)[,para_name], xlab="", mgp = mgp,
+    mytraceplot(para(x, "all")[,para_name], xlab="", mgp = mgp,
                 main=paste0("Trace of ", paranames[para_name], " (thin = ", x$thinning$para,")"), ...)
     if (sim && para_name %in% names(simobj$para)) {
       abline(h = simobj$para[[para_name]], col = 3, lty = 2)
@@ -349,14 +349,14 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
   }
 
   if (is.null(dates)) {
-    dates <- c(0L, as.integer(gsub("h_", "", coda::varnames(latent(x)[[1]]))))
+    dates <- c(0L, as.integer(gsub("h_", "", coda::varnames(latent(x)))))
     if (max(ax) > length(dates)) {  # means we are probably forecasting and need extra axis labels
       dates <- c(dates, seq(length(dates), max(ax), by=dates[2]-dates[1]))
     }
   } else {
     if (inherits(dates, "Date")) dates <- as.character(dates)
-    if (length(dates) != NCOL(latent(x)[[1]])) {
-      stop("Length of argument 'dates' differs from NCOL(latent(x)[[1]]).")
+    if (length(dates) != NCOL(latent(x, 1))) {
+      stop("Length of argument 'dates' differs from NCOL(latent(x, 1)).")
     }
     dates <- c('', dates)
     ax <- ax[ax != 0]  # avoid "zero" tick

@@ -28,6 +28,7 @@ svsample(
   n_cpus = 1L,
   cl = NULL,
   n_chains = 1L,
+  print_progress = "automatic",
   expert = NULL,
   ...
 )
@@ -136,7 +137,7 @@ default value is \code{rep(-10, length(y))}.
 In case of parallel execution with \code{cl} provided, \code{startlatent} can be a list of
 named lists that initialize the parallel chains.}
 
-\item{parallel}{one of \code{"no"} (default), \code{"multicore"}, or \code{"snow"},
+\item{parallel}{\emph{optional} one of \code{"no"} (default), \code{"multicore"}, or \code{"snow"},
 indicating what type of parallellism is to be applied. Option
 \code{"multicore"} is not available on Windows.}
 
@@ -147,7 +148,10 @@ parallel computations. Defaults to \code{1L}. Ignored if parameter
 \item{cl}{\emph{optional} so-called SNOW cluster object as implemented in package
 \code{parallel}. Ignored unless \code{parallel == "snow"}.}
 
-\item{n_chains}{positive integer specifying the number of independent MCMC chains}
+\item{n_chains}{\emph{optional} positive integer specifying the number of independent MCMC chains}
+
+\item{print_progress}{\emph{optional} one of \code{"automatic"}, \code{"progressbar"},
+or \code{"iteration"}, controls the output. Ignored if \code{quiet} is \code{TRUE}.}
 
 \item{expert}{\emph{optional} named list of expert parameters. For most
 applications, the default values probably work best. Interested users are
@@ -208,7 +212,7 @@ distribution by calling \code{\link{volplot}}, \code{\link{traceplot}} and
 }
 \description{
 \code{svsample} simulates from the joint posterior distribution of the SV
-parameters \code{mu}, \code{phi}, \code{sigma} (and potentially \code{nu}),
+parameters \code{mu}, \code{phi}, \code{sigma} (and potentially \code{nu} and \code{rho}),
 along with the latent log-volatilities \code{h_0,...,h_n} and returns the
 MCMC draws. If a design matrix is provided, simple Bayesian regression can
 also be conducted.

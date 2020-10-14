@@ -118,7 +118,7 @@
 #' default value is \code{rep(-10, length(y))}.
 #' In case of parallel execution with \code{cl} provided, \code{startlatent} can be a list of
 #' named lists that initialize the parallel chains.
-#' @param parallel one of \code{"no"} (default), \code{"multicore"}, or \code{"snow"},
+#' @param parallel \emph{optional} one of \code{"no"} (default), \code{"multicore"}, or \code{"snow"},
 #' indicating what type of parallellism is to be applied. Option
 #' \code{"multicore"} is not available on Windows.
 #' @param n_cpus \emph{optional} positive integer, the number of CPUs to be used in case of
@@ -126,7 +126,9 @@
 #' \code{cl} is supplied and \code{parallel != "snow"}.
 #' @param cl \emph{optional} so-called SNOW cluster object as implemented in package
 #' \code{parallel}. Ignored unless \code{parallel == "snow"}.
-#' @param n_chains positive integer specifying the number of independent MCMC chains
+#' @param n_chains \emph{optional} positive integer specifying the number of independent MCMC chains
+#' @param print_progress \emph{optional} one of \code{"automatic"}, \code{"progressbar"},
+#' or \code{"iteration"}, controls the output. Ignored if \code{quiet} is \code{TRUE}.
 #' @param expert \emph{optional} named list of expert parameters. For most
 #' applications, the default values probably work best. Interested users are
 #' referred to the literature provided in the References section. If
@@ -200,6 +202,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
                      quiet = FALSE, startpara = NULL, startlatent = NULL,
                      parallel = c("no", "multicore", "snow"),
                      n_cpus = 1L, cl = NULL, n_chains = 1L,
+                     print_progress = "automatic",
                      expert = NULL, ...) {
 
   # Validation
@@ -374,16 +377,17 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
          rho = if (inherits(priorspec$rho, "sv_beta")) 2 * mean(priorspec$rho) - 1 else mean(priorspec$rho),
          beta = mean(priorspec$beta),
          latent0 = -10)
-  startlatentdefault <- rep.int(startparadefault$mu, length(y))
   startpara <- if (have_parallel_startpara) {
     lapply(startpara, function (x, def) apply_default_list(x, def), def = startparadefault)
   } else {
     replicate(n_chains, apply_default_list(startpara, startparadefault), simplify = FALSE)
   }
   startlatent <- if (have_parallel_startlatent) {
-    lapply(startlatent, function (x, def) apply_default_list(x, def), def = startlatentdefault)
+    lapply(startlatent, function (x, def) apply_default_list(x, def), def = rep.int(NA, length(y)))
+  } else if (is.null(startlatent)) {
+    lapply(startpara, function (x, len) rep.int(x$mu, len), len = length(y))  # default startlatent is constant mu
   } else {
-    replicate(n_chains, apply_default_list(startlatent, startlatentdefault), simplify = FALSE)
+    replicate(n_chains, apply_default_list(startlatent, rep.int(NA, length(y))), simplify = FALSE)
   }
   validate_initial_values(startpara, startlatent, y, designmatrix)
 
@@ -403,12 +407,26 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
   # Pick sampling function
   myquiet <- (.Platform$OS.type != "unix") || quiet  # Hack to prevent console flushing problems with Windows
+  ## print progress
+  print_settings <- if (is.character(print_progress)) {
+    print_progress <- match.arg(print_progress, c("automatic", "progressbar", "iteration"))
+    if (print_progress == "automatic") {
+      n_chains
+    } else if (print_progress == "progressbar") {
+      1
+    } else {
+      max(c(2, n_chains))
+    }
+  } else {  # hidden feature
+    print_progress
+  }
+
   sampling_function <- if (use_fast_sv) {
     function (chain) {
       res <- stochvol::svsample_fast_cpp(y, draws, burnin, designmatrix, priorspec,
                                          thinpara, thinlatent, keeptime,
                                          startpara[[chain]], startlatent[[chain]], keeptau,
-                                         list(quiet = myquiet, chain = chain, n_chains = n_chains),
+                                         list(quiet = myquiet, chain = chain, n_chains = print_settings),
                                          correct_model_misspecification, interweave, myoffset, fast_sv)
       if (correct_model_misspecification) {
         para_indices <- sample.int(n = NROW(res$para), size = NROW(res$para), replace = TRUE, prob = res$correction_weight_para, useHash = FALSE)
@@ -427,7 +445,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
       stochvol::svsample_general_cpp(y, draws, burnin, designmatrix, priorspec,
                                      thinpara, thinlatent, keeptime,
                                      startpara[[chain]], startlatent[[chain]], keeptau,
-                                     list(quiet = myquiet, chain = chain, n_chains = n_chains),
+                                     list(quiet = myquiet, chain = chain, n_chains = print_settings),
                                      correct_model_misspecification, interweave, myoffset, general_sv)
     }
   }
@@ -464,10 +482,11 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
         }
         RNGkind(kind = "L'Ecuyer-CMRG")
         parallel::clusterSetRNGStream(cl)
+        parallel::clusterEvalQ(cl, library(stochvol))
         parallel::clusterExport(cl, c("y", "draws", "burnin", "designmatrix", "priorspec",
                                       "thinpara", "thinlatent", "keeptime",
                                       "startpara", "startlatent", "keeptau",
-                                      "myquiet", "n_chains",
+                                      "myquiet", "n_chains", "print_settings",
                                       "correct_model_misspecification", "interweave", "myoffset",
                                       "fast_sv", "general_sv"),
                                 envir = environment())
@@ -543,8 +562,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   }
 
   if (!quiet) {
-    cat("Done!\n", file=stderr())
-    cat("Summarizing posterior draws... ", file=stderr())
+    message("Done!")
+    message("Summarizing posterior draws...")
   }
   res <- if (res$resampled) {
     message("No computation of effective sample size after re-sampling")
@@ -579,4 +598,314 @@ default_general_sv <-
        update = list(latent_vector = TRUE, parameters = TRUE),
        init_tau = 1,
        proposal_diffusion_ken = FALSE)  # FALSE turns on adaptation
+
+#' Rolling Estimation of Stochastic Volatility Models
+#' 
+#' \code{svsample_roll} performs rolling window estimation based on \link{svsample}.
+#' A convenience function for backtesting purposes.
+#' 
+#' @param y numeric vector containing the data (usually log-returns), which
+#' must not contain zeros. Alternatively, \code{y} can be an \code{svsim}
+#' object. In this case, the returns will be extracted and a message is signalled.
+#' @param designmatrix regression design matrix for modeling the mean. Must
+#' have \code{length(y)} rows. Alternatively, \code{designmatrix} may be a
+#' string of the form \code{"arX"}, where \code{X} is a nonnegative integer. To
+#' fit a constant mean model, use \code{designmatrix = "ar0"} (which is
+#' equivalent to \code{designmatrix = matrix(1, nrow = length(y))}). To fit an
+#' AR(1) model, use \code{designmatrix = "ar1"}, and so on. If some elements of
+#' \code{designmatrix} are \code{NA}, the mean is fixed to zero (pre-1.2.0
+#' behavior of \pkg{stochvol}).
+#' @param n_ahead number of time steps to predict from each time window.
+#' @param forecast_length the time horizon at the end of the data set
+#' that is used for backtesting.
+#' @param n_start \emph{optional} the starting time point for backtesting.
+#' Computed from \code{forecast_length} if omitted.
+#' @param refit_every the SV model is refit every \code{refit_every} time steps.
+#' Only the value \code{1} is allowed.
+#' @param refit_window one of \code{"moving"} or \code{"expanding"}. If
+#' \code{"expanding"}, then the start of the time window stays
+#' at the beginning of the data set. If \code{"moving"}, then the
+#' length of the time window is constant throughout backtesting.
+#' @param calculate_quantile vector of numbers between 0 and 1.
+#' These quantiles are predicted using \code{\link{predict.svdraws}}
+#' for each time window.
+#' @param calculate_predictive_likelihood boolean. If \code{TRUE},
+#' the \code{n_ahead} predictive density is evaluated at the 
+#' \code{n_ahead} time observation after each time window.
+#' @param keep_draws boolean. If \code{TRUE}, the \code{svdraws} and
+#' the \code{svpredict} objects are kept from each time window.
+#' @param parallel one of \code{"no"} (default), \code{"multicore"}, or \code{"snow"},
+#' indicating what type of parallellism is to be applied. Option
+#' \code{"multicore"} is not available on Windows.
+#' @param n_cpus \emph{optional} positive integer, the number of CPUs to be used in case of
+#' parallel computations. Defaults to \code{1L}. Ignored if parameter
+#' \code{cl} is supplied and \code{parallel != "snow"}.
+#' @param cl \emph{optional} so-called SNOW cluster object as implemented in package
+#' \code{parallel}. Ignored unless \code{parallel == "snow"}.
+#' @param \dots Any extra arguments will be forwarded to
+#' \code{\link{svsample}}, controlling the prior setup, the starting values for the
+#' MCMC chains, the number of independent MCMC chains, thinning and other expert
+#' settings.
+#' @return The value returned is a list object of class \code{svdraws_roll}
+#' holding a list item for every time window. The elements of these list items are
+#' \item{indices}{a list object containing two elements: \code{train} is the vector
+#' of indices used for fitting the model, and \code{test} is the vector of indices
+#' used for prediction. The latter is mainly useful if a \code{designmatrix} is provided.}
+#' \item{quantiles}{the input parameter \code{calculate_quantiles}.}
+#' \item{refit_every}{the input parameter \code{refit_every}.}
+#' \item{predictive_likelihood}{present only if \code{calculate_predictive_likelihood}
+#' is \code{TRUE}. Then it is a number, the expected predictive density
+#' of the observation. The expecation is taken over the joint \code{n_ahead} predictive
+#' distribution of all model parameters.}
+#' \item{predictive_quantile}{present only if \code{calculate_quantile} is a non-empty
+#' vector. Then it is a vector of quantiles from the \code{n_ahead} predictive
+#' distribution of \code{y}. It is based on MCMC simulation by using \code{\link{predict}}.}
+#' \item{fit}{present only if \code{keep_draws} is \code{TRUE}. Then it is an
+#' \code{svdraws} object as returned by \code{\link{svsample}}.}
+#' \item{prediction}{present only if \code{keep_draws} is \code{TRUE}. Then it is an
+#' \code{svpredict} object as returned by \code{\link{predict.svdraws}}.}
+#' 
+#' To display the output, use \code{print} and \code{summary}. The
+#' \code{print} method simply prints a short summary of the setup;
+#' the \code{summary} method displays the summary statistics
+#' of the backtesting.
+#' @note
+#' The function executes \code{\link{svsample}} \code{(length(y) - arorder - n_ahead - n_start + 1) \%/\% refit_every} times.
+#' @seealso \code{\link{svsim}}, \code{\link{specify_priors}}, \code{\link{svsample}}
+#' @keywords models ts
+#' @example inst/examples/svsample_roll.R
+#' @export
+svsample_roll <- function (y, designmatrix = NA,
+                           n_ahead = 1, forecast_length = 500,
+                           n_start = NULL, refit_every = 1,
+                           refit_window = c("moving", "expanding"),
+                           calculate_quantile = c(0.01),
+                           calculate_predictive_likelihood = TRUE,
+                           keep_draws = FALSE,
+                           parallel = c("no", "multicore", "snow"),
+                           n_cpus = 1L, cl = NULL,
+                           ...) {
+
+  # Validation
+  ## y
+  if (inherits(y, "svsim")) {
+    simobj <- y
+    y <- simobj[["y"]]
+    message("Extracted data vector from 'svsim'-object.")
+  } else {
+    simobj <- NULL
+  }
+  assert_numeric(y, "Argument 'y'")
+  assert_gt(length(y), 1, "The length of the input time series 'y'")
+
+  y_orig <- y
+  y <- as.vector(y)
+
+  ## regression
+  arorder <- 0L
+  if (any(is.na(designmatrix))) {
+    designmatrix <- matrix(NA_real_)
+  } else {
+    if (any(grep("ar[0-9]+$", as.character(designmatrix)[1]))) {
+      arorder <- as.integer(gsub("ar", "", as.character(designmatrix)))
+      if (length(y) <= arorder + 1) {
+        stop("Time series 'y' is too short for this AR process.")
+      }
+    } else if (is.character(designmatrix)) {
+      stop("Argument 'designmatrix' must be a numeric matrix or an AR-specification.")
+    } else {
+      assert_numeric(designmatrix, "The processed argument 'designmatrix'")
+      if (!is.matrix(designmatrix)) {
+        designmatrix <- matrix(designmatrix, ncol = 1)
+      }
+      if (NROW(designmatrix) != length(y)) {
+        stop("Number of columns of argument 'designmatrix' must be equal to length(y).")
+      }
+    }
+  }
+
+  refit_window <- match.arg(refit_window)
+  if (!identical(refit_every, 1)) {
+    stop("Parameter 'refit_every' has to be 1")
+  }
+
+  assert_numeric(n_ahead, "Parameter 'n_ahead'")
+  n_ahead <- as.integer(n_ahead)
+  assert_single(n_ahead, "Parameter 'n_ahead'")
+  assert_positive(n_ahead, "Parameter 'n_ahead'")
+
+  assert_numeric(forecast_length, "Parameter 'forecast_length'")
+  forecast_length <- as.integer(forecast_length)
+  assert_single(forecast_length, "Parameter 'forecast_length'")
+  assert_positive(forecast_length, "Parameter 'forecast_length'")
+
+  if (!is.null(n_start)) {
+    assert_numeric(n_start, "Parameter 'n_start'")
+    n_start <- as.integer(n_start)
+    assert_single(n_start, "Parameter 'n_start'")
+    assert_gt(n_start, 2, "Parameter 'n_start'")
+  } else {
+    n_start <- length(y) - forecast_length + 1
+  }
+
+  assert_numeric(calculate_quantile, "Parameter 'calculate_quantile'")
+  assert_positive(calculate_quantile, "Parameter 'calculate_quantile'")
+  assert_lt(calculate_quantile, 1, "Parameter 'calculate_quantile'")
+
+  assert_logical(calculate_predictive_likelihood, "Parameter 'calculate_predictive_likelihood'")
+  assert_single(calculate_predictive_likelihood, "Parameter 'calculate_predictive_likelihood'")
+
+  assert_logical(keep_draws, "Parameter 'keep_draws'")
+  assert_single(keep_draws, "Parameter 'keep_draws'")
+
+  ## parallel (strongly influenced by package 'boot')
+  parallel <- match.arg(parallel)
+  have_mc <- FALSE
+  have_snow <- FALSE
+  if (parallel != "no") {
+    if (parallel == "multicore") {
+      have_mc <- .Platform$OS.type != "windows"
+    } else if (parallel == "snow") {
+      have_snow <- TRUE
+    }
+    if (!have_mc && !have_snow) {
+      n_cpus <- 1L
+    }
+    requireNamespace("parallel")
+  }
+  create_cluster <- isTRUE(is.null(cl))
+  have_cluster <- isTRUE(inherits(cl, "SOCKcluster"))
+  if (have_snow && !create_cluster && !have_cluster) {
+    warning("Unknown type of input in parameter 'cl'. Should be either NULL or of class 'cluster' created by the parallel package. Turning off parallelism")
+    cl <- NULL
+    have_mc <- FALSE
+    have_snow <- FALSE
+    n_cpus <- 1L
+  }
+  if (have_snow && n_cpus == 1L && !have_cluster) {
+    warning("Inconsistent settings for parallel execution: snow parallelism combined with n_cpus == 1 and no supplied cluster object. Turning off parallelism")
+    have_snow <- FALSE
+  }
+  if (have_mc && n_cpus == 1L) {
+    warning("Inconsistent settings for parallel execution: multicore parallelism combined with n_cpus == 1. Turning off parallelism")
+    have_mc <- FALSE
+  }
+  n_workers <- if (have_snow) {
+    if (have_cluster) {
+      length(cl)
+    } else {
+      n_cpus
+    }
+  } else {
+    1L
+  }
+  n_chains <- n_cpus
+
+  # Define accessors for the windows
+  choose_indices <- function (i) {
+    n <- length(y)
+    train_begin <- if (refit_window == "expanding") {
+      1
+    } else {
+      1 + (i-1) * refit_every
+    }
+    train_end <- train_begin + n_start - 2 + arorder
+    list(train = seq(train_begin, train_end),
+         test = seq(train_end+1, train_end+n_ahead))
+  }
+
+  # Define parallel function
+  sampling_function <- function (i) {
+    ind <- choose_indices(i)
+    arguments$y <- y[ind$train]
+    arguments$designmatrix <- if (any(is.na(designmatrix)) || is.character(designmatrix)) designmatrix else designmatrix[ind$train, ]
+    arguments$parallel <- "no"
+    arguments$print_progress <- n_windows
+    svdraws <- do.call(stochvol::svsample, arguments)
+    new_data <- if (is.character(designmatrix) || any(is.na(designmatrix))) {
+      NULL
+    } else {
+      designmatrix[ind$test, ]
+    }
+    pred <- predict(svdraws, steps = n_ahead, newdata = new_data)
+    predobs <- predy(pred, "concat")
+    predvol <- predvola(pred, "concat")
+    predquant <- if (length(calculate_quantile) > 0) {
+      quantile(predobs[, n_ahead, drop=TRUE], prob = calculate_quantile)
+    } else {
+      NULL
+    }
+    predlik <- if (calculate_predictive_likelihood) {
+      last_test_ind <- tail(ind$test, 1)
+      regression_mean <- if (is.character(designmatrix)) {
+        if (arorder == 0L) {
+          svbeta(svdraws, "concat")
+        } else {
+          c(1, y[last_test_ind - seq(arorder, 1, by = -1)]) %*% t(svbeta(svdraws, "concat"))
+        }
+      } else if (any(is.na(designmatrix))) {
+        0
+      } else {
+        designmatrix[last_test_ind, ] %*% t(svbeta(svdraws, "concat"))
+      }
+      mean(dnorm(y[last_test_ind], mean = regression_mean, sd = predvol[, n_ahead]))
+    } else {
+      NULL
+    }
+    ret <- if (keep_draws) {
+      attr(svdraws, "args") <- arguments
+      attr(pred, "args") <- list(steps = n_ahead, newdata = new_data)
+      list(fit = svdraws,
+           prediction = pred)
+    } else {
+      list()
+    }
+    ret$predicted_quantile <- predquant
+    ret$predictive_likelihood <- predlik
+    ret$indices <- ind
+    ret$quantiles <- calculate_quantile
+    ret$refit_window <- refit_window
+    ret
+  }
+
+  # Call sampler
+  n_windows <- (length(y) - arorder - n_ahead - n_start + 1) %/% refit_every
+  arguments <- list(...)
+  runtime <- system.time(reslist <-
+    if ((n_cpus > 1L || have_cluster) && (have_mc || have_snow)) {
+      if (have_mc) {
+        parallel::mclapply(seq_len(n_windows), sampling_function, mc.cores = n_cpus)
+      } else if (have_snow) {
+        if (create_cluster) {
+          cat("\nStarting cluster...\n")
+          cl <- parallel::makePSOCKcluster(rep("localhost", n_workers), outfile = NULL)
+        }
+        RNGkind(kind = "L'Ecuyer-CMRG")
+        parallel::clusterSetRNGStream(cl)
+        parallel::clusterEvalQ(cl, library(stochvol))
+        parallel::clusterExport(cl, c("y", "designmatrix",
+                                      "arorder", "refit_window", "refit_every",
+                                      "n_start", "n_ahead", "choose_indices",
+                                      "n_windows", "calculate_quantile",
+                                      "calculate_predictive_likelihood",
+                                      "keep_draws", "arguments"),
+                                envir = environment())
+        if (create_cluster) {
+          reslist <- tryCatch(parallel::parLapply(cl, seq_len(n_windows), sampling_function),
+                              finally = {
+                                parallel::stopCluster(cl)
+                                cat("\nCluster stopped.\n")
+                                })
+          reslist
+        } else {
+          parallel::parLapply(cl, seq_len(n_windows), sampling_function)
+        }
+      }
+    } else {
+      lapply(seq_len(n_windows), sampling_function)
+    }
+  )
+  class(reslist) <- "svdraws_roll"
+  reslist
+}
 

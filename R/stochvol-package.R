@@ -44,31 +44,6 @@
 #' 
 NULL
 
-#' Common Extractors for 'svdraws' Objects
-#' 
-#' Some simple extractors returning the corresponding element of an
-#' \code{svdraws} object.
-#' 
-#' 
-#' @name extractors
-#' @aliases para latent latent0 priors thinning runtime
-#' @param x \code{svdraws} object.
-#' @return The return value depends on the actual funtion:
-#' \item{para(x)}{extracts the parameter draws and returns them as an
-#' \code{mcmc} object.}
-#' \item{latent(x)}{extracts the latent contemporaneous
-#' log-volatility draws and returns them as an \code{mcmc} object.}
-#' \item{latent0(x)}{extracts the latent initial log-volatility draws and
-#' returns as an \code{mcmc} object.}
-#' \item{priors(x)}{extracts the prior
-#' parameters used and returns them in a \code{list}.}
-#' \item{thinning(x)}{extracts the thinning parameters used and returns them in
-#' a \code{list}.}
-#' \item{runtime(x)}{extracts the runtime and returns it as a
-#' \code{proc_time} object.}
-#' @keywords utilities
-NULL
-
 #' Efficient Bayesian Inference for Stochastic Volatility (SV) Models
 #' 
 #' This package provides an efficient algorithm for fully Bayesian estimation
@@ -100,7 +75,7 @@ NULL
 #' @importFrom stats cov rt rgamma rnorm sd IQR density time lowess dnorm dbeta dgamma dexp qnorm qt ppoints ts.plot median quantile predict plot.ts qqline qqnorm qqplot
 #' @importFrom coda mcmc nvar niter varnames traceplot mcmc.list nvar nchain effectiveSize mcpar
 #' @importFrom Rcpp sourceCpp
-#' @importFrom parallel parLapply stopCluster clusterSetRNGStream makePSOCKcluster mclapply makeCluster clusterExport
+#' @importFrom parallel parLapply stopCluster clusterSetRNGStream makePSOCKcluster mclapply makeCluster clusterExport clusterEvalQ
 #' @note This package is currently in active development. Your comments,
 #' suggestions and requests are warmly welcome!
 #' @author Gregor Kastner \email{gregor.kastner@@wu.ac.at}, Darjus Hosszejni \email{darjus.hosszejni@@wu.ac.at}
