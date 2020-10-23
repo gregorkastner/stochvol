@@ -1,3 +1,5 @@
+#ifdef COMPILE_STOCHOL_CPP_TESTS
+
 #include <testthat.h>
 #include <Rcpp.h>
 #include "densities.h"
@@ -37,4 +39,6 @@ context("Own density implementations") {
   }
 
 }
+
+#endif
 
