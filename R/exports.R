@@ -120,12 +120,12 @@
 #' more general prior distributions are allowed in this case.
 #' @rdname svsample_cpp
 #' @export
-svsample_fast_cpp <- function(y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, fast_sv) {
+svsample_fast_cpp <- function(y, draws = 1, burnin = 0, designmatrix = NA, priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, fast_sv = default_fast_sv) {
     .Call(`_stochvol_svsample_fast_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, fast_sv, PACKAGE = "stochvol")
 }
 #' @rdname svsample_cpp
 #' @export
-svsample_general_cpp <- function(y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, general_sv) {
+svsample_general_cpp <- function(y, draws = 1, burnin = 0, designmatrix = NA, priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, general_sv = default_general_sv) {
     .Call(`_stochvol_svsample_general_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, general_sv, PACKAGE = "stochvol")
 }
 

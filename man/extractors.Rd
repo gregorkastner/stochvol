@@ -90,13 +90,14 @@ Some simple extractors returning the corresponding element of an
 sim <- svsim(150)
 
 # Draw from vanilla SV
-draws <- svsample(sim, draws = 3000)
+draws <- svsample(sim, draws = 2000)
 
 ## Summarize all parameter draws as a merged mcmc object
 summary(para(draws))
 ## Extract the draws as an mcmc.list object
 para(draws, chain = "all")
 
+\donttest{
 ## Further short examples
 summary(latent0(draws))
 summary(latent(draws))
@@ -104,7 +105,6 @@ summary(vola(draws))
 sampled_parameters(draws)
 priors(draws)
 
-\donttest{
 # Draw 3 independent chains from heavy-tailed and asymmetric SV with AR(2) structure
 draws <- svsample(sim, draws = 20000, burnin = 3000,
                   designmatrix = "ar2",

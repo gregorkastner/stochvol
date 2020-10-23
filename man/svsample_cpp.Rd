@@ -15,40 +15,40 @@ An object of class \code{list} of length 5.
 \usage{
 svsample_fast_cpp(
   y,
-  draws,
-  burnin,
-  designmatrix,
-  priorspec,
-  thinpara,
-  thinlatent,
-  keeptime,
+  draws = 1,
+  burnin = 0,
+  designmatrix = NA,
+  priorspec = specify_priors(),
+  thinpara = 1,
+  thinlatent = 1,
+  keeptime = "all",
   startpara,
   startlatent,
-  keeptau,
-  print_settings,
-  correct_model_misspecification,
-  interweave,
-  myoffset,
-  fast_sv
+  keeptau = !inherits(priorspec$nu, "sv_infinity"),
+  print_settings = list(quiet = TRUE, n_chains = 1, chain = 1),
+  correct_model_misspecification = FALSE,
+  interweave = TRUE,
+  myoffset = 0,
+  fast_sv = default_fast_sv
 )
 
 svsample_general_cpp(
   y,
-  draws,
-  burnin,
-  designmatrix,
-  priorspec,
-  thinpara,
-  thinlatent,
-  keeptime,
+  draws = 1,
+  burnin = 0,
+  designmatrix = NA,
+  priorspec = specify_priors(),
+  thinpara = 1,
+  thinlatent = 1,
+  keeptime = "all",
   startpara,
   startlatent,
-  keeptau,
-  print_settings,
-  correct_model_misspecification,
-  interweave,
-  myoffset,
-  general_sv
+  keeptau = !inherits(priorspec$nu, "sv_infinity"),
+  print_settings = list(quiet = TRUE, n_chains = 1, chain = 1),
+  correct_model_misspecification = FALSE,
+  interweave = TRUE,
+  myoffset = 0,
+  general_sv = default_general_sv
 )
 
 default_fast_sv

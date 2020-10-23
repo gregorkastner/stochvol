@@ -30,6 +30,10 @@
 #' MCMC draws. If a design matrix is provided, simple Bayesian regression can
 #' also be conducted.
 #' 
+#' Functions \code{svtsample}, \code{svlsample}, and \code{svtlsample} are
+#' wrappers around \code{svsample} with convenient default values for the SV
+#' model with t-errors, leverage, and both t-errors and leverage, respectively.
+#' 
 #' For details concerning the algorithm please see the paper by Kastner and
 #' Frühwirth-Schnatter (2014).
 #' 
@@ -369,13 +373,23 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   if (have_parallel_startlatent && length(startlatent) != n_chains) {
     stop("Got list for parameter 'startlatent' of length ", length(startlatent), " but the number of chains is ", n_chains, ". The two numbers should match.")
   }
+  startbetadefault <- if (meanmodel == "none") {
+    mean(priorspec$beta)
+  } else {
+    init_beta(y, designmatrix)
+  }
+  startmudefault <- if (meanmodel == "none") {
+    init_mu(y, priorspec)
+  } else {
+    init_mu(y, priorspec, X = designmatrix, beta_hat = matrix(startbetadefault, ncol = 1))
+  }
   startparadefault <-
-    list(mu = mean(priorspec$mu),  # init_mu
+    list(mu = startmudefault,
          phi = if (inherits(priorspec$phi, "sv_beta")) 2 * mean(priorspec$phi) - 1 else mean(priorspec$phi),
          sigma = sqrt(mean(priorspec$sigma2)),
          nu = 2 + mean(priorspec$nu),
          rho = if (inherits(priorspec$rho, "sv_beta")) 2 * mean(priorspec$rho) - 1 else mean(priorspec$rho),
-         beta = mean(priorspec$beta),
+         beta = startbetadefault,
          latent0 = -10)
   startpara <- if (have_parallel_startpara) {
     lapply(startpara, function (x, def) apply_default_list(x, def), def = startparadefault)
@@ -598,6 +612,84 @@ default_general_sv <-
        update = list(latent_vector = TRUE, parameters = TRUE),
        init_tau = 1,
        proposal_diffusion_ken = FALSE)  # FALSE turns on adaptation
+
+#' @rdname svsample
+#' @export
+svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
+                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
+                      priornu = 0.1, priorrho = NA,
+                      priorbeta = c(0, 10000), priorlatent0 = "stationary",
+                      priorspec = NULL,
+                      thinpara = 1, thinlatent = 1, keeptime = "all",
+                      quiet = FALSE, startpara = NULL, startlatent = NULL,
+                      parallel = c("no", "multicore", "snow"),
+                      n_cpus = 1L, cl = NULL, n_chains = 1L,
+                      print_progress = "automatic",
+                      expert = NULL, ...) {
+  svsample(y = y, draws = draws, burnin = burnin, designmatrix = designmatrix,
+           priormu = priormu, priorphi = priorphi, priorsigma = priorsigma,
+           priornu = priornu, priorrho = priorrho,
+           priorbeta = priorbeta, priorlatent0 = priorlatent0,
+           priorspec = priorspec,
+           thinpara = thinpara, thinlatent = thinlatent, keeptime = keeptime,
+           quiet = quiet, startpara = startpara, startlatent = startlatent,
+           parallel = parallel,
+           n_cpus = n_cpus, cl = cl, n_chains = n_chains,
+           print_progress = print_progress,
+           expert = expert, ...)
+}
+
+#' @rdname svsample
+#' @export
+svlsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
+                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
+                      priornu = 0, priorrho = c(4, 4),
+                      priorbeta = c(0, 10000), priorlatent0 = "stationary",
+                      priorspec = NULL,
+                      thinpara = 1, thinlatent = 1, keeptime = "all",
+                      quiet = FALSE, startpara = NULL, startlatent = NULL,
+                      parallel = c("no", "multicore", "snow"),
+                      n_cpus = 1L, cl = NULL, n_chains = 1L,
+                      print_progress = "automatic",
+                      expert = NULL, ...) {
+  svsample(y = y, draws = draws, burnin = burnin, designmatrix = designmatrix,
+           priormu = priormu, priorphi = priorphi, priorsigma = priorsigma,
+           priornu = priornu, priorrho = priorrho,
+           priorbeta = priorbeta, priorlatent0 = priorlatent0,
+           priorspec = priorspec,
+           thinpara = thinpara, thinlatent = thinlatent, keeptime = keeptime,
+           quiet = quiet, startpara = startpara, startlatent = startlatent,
+           parallel = parallel,
+           n_cpus = n_cpus, cl = cl, n_chains = n_chains,
+           print_progress = print_progress,
+           expert = expert, ...)
+}
+
+#' @rdname svsample
+#' @export
+svtlsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
+                       priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
+                       priornu = 0.1, priorrho = c(4, 4),
+                       priorbeta = c(0, 10000), priorlatent0 = "stationary",
+                       priorspec = NULL,
+                       thinpara = 1, thinlatent = 1, keeptime = "all",
+                       quiet = FALSE, startpara = NULL, startlatent = NULL,
+                       parallel = c("no", "multicore", "snow"),
+                       n_cpus = 1L, cl = NULL, n_chains = 1L,
+                       print_progress = "automatic",
+                       expert = NULL, ...) {
+  svsample(y = y, draws = draws, burnin = burnin, designmatrix = designmatrix,
+           priormu = priormu, priorphi = priorphi, priorsigma = priorsigma,
+           priornu = priornu, priorrho = priorrho,
+           priorbeta = priorbeta, priorlatent0 = priorlatent0,
+           priorspec = priorspec,
+           thinpara = thinpara, thinlatent = thinlatent, keeptime = keeptime,
+           quiet = quiet, startpara = startpara, startlatent = startlatent,
+           parallel = parallel,
+           n_cpus = n_cpus, cl = cl, n_chains = n_chains,
+           print_progress = print_progress,
+           expert = expert, ...)
+}
 
 #' @rdname svsample
 #' @export

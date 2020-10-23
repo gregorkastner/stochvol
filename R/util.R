@@ -452,17 +452,16 @@ print.sv_priorspec <- function(x, ...) {
   }
 }
 
+# Find good initialization for beta
+## Simple OLS
+init_beta <- function (y, X) {
+  stats::coefficients(stats::lm(y ~ 0 + X))
+}
+
 # Find a good initial value for mu
 ## Posterior mean of the homoskedastic Bayesian linear regression model
 ## log((y_t - X_t*beta_hat)^2) + 1.27 = mu + epsilon_t
-# TODO document and export and use
 init_mu <- function (y, priorspec, X = NULL, beta_hat = NULL) {
-  moments_prior_mu <- switch(priorspec$mu$distribution,
-                             "normal" =
-                               c(priorspec$mu$para$mean, priorspec$mu$para$sd^2),
-                             stop("nyi"))
-  e_prior_mu <- moments_prior_mu[1]; v_prior_mu <- moments_prior_mu[2]
-
   regression_part <- if (is.null(X)) {
     0
   } else {
@@ -471,7 +470,14 @@ init_mu <- function (y, priorspec, X = NULL, beta_hat = NULL) {
   left_hand_side <- log((y - regression_part)^2) + 1.27
   len <- length(left_hand_side)
   ols <- mean(left_hand_side)
-  (len * ols + e_prior_mu / v_prior_mu) / (len + 1 / v_prior_mu)
+
+  if (inherits(priorspec$mu, "sv_normal")) {
+    moments_prior_mu <- c(mean(priorspec$mu), priorspec$mu$sd^2)
+    e_prior_mu <- moments_prior_mu[1]; v_prior_mu <- moments_prior_mu[2]
+    (len * ols + e_prior_mu / v_prior_mu) / (len + 1 / v_prior_mu)
+  } else {
+    ols
+  }
 }
 
 # Merge lists: match user input to a default, fill in missing parts in the input from the default

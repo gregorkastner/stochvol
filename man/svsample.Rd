@@ -2,6 +2,9 @@
 % Please edit documentation in R/wrappers.R
 \name{svsample}
 \alias{svsample}
+\alias{svtsample}
+\alias{svlsample}
+\alias{svtlsample}
 \alias{svsample2}
 \title{Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility (SV)
 Model}
@@ -16,6 +19,90 @@ svsample(
   priorsigma = 1,
   priornu = 0,
   priorrho = NA,
+  priorbeta = c(0, 10000),
+  priorlatent0 = "stationary",
+  priorspec = NULL,
+  thinpara = 1,
+  thinlatent = 1,
+  keeptime = "all",
+  quiet = FALSE,
+  startpara = NULL,
+  startlatent = NULL,
+  parallel = c("no", "multicore", "snow"),
+  n_cpus = 1L,
+  cl = NULL,
+  n_chains = 1L,
+  print_progress = "automatic",
+  expert = NULL,
+  ...
+)
+
+svtsample(
+  y,
+  draws = 10000,
+  burnin = 1000,
+  designmatrix = NA,
+  priormu = c(0, 100),
+  priorphi = c(5, 1.5),
+  priorsigma = 1,
+  priornu = 0.1,
+  priorrho = NA,
+  priorbeta = c(0, 10000),
+  priorlatent0 = "stationary",
+  priorspec = NULL,
+  thinpara = 1,
+  thinlatent = 1,
+  keeptime = "all",
+  quiet = FALSE,
+  startpara = NULL,
+  startlatent = NULL,
+  parallel = c("no", "multicore", "snow"),
+  n_cpus = 1L,
+  cl = NULL,
+  n_chains = 1L,
+  print_progress = "automatic",
+  expert = NULL,
+  ...
+)
+
+svlsample(
+  y,
+  draws = 10000,
+  burnin = 1000,
+  designmatrix = NA,
+  priormu = c(0, 100),
+  priorphi = c(5, 1.5),
+  priorsigma = 1,
+  priornu = 0,
+  priorrho = c(4, 4),
+  priorbeta = c(0, 10000),
+  priorlatent0 = "stationary",
+  priorspec = NULL,
+  thinpara = 1,
+  thinlatent = 1,
+  keeptime = "all",
+  quiet = FALSE,
+  startpara = NULL,
+  startlatent = NULL,
+  parallel = c("no", "multicore", "snow"),
+  n_cpus = 1L,
+  cl = NULL,
+  n_chains = 1L,
+  print_progress = "automatic",
+  expert = NULL,
+  ...
+)
+
+svtlsample(
+  y,
+  draws = 10000,
+  burnin = 1000,
+  designmatrix = NA,
+  priormu = c(0, 100),
+  priorphi = c(5, 1.5),
+  priorsigma = 1,
+  priornu = 0.1,
+  priorrho = c(4, 4),
   priorbeta = c(0, 10000),
   priorlatent0 = "stationary",
   priorspec = NULL,
@@ -239,6 +326,10 @@ MCMC draws. If a design matrix is provided, simple Bayesian regression can
 also be conducted.
 }
 \details{
+Functions \code{svtsample}, \code{svlsample}, and \code{svtlsample} are
+wrappers around \code{svsample} with convenient default values for the SV
+model with t-errors, leverage, and both t-errors and leverage, respectively.
+
 For details concerning the algorithm please see the paper by Kastner and
 Frühwirth-Schnatter (2014).
 }

@@ -76,7 +76,7 @@ See the examples below for more details.
 sim <- svsim(51)
 
 ## Draw from the posterior:
-res <- svsample(sim$y, draws = 7000, priorphi = c(10, 1.5))
+res <- svsample(sim$y, draws = 2000, priorphi = c(10, 1.5))
 
 ## Check out the results:
 summary(res)
