@@ -599,6 +599,23 @@ default_general_sv <-
        init_tau = 1,
        proposal_diffusion_ken = FALSE)  # FALSE turns on adaptation
 
+#' @rdname svsample
+#' @export
+svsample2 <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
+                      priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
+                      priornu = 0, priorrho = NA,
+                      priorbeta = c(0, 10000), priorlatent0 = "stationary",
+                      thinpara = 1, thinlatent = 1, keeptime = "all",
+                      quiet = FALSE, startpara = NULL, startlatent = NULL) {
+  .Deprecated("svsample_fast_cpp")
+  svsample(y = y, draws = draws, burnin = burnin, designmatrix = designmatrix,
+           priormu = priormu, priorphi = priorphi, priorsigma = priorsigma,
+           priornu = priornu, priorrho = priorrho,
+           priorbeta = priorbeta, priorlatent0 = priorlatent0,
+           thinpara = thinpara, thinlatent = thinlatent, keeptime = keeptime,
+           quiet = quiet, startpara = startpara, startlatent = startlatent)
+}
+
 #' Rolling Estimation of Stochastic Volatility Models
 #' 
 #' \code{svsample_roll} performs rolling window estimation based on \link{svsample}.
