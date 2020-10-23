@@ -194,7 +194,7 @@ void update_sv(
     const int parameterization,
     const bool dontupdatemu,
     const double priorlatent0) {
-  double mu = curpara[0],
+  double mu = dontupdatemu ? 0 : curpara[0],
          phi = curpara[1],
          sigma2 = std::pow(curpara[2], 2);
   const PriorSpec prior_spec {
@@ -208,12 +208,12 @@ void update_sv(
     parameterization % 2 ? Parameterization::CENTERED : Parameterization::NONCENTERED,  // centered_baseline
     B011inv,
     B022inv,
-    MHsteps,
+    dontupdatemu ? 3 : MHsteps,
     MHcontrol < 0 ? ExpertSpec_FastSV::ProposalSigma2::INDEPENDENCE : ExpertSpec_FastSV::ProposalSigma2::LOG_RANDOM_WALK,
     MHcontrol,
     truncnormal ? ExpertSpec_FastSV::ProposalPhi::REPEATED_ACCEPT_REJECT_NORMAL : ExpertSpec_FastSV::ProposalPhi::IMMEDIATE_ACCEPT_REJECT_NORMAL
   };
-  arma::uvec r_u;
+  arma::uvec r_u(r.n_elem);
   std::copy(r.cbegin(), r.cend(), r_u.begin());
   update_fast_sv(data, mu, phi, sigma2, h0, h, r_u, prior_spec, expert);
   curpara = {mu, phi, std::sqrt(sigma2)};
