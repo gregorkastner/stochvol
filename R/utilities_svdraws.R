@@ -411,7 +411,7 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
 }
 
 #' @export
-summary.svdraws <- function (object, showpara = TRUE, showlatent = TRUE, ...) {
+summary.svdraws <- function (object, showpara = TRUE, showlatent = FALSE, ...) {
   ret <- vector("list")
   class(ret) <- "summary.svdraws"
   ret$mcp <- mcpar(para(object, 1))
@@ -419,6 +419,7 @@ summary.svdraws <- function (object, showpara = TRUE, showlatent = TRUE, ...) {
   ret$priors <- priors(object)
   if (isTRUE(showpara)) {
     ret$para <- object$summary$para
+    ret$beta <- object$summary$beta
   }
   if (isTRUE(showlatent)) {
     ret$latent <- object$summary$latent
@@ -442,13 +443,19 @@ print.svdraws <- function (x, showpara = TRUE, showlatent = FALSE, ...) {
 
 #' @method print summary.svdraws
 #' @export
-print.summary.svdraws <- function (x, ...) { 
-  cat("\nSummary of ", x$mcp[2]-x$mcp[1]+x$mcp[3], " MCMC draws after a burn-in of ", x$mcp[1]-x$mcp[3], ".\n", sep="")
-  print(x$priors)
+print.summary.svdraws <- function (x, showpriorbeta = !is.null(x$beta), ...) {
+  cat("\nSummary of 'svdraws' object\n\n")
+  print(x$priors, showbeta = showpriorbeta)
+  cat("\nStored ", x$mcp[2]-x$mcp[1]+x$mcp[3], " MCMC draws after a burn-in of ", x$mcp[1]-x$mcp[3], ".\n", sep="")
   
   if (exists("para", x)) {
-    cat("\nPosterior draws of parameters (thinning = ", x$mcp[3], "):\n", sep='')
+    cat("\nPosterior draws of SV parameters (thinning = ", x$mcp[3], "):\n", sep='')
     print(x$para, digits=2, ...)
+  }
+  
+  if (exists("beta", x)) {
+    cat("\nPosterior draws of regression coefficients (thinning = ", x$mcp[3], "):\n", sep='')
+    print(x$beta, digits=2, ...)
   }
 
   if (exists("latent", x)) {
@@ -473,6 +480,7 @@ print.summary.svdraws <- function (x, ...) {
       print_resampling(x$resampled$latent, "latents")
     }
   }
+  cat("\n")
   invisible(x)
 }
 

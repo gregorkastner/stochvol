@@ -240,12 +240,29 @@ rep_len.sv_normal <- function (x, length.out) {
                                   nrow = length.out, ncol = length.out))
 }
 #' @export
+"[.sv_multinormal" <- function (x, n, drop=TRUE) {
+  if (drop) {
+    sv_normal(mean = x$mean[n], sd = 1/sqrt(x$precision[n, n]))
+  } else {
+    sv_multinormal(mean = x$mean[n], precision = x$precision[n, n])
+  }
+}
+#' @export
 mean.sv_multinormal <- function (x, ...) {
   x$mean
 }
 #' @export
-print.sv_multinormal <- function (x, ...) {
-  cat("MultivariateNormal(...)\n")
+print.sv_multinormal <- function (x, short = FALSE, ...) {
+  if (length(x$mean) == 1) {
+    print(x[1])
+  } else {
+    if (short) {
+      cat("MultivariateNormal(...)\n")
+    } else {
+      cat("MultivariateNormal with mean vector\n    (", paste(x$mean, collapse = ", "), ")\n    and precision matrix\n")
+      print(x$precision)
+    }
+  }
 }
 #' @export
 density.sv_multinormal <- function (x, ...) {
@@ -430,7 +447,7 @@ range.sv_infinity <- function (x, na.rm = FALSE, ...) {
 }
 
 #' @export
-print.sv_priorspec <- function(x, ...) {
+print.sv_priorspec <- function(x, showbeta = FALSE, ...) {
   cat("Prior distributions:\n")
   cat("mu        ~ "); print(x$mu)
   if (inherits(x$phi, "sv_beta")) {
@@ -449,6 +466,9 @@ print.sv_priorspec <- function(x, ...) {
     cat("(rho+1)/2 ~ "); print(x$rho)
   } else {
     cat("rho       ~ "); print(x$rho)
+  }
+  if (showbeta) {
+    cat("beta      ~ "); print(x$beta, short = TRUE)
   }
 }
 
@@ -505,3 +525,4 @@ asisprint <- function (x, censtring) {
   }
   paste0("(", paste(x, collapse=", "), ")")
 }
+
