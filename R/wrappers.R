@@ -641,7 +641,7 @@ svtsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
 #' @rdname svsample
 #' @export
-svlsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
+svlsample <- function(y, draws = 20000, burnin = 2000, designmatrix = NA,
                       priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                       priornu = 0, priorrho = c(4, 4),
                       priorbeta = c(0, 10000), priorlatent0 = "stationary",
@@ -667,7 +667,7 @@ svlsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 
 #' @rdname svsample
 #' @export
-svtlsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
+svtlsample <- function(y, draws = 20000, burnin = 2000, designmatrix = NA,
                        priormu = c(0, 100), priorphi = c(5, 1.5), priorsigma = 1,
                        priornu = 0.1, priorrho = c(4, 4),
                        priorbeta = c(0, 10000), priorlatent0 = "stationary",
