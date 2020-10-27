@@ -94,14 +94,16 @@
 #' ones specified by \code{priormu}, \code{...}, \code{priorrho}, a \code{priorspec}
 #' object can be supplied here. A smart constructor for this usecase is
 #' \link{specify_priors}.
-#' @param thinpara single number greater or equal to 1, coercible to integer.
-#' Every \code{thinpara}th parameter draw is kept and returned. The default
+#' @param thin single number greater or equal to 1, coercible to integer.
+#' Every \code{thinpara}th parameter and latent draw is kept and returned. The default
 #' value is 1, corresponding to no thinning of the parameter draws i.e. every
 #' draw is stored.
+#' @param thinpara single number greater or equal to 1, coercible to integer.
+#' Every \code{thinpara}th parameter draw is kept and returned. The default
+#' value is \code{thin}.
 #' @param thinlatent single number greater or equal to 1, coercible to integer.
 #' Every \code{thinlatent}th latent variable draw is kept and returned. The
-#' default value is 1, corresponding to no thinning of the latent variable
-#' draws, i.e. every draw is kept.
+#' default value is \code{thin}
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #' volatility draws should be stored.
 #' @param quiet logical value indicating whether the progress bar and other
@@ -713,6 +715,10 @@ svsample2 <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' \code{svsample_roll} performs rolling window estimation based on \link{svsample}.
 #' A convenience function for backtesting purposes.
 #' 
+#' Functions \code{svtsample_roll}, \code{svlsample_roll}, and \code{svtlsample_roll} are
+#' wrappers around \code{svsample_roll} with convenient default values for the SV
+#' model with t-errors, leverage, and both t-errors and leverage, respectively.
+#' 
 #' @param y numeric vector containing the data (usually log-returns), which
 #' must not contain zeros. Alternatively, \code{y} can be an \code{svsim}
 #' object. In this case, the returns will be extracted and a message is signalled.
@@ -1016,5 +1022,148 @@ svsample_roll <- function (y, designmatrix = NA,
   )
   class(reslist) <- "svdraws_roll"
   reslist
+}
+
+#' @rdname svsample_roll
+#' @export
+svtsample_roll <- function (y, designmatrix = NA,
+                            n_ahead = 1, forecast_length = 500,
+                            n_start = NULL, refit_every = 1,
+                            refit_window = c("moving", "expanding"),
+                            calculate_quantile = c(0.01),
+                            calculate_predictive_likelihood = TRUE,
+                            keep_draws = FALSE,
+                            parallel = c("no", "multicore", "snow"),
+                            n_cpus = 1L, cl = NULL,
+                            ...) {
+  local_svsample_roll <- function (y, designmatrix,
+                                   n_ahead, forecast_length,
+                                   n_start, refit_every,
+                                   refit_window,
+                                   calculate_quantile,
+                                   calculate_predictive_likelihood,
+                                   keep_draws,
+                                   parallel,
+                                   n_cpus, cl,
+                                   priornu = 0.1,  # set prior
+                                   ...) {
+    svsample_roll(y = y, designmatrix = designmatrix,
+                  n_ahead = n_ahead, forecast_length = forecast_length,
+                  n_start = n_start, refit_every = refit_every,
+                  refit_window = refit_window,
+                  calculate_quantile = calculate_quantile,
+                  calculate_predictive_likelihood = calculate_predictive_likelihood,
+                  keep_draws = keep_draws,
+                  parallel = parallel,
+                  n_cpus = n_cpus, cl = cl,
+                  priornu = priornu,
+                  ...)
+  }
+  local_svsample_roll(y = y, designmatrix = designmatrix,
+                      n_ahead = n_ahead, forecast_length = forecast_length,
+                      n_start = n_start, refit_every = refit_every,
+                      refit_window = refit_window,
+                      calculate_quantile = calculate_quantile,
+                      calculate_predictive_likelihood = calculate_predictive_likelihood,
+                      keep_draws = keep_draws,
+                      parallel = parallel,
+                      n_cpus = n_cpus, cl = cl,
+                      ...)
+}
+
+#' @rdname svsample_roll
+#' @export
+svlsample_roll <- function (y, designmatrix = NA,
+                            n_ahead = 1, forecast_length = 500,
+                            n_start = NULL, refit_every = 1,
+                            refit_window = c("moving", "expanding"),
+                            calculate_quantile = c(0.01),
+                            calculate_predictive_likelihood = TRUE,
+                            keep_draws = FALSE,
+                            parallel = c("no", "multicore", "snow"),
+                            n_cpus = 1L, cl = NULL,
+                            ...) {
+  local_svsample_roll <- function (y, designmatrix,
+                                   n_ahead, forecast_length,
+                                   n_start, refit_every,
+                                   refit_window,
+                                   calculate_quantile,
+                                   calculate_predictive_likelihood,
+                                   keep_draws,
+                                   parallel,
+                                   n_cpus, cl,
+                                   priorrho = c(4, 4),  # set prior
+                                   ...) {
+    svsample_roll(y = y, designmatrix = designmatrix,
+                  n_ahead = n_ahead, forecast_length = forecast_length,
+                  n_start = n_start, refit_every = refit_every,
+                  refit_window = refit_window,
+                  calculate_quantile = calculate_quantile,
+                  calculate_predictive_likelihood = calculate_predictive_likelihood,
+                  keep_draws = keep_draws,
+                  parallel = parallel,
+                  n_cpus = n_cpus, cl = cl,
+                  priorrho = priorrho,
+                  ...)
+  }
+  local_svsample_roll(y = y, designmatrix = designmatrix,
+                      n_ahead = n_ahead, forecast_length = forecast_length,
+                      n_start = n_start, refit_every = refit_every,
+                      refit_window = refit_window,
+                      calculate_quantile = calculate_quantile,
+                      calculate_predictive_likelihood = calculate_predictive_likelihood,
+                      keep_draws = keep_draws,
+                      parallel = parallel,
+                      n_cpus = n_cpus, cl = cl,
+                      ...)
+}
+
+#' @rdname svsample_roll
+#' @export
+svtlsample_roll <- function (y, designmatrix = NA,
+                             n_ahead = 1, forecast_length = 500,
+                             n_start = NULL, refit_every = 1,
+                             refit_window = c("moving", "expanding"),
+                             calculate_quantile = c(0.01),
+                             calculate_predictive_likelihood = TRUE,
+                             keep_draws = FALSE,
+                             parallel = c("no", "multicore", "snow"),
+                             n_cpus = 1L, cl = NULL,
+                             ...) {
+  local_svsample_roll <- function (y, designmatrix,
+                                   n_ahead, forecast_length,
+                                   n_start, refit_every,
+                                   refit_window,
+                                   calculate_quantile,
+                                   calculate_predictive_likelihood,
+                                   keep_draws,
+                                   parallel,
+                                   n_cpus, cl,
+                                   priornu = 0.1,  # set prior
+                                   priorrho = c(4, 4),  # set prior
+                                   ...) {
+    svsample_roll(y = y, designmatrix = designmatrix,
+                  n_ahead = n_ahead, forecast_length = forecast_length,
+                  n_start = n_start, refit_every = refit_every,
+                  refit_window = refit_window,
+                  calculate_quantile = calculate_quantile,
+                  calculate_predictive_likelihood = calculate_predictive_likelihood,
+                  keep_draws = keep_draws,
+                  parallel = parallel,
+                  n_cpus = n_cpus, cl = cl,
+                  priornu = priornu,
+                  priorrho = priorrho,
+                  ...)
+  }
+  local_svsample_roll(y = y, designmatrix = designmatrix,
+                      n_ahead = n_ahead, forecast_length = forecast_length,
+                      n_start = n_start, refit_every = refit_every,
+                      refit_window = refit_window,
+                      calculate_quantile = calculate_quantile,
+                      calculate_predictive_likelihood = calculate_predictive_likelihood,
+                      keep_draws = keep_draws,
+                      parallel = parallel,
+                      n_cpus = n_cpus, cl = cl,
+                      ...)
 }
 

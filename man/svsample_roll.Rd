@@ -2,9 +2,63 @@
 % Please edit documentation in R/wrappers.R
 \name{svsample_roll}
 \alias{svsample_roll}
+\alias{svtsample_roll}
+\alias{svlsample_roll}
+\alias{svtlsample_roll}
 \title{Rolling Estimation of Stochastic Volatility Models}
 \usage{
 svsample_roll(
+  y,
+  designmatrix = NA,
+  n_ahead = 1,
+  forecast_length = 500,
+  n_start = NULL,
+  refit_every = 1,
+  refit_window = c("moving", "expanding"),
+  calculate_quantile = c(0.01),
+  calculate_predictive_likelihood = TRUE,
+  keep_draws = FALSE,
+  parallel = c("no", "multicore", "snow"),
+  n_cpus = 1L,
+  cl = NULL,
+  ...
+)
+
+svtsample_roll(
+  y,
+  designmatrix = NA,
+  n_ahead = 1,
+  forecast_length = 500,
+  n_start = NULL,
+  refit_every = 1,
+  refit_window = c("moving", "expanding"),
+  calculate_quantile = c(0.01),
+  calculate_predictive_likelihood = TRUE,
+  keep_draws = FALSE,
+  parallel = c("no", "multicore", "snow"),
+  n_cpus = 1L,
+  cl = NULL,
+  ...
+)
+
+svlsample_roll(
+  y,
+  designmatrix = NA,
+  n_ahead = 1,
+  forecast_length = 500,
+  n_start = NULL,
+  refit_every = 1,
+  refit_window = c("moving", "expanding"),
+  calculate_quantile = c(0.01),
+  calculate_predictive_likelihood = TRUE,
+  keep_draws = FALSE,
+  parallel = c("no", "multicore", "snow"),
+  n_cpus = 1L,
+  cl = NULL,
+  ...
+)
+
+svtlsample_roll(
   y,
   designmatrix = NA,
   n_ahead = 1,
@@ -106,6 +160,11 @@ of the backtesting.
 \description{
 \code{svsample_roll} performs rolling window estimation based on \link{svsample}.
 A convenience function for backtesting purposes.
+}
+\details{
+Functions \code{svtsample_roll}, \code{svlsample_roll}, and \code{svtlsample_roll} are
+wrappers around \code{svsample_roll} with convenient default values for the SV
+model with t-errors, leverage, and both t-errors and leverage, respectively.
 }
 \note{
 The function executes \code{\link{svsample}} \code{(length(y) - arorder - n_ahead - n_start + 1) \%/\% refit_every} times.

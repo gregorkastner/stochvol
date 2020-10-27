@@ -35,10 +35,10 @@ bibentry(bibtype = "article",
                           family = "Kastner",
                           email = "gregor.kastner@wu.ac.at")),
   journal      = "R package vignette",
-  year         = "2019",
-  url          = "https://CRAN.R-project.org/package=stochvol/vignettes/paper.pdf",
+  year         = "2020",
+  #url          = "https://CRAN.R-project.org/package=stochvol/vignettes/paper.pdf",
   textVersion  =
-  paste("Hosszejni, Darjus and Kastner, Gregor (2019).",
+  paste("Hosszejni, Darjus and Kastner, Gregor (2020).",
         "Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol.",
         "R package vignette.",
         "URL: https://CRAN.R-project.org/package=stochvol/vignettes/paper.pdf")

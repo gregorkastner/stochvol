@@ -6,12 +6,12 @@
 \usage{
 specify_priors(
   mu = sv_normal(mean = 0, sd = 100),
-  phi = sv_beta(shape1 = 15, shape2 = 0.5),
+  phi = sv_beta(shape1 = 5, shape2 = 1.5),
   sigma2 = sv_gamma(shape = 0.5, rate = 0.5),
   nu = sv_infinity(),
   rho = sv_constant(0),
   latent0_variance = "stationary",
-  beta = sv_multinormal(mean = 0, sd = 100, dim = 1)
+  beta = sv_multinormal(mean = 0, sd = 10000, dim = 1)
 )
 }
 \arguments{

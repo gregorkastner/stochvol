@@ -22,8 +22,9 @@ svsample(
   priorbeta = c(0, 10000),
   priorlatent0 = "stationary",
   priorspec = NULL,
-  thinpara = 1,
-  thinlatent = 1,
+  thin = 1,
+  thinpara = thin,
+  thinlatent = thin,
   keeptime = "all",
   quiet = FALSE,
   startpara = NULL,
@@ -50,8 +51,9 @@ svtsample(
   priorbeta = c(0, 10000),
   priorlatent0 = "stationary",
   priorspec = NULL,
-  thinpara = 1,
-  thinlatent = 1,
+  thin = 1,
+  thinpara = thin,
+  thinlatent = thin,
   keeptime = "all",
   quiet = FALSE,
   startpara = NULL,
@@ -67,8 +69,8 @@ svtsample(
 
 svlsample(
   y,
-  draws = 10000,
-  burnin = 1000,
+  draws = 20000,
+  burnin = 2000,
   designmatrix = NA,
   priormu = c(0, 100),
   priorphi = c(5, 1.5),
@@ -78,8 +80,9 @@ svlsample(
   priorbeta = c(0, 10000),
   priorlatent0 = "stationary",
   priorspec = NULL,
-  thinpara = 1,
-  thinlatent = 1,
+  thin = 1,
+  thinpara = thin,
+  thinlatent = thin,
   keeptime = "all",
   quiet = FALSE,
   startpara = NULL,
@@ -95,8 +98,8 @@ svlsample(
 
 svtlsample(
   y,
-  draws = 10000,
-  burnin = 1000,
+  draws = 20000,
+  burnin = 2000,
   designmatrix = NA,
   priormu = c(0, 100),
   priorphi = c(5, 1.5),
@@ -106,8 +109,9 @@ svtlsample(
   priorbeta = c(0, 10000),
   priorlatent0 = "stationary",
   priorspec = NULL,
-  thinpara = 1,
-  thinlatent = 1,
+  thin = 1,
+  thinpara = thin,
+  thinlatent = thin,
   keeptime = "all",
   quiet = FALSE,
   startpara = NULL,
@@ -211,15 +215,18 @@ ones specified by \code{priormu}, \code{...}, \code{priorrho}, a \code{priorspec
 object can be supplied here. A smart constructor for this usecase is
 \link{specify_priors}.}
 
-\item{thinpara}{single number greater or equal to 1, coercible to integer.
-Every \code{thinpara}th parameter draw is kept and returned. The default
+\item{thin}{single number greater or equal to 1, coercible to integer.
+Every \code{thinpara}th parameter and latent draw is kept and returned. The default
 value is 1, corresponding to no thinning of the parameter draws i.e. every
 draw is stored.}
 
+\item{thinpara}{single number greater or equal to 1, coercible to integer.
+Every \code{thinpara}th parameter draw is kept and returned. The default
+value is \code{thin}.}
+
 \item{thinlatent}{single number greater or equal to 1, coercible to integer.
 Every \code{thinlatent}th latent variable draw is kept and returned. The
-default value is 1, corresponding to no thinning of the latent variable
-draws, i.e. every draw is kept.}
+default value is \code{thin}}
 
 \item{keeptime}{Either 'all' (the default) or 'last'. Indicates which latent
 volatility draws should be stored.}
