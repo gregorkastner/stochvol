@@ -675,9 +675,9 @@ print.svdraws_roll <- function (x, ...) {
 
 #' @export
 summary.svdraws_roll <- function (object, ...) {
+  cat("\nSummary of 'svdraws_roll' object\n\n")
   have_predlik <- !is.null(object[[1]]$predictive_likelihood)
   have_predquant <- length(object[[1]]$quantiles) > 0
-  cat("\n")
   if (have_predlik) {
     cat("Predictive likelihoods\n\n")
     sapply(object, function (xx) xx$predictive_likelihood)
