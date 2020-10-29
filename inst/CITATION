@@ -25,7 +25,7 @@ bibentry(bibtype = "article",
 )
 
 bibentry(bibtype = "article",
-  header       = "When using the sampler that allows for leverage (svlsample) please cite:",
+  header       = "When using the sampler that allows for asymmetry (leverage) and/or heavy tails please also cite:",
   title        = "Modeling Univariate and Multivariate Stochastic Volatility in {R} with {stochvol} and {factorstochvol}",
   author       = personList(
                    person(given = "Darjus",
@@ -36,15 +36,15 @@ bibentry(bibtype = "article",
                           email = "gregor.kastner@wu.ac.at")),
   journal      = "R package vignette",
   year         = "2020",
-  #url          = "https://CRAN.R-project.org/package=stochvol/vignettes/paper.pdf",
+  #url          = "https://CRAN.R-project.org/package=stochvol/vignettes/article2.pdf",
   textVersion  =
   paste("Hosszejni, Darjus and Kastner, Gregor (2020).",
         "Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol.",
         "R package vignette.",
-        "URL: https://CRAN.R-project.org/package=stochvol/vignettes/paper.pdf")
+        "URL: https://CRAN.R-project.org/package=stochvol/vignettes/article2.pdf")
 )
 
-citEntry(header = "To refer to the sampling methodology used by the sampler without leverage (svsample) please cite:",
+citEntry(header = "To refer to the sampling methodology used by the sampler without asymmetry (leverage) please cite:",
          entry = "article",
          title = "Ancillarity-Sufficiency Interweaving Strategy ({ASIS}) for Boosting {MCMC} Estimation of Stochastic Volatility Models",
          author = personList(as.person("Gregor Kastner"),
@@ -57,7 +57,7 @@ citEntry(header = "To refer to the sampling methodology used by the sampler with
          textVersion = "Kastner, Gregor and Frühwirth-Schnatter, Sylvia (2014). Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC estimation of stochastic volatility models. Computational Statistics & Data Analysis 76, 408-423. https://doi.org/10.1016/j.csda.2013.01.002"
 )
 
-citEntry(header = "To refer to the sampling methodology used by the sampler that allows for leverage (svlsample) please cite:",
+citEntry(header = "To refer to the sampling methodology used by the sampler that allows for asymmetry (leverage) please cite:",
          entry = "inproceedings",
          title = "Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage",
          author = personList(
@@ -81,13 +81,13 @@ citEntry(header = "To refer to the sampling methodology used by the sampler that
          textVersion = "Hosszejni, Darjus and Kastner, Gregor (2019). Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage. In: Argiento R., Durante D., Wade S. (eds). Bayesian Statistics and New Generations. BAYSM 2018. Springer Proceedings in Mathematics & Statistics, vol 296. Springer, Cham. https://doi.org/10.1007/978-3-030-30611-3_8"
 )
 
-citEntry(header = "If you want to specifically refer to the conditional Student's t sampler, use:",
-         entry = "techreport",
-         title = "Heavy-Tailed Innovations in the {R} Package stochvol",
-         author = personList(as.person("Gregor Kastner")),
-         type = "R Package Vignette",
-         institution = "CRAN",
-         year = "2015",
-         url = "https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf",
-         textVersion = "Kastner, Gregor (2015). Heavy-Tailed Innovations in the R Package stochvol. R Package Vignette. URL: https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf"
-)
+#citEntry(header = "If you want to specifically refer to the conditional Student's t sampler, use:",
+#         entry = "techreport",
+#         title = "Heavy-Tailed Innovations in the {R} Package stochvol",
+#         author = personList(as.person("Gregor Kastner")),
+#         type = "R Package Vignette",
+#         institution = "CRAN",
+#         year = "2015",
+#         url = "https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf",
+#         textVersion = "Kastner, Gregor (2015). Heavy-Tailed Innovations in the R Package stochvol. R Package Vignette. URL: https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf"
+#)
