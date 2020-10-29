@@ -1,11 +1,8 @@
 jss.bst
 jss.cls
 jsslogo.jpg
-vignettes/factor-stochvol-vignette/.git
-vignettes/factor-stochvol-vignette/figure
-vignettes/factor-stochvol-vignette/cache
+vignettes/factor-stochvol-vignette
 ^README.md$
-^.*.RDS$
 speedtest.R
 speedtest_sessioninfo.txt
 .ycm_extra_conf.py
