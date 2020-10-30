@@ -16,7 +16,7 @@ Suggests:
     magrittr (>= 1.5),
     knitr, LSD, RColorBrewer,
     factorstochvol
-LinkingTo: Rcpp, RcppArmadillo (>= 0.9.900), testthat
+LinkingTo: Rcpp, RcppArmadillo (>= 0.9.900)
 RoxygenNote: 7.1.1
 BuildResaveData: best
 VignetteBuilder: knitr
