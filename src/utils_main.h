@@ -69,7 +69,7 @@ AsymmetricConditionalMoments decorrelate (
   const double rho_div_sigma = rho / sigma;
   auto it_mean = mean.begin();
   auto it_h = h.cbegin();
-  for (int t = 0; t < h.n_elem-1; t++) {
+  for (unsigned int t = 0; t < h.n_elem-1; t++) {
     *it_mean = rho_div_sigma * ((*(it_h+1)) - mu - phi * ((*it_h) - mu));
     // Step
     it_mean++;

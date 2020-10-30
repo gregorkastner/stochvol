@@ -57,6 +57,8 @@ double determine_Bh0inv(
       return 1. - std::pow(phi, 2);
     case PriorSpec::Latent0::CONSTANT:
       return 1. / prior_spec.latent0.constant.value;
+    default:
+      ::Rf_error("determine_Bh0inv: This part of the code should never be reached.");
   }
 }
 

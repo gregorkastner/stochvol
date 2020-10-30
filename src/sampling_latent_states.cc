@@ -51,7 +51,7 @@ LatentVector draw_latent(
     const PriorSpec& prior_spec,
     const ExpertSpec_FastSV& expert) {
   const arma::vec& y = data;  // rename
-  const int T = y.n_elem;
+  const unsigned int T = y.n_elem;
 
   double omega_offdiag;  // contains off-diag element of precision matrix (const)
   arma::vec omega_diag(T+1),  // contains diagonal elements of precision matrix
@@ -94,6 +94,8 @@ LatentVector draw_latent(
         omega_offdiag = -phi;
       }
       break;
+    default:
+      ::Rf_error("draw_latent: This part of the code should never be reached.");
   } 
 
   // Cholesky decomposition
@@ -263,7 +265,7 @@ arma::vec draw_h_auxiliary(
                               help_W_z = rho * sigma * mix_a % exp_m2;
 
   // Partial calculations
-  double A_tm1_11, A_t_11,
+  double /*A_tm1_11,*/ A_t_11,
          A_tm1_12, A_t_12,
          //A_tm1_21, A_t_21,
          A_tm1_22, A_t_22;
@@ -309,7 +311,7 @@ arma::vec draw_h_auxiliary(
     const int d_t = d[t];
 
     // Running partial results
-    A_tm1_11 = A_t_11;
+    //A_tm1_11 = A_t_11;
     A_tm1_12 = A_t_12;
     //A_tm1_21 = A_t_21;
     A_tm1_22 = A_t_22;
@@ -342,7 +344,7 @@ arma::vec draw_h_auxiliary(
     const int d_t = d[t];
 
     // Running partial results
-    A_tm1_11 = A_t_11;
+    //A_tm1_11 = A_t_11;
     A_tm1_12 = A_t_12;
     //A_tm1_21 = A_t_21;
     A_tm1_22 = A_t_22;

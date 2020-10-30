@@ -114,6 +114,8 @@ SampledTheta draw_theta(
       return centered::regression(mu, phi, sigma, h0, h, prior_spec, expert);
     case Parameterization::NONCENTERED:
       return noncentered::regression(log_data2, mu, phi, sigma, ht0, ht, r, prior_spec, expert);
+    default:
+      ::Rf_error("draw_theta: Mistake in the switch-case");
   }
 }
 

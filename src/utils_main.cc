@@ -82,7 +82,7 @@ void transpose_and_rename(
     colnames(latent0) = Rcpp::CharacterVector({"h_0"});
   }
   {  // colnames in latent
-    const int ncol = latent.ncol();
+    const unsigned int ncol = latent.ncol();
     Rcpp::CharacterVector col_names(ncol);
     for (unsigned int c = 1; c <= ncol; c++) {
       std::string name = "h_";
@@ -92,7 +92,7 @@ void transpose_and_rename(
     colnames(latent) = col_names;
   }
   {  // colnames in betas
-    const int ncol = betas.ncol();
+    const unsigned int ncol = betas.ncol();
     Rcpp::CharacterVector col_names(ncol);
     for (unsigned int c = 0; c < ncol; c++) {
       std::string name = "beta_";
@@ -102,7 +102,7 @@ void transpose_and_rename(
     colnames(betas) = col_names;
   }
   {  // colnames in tau
-    const int ncol = tau.ncol();
+    const unsigned int ncol = tau.ncol();
     Rcpp::CharacterVector col_names(ncol);
     for (unsigned int c = 1; c <= ncol; c++) {
       std::string name = "tau_";
@@ -128,7 +128,7 @@ List cleanup(
   mixture_indicators = Rcpp::transpose(mixture_indicators);
 
   {  // colnames in mixture_indicators
-    const int ncol = mixture_indicators.ncol();
+    const unsigned int ncol = mixture_indicators.ncol();
     Rcpp::CharacterVector col_names(ncol);
     for (unsigned int c = 1; c <= ncol; c++) {
       std::string name = "r_";
