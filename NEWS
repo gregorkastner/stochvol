@@ -1,16 +1,49 @@
 Changes in Version 3.0.0:
-  - 'svsample', 'svtsample', and 'svlsample' are united into 'svsample',
-    different code bases are executed depending on the prior settings
+  - New model: heavy-tailed SV with leverage and its sampling
+    function 'svtlsample'
+  - Change in the heavy-tailed models: now they operate with a
+    normalized Student's t-distribution, i.e.\ its standard
+    deviation is 1 for all degrees of freedom
+  - New, optional API for specifying prior distributions
+  - It is possible to set any or all of 'mu', 'phi', 'sigma',
+    'nu', 'rho' to a constant value, i.e.\ set a Dirac prior
+  - Replaced the prior distribution for the degrees of freedom
+    parameter 'nu' with an exponential distribution; it used to be
+    a uniform distribution
+  - New set of unit tests including a Geweke test
   - Entirely refactored C++ backend
   - New, rethought set of exported C++ functions: 'update_fast_sv',
     'update_general_sv', 'update_regression', and 'update_t_error';
-    each of which is documented
-  - New, optional API for specifying prior distributions
-  - The prior distribution for the degrees of freedom parameter 'nu'
-    is an exponential distribution and not a uniform distribution
+    all of them are documented
   - Vastly improved the computational efficiency of the former
     'svlsample' code
+  - New feature: run independent MCMC chains on the same data set
+  - Integration of the 'parallel' package: option to run independent
+    MCMC chains on a 'SNOW' cluster or using the 'multicore' strategy
+  - Modified backend for 'svdraws' and 'svpredict' objects to
+    to incorporate independent chains: they contain 'mcmc.list'
+    objects instead of plain 'mcmc' objects.
+    WARNING! This may break code that exploited the backed!
+  - Additional extractor functions for 'svdraws' objects: 'vola',
+    'sv_beta', 'sv_tau', 'sampled_parameters', index chains via [],
+    'as.array'
+  - New extractors for 'svpredict' objects: 'predy', 'predlatent',
+    'predvola', index chains via []
   - CITATION file updated
+  - New vignette
+  - SV with leverage also includes 'latent0' from now on
+  - New feature: rolling window estimation via the functions
+    'svsample_roll', 'svtsample_roll', 'svlsample_roll', and
+    'svtlsample_roll'
+  - Unified plotting between models: removed the 'scaling' plot
+    from heavy-tailed model outputs
+  - Many new, small examples
+  - Small bugfixes
+  - New "fast-access" functions to circumvent input validation:
+    'svsample_fast_cpp' and 'svsample_general_cpp'; their arguments
+    are slightly different from the 'svsample' family of functions,
+    they come with documentation
+  - 'svsample2' is set to deprecated
 
 Changes in Version 2.0.5:
   - Bugfix in predict when a constant mean model is used for prediction
