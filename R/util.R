@@ -31,6 +31,28 @@ logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
   logretx
 }
 
+#' Validate and Process Argument 'expert'
+#' 
+#' A helper function that validates the input and extends it with
+#' default values if there are missing parts for argument 'expert'.
+#' @param expert list, the input values for expert.
+#' @return A list that is the input extended by default values. If
+#' the input is invalid, an error is thrown.
+#' @family validation
+#' @export
+validate_and_process_expert <- function (expert = NULL) {
+  expertdefault <-
+    list(correct_model_misspecification = FALSE,  # online correction for general_sv and post-correction for fast_sv
+         interweave = TRUE,
+         fast_sv =  # UNDOCUMENTED; very expert settings of the fast_sv sampler
+           default_fast_sv,
+         general_sv =  # UNDOCUMENTED; very expert settings of the general_sv sampler
+           default_general_sv)
+  expert <- apply_default_list(expert, expertdefault, "Names in expert", "allowed names in expert")
+  validate_expert(expert)
+  expert
+}
+
 #' Specify Prior Distributions for SV Models
 #' 
 #' This function gives access to a larger set of prior distributions

@@ -272,15 +272,17 @@ or \code{"iteration"}, controls the output. Ignored if \code{quiet} is \code{TRU
 applications, the default values probably work best. Interested users are
 referred to the literature provided in the References section. If
 \code{expert} is provided, it may contain the following named elements:
-\code{interweave}: Logical value. If \code{TRUE} (the default),
+\itemize{
+\item{interweave}{Logical value. If \code{TRUE} (the default),
 then ancillarity-sufficiency interweaving strategy (ASIS) is applied
 to improve on the sampling efficiency for the parameters.
-Otherwise one parameterization is used.
-\code{correct_model_misspecification}: Logical value. If \code{FALSE}
+Otherwise one parameterization is used.}
+\item{correct_model_misspecification}{Logical value. If \code{FALSE}
 (the default), then auxiliary mixture sampling is used to sample the latent
 states. If \code{TRUE}, extra computations are made to correct for model
 misspecification either ex-post by reweighting or on-line using a
 Metropolis-Hastings step.}
+}}
 
 \item{\dots}{Any extra arguments will be forwarded to
 \code{\link{updatesummary}}, controlling the type of statistics calculated

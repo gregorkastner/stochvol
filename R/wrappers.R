@@ -139,15 +139,17 @@
 #' applications, the default values probably work best. Interested users are
 #' referred to the literature provided in the References section. If
 #' \code{expert} is provided, it may contain the following named elements:
-#' \code{interweave}: Logical value. If \code{TRUE} (the default),
+#' \itemize{
+#' \item{interweave}{Logical value. If \code{TRUE} (the default),
 #' then ancillarity-sufficiency interweaving strategy (ASIS) is applied
 #' to improve on the sampling efficiency for the parameters.
-#' Otherwise one parameterization is used.
-#' \code{correct_model_misspecification}: Logical value. If \code{FALSE}
+#' Otherwise one parameterization is used.}
+#' \item{correct_model_misspecification}{Logical value. If \code{FALSE}
 #' (the default), then auxiliary mixture sampling is used to sample the latent
 #' states. If \code{TRUE}, extra computations are made to correct for model
 #' misspecification either ex-post by reweighting or on-line using a
-#' Metropolis-Hastings step.
+#' Metropolis-Hastings step.}
+#' }
 #' @param \dots Any extra arguments will be forwarded to
 #' \code{\link{updatesummary}}, controlling the type of statistics calculated
 #' for the posterior draws.
@@ -352,15 +354,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   assert_positive(n_chains, "Parameter for number of chains")
 
   ## expert
-  expertdefault <-
-    list(correct_model_misspecification = FALSE,  # online correction for general_sv and post-correction for fast_sv
-         interweave = TRUE,
-         fast_sv =  # UNDOCUMENTED; very expert settings of the fast_sv sampler
-           default_fast_sv,
-         general_sv =  # UNDOCUMENTED; very expert settings of the general_sv sampler
-           default_general_sv)
-  expert <- apply_default_list(expert, expertdefault, "Names in expert", "allowed names in expert")
-  validate_expert(expert)
+  expert <- validate_and_process_expert(expert)
   correct_model_misspecification <- expert$correct_model_misspecification
   interweave <- expert$interweave
   fast_sv <- expert$fast_sv

@@ -196,7 +196,7 @@ void update_sv(
     const double priorlatent0) {
   double mu = dontupdatemu ? 0 : curpara[0],
          phi = curpara[1],
-         sigma2 = std::pow(curpara[2], 2);
+         sigma = curpara[2];
   const PriorSpec prior_spec {
     (priorlatent0 <= 0) ? PriorSpec::Latent0() : PriorSpec::Latent0(PriorSpec::Constant(priorlatent0)),
     dontupdatemu ? PriorSpec::Mu(PriorSpec::Constant(0)) : PriorSpec::Mu(PriorSpec::Normal(bmu, std::sqrt(Bmu))),
@@ -215,8 +215,8 @@ void update_sv(
   };
   arma::uvec r_u(r.n_elem);
   std::copy(r.cbegin(), r.cend(), r_u.begin());
-  update_fast_sv(data, mu, phi, sigma2, h0, h, r_u, prior_spec, expert);
-  curpara = {mu, phi, std::sqrt(sigma2)};
+  update_fast_sv(data, mu, phi, sigma, h0, h, r_u, prior_spec, expert);
+  curpara = {mu, phi, sigma};
 }
 
 }

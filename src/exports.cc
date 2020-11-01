@@ -30,6 +30,7 @@
 #include "single_update.h"
 #include "sampling_main.h"
 #include "utils_latent_states.h"
+#include "utils_main.h"
 #include <RcppArmadillo.h>
 
 using namespace Rcpp;
@@ -169,6 +170,9 @@ RcppExport SEXP _stochvol_Export_registerCCallable() {
     R_RegisterCCallable("stochvol", "update_t_error", (DL_FUNC)stochvol::update_t_error);
     R_RegisterCCallable("stochvol", "update_general_sv", (DL_FUNC)stochvol::update_general_sv);
     R_RegisterCCallable("stochvol", "update_regressors", (DL_FUNC)stochvol::update_regressors);
+    R_RegisterCCallable("stochvol", "list_to_priorspec", (DL_FUNC)stochvol::list_to_priorspec);
+    R_RegisterCCallable("stochvol", "list_to_general_sv", (DL_FUNC)stochvol::list_to_general_sv);
+    R_RegisterCCallable("stochvol", "list_to_fast_sv", (DL_FUNC)stochvol::list_to_fast_sv);
     R_RegisterCCallable("stochvol", "update_sv", (DL_FUNC)stochvol::update_sv);
     return R_NilValue;
 }

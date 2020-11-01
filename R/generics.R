@@ -33,13 +33,9 @@
 #' be standardized (in the sense that each component series has an empirical
 #' variance equal to one).
 #' @param ... Ignored.
-#'
 #' @return Log returns of the (de-meaned / standardized) data.
-#'
 #' @family utilities
-#'
 #' @export
-
 logret <- function(dat, demean = FALSE, standardize = FALSE, ...) {
  UseMethod("logret")
 }
@@ -53,15 +49,11 @@ logret <- function(dat, demean = FALSE, standardize = FALSE, ...) {
 #'
 #' @param x An object used to select a method.
 #' @param ... Further arguments passed to or from other methods.
-#'
 #' @return Called for its side effects. Returns argument \code{x} invisibly.
-#'
 #' @keywords hplot
-#'
 #' @family plotting
-#'
 #' @export
-
 paratraceplot <- function(x, ...) {
  UseMethod("paratraceplot")
 }
+
