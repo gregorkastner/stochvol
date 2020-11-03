@@ -575,9 +575,17 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     message("Done!")
     message("Summarizing posterior draws...")
   }
-  res <- if (res$resampled) {
-    message("No computation of effective sample size after re-sampling")
-    updatesummary(res, esspara = FALSE, esslatent = FALSE, ...)
+  res <- if (res$resampled || isTRUE(draws == 1)) {
+    if (res$resampled) {
+      message("No computation of effective sample size after re-sampling")
+    } else if (draws == 1) {
+      message("No computation of effective sample size for 1 draw")
+    }
+    arguments <- list(...)
+    arguments$x <- res
+    arguments$esspara <- FALSE
+    arguments$esslatent <- FALSE
+    do.call(what = updatesummary, args = arguments)
   } else {
     updatesummary(res, ...)
   }

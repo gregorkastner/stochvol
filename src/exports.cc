@@ -27,11 +27,11 @@
  * Transform Rcpp implementations to .Call()-conform ones.
  */
 
+#include <RcppArmadillo.h>
 #include "single_update.h"
 #include "sampling_main.h"
 #include "utils_latent_states.h"
 #include "utils_main.h"
-#include <RcppArmadillo.h>
 
 using namespace Rcpp;
 

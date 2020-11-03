@@ -23,6 +23,7 @@
 
 #' @describeIn logret Log returns of vectors
 #' @family utilities
+#' @method logret default
 #' @export
 logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
   logretx <- tail(diff(log(dat)), length(dat) - 1)

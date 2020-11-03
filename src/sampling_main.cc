@@ -32,7 +32,7 @@
 #include <adaptation.hpp>
 #include "sampling_main.h"
 #include "single_update.h"
-#include "type_definitions.h"
+#include <type_definitions.h>
 #include "utils_main.h"
 #include "utils_latent_states.h"
 #include "utils.h"

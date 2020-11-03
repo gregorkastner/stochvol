@@ -1,3 +1,8 @@
+Changes in Version 3.0.1:
+  - Bugfix for calls to 'svsample' with draws = 1
+  - Fix some #include directives
+  - Avoid compilation problems on Solaris
+
 Changes in Version 3.0.0:
   - New model: heavy-tailed SV with leverage and its sampling
     function 'svtlsample'

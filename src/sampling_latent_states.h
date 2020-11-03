@@ -34,7 +34,7 @@
 #define _SAMPLING_LATENT_STATES_H_
 
 #include <RcppArmadillo.h>
-#include "type_definitions.h"
+#include <type_definitions.h>
 
 namespace stochvol {
 

@@ -1,5 +1,28 @@
-#ifndef ADAPTATION_H
-#define ADAPTATION_H
+/*
+ * R package stochvol by
+ *     Gregor Kastner Copyright (C) 2013-2020
+ *     Darjus Hosszejni Copyright (C) 2019-2020
+ *  
+ *  This file is part of the R package stochvol: Efficient Bayesian
+ *  Inference for Stochastic Volatility Models.
+ *  
+ *  The R package stochvol is free software: you can redistribute it
+ *  and/or modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation, either version 2 or
+ *  any later version of the License.
+ *  
+ *  The R package stochvol is distributed in the hope that it will be
+ *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License
+ *  along with the R package stochvol. If that is not the case, please
+ *  refer to <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef _STOCHVOL_ADAPTATION_H_
+#define _STOCHVOL_ADAPTATION_H_
 
 #include <RcppArmadillo.h>
 #include <vector>
@@ -27,12 +50,12 @@ namespace stochvol {
         const double _target_acceptance = 0.234,
         const double _lambda = 0.1,
         const double _scale = 0.1,
-        const double _C = 0.99)
+        const double _C_in = 0.99)  // _C is probably a macro on Solaris
       : dim{_dim},
         target_acceptance{_target_acceptance},
         lambda{_lambda},
         alpha{calculate_alpha(_lambda)},
-        C{_C},
+        C{_C_in},
         scale{_scale},
         state(_dim, _batch_size),
         draws_batch(dim, _batch_size),
@@ -204,8 +227,8 @@ namespace stochvol {
         const double _target_acceptance = 0.234,
         const double _lambda = 0.1,
         const double _scale = 0.1,
-        const double _C = 0.99)
-      : centered(_dim, _memory_size, _batch_size, _target_acceptance, _lambda, _scale, _C),
+        const double _C_in = 0.99)  // _C is probably a macro on Solaris
+      : centered(_dim, _memory_size, _batch_size, _target_acceptance, _lambda, _scale, _C_in),
         noncentered(centered) { }
 
     inline
