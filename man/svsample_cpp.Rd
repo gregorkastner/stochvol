@@ -17,7 +17,7 @@ svsample_fast_cpp(
   y,
   draws = 1,
   burnin = 0,
-  designmatrix = NA,
+  designmatrix = matrix(NA),
   priorspec = specify_priors(),
   thinpara = 1,
   thinlatent = 1,
@@ -36,7 +36,7 @@ svsample_general_cpp(
   y,
   draws = 1,
   burnin = 0,
-  designmatrix = NA,
+  designmatrix = matrix(NA),
   priorspec = specify_priors(),
   thinpara = 1,
   thinlatent = 1,
@@ -87,14 +87,14 @@ volatility draws should be stored.}
 \item{startpara}{named list, containing the starting values
 for the parameter draws. It must contain
 elements
- * mu: an arbitrary numerical value
- * phi: real number between \code{-1} and \code{1}
- * sigma: a positive real number
- * nu: a number larger than \code{2}; can be \code{Inf}
- * rho: real number between \code{-1} and \code{1}
- * beta: a numeric vector of the same length as the number of covariates
- * latent0: either \code{'stationary'} or a positive number denoting the
-     prior variance of \code{h0}}
+\itemize{
+  \item{mu}{an arbitrary numerical value}
+  \item{phi}{real number between \code{-1} and \code{1}}
+  \item{sigma}{a positive real number}
+  \item{nu}{a number larger than \code{2}; can be \code{Inf}}
+  \item{rho}{real number between \code{-1} and \code{1}}
+  \item{beta}{a numeric vector of the same length as the number of covariates}
+  \item{latent0}{a single number, the initial value for \code{h0}}}}
 
 \item{startlatent}{vector of length \code{length(y)},
 containing the starting values for the latent log-volatility draws.}
@@ -106,10 +106,11 @@ normal disturbance had to be 'upscaled' by a mixture factor and when the
 series behaved 'normally'.}
 
 \item{print_settings}{List of three elements:
- * quiet: logical value indicating whether the progress bar and other
-informative output during sampling should be omitted
- * n_chains: number of independent MCMC chains
- * chain: index of this chain
+ \itemize{
+   \item{quiet}{logical value indicating whether the progress bar and other
+informative output during sampling should be omitted}
+   \item{n_chains}{number of independent MCMC chains}
+   \item{chain}{index of this chain}}
 Please note that this function does not run multiple independent chains
 but \code{svsample} offers different printing functionality depending on
 whether it is executed as part of several MCMC chains in parallel
@@ -176,4 +177,48 @@ the parameters \code{mu}, \code{phi}, \code{sigma}, and \code{rho}. Therefore,
 more general prior distributions are allowed in this case.
 }
 
+\examples{
+# Draw one sample using fast SV and general SV
+y <- svsim(40)
+params <- list(mu = -10, phi = 0.9, sigma = 0.1,
+               nu = Inf, rho = 0, beta = c(),
+               latent0 = -10)
+res_fast <- svsample_fast_cpp(y,
+  startpara = params, startlatent = rep(-10, 40))
+res_gen <- svsample_general_cpp(y,
+  startpara = params, startlatent = rep(-10, 40))
+
+# Embed SV in another sampling scheme
+## SV without leverage
+len <- 40L
+draws <- 1000L
+burnin <- 1000L
+param_store <- matrix(NA, draws, 3,
+                      dimnames = list(NULL,
+                                      c("mu", "phi", "sigma")))
+startpara <- list(mu = 0, phi = 0.9, sigma = 0.1,
+                  nu = Inf, rho = 0, beta = NA,
+                  latent0 = 0)
+startlatent <- rep(0, len)
+for (i in seq_len(burnin+draws)) {
+  # draw the data in the bigger sampling scheme
+  # now we simulate y from vanilla SV
+  y <- svsim(len, mu = 0, phi = 0.9, sigma = 0.1)$y
+  # call SV sampler
+  res <- svsample_fast_cpp(y, startpara = startpara,
+                           startlatent = startlatent)
+  # administrate values
+  startpara[c("mu","phi","sigma")] <-
+    as.list(res$para[, c("mu", "phi", "sigma")])
+  startlatent <- drop(res$latent)
+  # store draws after the burnin
+  if (i > burnin) {
+    param_store[i-burnin, ] <-
+      res$para[, c("mu", "phi", "sigma")]
+  }
+}
+# quick look at the traceplots
+ts.plot(param_store, col = 1:3)
+
+}
 \keyword{datasets}

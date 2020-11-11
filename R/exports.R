@@ -54,14 +54,14 @@
 #' @param startpara named list, containing the starting values
 #' for the parameter draws. It must contain
 #' elements
-#'  * mu: an arbitrary numerical value
-#'  * phi: real number between \code{-1} and \code{1}
-#'  * sigma: a positive real number
-#'  * nu: a number larger than \code{2}; can be \code{Inf}
-#'  * rho: real number between \code{-1} and \code{1}
-#'  * beta: a numeric vector of the same length as the number of covariates
-#'  * latent0: either \code{'stationary'} or a positive number denoting the
-#'      prior variance of \code{h0}
+#' \itemize{
+#'   \item{mu}{an arbitrary numerical value}
+#'   \item{phi}{real number between \code{-1} and \code{1}}
+#'   \item{sigma}{a positive real number}
+#'   \item{nu}{a number larger than \code{2}; can be \code{Inf}}
+#'   \item{rho}{real number between \code{-1} and \code{1}}
+#'   \item{beta}{a numeric vector of the same length as the number of covariates}
+#'   \item{latent0}{a single number, the initial value for \code{h0}}}
 #' @param startlatent vector of length \code{length(y)},
 #' containing the starting values for the latent log-volatility draws.
 #' @param keeptau Logical value indicating whether the 'variance inflation
@@ -70,10 +70,11 @@
 #' normal disturbance had to be 'upscaled' by a mixture factor and when the
 #' series behaved 'normally'.
 #' @param print_settings List of three elements:
-#'  * quiet: logical value indicating whether the progress bar and other
-#' informative output during sampling should be omitted
-#'  * n_chains: number of independent MCMC chains
-#'  * chain: index of this chain
+#'  \itemize{
+#'    \item{quiet}{logical value indicating whether the progress bar and other
+#' informative output during sampling should be omitted}
+#'    \item{n_chains}{number of independent MCMC chains}
+#'    \item{chain}{index of this chain}}
 #' Please note that this function does not run multiple independent chains
 #' but \code{svsample} offers different printing functionality depending on
 #' whether it is executed as part of several MCMC chains in parallel
@@ -118,14 +119,15 @@
 #' General SV employs adapted random walk Metropolis-Hastings as the proposal for
 #' the parameters \code{mu}, \code{phi}, \code{sigma}, and \code{rho}. Therefore,
 #' more general prior distributions are allowed in this case.
+#' @example inst/examples/svsample_cpp.R
 #' @rdname svsample_cpp
 #' @export
-svsample_fast_cpp <- function(y, draws = 1, burnin = 0, designmatrix = NA, priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, fast_sv = default_fast_sv) {
+svsample_fast_cpp <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA), priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, fast_sv = default_fast_sv) {
     .Call(`_stochvol_svsample_fast_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, fast_sv, PACKAGE = "stochvol")
 }
 #' @rdname svsample_cpp
 #' @export
-svsample_general_cpp <- function(y, draws = 1, burnin = 0, designmatrix = NA, priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, general_sv = default_general_sv) {
+svsample_general_cpp <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA), priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, general_sv = default_general_sv) {
     .Call(`_stochvol_svsample_general_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, general_sv, PACKAGE = "stochvol")
 }
 
@@ -137,3 +139,4 @@ get_omori_constants <- function() {
 methods::setLoadAction(function(ns) {
     .Call('_stochvol_Export_registerCCallable', PACKAGE = 'stochvol')
 })
+

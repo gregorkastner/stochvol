@@ -123,11 +123,11 @@ List svsample_fast_cpp(
 
   // storage
   const bool keep_r = expert_in["store_indicators"];
-  const int para_draws = draws / thinpara + 1;
+  const int para_draws = draws / thinpara;
   Rcpp::NumericMatrix para_store(5, para_draws);
   Rcpp::NumericMatrix beta_store(p, is_regression * para_draws);
   const int latent_length = T / thintime;  // thintime must be either 1 or T
-  const int latent_draws = draws / thinlatent + 1;
+  const int latent_draws = draws / thinlatent;
   Rcpp::NumericVector latent0_store(latent_draws);
   Rcpp::NumericMatrix latent_store(latent_length, latent_draws);
   Rcpp::NumericMatrix tau_store(latent_length, keep_tau * latent_draws);
@@ -156,8 +156,8 @@ List svsample_fast_cpp(
       ::R_CheckUserInterrupt();
     }
 
-    const bool thinpara_round = (thinpara > 1) and (i % thinpara != 0);  // is this a parameter thinning round?
-    const bool thinlatent_round = (thinlatent > 1) and (i % thinlatent != 0);  // is this a latent thinning round?
+    const bool parasave_round = i % thinpara == thinpara - 1,  // is this a parameter saving round?
+               latentsave_round = i % thinlatent == thinlatent - 1;  // is this a latent saving round?
 
     // print a progress sign every "show" iterations
     if (verbose and i % show == 0) {
@@ -206,19 +206,21 @@ List svsample_fast_cpp(
 
     // store draws
     double correction_weight_i = 1;
-    if ((not thinpara_round or not thinlatent_round) and correct_model_specification) {
+    if ((parasave_round or latentsave_round) and correct_model_specification) {
       correction_weight_i = fast_sv::compute_correction_weight(data_demean, log_data2_normal, h, 1/exp_h_half_inv);
     }
-    if (i >= 1 and not thinpara_round) {
-      save_para_sample(i / thinpara - 1, mu, phi, sigma, nu, beta, para_store, beta_store, is_regression);
+    if (i >= 1 and parasave_round) {
+      const unsigned int index = i / thinpara - 1;
+      save_para_sample(index, mu, phi, sigma, nu, beta, para_store, beta_store, is_regression);
       if (correct_model_specification) {
-        correction_weight_para[i / thinpara - 1] = correction_weight_i;
+        correction_weight_para[index] = correction_weight_i;
       }
     }
-    if (i >= 1 and not thinlatent_round) {
-      save_latent_sample(i / thinlatent - 1, h0, h, tau, r, thintime, latent_length, latent0_store, latent_store, tau_store, r_store, keep_tau and is_heavy_tail, keep_r);
+    if (i >= 1 and latentsave_round) {
+      const unsigned int index = i / thinlatent - 1;
+      save_latent_sample(index, h0, h, tau, r, thintime, latent_length, latent0_store, latent_store, tau_store, r_store, keep_tau and is_heavy_tail, keep_r);
       if (correct_model_specification) {
-        correction_weight_latent[i / thinlatent - 1] = correction_weight_i;
+        correction_weight_latent[index] = correction_weight_i;
       }
     }
   }  // END main MCMC loop
@@ -311,11 +313,11 @@ List svsample_general_cpp(
   auto conditional_moments = decorrelate(mu, phi, sigma, rho, h);
 
   // storage
-  const int para_draws = draws / thinpara + 1;
+  const int para_draws = draws / thinpara;
   Rcpp::NumericMatrix para_store(5, para_draws);
   Rcpp::NumericMatrix beta_store(p, is_regression * para_draws);
   const int latent_length = T / thintime;  // thintime must be either 1 or T
-  const int latent_draws = draws / thinlatent + 1;
+  const int latent_draws = draws / thinlatent;
   Rcpp::NumericVector latent0_store(latent_draws);
   Rcpp::NumericMatrix latent_store(latent_length, latent_draws);
   Rcpp::NumericMatrix tau_store(latent_length, keep_tau * latent_draws);
@@ -353,8 +355,8 @@ List svsample_general_cpp(
       ::R_CheckUserInterrupt();
     }
 
-    const bool thinpara_round = (thinpara > 1) and (i % thinpara != 0),  // is this a parameter thinning round?
-               thinlatent_round = (thinlatent > 1) and (i % thinlatent != 0);  // is this a latent thinning round?
+    const bool parasave_round = i % thinpara == thinpara - 1,  // is this a parameter saving round?
+               latentsave_round = i % thinlatent == thinlatent - 1;  // is this a latent saving round?
 
     // print a progress sign every "show" iterations
     if (verbose and i % show == 0) {
@@ -405,10 +407,10 @@ List svsample_general_cpp(
     }
 
     // store draws
-    if ((i >= 1) && !thinpara_round) {
+    if (i >= 1 and parasave_round) {
       save_para_sample(i / thinpara - 1, mu, phi, sigma, nu, rho, beta, para_store, beta_store, is_regression);
     }
-    if ((i >= 1) && !thinlatent_round) {
+    if (i >= 1 and latentsave_round) {
       save_latent_sample(i / thinlatent - 1, h0, h, tau, thintime, latent_length, latent0_store, latent_store, tau_store, keep_tau and is_heavy_tail);
     }
   }
