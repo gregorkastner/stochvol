@@ -1,3 +1,7 @@
+Changes in Version 3.0.2:
+  - Bugfix in the fast access functions 'svsample_fast_cpp' and
+    'svsample_general_cpp'
+
 Changes in Version 3.0.1:
   - Bugfix for calls to 'svsample' with draws = 1
   - Fix some #include directives
