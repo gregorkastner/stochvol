@@ -88,13 +88,13 @@ volatility draws should be stored.}
 for the parameter draws. It must contain
 elements
 \itemize{
-  \item{mu}{an arbitrary numerical value}
-  \item{phi}{real number between \code{-1} and \code{1}}
-  \item{sigma}{a positive real number}
-  \item{nu}{a number larger than \code{2}; can be \code{Inf}}
-  \item{rho}{real number between \code{-1} and \code{1}}
-  \item{beta}{a numeric vector of the same length as the number of covariates}
-  \item{latent0}{a single number, the initial value for \code{h0}}}}
+  \item{mu: an arbitrary numerical value}
+  \item{phi: real number between \code{-1} and \code{1}}
+  \item{sigma: a positive real number}
+  \item{nu: a number larger than \code{2}; can be \code{Inf}}
+  \item{rho: real number between \code{-1} and \code{1}}
+  \item{beta: a numeric vector of the same length as the number of covariates}
+  \item{latent0: a single number, the initial value for \code{h0}}}}
 
 \item{startlatent}{vector of length \code{length(y)},
 containing the starting values for the latent log-volatility draws.}
@@ -107,10 +107,10 @@ series behaved 'normally'.}
 
 \item{print_settings}{List of three elements:
  \itemize{
-   \item{quiet}{logical value indicating whether the progress bar and other
+   \item{quiet: logical value indicating whether the progress bar and other
 informative output during sampling should be omitted}
-   \item{n_chains}{number of independent MCMC chains}
-   \item{chain}{index of this chain}}
+   \item{n_chains: number of independent MCMC chains}
+   \item{chain: index of this chain}}
 Please note that this function does not run multiple independent chains
 but \code{svsample} offers different printing functionality depending on
 whether it is executed as part of several MCMC chains in parallel
