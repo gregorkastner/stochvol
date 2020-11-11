@@ -787,7 +787,7 @@ svsample2 <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' the \code{summary} method displays the summary statistics
 #' of the backtesting.
 #' @note
-#' The function executes \code{\link{svsample}} \code{(length(y) - arorder - n_ahead - n_start + 1) \%/\% refit_every} times.
+#' The function executes \code{\link{svsample}} \code{(length(y) - arorder - n_ahead - n_start + 2) \%/\% refit_every} times.
 #' @seealso \code{\link{svsim}}, \code{\link{specify_priors}}, \code{\link{svsample}}
 #' @keywords models ts
 #' @example inst/examples/svsample_roll.R
@@ -986,7 +986,7 @@ svsample_roll <- function (y, designmatrix = NA,
   }
 
   # Call sampler
-  n_windows <- (length(y) - arorder - n_ahead - n_start + 1) %/% refit_every
+  n_windows <- (length(y) - arorder - n_ahead - n_start + 2) %/% refit_every
   arguments <- list(...)
   runtime <- system.time(reslist <-
     if ((n_cpus > 1L || have_cluster) && (have_mc || have_snow)) {
