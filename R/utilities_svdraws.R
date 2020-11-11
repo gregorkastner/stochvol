@@ -679,13 +679,13 @@ summary.svdraws_roll <- function (object, ...) {
   have_predlik <- !is.null(object[[1]]$predictive_likelihood)
   have_predquant <- length(object[[1]]$quantiles) > 0
   if (have_predlik) {
-    cat("Predictive likelihoods\n\n")
-    sapply(object, function (xx) xx$predictive_likelihood)
-    cat("\n\n")
+    cat(" Summary of predictive likelihoods\n")
+    print(summary(sapply(object, function (xx) xx$predictive_likelihood)))
+    cat("\n")
   }
   if (have_predquant) {
-    cat("Summary of predicted quantiles\n\n")
-    sapply(object, function (xx) xx$predicted_quantile)
+    cat(" Summary of predicted quantiles\n")
+    print(summary(t(sapply(object, function (xx) xx$predicted_quantile))))
     cat("\n\n")
   }
 }
