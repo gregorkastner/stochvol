@@ -40,7 +40,7 @@
 #' \code{length(y)} times the number of covariates. If there are
 #' no covariates then this should be \code{matrix(NA)}
 #' @param priorspec a \code{priorspec} object created by
-#' \link{specify_priors}
+#' \code{\link{specify_priors}}
 #' @param thinpara single number greater or equal to 1, coercible to integer.
 #' Every \code{thinpara}th parameter draw is kept and returned. The default
 #' value is 1, corresponding to no thinning of the parameter draws i.e. every
@@ -76,7 +76,7 @@
 #'    \item{n_chains: number of independent MCMC chains}
 #'    \item{chain: index of this chain}}
 #' Please note that this function does not run multiple independent chains
-#' but \code{svsample} offers different printing functionality depending on
+#' but \code{\link{svsample}} offers different printing functionality depending on
 #' whether it is executed as part of several MCMC chains in parallel
 #' (chain specific messages) or simply as a single chain (progress bar).
 #' @param correct_model_misspecification Logical value. If \code{FALSE},
@@ -91,8 +91,8 @@
 #' @param myoffset Single non-negative number that is used in
 #' \code{log(y^2 + myoffset)} to prevent \code{-Inf} values in the auxiliary
 #' mixture sampling scheme.
-#' @param fast_sv named list of expert settings. We recommend the use of \code{default_fast_sv}.
-#' @param general_sv named list of expert settings. We recommend the use of \code{default_general_sv}.
+#' @param fast_sv named list of expert settings. We recommend the use of \code{\link{get_default_fast_sv}}.
+#' @param general_sv named list of expert settings. We recommend the use of \code{\link{get_default_general_sv}}.
 #' @section Fast SV:
 #' Fast SV was developed in Kastner and Fruehwirth-Schnatter (2014). Fast SV estimates an
 #' approximate SV model without leverage, where the approximation comes in through
@@ -122,21 +122,37 @@
 #' @example inst/examples/svsample_cpp.R
 #' @rdname svsample_cpp
 #' @export
-svsample_fast_cpp <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA), priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, fast_sv = default_fast_sv) {
-    .Call(`_stochvol_svsample_fast_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, fast_sv, PACKAGE = "stochvol")
+svsample_fast_cpp <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA), priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, fast_sv = get_default_fast_sv()) {
+  result <- .Call(`_stochvol_svsample_fast_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, fast_sv, PACKAGE = "stochvol")
+  if (fast_sv$store_indicators) {
+    fast_sv$init_indicators <- result$indicators[NROW(result$indicators), , drop = TRUE]
+  }
+  if (NROW(result$tau) > 1) {
+    fast_sv$init_tau <- result$tau[NROW(result$tau), , drop = TRUE]
+  }
+  result$fast_sv <- fast_sv
+  result
 }
+
 #' @rdname svsample_cpp
 #' @export
-svsample_general_cpp <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA), priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, general_sv = default_general_sv) {
-    .Call(`_stochvol_svsample_general_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, general_sv, PACKAGE = "stochvol")
+svsample_general_cpp <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA), priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, general_sv = get_default_general_sv(priorspec)) {
+  result <- .Call(`_stochvol_svsample_general_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, general_sv, PACKAGE = "stochvol")
+  if (NROW(result$tau) > 1) {
+    general_sv$init_tau <- result$tau[NROW(result$tau), , drop = TRUE]
+  }
+  general_sv$adaptation_object <- result$adaptation
+  result$adaptation <- NULL
+  result$general_sv <- general_sv
+  result
 }
 
 get_omori_constants <- function() {
-    .Call(`_stochvol_get_omori_constants`, PACKAGE = "stochvol")
+  .Call(`_stochvol_get_omori_constants`, PACKAGE = "stochvol")
 }
 
 # Register entry points for exported C++ functions
 methods::setLoadAction(function(ns) {
-    .Call('_stochvol_Export_registerCCallable', PACKAGE = 'stochvol')
+  .Call('_stochvol_Export_registerCCallable', PACKAGE = 'stochvol')
 })
 

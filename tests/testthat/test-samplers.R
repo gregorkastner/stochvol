@@ -49,7 +49,7 @@ test_that("vanilla SV passes Geweke test", {
     h <- generate_h(len, increment_fun(startpara$mu, startpara$phi, startpara$sigma), h0)
     startlatent <- h
     designmatrix <- matrix(NA_real_, 1, 1)
-    fast_sv <- default_fast_sv
+    fast_sv <- get_default_fast_sv()
     fast_sv$store_indicators <- TRUE
     fast_sv$baseline_parameterization <- if (centered) "centered" else "noncentered"
     fast_sv$init_indicators <- sample.int(10, len, replace = TRUE, prob = p)
@@ -144,11 +144,12 @@ test_that("general SV passes Geweke test", {
 
     len <- 30L
     designmatrix <- matrix(NA_real_, 1, 1)
-    general_sv <- default_general_sv
+    general_sv <- get_default_general_sv(priorspec)
     general_sv$multi_asis <- 3
     general_sv$starting_parameterization <- if (centered) "centered" else "noncentered"
+    general_sv$adaptation_object[[general_sv$starting_parameterization]]$memory <- matrix(NA, 300L, 3L)
 
-    # pre-run to get a good proposal
+    # pre-run to get an efficient proposal for better mixing
     print_settings <- list(quiet = TRUE, chain = 1, n_chains = 1)
     data <- svsim(len, mu = startpara$mu, phi = startpara$phi, sigma = startpara$sigma, rho = startpara$rho, nu = startpara$nu)
     startlatent <- data$latent
@@ -162,10 +163,16 @@ test_that("general SV passes Geweke test", {
                                 interweave = TRUE,
                                 myoffset = 0, general_sv = general_sv)
 
-    expect_gt(tail(res$adaptation[[general_sv$starting_parameterization]]$history[, "Acceptance Rate"], 1), 0.05)
+    adaptation_object <- res$general_sv$adaptation_object[[general_sv$starting_parameterization]]
+    acceptance_rates <- adaptation_object$memory[, "Acceptance Rate"]
+    acceptance_rates <- acceptance_rates[!is.na(acceptance_rates)]
+    expect_gt(tail(acceptance_rates, 1), 0.02)
+
+    general_sv$adaptation_object[[general_sv$starting_parameterization]]$memory <- matrix(NA, 0L, 3L)
 
     general_sv$proposal_diffusion_ken <-
-      res$adaptation[[general_sv$starting_parameterization]][c("scale", "covariance")]
+      list(scale = adaptation_object$cached_scale,
+           covariance = adaptation_object$cached_covariance)
     general_sv$multi_asis <- 2
 
     draws <- 20000L
@@ -231,13 +238,13 @@ test_that("general SV passes Geweke test", {
     }
     if (FALSE) {
       idx <- seq(1, draws)
-      opar <- par(mfrow = c(2, 3), mgp = c(1.6, 0.6, 0), mar = c(1.5, 1.5, 2, 0.5))
-      qqnorm(sample(c(-1, 1), length(idx), replace = TRUE) * store_para[idx, "sigma"] * sqrt(2 * priorspec$sigma2$rate)); abline(0, 1, col = "blue")
-      qqnorm((store_para[idx, "mu"] - priorspec$mu$mean) / priorspec$mu$sd); abline(0, 1, col = "blue")
-      qqnorm(qnorm(pbeta(0.5 * (1 + store_para[idx, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2))); abline(0, 1, col = "blue")
-      qqnorm(qnorm(pbeta(0.5 * (1 + store_para[idx, "rho"]), priorspec$rho$shape1, priorspec$rho$shape2))); abline(0, 1, col = "red")
-      qqnorm(qnorm(pexp(store_para[idx, "nu"] - 2, rate = priorspec$nu$rate))); abline(0, 1, col = "red")
-      qqplot(store_tau[idx, 9], 1/rgamma(2*length(idx), shape = .5*store_para[idx, "nu"], rate = .5*(store_para[idx, "nu"]-2))); abline(0, 1, col = "red")
+      opar <- par(mfrow = c(3, 2)) #, mgp = c(1.6, 0.6, 0), mar = c(1.5, 1.5, 2, 0.5))
+      qqnorm(sample(c(-1, 1), length(idx), replace = TRUE) * store_para[idx, "sigma"] * sqrt(2 * priorspec$sigma2$rate), ylab = "Theoretical Quantiles", xlab = "Sample Quantiles", main = bquote("Geweke QQ-Plot for Parameter"~sigma)); abline(0, 1, col = "red")
+      qqnorm((store_para[idx, "mu"] - priorspec$mu$mean) / priorspec$mu$sd, ylab = "Theoretical Quantiles", xlab = "Sample Quantiles", main = bquote("Geweke QQ-Plot for Parameter"~mu)); abline(0, 1, col = "red")
+      qqnorm(qnorm(pbeta(0.5 * (1 + store_para[idx, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2)), ylab = "Theoretical Quantiles", xlab = "Sample Quantiles", main = bquote("Geweke QQ-Plot for Parameter"~phi)); abline(0, 1, col = "red")
+      qqnorm(qnorm(pbeta(0.5 * (1 + store_para[idx, "rho"]), priorspec$rho$shape1, priorspec$rho$shape2)), ylab = "Theoretical Quantiles", xlab = "Sample Quantiles", main = bquote("Geweke QQ-Plot for Parameter"~rho)); abline(0, 1, col = "red")
+      qqnorm(qnorm(pexp(store_para[idx, "nu"] - 2, rate = priorspec$nu$rate)), ylab = "Theoretical Quantiles", xlab = "Sample Quantiles", main = bquote("Geweke QQ-Plot for Parameter"~nu)); abline(0, 1, col = "red")
+      #qqplot(store_tau[idx, 9], 1/rgamma(2*length(idx), shape = .5*store_para[idx, "nu"], rate = .5*(store_para[idx, "nu"]-2))); abline(0, 1, col = "red")  # keep in mind that this is very heavy-tailed
       par(opar)
     }
   }

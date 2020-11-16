@@ -30,10 +30,10 @@
 
 #include <RcppArmadillo.h>
 #include <cmath>
+#include <expert.hpp>
 #include "sampling_parameters.h"
 #include "utils_parameters.h"
 #include "utils_latent_states.h"
-#include <type_definitions.h>
 #include "densities.h"
 #include "utils.h"
 

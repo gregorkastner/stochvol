@@ -174,8 +174,14 @@ runtime <- function (x) {
 #' @rdname extractors
 #' @export
 sampled_parameters <- function (x) {
+  pr <- if (inherits(x, "svdraws")) {
+    priors(x)
+  } else if (inherits(x, "sv_priorspec")) {
+    x
+  } else {
+    stop("Argument 'x' must be either an svdraws object or an sv_priorspec object.")
+  }
   res <- c()
-  pr <- priors(x)
   if (!inherits(pr$mu, "sv_constant")) {
     res <- c(res, "mu")
   }
@@ -446,7 +452,12 @@ print.svdraws <- function (x, showpara = TRUE, showlatent = FALSE, ...) {
 print.summary.svdraws <- function (x, showpriorbeta = !is.null(x$beta), ...) {
   cat("\nSummary of 'svdraws' object\n\n")
   print(x$priors, showbeta = showpriorbeta)
-  cat("\nStored ", x$mcp[2]-x$mcp[1]+x$mcp[3], " MCMC draws after a burn-in of ", x$mcp[1]-x$mcp[3], ".\n", sep="")
+  cat("\nStored ", (x$mcp[2] - x$mcp[1] + 2*x$mcp[3] - 1) %/% x$mcp[3], " MCMC draws after a burn-in of ", x$mcp[1]-x$mcp[3], ".\n", sep="")
+  if (x$mcp[3] == 1) {
+    cat("No thinning.\n")
+  } else {
+    cat("Thinning: ", x$mcp[3], ".\n", sep="")
+  }
   
   if (exists("para", x)) {
     cat("\nPosterior draws of SV parameters (thinning = ", x$mcp[3], "):\n", sep='')

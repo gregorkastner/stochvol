@@ -25,8 +25,9 @@
 #define stochvol_H_
 
 #include <RcppArmadillo.h>
-#include "adaptation.hpp"
 #include "type_definitions.h"
+#include "adaptation.hpp"
+#include "expert.hpp"
 
 namespace stochvol {
 

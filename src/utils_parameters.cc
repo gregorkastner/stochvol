@@ -29,11 +29,11 @@
  */
 
 #include <RcppArmadillo.h>
+#include <expert.hpp>
 #include <cmath>
 #include "utils.h"
 #include "utils_parameters.h"
 #include "utils_latent_states.h"
-#include <type_definitions.h>
 #include "densities.h"
 #include <array>
 #include <utility>

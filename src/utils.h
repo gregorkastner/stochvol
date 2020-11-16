@@ -31,7 +31,7 @@
 #define _STOCHVOL_UTILS_H_
 
 #include <R.h>
-#include <type_definitions.h>
+#include <expert.hpp>
 
 namespace stochvol {
 

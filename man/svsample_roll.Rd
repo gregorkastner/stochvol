@@ -167,7 +167,7 @@ wrappers around \code{svsample_roll} with convenient default values for the SV
 model with t-errors, leverage, and both t-errors and leverage, respectively.
 }
 \note{
-The function executes \code{\link{svsample}} \code{(length(y) - arorder - n_ahead - n_start + 1) \%/\% refit_every} times.
+The function executes \code{\link{svsample}} \code{(length(y) - arorder - n_ahead - n_start + 2) \%/\% refit_every} times.
 }
 \examples{
 \donttest{
@@ -215,5 +215,9 @@ roll <- svsample_roll(sim, draws = 5000, burnin = 2000,
 \seealso{
 \code{\link{svsim}}, \code{\link{specify_priors}}, \code{\link{svsample}}
 }
+\keyword{backtesting}
+\keyword{estimation}
 \keyword{models}
+\keyword{rolling}
 \keyword{ts}
+\keyword{window}

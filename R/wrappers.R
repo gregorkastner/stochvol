@@ -354,7 +354,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   assert_positive(n_chains, "Parameter for number of chains")
 
   ## expert
-  expert <- validate_and_process_expert(expert)
+  expert <- validate_and_process_expert(expert, priorspec)
   correct_model_misspecification <- expert$correct_model_misspecification
   interweave <- expert$interweave
   fast_sv <- expert$fast_sv
@@ -594,9 +594,17 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   res
 }
 
-#' @rdname svsample_cpp
+#' Default Values for the Expert Settings
+#' 
+#' These functions define meaningful expert settings for
+#' argument \code{expert} of \code{\link{svsample}} and its derivatives.
+#' The result of \code{get_default_fast_sv} should be provided as
+#' \code{expert$fast_sv} and \code{get_default_general_sv} as \code{expert$general_sv}
+#' when relevant.
+#' @rdname expert_defaults
+#' @seealso \code{link{svsample}}, \code{\link{specify_priors}}, \code{\link{svsample_roll}}, \code{\link{svsample_fast_cpp}}, \code{\link{svsample_general_cpp}}
 #' @export
-default_fast_sv <- 
+get_default_fast_sv <- function () {
   list(baseline_parameterization = "centered",  # "centered" or "noncentered"
        proposal_phi = "immediate acceptance-rejection",  # "immediate acceptance-rejection" or "repeated acceptance-rejection"
        proposal_sigma2 = "independence",  # "independence" or "log random walk"
@@ -608,14 +616,51 @@ default_fast_sv <-
        update = list(latent_vector = TRUE, parameters = TRUE, mixture_indicators = TRUE),
        init_indicators = 5,
        init_tau = 1)
-#' @rdname svsample_cpp
+}
+#' @rdname expert_defaults
+#' @param priorspec a \code{priorspec} object created by
+#' \code{\link{specify_priors}}
 #' @export
-default_general_sv <-
-  list(multi_asis = 5,  # positive integer
+get_default_general_sv <- function (priorspec) {
+  if (!inherits(priorspec, "sv_priorspec")) {
+    stop("Argument 'priorspec' must be an sv_priorspec object.")
+  }
+  multi_asis <- 5
+  list(multi_asis = multi_asis,  # positive integer
        starting_parameterization = "centered",  # "centered" or "noncentered"
        update = list(latent_vector = TRUE, parameters = TRUE),
        init_tau = 1,
-       proposal_diffusion_ken = FALSE)  # FALSE turns on adaptation
+       proposal_diffusion_ken = FALSE,  # FALSE turns on adaptation
+       adaptation_object =  # used iff identical(proposal_diffusion_ken, FALSE)
+         list(centered = get_default_adaptation(priorspec, multi_asis),
+              noncentered = get_default_adaptation(priorspec, multi_asis)))
+}
+
+get_default_adaptation <- function (priorspec, multi_asis) {
+  lambda <- 0.1
+  C <- 0.99
+  dim <- length(setdiff(sampled_parameters(priorspec), "nu"))
+  Sigma <- diag(rep_len(1, dim))
+  target_acceptance <- 1 - (1-0.234)^(1/multi_asis)
+  batch_size <- ceiling(20 / target_acceptance)
+  list(dim = dim,  # no. of parameters in the adaptation
+       memory = matrix(NA, nrow = 0, ncol = 3),  # storage for adaptation stats
+       batch_size = batch_size,  # number of steps between two adaptations
+       target_acceptance = target_acceptance,  # target acceptance rate; combination of ASIS and the magical 0.234
+       lambda = lambda,  # (ignored) used to set alpha in the C++ code
+       scale = 0.001,  # initial scaling of the covariance matrix for the random walk
+       C = C,  # (ignored) used to set gamma in the C++ code
+       alpha = (1 + lambda/64) / (1 + lambda),  # the exponential rate of decay for the probability of adaptation
+       gamma = C,  # initial probability of adaptation
+       count_acceptance = 0L,  # count of accepted draws in this batch
+       i_batch = 0L,  # where we are in the current batch
+       mu = rep_len(0, dim),  # current mean of the random walk
+       Sigma = Sigma,  # current covariance matrix of the random walk
+       draws_batch = matrix(NA, nrow = dim, ncol = batch_size),  # storage for the draws in this batch
+       updated_proposal = FALSE,  # have we updated the cached scale and covariance matrix with this batch
+       cached_scale = 0.001,  # used in a cache object in C++
+       cached_covariance = Sigma)  # used in a cache object in C++
+}
 
 #' @rdname svsample
 #' @export
@@ -789,7 +834,7 @@ svsample2 <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' @note
 #' The function executes \code{\link{svsample}} \code{(length(y) - arorder - n_ahead - n_start + 2) \%/\% refit_every} times.
 #' @seealso \code{\link{svsim}}, \code{\link{specify_priors}}, \code{\link{svsample}}
-#' @keywords models ts
+#' @keywords models ts backtesting rolling window estimation
 #' @example inst/examples/svsample_roll.R
 #' @export
 svsample_roll <- function (y, designmatrix = NA,

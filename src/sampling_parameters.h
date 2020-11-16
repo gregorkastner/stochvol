@@ -35,9 +35,9 @@
 #define _SAMPLING_PARAMETERS_H_
 
 #include <RcppArmadillo.h>
+#include <expert.hpp>
 #include <adaptation.hpp>
 #include "utils_parameters.h"
-#include <type_definitions.h>
 
 namespace stochvol {
 

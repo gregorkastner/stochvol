@@ -29,10 +29,10 @@
  */
 
 #include <RcppArmadillo.h>
+#include <expert.hpp>
 #include "utils_main.h"
 #include "utils_latent_states.h"
 #include "densities.h"
-#include <type_definitions.h>
 
 using namespace Rcpp;
 
@@ -172,20 +172,12 @@ List cleanup(
 
   return List::create(
       _["para"] = para,
-      _["adaptation"] = List::create(
-        _["centered"] = List::create(
-          _["history"] = adaptation_collection.centered.get_storage(),
-          _["scale"] = wrap(adaptation_collection.centered.get_proposal().get_scale()),
-          _["covariance"] = wrap(adaptation_collection.centered.get_proposal().get_covariance())),
-        _["noncentered"] = List::create(
-          _["history"] = adaptation_collection.noncentered.get_storage(),
-          _["scale"] = wrap(adaptation_collection.noncentered.get_proposal().get_scale()),
-          _["covariance"] = wrap(adaptation_collection.noncentered.get_proposal().get_covariance()))),
+      _["adaptation"] = adaptation_collection.serialize(),
       _["latent"] = latent,
       _["latent0"] = latent0,
       _["tau"] = tau,
       _["beta"] = betas);
-}  // END namespace general_sv
+}
 
 int progressbar_init(
     const int N) {
@@ -457,6 +449,67 @@ ExpertSpec_GeneralSV list_to_general_sv(
     proposal_diffusion_ken,
     update
   };
+}
+
+/*
+ProposalDiffusionKen list_to_proposal_ken (
+    const List& list) {
+  return ProposalDiffusionKen(list["scale"], list["covariance"]);
+}
+
+List proposal_ken_to_list (
+    const ProposalDiffusionKen& ken) {
+  return List::create(
+      _["scale"] = wrap(ken.get_scale()),
+      _["covariance"] = wrap(ken.get_covariance()));
+}
+*/
+
+AdaptationCollection list_to_adaptationcollection (
+    const List& list) {
+  return {
+    list_to_adaptation(list["centered"]),
+    list_to_adaptation(list["noncentered"])};
+}
+
+Adaptation list_to_adaptation (
+    const List& list) {
+  using Memory = std::vector<Adaptation::Storage>;
+  const NumericMatrix memory_rcpp = list["memory"];
+  Memory memory;
+  memory.reserve(memory_rcpp.nrow());
+  for (int i = 0; i < memory_rcpp.nrow() and not std::isnan(memory_rcpp(i, 0)); i++) {
+    memory.push_back({memory_rcpp(i, 0), memory_rcpp(i, 1), memory_rcpp(i, 2)});
+  }
+
+  const NumericVector mu_rcpp (as<NumericVector>(list["mu"]));
+  const NumericMatrix Sigma_rcpp (as<NumericMatrix>(list["Sigma"]));
+  const NumericMatrix draws_batch_rcpp (as<NumericMatrix>(list["draws_batch"]));
+  const NumericMatrix cached_covariance_rcpp (as<NumericMatrix>(list["cached_covariance"]));
+
+  const arma::vec mu (mu_rcpp.cbegin(), mu_rcpp.length());
+  const arma::mat Sigma (Sigma_rcpp.cbegin(), Sigma_rcpp.nrow(), Sigma_rcpp.ncol());
+  const arma::mat draws_batch (draws_batch_rcpp.cbegin(), draws_batch_rcpp.nrow(), draws_batch_rcpp.ncol());
+  const arma::mat cached_covariance (cached_covariance_rcpp.cbegin(), cached_covariance_rcpp.nrow(), cached_covariance_rcpp.ncol());
+
+  return {
+    as<int>(list["dim"]),
+    memory,  //std::move(memory),
+    as<int>(list["batch_size"]),
+    as<double>(list["target_acceptance"]),
+    as<double>(list["lambda"]),
+    as<double>(list["scale"]),
+    as<double>(list["C"]),
+    as<double>(list["alpha"]),
+    as<double>(list["gamma"]),
+    as<int>(list["count_acceptance"]),
+    as<int>(list["i_batch"]),
+    mu,  //std::move(mu),
+    Sigma,  //std::move(Sigma),
+    draws_batch,  //std::move(draws_batch),
+    as<bool>(list["updated_proposal"]),
+    as<double>(list["cached_scale"]),
+    cached_covariance};
 }
 
 }

@@ -29,9 +29,9 @@
  */
 
 #include <RcppArmadillo.h>
+#include <expert.hpp>
 #include "single_update.h"
 #include "densities.h"
-#include <type_definitions.h>
 #include "sampling_latent_states.h"
 #include "sampling_parameters.h"
 #include "utils_latent_states.h"

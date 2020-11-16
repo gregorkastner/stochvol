@@ -29,10 +29,10 @@
  */
 
 #include <RcppArmadillo.h>
+#include <expert.hpp>
 #include <adaptation.hpp>
 #include "sampling_main.h"
 #include "single_update.h"
-#include <type_definitions.h>
 #include "utils_main.h"
 #include "utils_latent_states.h"
 #include "utils.h"
@@ -156,8 +156,8 @@ List svsample_fast_cpp(
       ::R_CheckUserInterrupt();
     }
 
-    const bool parasave_round = i % thinpara == thinpara - 1,  // is this a parameter saving round?
-               latentsave_round = i % thinlatent == thinlatent - 1;  // is this a latent saving round?
+    const bool parasave_round = (i - 1) % thinpara == thinpara - 1,  // is this a parameter saving round?
+               latentsave_round = (i - 1) % thinlatent == thinlatent - 1;  // is this a latent saving round?
 
     // print a progress sign every "show" iterations
     if (verbose and i % show == 0) {
@@ -210,14 +210,14 @@ List svsample_fast_cpp(
       correction_weight_i = fast_sv::compute_correction_weight(data_demean, log_data2_normal, h, 1/exp_h_half_inv);
     }
     if (i >= 1 and parasave_round) {
-      const unsigned int index = i / thinpara - 1;
+      const unsigned int index = (i - 1) / thinpara;
       save_para_sample(index, mu, phi, sigma, nu, beta, para_store, beta_store, is_regression);
       if (correct_model_specification) {
         correction_weight_para[index] = correction_weight_i;
       }
     }
     if (i >= 1 and latentsave_round) {
-      const unsigned int index = i / thinlatent - 1;
+      const unsigned int index = (i - 1) / thinlatent;
       save_latent_sample(index, h0, h, tau, r, thintime, latent_length, latent0_store, latent_store, tau_store, r_store, keep_tau and is_heavy_tail, keep_r);
       if (correct_model_specification) {
         correction_weight_latent[index] = correction_weight_i;
@@ -322,22 +322,8 @@ List svsample_general_cpp(
   Rcpp::NumericMatrix latent_store(latent_length, latent_draws);
   Rcpp::NumericMatrix tau_store(latent_length, keep_tau * latent_draws);
 
-  // adaptive MH
-  const int batch_size = 200,
-            memory_size = expert.adapt ? expert.strategy.size() * (draws + burnin) / batch_size + 1 : 1;
-  const double target_acceptance = 0.234,
-               lambda = 0.1,
-               init_scale = 0.001;
-  AdaptationCollection adaptation_collection(
-      (prior_spec.mu.distribution != PriorSpec::Mu::CONSTANT) +
-      (prior_spec.phi.distribution != PriorSpec::Phi::CONSTANT) +
-      (prior_spec.sigma2.distribution != PriorSpec::Sigma2::CONSTANT) +
-      (prior_spec.rho.distribution != PriorSpec::Rho::CONSTANT),
-      memory_size,
-      batch_size,
-      target_acceptance,
-      lambda,  // between 0 and 1: the larger the value the stronger and longer the adaptation
-      init_scale);
+  // adaptive random walk
+  AdaptationCollection adaptation_collection {expert.adapt ? list_to_adaptationcollection(expert_in["adaptation_object"]) : AdaptationCollection()};
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
@@ -355,8 +341,8 @@ List svsample_general_cpp(
       ::R_CheckUserInterrupt();
     }
 
-    const bool parasave_round = i % thinpara == thinpara - 1,  // is this a parameter saving round?
-               latentsave_round = i % thinlatent == thinlatent - 1;  // is this a latent saving round?
+    const bool parasave_round = (i - 1) % thinpara == thinpara - 1,  // is this a parameter saving round?
+               latentsave_round = (i - 1) % thinlatent == thinlatent - 1;  // is this a latent saving round?
 
     // print a progress sign every "show" iterations
     if (verbose and i % show == 0) {
@@ -408,10 +394,10 @@ List svsample_general_cpp(
 
     // store draws
     if (i >= 1 and parasave_round) {
-      save_para_sample(i / thinpara - 1, mu, phi, sigma, nu, rho, beta, para_store, beta_store, is_regression);
+      save_para_sample((i - 1) / thinpara, mu, phi, sigma, nu, rho, beta, para_store, beta_store, is_regression);
     }
     if (i >= 1 and latentsave_round) {
-      save_latent_sample(i / thinlatent - 1, h0, h, tau, thintime, latent_length, latent0_store, latent_store, tau_store, keep_tau and is_heavy_tail);
+      save_latent_sample((i - 1) / thinlatent, h0, h, tau, thintime, latent_length, latent0_store, latent_store, tau_store, keep_tau and is_heavy_tail);
     }
   }
 

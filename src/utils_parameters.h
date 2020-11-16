@@ -35,7 +35,7 @@
 
 #include <RcppArmadillo.h>
 #include <adaptation.hpp>
-#include <type_definitions.h>
+#include <expert.hpp>
 #include <array>
 
 namespace stochvol {

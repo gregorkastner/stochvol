@@ -32,28 +32,6 @@ logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
   logretx
 }
 
-#' Validate and Process Argument 'expert'
-#' 
-#' A helper function that validates the input and extends it with
-#' default values if there are missing parts for argument 'expert'.
-#' @param expert list, the input values for expert.
-#' @return A list that is the input extended by default values. If
-#' the input is invalid, an error is thrown.
-#' @family validation
-#' @export
-validate_and_process_expert <- function (expert = NULL) {
-  expertdefault <-
-    list(correct_model_misspecification = FALSE,  # online correction for general_sv and post-correction for fast_sv
-         interweave = TRUE,
-         fast_sv =  # UNDOCUMENTED; very expert settings of the fast_sv sampler
-           default_fast_sv,
-         general_sv =  # UNDOCUMENTED; very expert settings of the general_sv sampler
-           default_general_sv)
-  expert <- apply_default_list(expert, expertdefault, "Names in expert", "allowed names in expert")
-  validate_expert(expert)
-  expert
-}
-
 #' Specify Prior Distributions for SV Models
 #' 
 #' This function gives access to a larger set of prior distributions
@@ -127,8 +105,8 @@ specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
 
 #' Prior Distributions in \code{stochvol}
 #' 
-#' The functions below can be supplied to \link{specify_priors}
-#' to overwrite the default set of prior distributions in \link{svsample}.
+#' The functions below can be supplied to \code{\link{specify_priors}}
+#' to overwrite the default set of prior distributions in \code{\link{svsample}}.
 #' The functions have \code{mean}, \code{range}, \code{density}, and
 #' \code{print} methods.
 #' @param value The constant value for the degenerate constant distribution
@@ -503,20 +481,22 @@ init_beta <- function (y, X) {
 
 # Find a good initial value for mu
 ## Posterior mean of the homoskedastic Bayesian linear regression model
-## log((y_t - X_t*beta_hat)^2) + 1.27 = mu + epsilon_t
+## log((y_t - X_t*beta_hat)^2) = mu + epsilon_t
+## where epsilon_t ~ N(-1.27, 4.934)
 init_mu <- function (y, priorspec, X = NULL, beta_hat = NULL) {
+  laplace_approx_mean <- -1.27; laplace_approx_var <- 4.934
   regression_part <- if (is.null(X)) {
     0
   } else {
     X %*% beta_hat
   }
-  left_hand_side <- log((y - regression_part)^2) + 1.27
+  left_hand_side <- (log((y - regression_part)^2) - laplace_approx_mean) / sqrt(laplace_approx_var)
   len <- length(left_hand_side)
-  ols <- mean(left_hand_side)
+  ols <- mean(left_hand_side) * sqrt(laplace_approx_var)
 
   if (inherits(priorspec$mu, "sv_normal")) {
     moments_prior_mu <- c(mean(priorspec$mu), priorspec$mu$sd^2)
-    e_prior_mu <- moments_prior_mu[1]; v_prior_mu <- moments_prior_mu[2]
+    e_prior_mu <- moments_prior_mu[1] / sqrt(laplace_approx_var); v_prior_mu <- moments_prior_mu[2] / laplace_approx_var
     (len * ols + e_prior_mu / v_prior_mu) / (len + 1 / v_prior_mu)
   } else {
     ols

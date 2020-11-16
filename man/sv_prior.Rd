@@ -49,8 +49,8 @@ sv_infinity()
 \item{shape2}{Second shape parameter for the distribution}
 }
 \description{
-The functions below can be supplied to \link{specify_priors}
-to overwrite the default set of prior distributions in \link{svsample}.
+The functions below can be supplied to \code{\link{specify_priors}}
+to overwrite the default set of prior distributions in \code{\link{svsample}}.
 The functions have \code{mean}, \code{range}, \code{density}, and
 \code{print} methods.
 }

@@ -1,3 +1,53 @@
+@Article{zoo,
+    title = {\pkg{zoo}: \proglang{S3} Infrastructure for Regular and Irregular Time Series},
+    author = {Achim Zeileis and Gabor Grothendieck},
+    journal = {Journal of Statistical Software},
+    year = {2005},
+    volume = {14},
+    number = {6},
+    pages = {1--27},
+    doi = {10.18637/jss.v014.i06},
+}
+
+@Manual{devtools,
+    title = {\pkg{devtools}: Tools to Make Developing \proglang{R} Packages Easier},
+    author = {Hadley Wickham and Jim Hester and Winston Chang},
+    year = {2020},
+    note = {\proglang{R} package version 2.3.2},
+    url = {https://CRAN.R-project.org/package=devtools},
+  }
+
+@article{creal2017class,
+author = {Drew D. Creal},
+title = {A Class of Non-Gaussian State Space Models With Exact Likelihood Inference},
+journal = {Journal of Business \& Economic Statistics},
+volume = {35},
+number = {4},
+pages = {585-597},
+year  = {2017},
+publisher = {Taylor \& Francis},
+doi = {10.1080/07350015.2015.1092977},
+}
+
+@Manual{stochvolTMB,
+    title = {\pkg{stochvolTMB}: Likelihood Estimation of Stochastic Volatility Models},
+    author = {Jens Christian Wahl},
+    year = {2020},
+    note = {\proglang{R} package version 0.1.2},
+    url = {https://CRAN.R-project.org/package=stochvolTMB},
+}
+
+@article{abanto2017maximum,
+author = {Abanto-Valle, Carlos A. and Langrock, Roland and Chen, Ming-Hui and Cardoso, Michel V.},
+title = {Maximum likelihood estimation for stochastic volatility in mean models with heavy-tailed distributions},
+journal = {Applied Stochastic Models in Business and Industry},
+volume = {33},
+number = {4},
+pages = {394-408},
+doi = {10.1002/asmb.2246},
+year = {2017}
+}
+
 @article{geweke2004getting,
     author = {Geweke, John},
     title = {Getting It Right: {J}oint Distribution Tests of Posterior Simulators},
@@ -10,8 +60,8 @@
 @Manual{shrinktvp,
   title = {\pkg{shrinkTVP}: Efficient Bayesian Inference for Time-Varying Parameter Models with Shrinkage},
   author = {Peter Knaus and Angela Bitto-Nemling and Annalisa Cadonna and Sylvia Frühwirth-Schnatter},
-  year = {2019},
-  note = {\proglang{R} package version 1.0.0},
+  year = {2020},
+  note = {\proglang{R} package version 2.0.1},
   url = {https://CRAN.R-project.org/package=shrinkTVP},
 }
 
@@ -117,12 +167,12 @@ archivePrefix = {arXiv},
   booktitle={Bayesian Statistics: New Challenges and New Generations},
   title={Approaches Toward the {B}ayesian Estimation of the Stochastic Volatility Model with Leverage},
   author={Hosszejni, Darjus and Kastner, Gregor},
-  url={https://arxiv.org/abs/1901.11491},
   publisher={Springer-Verlag},
   series={Springer Proceedings in Mathematics \& Statistics},
   editor={Raffaele Argiento and Daniele Durante and Sara Wade},
   year={2019},
-  note={forthcoming}
+  doi={10.1007/978-3-030-30611-3\_8},
+  pages={75-83}
 }
 
 @article{kastner2014ancillarity,
@@ -155,13 +205,6 @@ archivePrefix = {arXiv},
 	editor = {O. D. Anderson},
         address = {Amsterdam},
 	year = {1982}
-}
-
-@misc{murray2013bayesian,
-  title={Bayesian State-Space Modelling on High-Performance Hardware Using {LibBi}},
-  author={Murray, Lawrence M.},
-  journal={arXiv preprint, arXiv:1306.3277},
-  year={2013}
 }
 
 @article{chan2016modeling,
@@ -279,15 +322,16 @@ archivePrefix = {arXiv},
   title = {\proglang{R}: A Language and Environment for Statistical Computing},
   author = {{\proglang{R} Core Team}},
   organization = {\proglang{R} Foundation for Statistical Computing},
-  year = {2019},
+  address = {Vienna, Austria},
+  year = {2020},
   url = {https://www.R-project.org/}
 }
 
 @manual{kastner2020stochvol,
   title = {\pkg{stochvol}: Efficient Bayesian Inference for Stochastic Volatility ({SV}) Models},
-  author = {Kastner, Gregor and Hosszejni, Darjus},
+  author = {Hosszejni, Darjus and Kastner, Gregor},
   year = {2020},
-  note = {\proglang{R} package version 3.0.0},
+  note = {\proglang{R} package version 3.0.1},
   url = {http://CRAN.R-project.org/package=stochvol}
 }
 
@@ -527,28 +571,12 @@ archivePrefix = {arXiv},
   doi = {10.1016/j.csda.2008.03.015}
 }
 
-@manual{nakajima2019svpack,
-  title = {\pkg{ASVPACK}},
-  author = {Nakajima, Jouchi},
-  url = {https://sites.google.com/site/jnakajimaweb/asvpack.zip},
-  year = {2009}
-}
-
-@manual{ox,
-  title = {Object-Oriented Matrix Programming Using \proglang{Ox}},
-  author = {Doornik, Jurgen A.},
-  year = {2007},
-  edition = {3rd},
-  note = {London: Timberlake Consultants press and Oxford: \url{www.doornik.com}}
-}
-
 @TechReport{kastner2015heavy,
   title = {Heavy-Tailed Innovations in the \proglang{R} Package \pkg{stochvol}},
   author = {Gregor Kastner},
-  type = {\proglang{R} Package Vignette},
-  institution = {Comprehensive \proglang{R} Archive Network (CRAN)},
+  institution = {WU Vienna University of Economics and Business},
   year = {2015},
-  url = {https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf},
+  url = {https://epub.wu.ac.at/4918},
 }
 
 @article{markowitz1952portfolio,
@@ -617,9 +645,9 @@ archivePrefix = {arXiv},
 
 @Manual{factorstochvol,
   title = {\pkg{factorstochvol}: {B}ayesian Estimation of (Sparse) Latent Factor Stochastic Volatility Models},
-  author = {Gregor Kastner},
-  note = {\proglang{R} package version 0.9.2},
-  year = {2019},
+  author = {Gregor Kastner and Darjus Hosszejni},
+  note = {\proglang{R} package version 0.10.1},
+  year = {2020},
   url = {https://cran.r-project.org/package=factorstochvol}
 }
 
@@ -669,10 +697,11 @@ archivePrefix = {arXiv},
 }
 
 @Manual{rugarch,
-    title = {rugarch: {U}nivariate {GARCH} Models},
+    title = {\pkg{rugarch}: {U}nivariate {GARCH} Models},
     author = {Alexios Ghalanos},
     year = {2020},
-    note = {R package version 1.4-4.},
+    note = {\proglang{R} package version 1.4-4},
+    url = {https://CRAN.R-project.org/package=rugarch},
 }
 
 

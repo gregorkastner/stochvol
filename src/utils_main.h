@@ -33,7 +33,7 @@
 // Helper functions for the main sampler
 
 #include <RcppArmadillo.h>
-#include <type_definitions.h>
+#include <expert.hpp>
 #include <adaptation.hpp>
 
 namespace stochvol {
@@ -306,6 +306,16 @@ ExpertSpec_GeneralSV list_to_general_sv(
 ExpertSpec_FastSV list_to_fast_sv(
     const Rcpp::List& list,
     const bool interweave);
+
+// Transform an R adaptation list into its corresponding
+// C++ object
+Adaptation list_to_adaptation (
+    const Rcpp::List& list);
+
+// Transform an R adaptation collection list into
+// its corresponding C++ object
+AdaptationCollection list_to_adaptationcollection (
+    const Rcpp::List& list);
 
 }
 

@@ -1,7 +1,7 @@
 # Draw one sample using fast SV and general SV
-y <- svsim(40)
+y <- svsim(40)$y
 params <- list(mu = -10, phi = 0.9, sigma = 0.1,
-               nu = Inf, rho = 0, beta = c(),
+               nu = Inf, rho = 0, beta = NA,
                latent0 = -10)
 res_fast <- svsample_fast_cpp(y,
   startpara = params, startlatent = rep(-10, 40))
@@ -9,10 +9,10 @@ res_gen <- svsample_general_cpp(y,
   startpara = params, startlatent = rep(-10, 40))
 
 # Embed SV in another sampling scheme
-## SV without leverage
+## vanilla SV
 len <- 40L
 draws <- 1000L
-burnin <- 1000L
+burnin <- 200L
 param_store <- matrix(NA, draws, 3,
                       dimnames = list(NULL,
                                       c("mu", "phi", "sigma")))
@@ -37,6 +37,6 @@ for (i in seq_len(burnin+draws)) {
       res$para[, c("mu", "phi", "sigma")]
   }
 }
-# quick look at the traceplots
+### quick look at the traceplots
 ts.plot(param_store, col = 1:3)
 

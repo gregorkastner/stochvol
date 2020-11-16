@@ -29,10 +29,10 @@
  */
 
 #include <RcppArmadillo.h>
+#include <expert.hpp>
 #include "sampling_latent_states.h"
 #include "utils.h"
 #include "utils_latent_states.h"
-#include <type_definitions.h>
 
 using namespace Rcpp;
 
