@@ -490,14 +490,14 @@ init_mu <- function (y, priorspec, X = NULL, beta_hat = NULL) {
   } else {
     X %*% beta_hat
   }
-  left_hand_side <- (log((y - regression_part)^2) - laplace_approx_mean) / sqrt(laplace_approx_var)
+  left_hand_side <- (log((y - regression_part)^2 + 1e-20) - laplace_approx_mean)
   len <- length(left_hand_side)
-  ols <- mean(left_hand_side) * sqrt(laplace_approx_var)
+  ols <- mean(left_hand_side)
 
   if (inherits(priorspec$mu, "sv_normal")) {
     moments_prior_mu <- c(mean(priorspec$mu), priorspec$mu$sd^2)
-    e_prior_mu <- moments_prior_mu[1] / sqrt(laplace_approx_var); v_prior_mu <- moments_prior_mu[2] / laplace_approx_var
-    (len * ols + e_prior_mu / v_prior_mu) / (len + 1 / v_prior_mu)
+    e_prior_mu <- moments_prior_mu[1]; v_prior_mu <- moments_prior_mu[2]
+    (v_prior_mu * len * ols + laplace_approx_var * e_prior_mu) / (v_prior_mu * len + laplace_approx_var)
   } else {
     ols
   }

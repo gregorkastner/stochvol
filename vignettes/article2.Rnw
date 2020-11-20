@@ -861,6 +861,9 @@ Finally, one has the opportunity not to store the full vector $\hvec$ but only i
 The default behavior is to store every draw after the burn-in phase.
 
 \section[The factorstochvol package]{The \factorstochvol{} package} \label{sec:factorstochvol}
+
+%Temporarily removed from the vignette to resolve CRAN interdependencies between \stochvol{} and \factorstochvol{}.
+%For more information on this chapter, visit the vignette of \factorstochvol{}, please.
 %
 The most common workflow of using \factorstochvol{} for fitting multivariate factor SV models consists of the following steps:
 (1) Prepare the data,

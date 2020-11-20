@@ -115,7 +115,7 @@ List svsample_fast_cpp(
 
   // keep some arrays cached
   arma::vec data_demean = is_regression ? data - X * beta : data,
-            log_data2_normal = arma::log(arma::square(data_demean) / tau),  // standardized "data" (different for t-errors, "normal data")
+            log_data2_normal = arma::log(arma::square(data_demean) / tau + offset),  // standardized "data" (different for t-errors, "normal data")
             exp_h_half_inv;
   clamp_log_data2(log_data2_normal);
   const arma::vec conditional_mean(data.n_elem, arma::fill::zeros),
@@ -191,13 +191,13 @@ List svsample_fast_cpp(
       // update cached data arrays
       data_demean = data - X * beta;
       if (is_heavy_tail) {
-        log_data2_normal = arma::log(arma::square(data_demean) / tau);
+        log_data2_normal = arma::log(arma::square(data_demean) / tau + offset);
       } else {
-        log_data2_normal = arma::log(arma::square(data_demean));
+        log_data2_normal = arma::log(arma::square(data_demean) + offset);
       }
       clamp_log_data2(log_data2_normal);
     } else if (is_heavy_tail) {
-      log_data2_normal = arma::log(arma::square(data_demean) / tau);
+      log_data2_normal = arma::log(arma::square(data_demean) / tau + offset);
       clamp_log_data2(log_data2_normal);
     } else {
       ;  // no update needed
@@ -306,7 +306,7 @@ List svsample_general_cpp(
   // keep some arrays cached
   arma::vec data_demean = is_regression ? data - X * beta : data,
             data_demean_normal = data_demean / arma::sqrt(tau),  // standardized "data" (different for t-errors, "normal data")
-            log_data2_normal = arma::log(arma::square(data_demean_normal)),
+            log_data2_normal = arma::log(arma::square(data_demean_normal) + offset),
             exp_h_half_inv;
   clamp_log_data2(log_data2_normal);
   arma::ivec d = arma_sign(data_demean);
@@ -379,14 +379,14 @@ List svsample_general_cpp(
       data_demean = data - X * beta;
       d = arma_sign(data_demean);
       if (is_heavy_tail) {
-        log_data2_normal = arma::log(arma::square(data_demean) / tau);
+        log_data2_normal = arma::log(arma::square(data_demean) / tau + offset);
       } else {
-        log_data2_normal = arma::log(arma::square(data_demean));
+        log_data2_normal = arma::log(arma::square(data_demean) + offset);
       }
       clamp_log_data2(log_data2_normal);
     } else if (is_heavy_tail) {
       data_demean_normal = data_demean / arma::sqrt(tau);
-      log_data2_normal = arma::log(arma::square(data_demean_normal));
+      log_data2_normal = arma::log(arma::square(data_demean_normal) + offset);
       clamp_log_data2(log_data2_normal);
     } else {
       ;  // no update needed

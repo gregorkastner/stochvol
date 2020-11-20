@@ -69,7 +69,7 @@ namespace stochvol {
         proposal_sigma2 {_proposal_sigma2},
         proposal_sigma2_rw_scale {_proposal_sigma2_rw_scale},
         proposal_phi {_proposal_phi},
-        update {_update} {}
+        update (_update) {}
   };
 
   struct ExpertSpec_GeneralSV {
@@ -101,7 +101,7 @@ namespace stochvol {
         proposal_para {_proposal_para},
         adapt {_adapt},
         proposal_diffusion_ken {_proposal_diffusion_ken},
-        update {_update} {}
+        update (_update) {}
   };
 
 }

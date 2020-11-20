@@ -1,6 +1,12 @@
+Changes in Version 3.0.3:
+  - Bugfix in 'svsample' when the input data contains 0s
+
 Changes in Version 3.0.2:
   - Bugfix in the fast access functions 'svsample_fast_cpp' and
-    'svsample_general_cpp'
+    'svsample_general_cpp': dimensions were incorrect
+  - Bring out the adaptation object for 'svsample_general_cpp' to
+    the R level; used to be accessible from C++ only
+  - Update to the adaptation object in C++
 
 Changes in Version 3.0.1:
   - Bugfix for calls to 'svsample' with draws = 1

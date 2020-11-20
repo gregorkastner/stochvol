@@ -1,5 +1,9 @@
 context("Wrapper functions")
 
+test_that("zeroes do not interfere with execution", {
+  expect_message(svsample(c(0, y), draws = draws, burnin = burnin, quiet = TRUE), "Argument 'y' *")
+})
+
 test_that("svsample executes", {
   expect_warning(svsample(y, draws = draws, burnin = burnin, quiet = TRUE), NA) %>%
     expect_is("svdraws")

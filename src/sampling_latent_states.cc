@@ -100,12 +100,12 @@ LatentVector draw_latent(
 
   // Cholesky decomposition
   const auto cholesky_matrix = cholesky_tridiagonal(omega_diag, omega_offdiag);
-  const arma::vec& chol_diag = std::move(cholesky_matrix.chol_diag);
-  const arma::vec& chol_offdiag = std::move(cholesky_matrix.chol_offdiag);
+  const arma::vec& chol_diag = cholesky_matrix.chol_diag;
+  const arma::vec& chol_offdiag = cholesky_matrix.chol_offdiag;
 
   // Solution of Chol*x = covector ("forward algorithm")
   arma::vec htmp = forward_algorithm(chol_diag, chol_offdiag, covector);
-  htmp.transform( [](double h_elem) -> double { return h_elem + R::norm_rand(); });
+  htmp.transform( [](const double h_elem) -> double { return h_elem + R::norm_rand(); });
 
   // Solution of (Chol')*x = htmp ("backward algorithm")
   const arma::vec hnew = backward_algorithm(chol_diag, chol_offdiag, htmp);
