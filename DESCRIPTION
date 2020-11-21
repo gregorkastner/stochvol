@@ -15,7 +15,6 @@ Suggests:
     testthat (>= 2.3.2),
     magrittr (>= 1.5),
     knitr, LSD, RColorBrewer,
-    factorstochvol (>= 0.10.1),
     zoo
 LinkingTo: Rcpp, RcppArmadillo (>= 0.9.900)
 RoxygenNote: 7.1.1
