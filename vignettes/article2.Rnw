@@ -168,15 +168,15 @@ financial time series%
   WU Vienna University of Economics and Business\\
   Welthandelsplatz~1 / Building D4 / Level 4\\
   1020 Vienna, Austria\\
-  E-mail: \email{darjus.hosszejni@wu.ac.at}\\
+  E-mail: \email{Darjus.Hosszejni@wu.ac.at}\\
   URL: \url{http://statmath.wu.ac.at/~hosszejni/}
   \\\\
   Gregor Kastner\\
   Department of Statistics\\
   University of Klagenfurt\\
-  Universitätsstraße 65-67\\
+  Universit\"atsstraße 65-67\\
   9020 Klagenfurt, Austria\\
-  E-mail: \email{gregor.kastner@aau.at}\\
+  E-mail: \email{Gregor.Kastner@aau.at}\\
   URL: \url{http://statmath.wu.ac.at/~kastner/}
 }
 
@@ -193,12 +193,6 @@ knitr::opts_chunk$set(prompt = TRUE,
                       cache = TRUE,
                       fig.path = "Figures/article-")
 base::options(continue = "+  ", prompt = "R> ")
-#used_packages <- c("LSD", "RColorBrewer")
-#for (p in used_packages) {
-#  if (!require(p, character.only = TRUE)) {
-#    install.packages(p)
-#  }
-#}
 @
 
 %% -- Introduction -------------------------------------------------------------
@@ -213,6 +207,9 @@ base::options(continue = "+  ", prompt = "R> ")
 %% - Unless the expansions of abbreviations are proper names (like "Journal
 %%   of Statistical Software" above) they should be in sentence case (like
 %%   "generalized linear models" below).
+
+\section*{Preface}
+This vignette corresponds to a pre-print of the same name~\citep{thisarxiv}. At the time of this writing, the vignette excludes the fifth chapter in order to reduce dependency on other packages, and the version at hand might receive minor updates as time goes by. Further information about citing \pkg{stochvol} can be obtained in \proglang{R} by installing the package, e.g., through \code{install.packages("stochvol")}, and calling \code{citation("stochvol")}.
 
 \section[Introduction]{Introduction} \label{sec:intro}
 
