@@ -11,11 +11,9 @@ License: GPL (>= 2)
 Depends: R (>= 3.5)
 Imports: Rcpp (>= 1.0), coda (>= 0.19), graphics, stats, utils, grDevices
 Suggests: 
-    mvtnorm (>= 1.1-1),
+    mvtnorm,
     testthat (>= 2.3.2),
-    magrittr (>= 1.5),
-    knitr, LSD, RColorBrewer,
-    zoo
+    knitr
 LinkingTo: Rcpp, RcppArmadillo (>= 0.9.900)
 RoxygenNote: 7.1.1
 BuildResaveData: best

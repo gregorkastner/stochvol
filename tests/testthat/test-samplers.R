@@ -2,18 +2,15 @@ context("Samplers are correct")
 
 test_that("vanilla SV passes Geweke test", {
   skip_on_cran()
-  skip_if_not_installed(pkg = "magrittr", minimum_version = "1.5")
-  library("magrittr")
 
   # general helper functions
   increment_fun <- function (mu, phi, sigma) {
     function (h_t, eps) { mu + phi * (h_t - mu) + sigma * eps }
   }
   generate_h <- function (len, increment_fun, h0) {
-    increment_fun %>%
-    Reduce(rnorm(len), h0,
-           accumulate = TRUE) %>%
-    tail(-1)  # remove h0 from h
+    res <- Reduce(increment_fun, rnorm(len), h0,
+           accumulate = TRUE)
+    res <- tail(res, -1)  # remove h0 from h
   }
   omori_constants <- get_omori_constants()
   p <- omori_constants$prob

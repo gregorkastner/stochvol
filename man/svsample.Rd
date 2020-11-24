@@ -488,12 +488,12 @@ res <- svsample(y, draws = 30000, burnin = 10000,
                 parallel = "multicore", n_chains = 3, n_cpus = 2)
 
 # Plot using a color palette
-palette(rainbow(coda::nchain(para(res))))
+palette(rainbow(coda::nchain(para(res, "all"))))
 plot(res)
 
 # Use functionality from package 'coda'
 ## E.g. Geweke's convergence diagnostics
-coda::geweke.diag(para(res)[, c("mu", "phi", "sigma")])
+coda::geweke.diag(para(res, "all")[, c("mu", "phi", "sigma")])
 
 # Use functionality from package 'bayesplot'
 bayesplot::mcmc_pairs(res, pars = c("sigma", "mu", "phi", "h_0", "h_15"))

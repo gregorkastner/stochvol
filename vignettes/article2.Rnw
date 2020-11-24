@@ -559,7 +559,7 @@ ind <- which(exrates$date >= as.Date("2008-03-01") &
   exrates$date <= as.Date("2012-03-01"))
 CHF_price <- exrates$CHF[ind]
 @
-<<svrunmodel, results='hide', echo=TRUE>>=
+<<svrunmodel, eval=FALSE, echo=TRUE>>=
 <<presvrunmodel>>
 res_sv <- svsample(CHF_price, designmatrix = "ar1")
 @
@@ -584,7 +584,7 @@ Then, to estimate the constant mean model with heavy tailed SV residuals, we pas
 set.seed(2)
 CHF_logret <- 100 * logret(CHF_price)
 @
-<<svtrunmodel, echo=TRUE, results='hide'>>=
+<<svtrunmodel, echo=TRUE, eval=FALSE>>=
 <<presvtrunmodel>>
 res_svt <- svtsample(CHF_logret, designmatrix = "ar0")
 @
@@ -608,7 +608,7 @@ set.seed(3)
 X <- cbind(constant = 1,
   100 * logret(exrates$USD[ind]),
   100 * logret(exrates$JPY[ind]))
-res_svl <- svlsample(CHF_logret, designmatrix = X)
+res_svl <- svlsample(CHF_logret, designmatrix = X, thin = 10)
 @
 
 \subsection{Visualizing the results} \label{sec:svuse2}
@@ -747,7 +747,7 @@ They expect as their first argument the input data $\yvec_{[1:L]}$, which is of 
 For estimating the SV model in each time window $j=1,\dots,J$ in the moving or expanding window scheme, the sub-vector $\yvec_{[j:(t+j-1)]}$, or, respectively, $\yvec_{[1:(t+j-1)]}$, is taken as data and is used to predict $n_\text{ahead}\ge1$ time steps ahead.
 The width $t$ of the first time window can be determined from $L$, $J$, and $n_\text{ahead}$.
 The following example demonstrates how the rolling window sampling routines can be called in \stochvol{}.
-<<svroll, echo=TRUE, results='hide'>>=
+<<svroll, echo=TRUE, eval=FALSE>>=
 set.seed(5)
 res <- svsample_roll(CHF_logret, n_ahead = 1,
   forecast_length = 30,
@@ -769,7 +769,7 @@ The prior for $\nupar$ can be influenced in \fct{svtsample} and \fct{svtlsample}
 Finally, \fct{svlsample} and \fct{svtlsample} take the \code{numeric} sequence $(\rhopriorf,\rhopriors)$ through the input argument \code{priorrho}.
 
 The code snippet below shows all the default values of the prior hyperparameters. 
-<<printpriordefault, echo=TRUE, results='hide'>>=
+<<printpriordefault, echo=TRUE, eval=FALSE>>=
 svsample(CHF_logret, priormu = c(0, 100), priorphi = c(5, 1.5),
   priorsigma = 1, priorbeta = c(0, 10000))
 svtsample(CHF_logret, priormu = c(0, 100), priorphi = c(5, 1.5),
@@ -804,7 +804,7 @@ Additionally, \code{latent0\_variance} accepts the character value \code{"statio
 All four sampling methods accept the prior specification object through the input argument \code{priorspec}.
 
 All input arguments for \code{specify\_priors} are optional, their default values and how they are used is seen below.
-<<printpriorspecdefault, echo=TRUE, results='hide'>>=
+<<printpriorspecdefault, echo=TRUE, eval=FALSE>>=
 ps <- specify_priors(
   mu = sv_normal(mean = 0, sd = 100),
   phi = sv_beta(shape1 = 5, shape2 = 1.5),
@@ -850,7 +850,7 @@ Finally, in case ``SNOW'' is applied, the sampling routines optionally accept an
 As mentioned earlier, the sampling algorithms for the latent states $\hvec$ in \stochvol{} rely on a Gaussian mixture approximation as in~\citet{omori2007stochastic} and~\citet{kastner2014ancillarity}.
 The approximation tends to be very good, therefore the default setting is not to correct for model misspecification.
 However, this correction can be enabled in all of the sampling routines through the \code{expert} argument as shown for \fct{svsample} in the following.
-<<results='hide'>>=
+<<eval=FALSE>>=
 y <- svsim(50)$y
 svsample(y, expert = list(correct_model_misspecification = TRUE))
 @
@@ -862,7 +862,7 @@ The default behavior is to store every draw after the burn-in phase.
 
 \section[The factorstochvol package]{The \factorstochvol{} package} \label{sec:factorstochvol}
 
-For more information on the \factorstochvol{} package, please see its vignette on CRAN.
+For more information on \factorstochvol{}, please see the vignette attached to the package~\citep{factorstochvol}.
 %
 %The most common workflow of using \factorstochvol{} for fitting multivariate factor SV models consists of the following steps:
 %(1) Prepare the data,
@@ -1238,7 +1238,7 @@ We extended the work of~\citet{kastner2016dealing} to other SV models, including
 We showcased the features that are the most important to end users in \proglang{R}: estimation through the sampler functions, visualization, summary, and prediction methods.
 Due to its more involved nature, however, we did not include the description of the \proglang{C++} interface.
 Two functions called \fct{update\_fast\_sv} and \fct{update\_general\_sv} are exported and programmers have the possibility to access the samplers in \stochvol{} directly from \proglang{C++} after linking to the compiled package.
-For usage examples, see the implementations of \factorstochvol{} or \pkg{shrinkTVP} \citep{shrinktvp}.
+For usage examples, see the implementations of \factorstochvol{} or \pkg{shrinkTVP}~\citep{shrinktvp}.
 %
 \bibliography{ref}
 
