@@ -68,7 +68,7 @@ LatentVector draw_latent(
         omega_diag[0] = (Bh0inv + phi2) * sigma2inv;
         covector[0] = mu * (Bh0inv - phi*(1-phi)) * sigma2inv;
 
-        for (int j = 1; j < T; j++) {
+        for (unsigned int j = 1; j < T; j++) {
           omega_diag[j] = mix_varinv[r[j-1]] + (1+phi2)*sigma2inv; 
           covector[j] = (data[j-1] - mix_mean[r[j-1]])*mix_varinv[r[j-1]]
             + mu*(1-phi)*(1-phi)*sigma2inv;
@@ -85,7 +85,7 @@ LatentVector draw_latent(
         omega_diag[0] = Bh0inv + phi2;
         covector[0] = 0.;
 
-        for (int j = 1; j < T; j++) {
+        for (unsigned int j = 1; j < T; j++) {
           omega_diag[j] = mix_varinv[r[j-1]] * sigma2 + 1 + phi2;
           covector[j] = mix_varinv[r[j-1]] * sigma * (data[j-1] - mix_mean[r[j-1]] - mu);
         }

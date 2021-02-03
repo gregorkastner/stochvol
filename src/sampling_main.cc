@@ -60,8 +60,8 @@ List svsample_fast_cpp(
     const bool interweave,
     const double offset,
     const Rcpp::List& expert_in) {
-  const int T = data.size();
-  const int p = X.n_cols;
+  const unsigned int T = data.size();
+  const unsigned int p = X.n_cols;
 
   const PriorSpec prior_spec = list_to_priorspec(priorspec_in);
   const ExpertSpec_FastSV expert = list_to_fast_sv(expert_in, interweave);
@@ -266,8 +266,8 @@ List svsample_general_cpp(
     const Rcpp::List& expert_in) {
 
   const int N = burnin + draws;
-  const int T = data.size();
-  const int p = X.n_cols;
+  const unsigned int T = data.size();
+  const unsigned int p = X.n_cols;
 
   const PriorSpec prior_spec = list_to_priorspec(priorspec_in);
   const ExpertSpec_GeneralSV expert = list_to_general_sv(expert_in, correct_model_specification, interweave);

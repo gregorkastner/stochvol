@@ -95,24 +95,14 @@
 
 \graphicspath{{Figures/}}
 
-%% -- Article metainformation (author, title, ...) -----------------------------
-
-%% - \author{} with primary affiliation
-%% - \Plainauthor{} without affiliations
-%% - Separate authors by \And or \AND (in \author) or by comma (in \Plainauthor).
-%% - \AND starts a new line, \And does not.
 \author{Darjus Hosszejni\\[.3em]WU Vienna University\\[-.1em]of Economics and Business
 \And Gregor Kastner\\[.3em]University of Klagenfurt}
 \Plainauthor{Darjus Hosszejni, Gregor Kastner}
 
-%% - \title{} in title case
-%% - \Plaintitle{} without LaTeX markup (if any)
-%% - \Shorttitle{} with LaTeX markup (if any), used as running title
 \title{Modeling Univariate and Multivariate Stochastic Volatility in \proglang{R} with \stochvol{} and \factorstochvol}
 \Plaintitle{Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol}
 \Shorttitle{Modeling Stochastic Volatility in \proglang{R}}
 
-%% - \Abstract{} almost as usual
 \Abstract{
 Stochastic volatility (SV) models are nonlinear state-space models that enjoy increasing popularity for fitting and predicting heteroskedastic time series.
 However, due to the large number of latent quantities, their efficient estimation is non-trivial and software that allows to easily fit SV models to data is rare.
@@ -125,9 +115,6 @@ However, due to the large number of latent quantities, their efficient estimatio
   In the paper at hand, we provide a detailed discussion on Bayesian SV estimation and showcase the use of the new software through various examples.
 }
 
-%% - \Keywords{} with LaTeX markup, at least one required
-%% - \Plainkeywords{} without LaTeX markup (if necessary)
-%% - Should be comma-separated and in sentence case.
 \Keywords{%
 Bayesian inference,
 state-space model,
@@ -154,12 +141,6 @@ asymmetric return distribution,
 heavy tails,
 financial time series%
 }
-
-%% - \Address{} of at least one author
-%% - May contain multiple affiliations for each author
-%%   (in extra lines, separated by \emph{and}\\).
-%% - May contain multiple authors for the same affiliation
-%%   (in the same first line, separated by comma).
 
 \Address{
   Darjus Hosszejni\\
@@ -190,26 +171,17 @@ knitr::opts_chunk$set(prompt = TRUE,
                       error = FALSE,
                       message = FALSE,
                       echo = FALSE,
-                      cache = TRUE,
-                      fig.path = "Figures/article-")
-base::options(continue = "+  ", prompt = "R> ")
+                      cache = FALSE,
+                      fig.path = "Figures/jss3813-",
+                      tidy = FALSE)
+base::options(continue = "+  ", prompt = "R> ", width = 70,
+  useFancyQuotes = FALSE)
 @
 
-%% -- Introduction -------------------------------------------------------------
-
-%% - In principle "as usual".
-%% - But should typically have some discussion of both _software_ and _methods_.
-%% - Use \proglang{}, \pkg{}, and \code{} markup throughout the manuscript.
-%% - If such markup is in (sub)section titles, a plain text version has to be
-%%   added as well.
-%% - All software mentioned should be properly \cite-d.
-%% - All abbreviations should be introduced.
-%% - Unless the expansions of abbreviations are proper names (like "Journal
-%%   of Statistical Software" above) they should be in sentence case (like
-%%   "generalized linear models" below).
-
 \section*{Preface}
-This vignette corresponds to a pre-print of the same name~\citep{thisarxiv}. At the time of this writing, the vignette excludes the fifth chapter in order to reduce dependency on other packages, and the version at hand might receive minor updates as time goes by. Further information about citing \pkg{stochvol} can be obtained in \proglang{R} by installing the package, e.g., through \code{install.packages("stochvol")}, and calling \code{citation("stochvol")}.
+This vignette corresponds to the forthcoming article of the same name~\citep{thisjss}.
+The version at hand might receive minor updates as time goes by.
+Further information about citing \pkg{stochvol} can be obtained in \proglang{R} by installing the package, e.g., through \code{install.packages("stochvol")}, and calling \code{citation("stochvol")}.
 
 \section[Introduction]{Introduction} \label{sec:intro}
 
@@ -238,27 +210,25 @@ In Section~\ref{sec:stochvol}, we unveil the new samplers of the \stochvol{} pac
 We describe the \factorstochvol{} package in Section~\ref{sec:factorstochvol}, and then we conclude.
 
 \section{Univariate SV models}\label{sec:svmodels}
-%
+
 We begin by introducing the vanilla SV model with linear regressors, henceforth simply called the SV model.
 This is a minor but important extension of the SV model without regressors.
 We also settle the notation and establish a baseline model that we generalize and reuse throughout the manuscript.
 Consequently, we proceed with three generalized models: the SV model with Student's $t$~errors (SVt), the SV model with leverage (SVl), and their combination, the SV model with Student's $t$~errors and leverage (SVtl).
 Finally, we close the section after discussing prior distributions and Markov chain Monte Carlo (MCMC) sampling.
-%
+
 \subsection{Model specifications}\label{sec:unimodels}
-%
+
 The key feature of the SV model is its stochastic and time-varying specification of the variance evolution.
 In particular, the log-variance is assumed to follow an AR(1) process.
 This feature unites the following models.
-%
+
 \subsubsection{Vanilla SV with linear regressors}
-%
+
 Let $\yvec=(y_1,\dots,y_\leny)^\top$ denote a vector of observations.
 The SV model assumes the following structure for $\yvec$,
 \begin{equation}\label{eq:vanillasv}
   \begin{split}
-%    y_t\mid\bm x_t,\bm\beta,\hpar_t &\sim \Normal{\bm x_t\bm\beta}{\exp(\hpar_t)}, \\
-%    \hpar_{t+1}\mid\svpars,\hpar_t &\sim \Normal{\mupar+\phipar(\hpar_t-\mupar)}{\sigmapar^2},
     y_t &= \bm x_t\bm\beta + \exp(\hpar_t/2)\varepsilon_t, \\
     \hpar_{t+1} &= \mupar+\phipar(\hpar_t-\mupar) + \sigmapar\eta_t, \\
     \varepsilon_t &\sim \Normal{0}{1}, \\
@@ -270,17 +240,15 @@ The log-variance process $\hvec=(\hpar_1,\dots,\hpar_\leny)^\top$ is initialized
 $\bm X=(\bm x_1^\top,\dots,\bm x_\leny^\top)^\top$ is an $\leny\times\nreg$ matrix containing in its $t$th row the vector of $\nreg$ regressors at time $t$.
 The $\nreg$ regression coefficients are collected in $\bm\beta=(\beta_1,\dots,\beta_\nreg)^\top$.
 We refer to $\svpars=(\mupar,\phipar,\sigmapar)$ as the SV parameters: $\mupar$ is the level, $\phipar$ is the persistence, and $\sigmapar$ (also called \emph{volvol}) is the standard deviation of the log-variance.
-%
-\subsubsection{SV with Student's $t$ errors}
-%
+
+\subsubsection{SV with Student's t errors}
+
 Several authors have suggested to use non-normal conditional residual distributions for stochastic volatility modeling.
 Examples include the Student's $t$~distribution \citep{harvey1994multivariate}, the extended generalized inverse Gaussian \citep{silva2006extented}, (semi-)parametric residuals \citep{jensen2010bayesian,delatola2011bayesian}, or the generalized hyperbolic skew Student's $t$~distribution \citep{nakajima2012stochastic}.
 We implement Student's $t$~errors for the observation equation in \stochvol{}.
 Formally,
 \begin{equation}\label{eq:heavysv}
   \begin{split}
-%    y_t\mid\bm x_t,\bm\beta,\hpar_t,\nupar &\sim \Student{\nupar}{\bm x_t\bm\beta}{\exp(\hpar_t)}, \\
-%    \hpar_{t+1}\mid\svpars,\hpar_t &\sim \Normal{\mupar+\phipar(\hpar_t-\mupar)}{\sigmapar^2},
     y_t &= \bm x_t\bm\beta + \exp(\hpar_t/2)\varepsilon_t, \\
     \hpar_{t+1} &= \mupar+\phipar(\hpar_t-\mupar) + \sigmapar\eta_t, \\
     \varepsilon_t &\sim \Student{\nupar}{0}{1}, \\
@@ -291,16 +259,14 @@ where $\varepsilon_t$ and $\eta_t$ are independent.
 $\Student{\nupar}{a}{b}$ is the Student's $t$~distribution with $\nupar$ degrees of freedom, mean $a$, and variance $b$.
 The single difference between Equation~\ref{eq:vanillasv} and Equation~\ref{eq:heavysv} is that here the observations are conditionally $t$~distributed.
 Hence, Equation~\ref{eq:heavysv} generalizes Equation~\ref{eq:vanillasv} through the new parameter $\nupar$ as the Student's $t$~distribution converges in law to the standard normal distribution when $\nupar$ goes to infinity.
-%
+
 \subsubsection{SV with leverage}
-%
+
 Propositions for asymmetric innovations include non-parametric distributions~\citep{jensen2014estimating}, skewed distributions~\citep{nakajima2012stochastic}, and distributions featuring correlation with the variance process, also called the leverage effect~\citep{harvey1996estimation,jacquier2004bayesian}.
 We implement the leverage effect in the \stochvol{} package.
 Formally,
 \begin{equation}\label{eq:svleverage}
   \begin{split}
-%    \begin{pmatrix} y_t \\ \hpar_{t+1} \end{pmatrix} \;\Bigg|\; \hpar_t,\svlpars,\bm x_t,\bm\beta &\sim
-%    \Normal[2][1]{\begin{pmatrix} \bm x_t\bm\beta \\ \mupar+\phipar(\hpar_t-\mupar) \end{pmatrix}}{\bm\Sigma^\rhopar}, \\
     y_t &= \bm x_t\bm\beta + \exp(\hpar_t/2)\varepsilon_t, \\
     \hpar_{t+1} &= \mupar+\phipar(\hpar_t-\mupar) + \sigmapar\eta_t, \\
     \varepsilon_t &\sim \Normal{0}{1}, \\
@@ -314,9 +280,9 @@ where the correlation matrix of $(\varepsilon_t,\eta_t)$ is
 The vector $\svlpars=(\mupar,\phipar,\sigmapar,\rhopar)^\top$ collects the SV parameters.
 The new parameter compared to Equation~\ref{eq:vanillasv} is a correlation term $\rhopar$ which relates the residuals of the observations to the innovations of the variance process.
 Equation~\ref{eq:vanillasv} is therefore a special case of Equation~\ref{eq:svleverage} with a pre-fixed $\rhopar=0$.
-%
-\subsubsection{SV with Student's $t$ errors and leverage}
-%
+
+\subsubsection{SV with Student's t errors and leverage}
+
 Some authors have proposed the combination of $t$~errors with the leverage effect~\citep{jacquier2004bayesian,omori2007stochastic,nakajima2009leverage}.
 We implement the common generalization of Equation~\ref{eq:heavysv} and Equation~\ref{eq:svleverage}.
 Formally,
@@ -329,9 +295,9 @@ Formally,
   \end{split}
 \end{equation}
 where the correlation matrix of $(\varepsilon_t,\eta_t)$ is $\bm\Sigma^\rhopar$ as in Equation~\ref{eq:corrmatrix}.
-%
+
 \subsection{Prior distributions}\label{sec:svpriors}
-%
+
 We a priori assume $\bm\beta\sim\Normal[\nreg]{\betapriorf}{\betapriors}$, where $\Normal[l]{\bm b}{\bm B}$ is the $l$-dimensional normal distribution with mean vector $\bm b$ and variance-covariance matrix $\bm B$.
 For small values in the diagonal of $\betapriors$, this prior enforces shrinkage towards $\betapriorf$; for large values in the diagonal, the prior turns rather uninformative.
 By setting $\betapriorf$ to the zero vector and $\betapriors$ to a scaled identity matrix, the prior distribution becomes the Bayesian analogue to ridge regression~\citep[see, e.g.,][for a discussion of this and other shrinkage priors]{park2008bayesian}.
@@ -364,10 +330,10 @@ As a reviewer recommended, we follow~\citep{geweke1993bayesian} and equip $\nupa
 Finally, in the case of the SV models with leverage, we employ the translated and scaled beta distribution for $\rhopar\in(-1,1)$ as in~\citet{omori2007stochastic}, i.e., $(\rhopar+1)/2\sim\Betadist{\rhopriorf}{\rhopriors}$.
 We find that the posterior estimates of $\rhopar$ can be sensitive to its prior distribution, thus, some care is needed when setting the hyperparameters in practice.
 In our experience, slightly informative choices such as $\rhopriorf=\rhopriors\approx4$ work well in financial applications.
-%
+
 \subsection{Estimation}
-%
-All methods implemented in \stochvol{} and \factorstochvol{} rely on the Bayesian pradigm.\footnote{At this point we would also like to point out works aiming at estimating stochastic volatility and related models within the frequentist framework, see, e.g., \citet{abanto2017maximum, creal2017class}, and in particular the recent \pkg{stochvolTMB} package \citep{stochvolTMB}.}
+
+All methods implemented in \stochvol{} and \factorstochvol{} rely on the Bayesian paradigm.\footnote{At this point we would also like to point out works aiming at estimating stochastic volatility and related models within the frequentist framework, see, e.g., \citet{abanto2017maximum, creal2017class}, and in particular the recent \pkg{stochvolTMB} package \citep{stochvolTMB}.}
 Bayesian analysis aims to estimate model parameters through Bayesian updating.
 By using probability distributions to represent information, Bayes' theorem can be employed to update the prior information to the posterior information by incorporating the observations. This approach has the advantage of providing full uncertainty quantification in a probabilistic framework without relying on asymptotic results; moreover, so-called \emph{shrinkage priors} can be used to regularize the posterior and guard against overfitting. For an introductory textbook on Bayesian statistics, see, for instance, \citet{mcelreath2015statistical}.
 
@@ -395,16 +361,13 @@ For maximal computational effectiveness, all sampling algorithms are implemented
 Matrix computations make use of the efficient \proglang{C++} template library \pkg{Armadillo}~\citep{sanderson2016armadillo} through the \proglang{R} package \pkg{RcppArmadillo}~\citep{eddelbuettel2014rcpparmadillo}.\footnote{For explicit run time discussions please see \cite{kastner2014ancillarity} and \cite{hosszejni2019approaches}. For the possibility to use multi-core computing within a single MCMC chain and potential speed gains when doing so, please see \cite{kastner2019sparse}.}
 After sampling, the resulting \proglang{R} objects make use of plotting and summary functions of the \proglang{R} package \pkg{coda}~\citep{coda}.
 
-%Mirroring earlier versions of \stochvol, all new methods work with multiple model parameterizations.
-%Samplers based on different parameterizations explore the posterior space differently, and ASIS combines ``the best of different worlds'' by resampling $\svpars$ multiple times using multiple parameterizations~\citep{kastner2014ancillarity,hosszejni2019approaches}.
-%
 \section{Multivariate SV models} \label{sec:fsv}
-%
+
 A key difficulty accompanying dynamic covariance estimation is the relatively high number of unknowns compared to the number of observations.
 More precisely, letting $\dimy$ denote the cross-sectional dimension, the corresponding covariance matrix $\Sigmay_t$ contains $\dimy(\dimy+1)/2$ degrees of freedom, a quadratic term in $\dimy$.
 Table~\ref{tab:numpar1} illustrates the ``curse of dimensionality'' for various values of $\dimy$.
 One way to break this curse is to use latent factors and thereby achieve a sparse representation of $\Sigmay_t$.
-%
+
 \begin{table}[t]
   \centering
   \begin{tabular}{lll}
@@ -419,7 +382,7 @@ One way to break this curse is to use latent factors and thereby achieve a spars
 \end{table}
 
 \subsection{The factor SV model}
-% factor SV fun fact
+
 Latent factor models embody the idea that even high dimensional systems are driven by only a few sources of randomness.
 These few sources of randomness control a few factors, which in turn account for the interactions between the observations.
 Moreover, latent factor models provide an efficient tool for dynamic covariance matrix estimation.
@@ -432,7 +395,7 @@ where $\rank(\Sigmalow_t)=\nfac<\dimy$, and $\Sigmaidi_t$ is the diagonal matrix
 The rank assumption on the symmetric $\Sigmalow_t$ gives rise to the factorization $\Sigmalow_t=\Psi\Psi^\top$, where $\Psi\in\Real^{\dimy\times\nfac}$ contains $mr-\nfac(\nfac-1)/2$ free elements~\citep[see, e.g., the pivoted Cholesky algorithm in][]{higham1990analysis}.
 Hence, $\dimy(\nfac+1)-\nfac(\nfac-1)/2$ free elements remain in $\Sigmay_t$, now only linear in $\dimy$.
 Table~\ref{tab:numpar2} illustrates the ``broken curse of dimensionality'' for various values of $\dimy$ and $\nfac=4$.
-%
+
 \begin{table}[t]
   \centering
   \begin{tabular}{lll}
@@ -465,13 +428,10 @@ The covariance matrices $\Sigmaidi_t$ and $\Sigmafac_t$ are both diagonal repres
 \end{equation}
 For a more theoretical treatment of factor SV from a Bayesian point of view, the reader is referred to, e.g., \citet{pitt1999time}, \citet{aguilar2000bayesian}, \citet{chib2006analysis}, and \citet{han2006asset}.
 
-% Identification
 Based on Equation~\ref{eq:fsv}, we can reformulate Equation~\ref{eq:decomp} as
-%
 \begin{equation}\label{eq:vardecomp}
   \Sigmay_t=\Loadings\Sigmafac_t\Loadings^\top+\Sigmaidi_t,
 \end{equation}
-%
 from which several identification issues are apparent: the order, the sign, and the scale of the factors is unidentified.
 More specifically, for any generalized permutation matrix%
 \footnote{A generalized permutation matrix has the zero--non-zero pattern of a permutation matrix, but it is allowed to have any non-zero values instead of just ones.
@@ -481,9 +441,9 @@ $\Sigmafac^\prime_t=\Permmat\Sigmafac_t\Permmat^\top$.
 We resolve the ambiguity in the scale of the factors by fixing the level of their log-variance to zero, i.e., $\mufac_j=0$ for $j=1,\dots,\nfac$.
 Sign and order identification can be enforced through restrictions on the factor loadings matrix $\Loadings$.
 Several options are available in \factorstochvol{} for restricting $\Loadings$, for details see Section~\ref{sec:fsvuse2}.
-%
+
 \subsection{Prior distributions}\label{sec:fsvpriors}
-%
+
 Priors need to be specified for the mean, the latent log-variance processes, and for the factor loadings matrix $\Loadings$.
 We choose $\beta_j\sim\Normal{b_\beta}{B_\beta}$, independently for $j=1,\dots,\dimy$.
 For small values of $B_\beta$, this shrinks $\beta_j$ toward $b_\beta$; for large values of $B_\beta$, the prior is fairly uninformative.
@@ -511,20 +471,15 @@ Analogously, one could also consider column-wise shrinkage with element-wise ada
 \end{equation}
 with the corresponding prior $\lambda_j^2 \sim \Gammadist{c}{d}$.
 
-% The vignette says \factorstochvol{} uses a different prior for h_0 but the man page says differently. I trust the man page.
-%With one exception, we employ for the log-variance processes the prior distributions discussed in Section~\ref{sec:svpriors}.
-%In particular, we use slightly modified priors for the $\nfac$ latent volatilities in order to improve stability.
-%Our choice of $\hfac_{j0}\mid\sigmafac_{j}\sim\Normal{0}{B_j\sigmafac_j^2}$ for $j=1,\dots,\nfac$ does not depend on the persistence, and it thus turns out to induce more stable marginal posteriors for extremely persistent latent factor volatilities if we choose $B_{\dimy+j}$ to be small.
-%
 \subsection{Estimation}
-%
+
 Bayesian estimation in the factor SV model builds on the univariate vanilla SV implementations in \stochvol{} and features several levels of efficiency boosting. To alleviate the problem of potentially slow convergence in high dimensions, it is carried out via a sampler that utilizes several variants of ASIS. The sampling details implemented in \factorstochvol{} are described in \citet[using Gaussian priors for the factor loadings]{kastner2017efficient} as well as \citet[using hierarchical shrinkage priors for the factor loadings]{kastner2019sparse}.
 
 Similarly to \stochvol{} and in an attempt to make computation time bearable even in higher dimensions, \factorstochvol{}'s main sampler is written in \proglang{C++}.
-It uses the \proglang{R} package \pkg{Rcpp} to ease communication between \proglang{R} and \proglang{C++}. The univariate SV parts are borrowed from \stochvol{} and interfaced through its \proglang{C/C++}-level updating function \fct{update\_fast\_sv}. In doing so, moving between interpreted \proglang{R} code and compiled \proglang{C++} code at each MCMC iteration is avoided.
+It uses the \proglang{R} package \pkg{Rcpp} to ease communication between \proglang{R} and \proglang{C++}. The univariate SV parts are borrowed from \stochvol{} and interfaced through its \proglang{C}/\proglang{C++}-level updating function \fct{update\_fast\_sv}. In doing so, moving between interpreted \proglang{R} code and compiled \proglang{C++} code at each MCMC iteration is avoided.
 
 \section[The stochvol package]{The \stochvol{} package} \label{sec:stochvol}%
-%
+
 The \stochvol{} package provides means for fitting univariate SV, SVt, SVl, and SVtl models via its sampling routines \fct{svsample}, \fct{svtsample}, \fct{svlsample}, and \fct{svtlsample}, respectively.
 In the following, we describe a recommended workflow with \stochvol.
 First, we discuss estimation, visualization, and prediction using default settings.
@@ -538,7 +493,7 @@ Using the \code{exrates} data found in the package, we model the EURCHF exchange
 \subsubsection{AR(1) model with SV residuals}
 
 The first example is an AR(1) model with SV residuals, i.e., Equation~\ref{eq:vanillasv} turns into
-\begin{equation*}%\label{eq:ar1sv}
+\begin{equation*}
   \begin{split}
     y_t\mid y_{t-1},\beta_0,\beta_1,\hpar_t &\sim \Normal{\beta_0+\beta_1y_{t-1}}{\exp(\hpar_t)}, \\
     \hpar_{t+1}\mid\svpars,\hpar_t &\sim \Normal{\mupar+\phipar(\hpar_t-\mupar)}{\sigmapar^2}.
@@ -556,7 +511,7 @@ ind <- which(exrates$date >= as.Date("2008-03-01") &
   exrates$date <= as.Date("2012-03-01"))
 CHF_price <- exrates$CHF[ind]
 @
-<<svrunmodel, eval=FALSE, echo=TRUE>>=
+<<svrunmodel, results='hide', echo=TRUE>>=
 <<presvrunmodel>>
 res_sv <- svsample(CHF_price, designmatrix = "ar1")
 @
@@ -566,7 +521,7 @@ More generally, \code{designmatrix} can take \code{character} values of the form
 \subsubsection{Constant mean model with SVt residuals}
 
 The second example is a constant mean model with SVt residuals, i.e., Equation~\ref{eq:heavysv} becomes
-\begin{equation*}%\label{eq:ar0svt}
+\begin{equation*}
   \begin{split}
     y_t\mid\beta_0,\hpar_t,\nupar &\sim \Student{\nu}{\beta_0}{\exp(\hpar_t/2)}, \\
     \hpar_{t+1}\mid\svpars,\hpar_t &\sim \Normal{\mupar+\phipar(\hpar_t-\mupar)}{\sigmapar^2}.
@@ -581,7 +536,7 @@ Then, to estimate the constant mean model with heavy tailed SV residuals, we pas
 set.seed(2)
 CHF_logret <- 100 * logret(CHF_price)
 @
-<<svtrunmodel, echo=TRUE, eval=FALSE>>=
+<<svtrunmodel, echo=TRUE, results='hide'>>=
 <<presvtrunmodel>>
 res_svt <- svtsample(CHF_logret, designmatrix = "ar0")
 @
@@ -589,7 +544,7 @@ res_svt <- svtsample(CHF_logret, designmatrix = "ar0")
 \subsubsection{Multiple regression with SVl residuals}
 
 The third example is a multiple regression model with an intercept, two regressors, and SVl residuals; that is, Equation~\ref{eq:svleverage} turns into
-\begin{equation*}%\label{eq:regsvl}
+\begin{equation*}
   \begin{split}
     \begin{pmatrix} y_t \\ \hpar_{t+1} \end{pmatrix} \;\Bigg|\; \hpar_t,\svlpars,\begin{pmatrix} x_{t1} \\ x_{t2} \end{pmatrix},\beta_0,\begin{pmatrix} \beta_1 \\ \beta_2 \end{pmatrix} &\sim
     \Normal[2][1]{\begin{pmatrix} \beta_0+\beta_1x_{t1}+\beta_2x_{t2} \\ \mupar+\phipar(\hpar_t-\mupar) \end{pmatrix}}{\bm\Sigma^\rhopar}, \\
@@ -602,16 +557,13 @@ To estimate a multiple regression model using \stochvol, we need to prepare a \c
 We create an intercept as the first column of $\bm X$, and we set the second and the third columns to the EURUSD log returns and the EURJPY log returns, respectively; finally, we use the columns of $\bm X$ as covariates in the multiple regression.
 <<svlrunmodel, echo=TRUE, eval=TRUE, dependson="presvtrunmodel">>=
 set.seed(3)
-X <- cbind(constant = 1,
-  100 * logret(exrates$USD[ind]),
+X <- cbind(constant = 1, 100 * logret(exrates$USD[ind]),
   100 * logret(exrates$JPY[ind]))
-res_svl <- svlsample(CHF_logret, designmatrix = X, thin = 10)
+res_svl <- svlsample(CHF_logret, designmatrix = X)
 @
 
 \subsection{Visualizing the results} \label{sec:svuse2}
-%
-% plot
-% summary
+
 Often, the joint posterior distribution of model parameters and latent quantities mark the goal of a Bayesian analysis.
 To inspect it, one can look at summary statistics and various types of visualizations of marginal posterior distributions.
 Also, it is recommended to examine the Markov chain for possible convergence issues -- this happens usually by investigating trace plots of posterior quantities.
@@ -619,20 +571,18 @@ For this reason, inspired by the \pkg{coda} package, \stochvol{} provides its ow
 In order to introduce the tools that \stochvol{} provides for analyzing MCMC output, we briefly examine the results of the third example (multiple regression with SVl errors) in the remaining part of the section.
 
 First, we plot the output of the estimation.
-<<svlplot, echo=TRUE, dependson="svlrunmodel", fig.height=4>>=
-plot(res_svl, showobs = FALSE,
-     dates = exrates$date[ind[-1]])
+<<svlplot, echo=TRUE, dependson="svlrunmodel", fig.height=4, results='hide'>>=
+plot(res_svl, showobs = FALSE, dates = exrates$date[ind[-1]])
 @
 The result is shown in Figure~\ref{fig:svlall}.
 We see in the first row a summary of the posterior density of the volatility. Apart from its median, we also receive a quantification of the uncertainty through the 5\% and the 95\% quantiles at each time point.
 In the second row, we can follow the evolution of the Markov chain of the SV parameters. In this example, they are $\mupar$, $\phipar$, $\sigmapar$, and $\rhopar$.
-%Note, that in the second example with heavy tails, the plot shows $\nupar$ instead of $\rhopar$.
 Lastly, we see prior and posterior density plots of the parameters in the third row in gray and black, respectively.
 They show high persistence and significant leverage.
-%
+
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\textwidth]{article-svlplot-1.pdf}
+  \includegraphics[width=\textwidth]{jss3813-svlplot-1.pdf}
   \caption{The default plot of an estimated model.
   The top row shows a summary of the posterior of the daily volatility (in percent) $100\exp(\bm h/2)$ through its median (black) and 5\% and 95\% quantiles (gray).
   The remaining panels summarize the Markov chains of the parameters $\mupar$, $\phipar$, $\sigmapar$, and $\rhopar$.
@@ -641,21 +591,19 @@ They show high persistence and significant leverage.
 \end{figure}
 
 Next, we observe the AR coefficients.
-<<svlbetaplot, echo=2, dependson="svlrunmodel", fig.width=6.7, fig.height=3.5>>=
-opar <- par(mar = c(2.5, 1.5, 0.5, 0.5), mfrow = c(3, 2), mgp = c(1.7, 0.5, 0))
+<<svlbetaplot, echo=2, dependson="svlrunmodel", fig.width=6.7, fig.height=3.5, results='hide'>>=
+par(mar = c(2.5, 1.5, 0.5, 0.5), mfrow = c(3, 2), mgp = c(1.7, 0.5, 0))
 for (i in seq_len(3)) {
   coda::traceplot(svbeta(res_svl)[, i])
   coda::densplot(svbeta(res_svl)[, i], show.obs = FALSE)
 }
-par(opar)
 @
 The result is shown in Figure~\ref{fig:svlbeta}.
 On the left hand side, we do not spot any signs of convergence or mixing problems in the trace plots.
 On the right hand side, we see that none of the posterior densities of $\beta_0$, $\beta_1$, and $\beta_2$ concentrate around 0, hence the covariates seem to have an impact on the dependent variable.
-%
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\textwidth]{article-svlbetaplot-1}
+  \includegraphics[width=\textwidth]{jss3813-svlbetaplot-1}
   \caption{Trace plots and estimated kernel densities of posterior draws from $p(\bm\beta\mid\bm y)$.}
   \label{fig:svlbeta}
 \end{figure}
@@ -682,27 +630,23 @@ Note that we need 25 days of price data to obtain 24 returns.
 <<svlpredict, echo=TRUE, eval=TRUE>>=
 set.seed(4)
 pred_ind <- seq(tail(ind, 1), length.out = 25)
-pred_X <- cbind(constant = 1,
-  100 * logret(exrates$USD[pred_ind]),
+pred_X <- cbind(constant = 1, 100 * logret(exrates$USD[pred_ind]),
   100 * logret(exrates$JPY[pred_ind]))
 pred_svl <- predict(res_svl, 24, newdata = pred_X)
 @
-
 As we have access to the entire distribution of future log returns, we can quantify the uncertainty around our predictions through quantiles.
 In the following code snippet, we visualize the $k$-step-ahead predictive distributions for $k=1,\dots,24$, along with the truly observed values.
 The result is in Figure~\ref{fig:svlpred}.
-<<plotsvlpred, echo=TRUE, eval=TRUE, fig.height=3.5, fig.width=10>>=
-opar <- par(mgp = c(1.7, 0.5, 0))
+<<plotsvlpred, echo=2:4, eval=TRUE, fig.height=3.5, fig.width=10, results='hide'>>=
+par(mgp = c(1.7, 0.5, 0))
 obs_CHF <- 100 * logret(exrates$CHF[pred_ind])
-ts.plot(cbind(t(apply(predy(pred_svl), 2, quantile, c(0.05, 0.5, 0.95))),
-  obs_CHF), xlab = "Periods ahead", lty = c(rep(1, 3), 2),
+qs <- t(apply(predy(pred_svl), 2, quantile, c(0.05, 0.5, 0.95)))
+ts.plot(cbind(qs, obs_CHF), xlab = "Periods ahead", lty = c(rep(1, 3), 2),
   col = c("gray80", "black", "gray80", "red"))
-par(opar)
 @
-%
 \begin{figure}[t]
   \centering
-  \includegraphics[trim=40 38 28 58, clip, width=\textwidth]{article-plotsvlpred-1}
+  \includegraphics[trim=40 38 28 58, clip, width=\textwidth]{jss3813-plotsvlpred-1}
   \caption{Multi-step ahead predictive distributions (solid, gray and black) and observations (dashed, red).}
   \label{fig:svlpred}
 \end{figure}
@@ -719,7 +663,7 @@ Its density, also called the \emph{predictive density}, is defined as
 \begin{equation}\label{eq:predictive-density}
   p(y_{t+1}\mid\bm{y^o}_{[1:t]})=\int_{\bm{\mathcal{K}}}p(y_{t+1}\mid\bm{y^o}_{[1:t]}, \bm\kappa) p(\bm\kappa\mid\bm{y^o}_{[1:t]}) \text{d}\bm\kappa,
 \end{equation}
-where $\bm\kappa$ collects all unobserved variables, i.e.\ $\bm\kappa=(\mupar,\phipar,\sigmapar,\rhopar,\nupar,\hvec,\bm\beta)^\top$ in the most general case of SVtl, and the domain of integration $\bm{\mathcal{K}}$ is the set of all possible values for $\bm\kappa$.
+where $\bm\kappa$ collects all unobserved variables, i.e., $\bm\kappa=(\mupar,\phipar,\sigmapar,\rhopar,\nupar,\hvec,\bm\beta)^\top$ in the most general case of SVtl, and the domain of integration $\bm{\mathcal{K}}$ is the set of all possible values for $\bm\kappa$.
 We follow~\citet{geweke2010comparing} in our notation by using a superscript $\bm o$ for the vector of observed values $\bm{y^o}_{[1:t]}=(y_1,y_2,\dots,y_t)^\top$.
 Equation~\ref{eq:predictive-density} can be seen as the integration of the predictive likelihood over the posterior distribution of all parameters and therefore it accounts for posterior parameter uncertainty for the predicted values.
 
@@ -744,18 +688,16 @@ They expect as their first argument the input data $\yvec_{[1:L]}$, which is of 
 For estimating the SV model in each time window $j=1,\dots,J$ in the moving or expanding window scheme, the sub-vector $\yvec_{[j:(t+j-1)]}$, or, respectively, $\yvec_{[1:(t+j-1)]}$, is taken as data and is used to predict $n_\text{ahead}\ge1$ time steps ahead.
 The width $t$ of the first time window can be determined from $L$, $J$, and $n_\text{ahead}$.
 The following example demonstrates how the rolling window sampling routines can be called in \stochvol{}.
-<<svroll, echo=TRUE, eval=FALSE>>=
+<<svroll, echo=TRUE, results='hide'>>=
 set.seed(5)
-res <- svsample_roll(CHF_logret, n_ahead = 1,
-  forecast_length = 30,
-  refit_window = "moving",
-  calculate_quantile = c(0.01, 0.05),
+res <- svsample_roll(CHF_logret, n_ahead = 1, forecast_length = 30,
+  refit_window = "moving", calculate_quantile = c(0.01, 0.05),
   calculate_predictive_likelihood = TRUE)
 @
 Argument \code{n\_ahead} is used to set $n_\text{ahead}$, \code{forecast\_length} is used to set $J$, and \code{refit\_window} expects either \code{"moving"} or \code{"expanding"} to set the rolling window scheme to moving or expanding, respectively.
 Argument \code{calculate\_quantile} expects a vector of numbers between 0 and 1; the numbers are interpreted as the quantiles to be predicted.
 Furthermore, if \code{calculate\_predictive\_likelihood} is set to \code{TRUE}, the function estimates the predictive likelihood.
-Lastly, the output \code{res} is a list of length $J$, i.e.\ one element for each time window.
+Lastly, the output \code{res} is a list of length $J$, i.e., one element for each time window.
 It contains the respective posterior quantile and predictive likelihood results together with all posterior parameter draws for $\bm\kappa$.
 
 \subsection{Specifying the prior hyperparameters}
@@ -766,7 +708,7 @@ The prior for $\nupar$ can be influenced in \fct{svtsample} and \fct{svtlsample}
 Finally, \fct{svlsample} and \fct{svtlsample} take the \code{numeric} sequence $(\rhopriorf,\rhopriors)$ through the input argument \code{priorrho}.
 
 The code snippet below shows all the default values of the prior hyperparameters. 
-<<printpriordefault, echo=TRUE, eval=FALSE>>=
+<<printpriordefault, echo=TRUE, results='hide'>>=
 svsample(CHF_logret, priormu = c(0, 100), priorphi = c(5, 1.5),
   priorsigma = 1, priorbeta = c(0, 10000))
 svtsample(CHF_logret, priormu = c(0, 100), priorphi = c(5, 1.5),
@@ -781,14 +723,6 @@ svtlsample(CHF_logret, priormu = c(0, 100), priorphi = c(5, 1.5),
 As an alternative to the concise interface above, a broader set of prior distributions can be specified via an object created by the \fct{specify\_priors} function.
 The function has an input argument for each model parameter: \code{mu}, \code{phi}, \code{sigma2}, \code{nu}, \code{rho}, \code{beta}, and additionally one for the variance of $\hpar_0$ called \code{latent0\_variance}.
 There is a list of accompanying functions that create distributions in \stochvol{}:
-%\code{sv\_beta(shape1, shape2)} creates $\Betadist{\texttt{shape1}}{\texttt{shape2}}$,
-%\code{sv\_constant(value)} creates the degenerate Dirac distribution with a constant value \code{value},
-%\code{sv\_normal(mean, sd)} creates $\Normal{\texttt{mean}}{\texttt{sd}^2}$,
-%\code{sv\_mulinormal(mean, precision}} creates $\Normal[k]{\texttt{mean}}{\texttt{precision}^{-1}}$, where $k$ is the dimensionality of \code{mean},
-%\code{sv\_exponential(rate)} creates $\Exponential{\texttt{rate}}$,
-%\code{sv\_gamma(shape, rate)} creates $\Gamma{\texttt{shape}}{\texttt{rate}}$,
-%\code{sv\_inverse\_gamma(shape, scale)} creates an inverse gamma distribution with shape \code{shape} and scale \code{scale},
-%and \code{sv\_infinity} is used to set the degrees of freedom parameter of the Student's $t$-distribution to infinity, hence turning the distribution into a normal distribution.
 \fct{sv\_beta} has arguments \code{shape1} and \code{shape2} and it is accepted for \code{phi} and \code{rho};
 \fct{sv\_constant} has argument \code{value} and it is accepted for \code{mu}, \code{phi}, \code{sigma2}, \code{nu}, \code{rho}, and \code{latent0\_variance};
 \fct{sv\_normal} has arguments \code{mean} and \code{sd} and it is accepted for \code{mu} and \code{phi};
@@ -801,20 +735,17 @@ Additionally, \code{latent0\_variance} accepts the character value \code{"statio
 All four sampling methods accept the prior specification object through the input argument \code{priorspec}.
 
 All input arguments for \code{specify\_priors} are optional, their default values and how they are used is seen below.
-<<printpriorspecdefault, echo=TRUE, eval=FALSE>>=
-ps <- specify_priors(
-  mu = sv_normal(mean = 0, sd = 100),
-  phi = sv_beta(shape1 = 5, shape2 = 1.5),
-  sigma2 = sv_gamma(shape = 0.5, rate = 0.5),
-  nu = sv_infinity(),
-  rho = sv_constant(0),
-  latent0_variance = "stationary",
-  beta = sv_multinormal(mean = 0, sd = 10000, dim = 1))
+<<printpriorspecdefault, echo=TRUE, results='hide'>>=
+ps <- specify_priors(mu = sv_normal(mean = 0, sd = 100),
+  phi = sv_beta(shape1 = 5, shape2 = 1.5), rho = sv_constant(0),
+  sigma2 = sv_gamma(shape = 0.5, rate = 0.5), nu = sv_infinity(),
+  beta = sv_multinormal(mean = 0, sd = 10000, dim = 1),
+  latent0_variance = "stationary")
 svsample(CHF_logret, priorspec = ps)
 @
 
-
 \subsection{Setting up the Markov chain}
+
 When conducting Bayesian inference using an MCMC sampling scheme, the number of draws from the posterior distribution, the length of the so-called burn-in phase, the initial values of the Markov chain, and the various strategies of storing the results are all of general interest.
 The input arguments \code{draws} and \code{burnin} settle the first two points.
 A sample size of \code{burnin + draws} is acquired from the posterior distribution out of which the first \code{burnin} number of draws are thrown away.
@@ -842,12 +773,11 @@ Additionally, arguments \code{parallel}, \code{n\_cpus}, and \code{cl} can be us
 To overwrite the default sequential execution strategy, \code{parallel} is to be set either to \code{"snow"}, to employ the so-called ``SNOW'' clusters, or to \code{"multicore"} to use the ``multicore'' type computation~\citep{rlanguage}.
 Next, argument \code{n\_cpus} should be set to the physical number of parallel processing units to be used.
 Finally, in case ``SNOW'' is applied, the sampling routines optionally accept an already running ``SNOW'' cluster through argument \code{cl}.
-%\footnote{Note in addition that some linear algebra backends such as Intel MKL or BLAS support native parallelization of matrix operations which will be used by \stochvol{} and \factorstochvol{} if \proglang{R} is properly linked against these.}
 
 As mentioned earlier, the sampling algorithms for the latent states $\hvec$ in \stochvol{} rely on a Gaussian mixture approximation as in~\citet{omori2007stochastic} and~\citet{kastner2014ancillarity}.
 The approximation tends to be very good, therefore the default setting is not to correct for model misspecification.
 However, this correction can be enabled in all of the sampling routines through the \code{expert} argument as shown for \fct{svsample} in the following.
-<<eval=FALSE>>=
+<<results='hide'>>=
 y <- svsim(50)$y
 svsample(y, expert = list(correct_model_misspecification = TRUE))
 @
@@ -859,375 +789,300 @@ The default behavior is to store every draw after the burn-in phase.
 
 \section[The factorstochvol package]{The \factorstochvol{} package} \label{sec:factorstochvol}
 
-For more information on \factorstochvol{}, please see the vignette attached to the package~\citep{factorstochvol}.
-%
-%The most common workflow of using \factorstochvol{} for fitting multivariate factor SV models consists of the following steps:
-%(1) Prepare the data,
-%(2) decide on an identification structure,
-%(3) specify the prior hyperparameters,
-%(4) run the sampler,
-%(5) investigate the output and visualize the results, and
-%(6) predict (if required).
-%These steps are described in detail in the following sections.
-%%
-%\subsection{Preparing the data} \label{sec:fsvuse1}
-%%
-%The workhorse in \factorstochvol{} is the sampling function \fct{fsvsample}. It expects the data to come in form of a matrix $\bm Y=(\yvec_1,\dots,\yvec_\leny)^\top$ with $\leny$ rows and $\dimy$ columns.
-%For illustration, we use the exchange rate data set in \stochvol{} which contains $3140$ daily observations of exchanges rates for $23$ currency pairs against EUR, ranging from March 3, 2000 to April 4, 2012.
-%To keep the analysis simple and computation times moderate, we however only model the last $1001$ days of the first six series in alphabetical order (Australian dollar, Canadian dollar, Swiss franc, Czech koruna, Danish krone, Great British pound) for further analysis.
-%Instead of using the nominal exchange rates we compute log returns. This leaves us with a data set of size $n = 1000$ and $m = 6$.
-%The data is prepared using the code snippet below and visualized in Figure~\ref{fig:exrates} using the \pkg{zoo} package \citep{zoo}.
-%
-%<<fsvprepdata, echo=TRUE, fig.width=10, fig.height=5>>=
-%library("factorstochvol")
-%library("zoo")
-%data("exrates", package = "stochvol")
-%m <- 6
-%n <- 1000
-%y <- 100 * logret(tail(exrates[, seq_len(m)], n + 1))
-%y <- zoo(y, order.by = tail(exrates$date, n))
-%plot(y, main = "", xlab = "Time")
-%@
-%%
-%\begin{figure}[t]
-%  \centering
-%  \includegraphics[trim=5 40 20 40, clip, width=\textwidth]{article-fsvprepdata-1}
-%  \caption{Percentage log returns of six EUR exchange rates.}
-%  \label{fig:exrates}
-%\end{figure}
-%%
-%\subsection{Deciding on an identification structure}\label{sec:fsvuse2}
-%%
-%The likelihood in factor models is invariant to certain factor transformations such as reordering of factors and their loadings or sign switches thereof. In addition to this, it is often multimodal. Consequently, identifying the factor loadings is far from  trivial.
-%The most common way to address this issue in factor SV models is to impose a lower-diagonal factor loadings matrix where all elements above the diagonal are set to zero \citep[e.g.,][]{aguilar2000bayesian, chib2006analysis, han2006asset, zhou2014bayesian}.
-%To use this constraint in \factorstochvol, the argument \code{restrict = "upper"} can be passed to the main sampling function \fct{fsvsample}.
-%Evidently, this practice imposes an order dependence, as, e.g., the first variable is not allowed to load on anything else but the first factor.
-%
-%A rather ad hoc method for automatically ordering the data is implemented in the helper function \fct{preorder}.
-%After a maximum likelihood factor model fit to the data (using \fct{factanal} from the \pkg{stats} package with the default \code{varimax} rotation), the series are ordered as follows: The variable with the highest loading on factor 1 is placed first, the variable with the highest loading on factor 2 second (unless this variable is already placed first, in which case the variable with the second highest loading is taken), et cetera.
-%For the data set at hand, this would imply the following ordering for a two-factor model.
-%%
-%<<preorder, echo=TRUE>>=
-%preorder(y, factors = 2)
-%@
-%%
-%According to this algorithm, the second series should be placed first and the third series should be placed second. Thereafter, the alphabetical ordering remains.
-%%
-%To achieve this effect without reordering the data, a \code{logical} matrix of size $\dimy \times r$ can be passed to \fct{fsvsample} via \code{restrict}, where the entry \code{TRUE} means that this element is restricted to zero; \code{FALSE} means that it is to be estimated from the data.
-%Similarly to \fct{preorder}, the function \fct{findrestrict} tries to automate this procedure.
-%Again, the maximum likelihood estimates from a static factor analysis are used; however, \fct{findrestrict} uses a slightly different algorithm than the one above:
-%The variable with the lowest absolute loadings on factors $2, 3, \dots, r$ (relative to factor 1) is determined to lead the first factor, the variable with the lowest absolute loadings on factors $3, 4, \dots, r$ (relative to factors 1 and 2) is placed second, et cetera.
-%Below is the result for the data set at hand.
-%%
-%<<findrestrict, echo=TRUE>>=
-%findrestrict(y, factors = 2)
-%@
-%%
-%If \fct{fsvsample} is called with the argument \code{restrict = "auto"}, it automatically invokes \fct{findrestrict} with the appropriate number of factors.
-%Using \code{restrict = "none"} (the default) causes the sampler not to place any constraints on the loadings matrix; thus, the resulting posterior draws may be unstable or suffer from multiple local modes.
-%If, however, inference on the factor loadings themselves is not the primary concern of the analysis, leaving the factor loadings unidentified may be the preferred option.
-%This is in particular the case when inference for the covariance matrix is sought, as this only depends on $\Loadings$ through the rotation-invariant transformation of Equation~\ref{eq:vardecomp}.
-%For a more elaborate discussion of these issues, we refer the reader to \citet{sentana2001identification} who discuss automatic identification through hetero\-skedasticity. A comparison of log predictive scores under different identification schemes for factor SV models is given in \citet{kastner2017efficient}; see also \citet{fruhwirth2018sparse} for related issues in static factor models.
-%To continue with the current example, we chose not to place any a priori restrictions on the factor loadings matrix while using a row-wise normal-gamma shrinkage prior on the factor loadings matrix \citep[cf.][]{kastner2019sparse}.
-%
-%\subsection{Specifying prior hyperparameters} \label{sec:fsvuse3}
-%% priorfacload
-%% columnwise
-%% priorng
-%Apart from the obvious prior choice about the number of factors and the identification scheme discussed above, a number of hyperparameter choices are available in \factorstochvol.
-%Regarding the log-variance processes, the interface is analogous to that of \fct{svsample}.
-%In the following, $i=1,\dots,\dimy$ and $j=1,\dots,\nfac$ index the idiosyncratic and the factor log-variance processes, respectively.
-%The pair of common prior hyperparameters $(b_\beta, B_\beta)$ can be passed as a sequence of length two to \code{priorbeta}.
-%The common prior of $\muidi_i$ can be set by passing a sequence of length two -- the mean and the standard deviation of the normal distribution -- to \code{priormu};
-%the common priors of $\phiidi_i$ and $\phifac_j$ can also be set by passing sequences of length two -- the parameters of the corresponding beta distribution -- to \code{priorphiidi} and to \code{priorphifac}, respectively;
-%similarly, the common priors of $\sigmaidi_i$ and $\sigmafac_j$ can be specified via the arguments \code{priorsigmaidi} and \code{priorsigmafac}, respectively, that accept as positive numbers the scale $\sigmaprior$ of the corresponding gamma distribution.
-%
-%As discussed in Section~\ref{sec:fsvpriors}, \factorstochvol{} offers three specifications as priors for $\Loadings$, controlled through the argument \code{priorfacloadtype}. To use the first option (\code{priorfacloadtype = "normal"}), one needs to fix the values of $\tau_{ij}$ a priori. The user can pass these fixed values to \fct{fsvsample} via the argument \code{priorfacload}, either as an $\dimy\times\nfac$ matrix with positive entries or as a single positive number which will be recycled accordingly.
-%For the second option, the normal gamma prior with row-wise or column-wise shrinkage (\code{priorfacloadtype = "rowwiseng"} and \code{priorfacloadtype = "colwiseng"}, respectively), the value of \code{priorfacload} is then interpreted as the shrinkage parameter $a$. Both specifications of the normal gamma prior need the values $c$ and $d$. They can be set as a two-element vector passed to the argument \code{priorng}.
-%
-%%All the default priors are shown below.
-%%<<fsvsampleprior, eval=TRUE, echo=TRUE>>=
-%%args(fsvsample)
-%%@
-%
-%\subsection{Running the MCMC sampler}
-%
-%Running the sampler corresponds to invoking \fct{fsvsample}. Apart from the prior settings discussed above, its most important arguments are listed below with the default value in brackets. For a complete list of all arguments and more details, see \code{?fsvsample}.
-%\begin{itemize}
-%  \item \code{y}: the data;
-%  \item \code{factors} [\code{1}]: the number of factors;
-%  \item \code{draws} [\code{1000}]: the number of MCMC samples to be drawn after burnin;
-%  \item \code{thin} [\code{1}]: the amount of thinning (every \code{thin}\textsuperscript{th} draw is kept);
-%  \item \code{burnin} [\code{1000}]: the length of the burn-in period, i.e.\ the number of MCMC draws to be discarded before the samples are considered to emerge from the stationary distribution,
-%  \item \code{zeromean} [\code{TRUE}]: a logical value indicating whether $\bm\beta$ is to be estimated from the data or whether $\bm\beta$ is set to zero (the default);
-%  \item \code{keeptime} [\code{"last"}]: either \code{"all"}, meaning that all latent log volatilities are being monitored at all points in time, or \code{"last"}, meaning that the latent log volatility draws are only stored at $t = n$, the last point in time; the latter setting is the default to avoid excessive memory usage in higher dimensions;
-%  \item \code{heteroskedastic} [\code{TRUE}]: indicator(s) to turn off stochastic volatility for the idiosyncratic variances, the factor variances, or both;
-%  \item \code{samplefac} [\code{TRUE}]: indicator to turn off sampling of the factors; useful to work with observed instead of latent factors \citep[see][for a use case of this]{kastner2019sparse};
-%  \item \code{runningstore} [\code{6}]: to avoid having to store all MCMC draws, \code{fsvsample}'s default is to compute and store the first two ergodic moments of some interesting quantities (namely log variances, factors, volatilities, covariance matrices, correlation matrices, communalities) only; the default (\code{runningstore = 6}) is to compute and store everything; however, one can set \code{runningstore} to a lower number to save computation time; the argument \code{runningstoremoments} [\code{2}] can further be used to modify the number of moments to be stored;
-%  \item \code{runningstorethin} [\code{10}]: indicates how often ergodic moments should be calculated, where \code{1} means that this should be done at every iteration and higher numbers lessen both runtime as well as accuracy;
-%  \item \code{quiet} [\code{FALSE}]: a logical indicator determining the verbosity of \code{fsvsample}.
-%\end{itemize}
-%
-%For our illustrative example, most settings are left at their default values. The number of factors is increased from one to two, instead of 1000 we sample 10000 draws, we estimate a constant mean, a thinning of 10 is used, and \code{quiet} is set to \code{TRUE}.
-%
-%<<runmodel, echo=TRUE>>=
-%set.seed(1)
-%res <- fsvsample(y, factors = 2, draws = 10000,
-%  zeromean = FALSE, thin = 10, quiet = TRUE)
-%@
-%
-%
-%\subsection{Investigating the output and visualizing the results}
-%
-%The resulting object 
-%<<printrres, echo = TRUE>>=
-%res
-%@
-%holds a rich amount of information. In particular, it contains
-%\begin{itemize}
-%  \item draws of certain posterior quantities such as the factors $\fvec$, the factor loadings $\Loadings$, the various factor and idiosyncratic SV parameters, the latent factor and idiosyncratic log variances $\bm{\hfac}$ and $\bm{\hidi}$, and the intercept $\bm\beta$,
-%  \item configuration settings such as the number of draws, potential restrictions on the loadings matrix, prior hyperparameters, etc.,
-%  \item running moments (such as means and standard deviations) of quantities of interest, depending on the values of \code{runningstore} and \code{runningstoremoments} specified when calling \fct{fsvsample},
-%  \item the data input $\bm{y}$.
-%\end{itemize}
-%For more details, please investigate \code{str(res)} and/or \code{?fsvsample}.
-%
-%Using \fct{covmat}, one can extract the MCMC draws of the implied covariance matrices for all points in time which have been stored during sampling. By default, this is the last point in time (\code{keeptime = "last"}), and thus
-%<<covn, echo = TRUE>>=
-%dim(cov_n <- covmat(res))
-%@
-%shows that we have stored $\Sexpr{res$config$draws/res$config$thin}$ posterior draws of a $\Sexpr{m}\times\Sexpr{m}$ covariance matrix at one point in time, $t = n = \Sexpr{n}$. To check convergence, one can take a look at the trace plot and the autocorrelation function of the log determinant, i.e.:
-%<<logdetcovn, echo = 2:5, fig.width = 10, fig.height=3.5>>=
-%opar <- par(mfrow = c(1, 2), mgp = c(1.7, 0.5, 0), mar = c(3, 3, 1, 1))
-%logdet <- function (x) log(det(x))
-%logdet_n <- apply(cov_n[,,,1], 3, logdet)
-%ts.plot(logdet_n)
-%acf(logdet_n, main = "")
-%par(opar)
-%@
-%The result are visualized in Figure~\ref{fig:logdetcovn}; decent mixing for this quantity is apparent.
-%%
-%\begin{figure}[tp]
-%  \centering
-%  \includegraphics[width=\textwidth, clip, trim=5 5 10 10]{article-logdetcovn-1}
-%  \caption{Trace plot and empirical autocorrelation function of the log determinant of the model-implied covariance matrix at $t = n$.}
-%  \label{fig:logdetcovn}
-%\end{figure}
-%%
-%To assess the mixing speed of each individual covariance matrix element, one can check, e.g., the estimated effective sample size (out of $\Sexpr{res$config$draws/res$config$thin}$ draws kept) which is implemented in \pkg{coda}. Again, no major convergence problems are apparent.
-%<<covess, echo = TRUE>>=
-%round(apply(cov_n, 1:2, coda::effectiveSize))
-%@
-%
-%Assuming that \code{runningstore} was set sufficiently high when sampling, several convenience functions can be used for quick visualizations without having to post-process the MCMC draws. For example, to visualize the time-varying correlation matrices, consider
-%<<corimageplot, echo=2>>=
-%opar <- par(mfrow = c(1, 3), xpd = TRUE)
-%corimageplot(res, these = seq(1, n, length.out = 3), plotCI = "circle",
-%  plotdatedist = 2, date.cex = 1.1)
-%par(opar)
-%@
-%%
-%\begin{figure}[tp]
-%  \centering
-%  \includegraphics[width=\textwidth, clip, trim=22 185 0 174]{article-corimageplot-1}
-%  \caption{Three estimated correlation matrices and their posterior uncertainty depicted using circles.
-%    Inner (outer) radii of the circles illustrate to the posterior mean minus (plus) two standard deviations.
-%    Colors blue and red represent negative and positive values, respectively.
-%    Furthermore, the transparency of the circles represents the posterior mean.
-%  Note that the diagonal is left white as it trivially contains ones (without uncertainty).}
-%  \label{fig:corimageplot}
-%\end{figure}
-%%
-%which produces the three estimated posterior correlation matrices depicted in Figure~\ref{fig:corimageplot}. Setting \code{plotCI = "circle"} visualizes posterior uncertainty -- inner and outer radii correspond to the posterior mean plus/minus two standard deviations, respectively.
-%
-%To get an idea about how the marginal volatilities evolve over time, \fct{voltimeplot} can be used. To exemplify,
-%<<voltimeplot, echo=2:3, fig.width = 10, fig.height = 3, cache.rebuild = TRUE>>=
-%opar <- par(mgp = c(1.7, 0.5, 0), mar = c(2, 1.5, 1, 0.5))
-%palette(RColorBrewer::brewer.pal(7, "Dark2")[-5])
-%voltimeplot(res, legend = "top")
-%par(opar)
-%@
-%%
-%\begin{figure}[tp]
-%  \centering
-%  \includegraphics[width=\textwidth, clip, trim=0 10 2 10]{article-voltimeplot-1}
-%  \caption{Posterior means of daily marginal volatilities in percent.}
-%  \label{fig:voltimeplot}
-%\end{figure}
-%%
-%yields the estimated volatilities in Figure~\ref{fig:voltimeplot}. The financial cirisis of 2008 and the capping of CHF's appreciation in September 2011 are clearly visible, while DKK's volatility (relative to EUR) is practically zero. Note that \fct{voltimeplot} respects palette changes. In the above example, \pkg{RcolorBrewer} \citep{rcolorbrewer} is used. Moreover,
-%<<cortimeplot, echo=2:4, fig.width = 10, fig.height = 5, cache.rebuile = TRUE>>=
-%opar <- par(mfrow = c(2, 1), mgp = c(1.7, 0.5, 0), mar = c(2, 1.5, 1, 0.5))
-%palette(RColorBrewer::brewer.pal(6, "Dark2"))
-%cortimeplot(res, 1)
-%cortimeplot(res, 2)
-%par(opar)
-%@
-%%
-%\begin{figure}[tp]
-%  \centering
-%  \includegraphics[width=\textwidth, clip, trim=4 4 0 4]{article-cortimeplot-1}
-%  \caption{Posterior means of correlations with AUD (top panel) and CAD (bottom panel).}
-%  \label{fig:cortimeplot}
-%\end{figure}
-%%
-%yields the estimated pairwise correlations in Figure~\ref{fig:cortimeplot}. While, relative to EUR, the estimated correlation between AUD and CAD appears to be relatively stable over time, correlations with CHF can become negative at times. To visualize the \emph{communalities}, i.e.\ the proportions of variances explained through the latent factors, invoke
-%<<comtimeplot, echo=2, fig.height = 6.5>>=
-%opar <- par(mgp = c(1.7, 0.5, 0), mar = c(3, 3, 1, 1))
-%comtimeplot(res, maxrows = 6)
-%par(opar)
-%@
-%%
-%\begin{figure}[tp]
-%  \centering
-%  \includegraphics[width=\textwidth]{article-comtimeplot-1}
-%  \caption{Communalities: Posterior means plus/minus two posterior standard deviations.
-%    The six panels correspond to the six observation series and they depict the percentage of volatility explained by the latent factors.
-%    The idiosyncratic volatility attributes for the unexplained part.}
-%  \label{fig:comtimeplot}
-%\end{figure}
-%%
-%which yields the estimated communalities in Figure~\ref{fig:comtimeplot}.
-%
-%To gain an even deeper understanding of the estimated model, we now turn towards examining the latent factors and their variances themselves. To visualize the loadings, the functions \fct{facloadpairplot}, \fct{facloadcredplot}, \fct{facloadpointplot}, \fct{facloadtraceplot}, and \fct{facloaddensplot} are available; the former two are exemplified in Figure~\ref{fig:loadplot2}. Moreover, we can see the factor log variances produced through \code{logvartimeplot(res, show = "fac")}. Similarly, \code{logvartimeplot(res, show = "idi")} produces plots of the idiosyncratic log variances which are displayed in Figure~\ref{fig:idivarplot}.
-%%<<loadplot, echo=2, fig.width=6, fig.height=6>>=
-%%opar <- par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
-%%facloadpointplot(res)
-%%par(opar)
-%%@
-%%%
-%%\begin{figure}[t]
-%%  \centering
-%%  \includegraphics{article-loadplot-1}
-%%  \caption{A picture}
-%%  \label{fig:loadplot}
-%%\end{figure}
-%%%
-%<<loadplot2, fig.width=4.5, fig.height=4.5>>=
-%opar <- par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
-%facloadpairplot(res)
-%facloadcredplot(res)
-%par(opar)
-%@
-%<<varplot, fig.width=10, fig.height=4>>=
-%opar <- par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
-%logvartimeplot(res, show = "fac")
-%par(opar)
-%@
-%%
-%\begin{figure}[tp]
-%  \centering
-%  \includegraphics[width=0.49\textwidth]{article-loadplot2-1}\hfill
-%  \includegraphics[width=0.49\textwidth]{article-loadplot2-2}\\
-%  \includegraphics[width=\textwidth]{article-varplot-1}
-%  \caption{Factor loadings and factor variances.
-%    The top panels visualize the joint posterior distribution of the two factor loadings.
-%    While the colored clouds on the left consist of posterior draws and provide details, the posterior $0.01$/$0.99$ credible intervals on the right summarize the marginal distributions. 
-%    The bottom panels depict posterior means plus/minus two standard deviations of factor log variances.}
-%  \label{fig:loadplot2}
-%\end{figure}
-%%
-%<<varplot2, fig.width=7, fig.height=6.5>>=
-%opar <- par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
-%logvartimeplot(res, show = "idi", maxrows = 6)
-%par(opar)
-%@
-%\begin{figure}[tp]
-%  \centering
-%  \includegraphics[width=\textwidth]{article-varplot2-1}
-%  \caption{Idiosyncratic log variances: Posterior means plus/minus two standard deviations.
-%    Panels illustrate the marginal posterior distributions of the diagonal elements of $\Sigmaidi_t$ in Equation~\ref{eq:fsvcov}.}
-%  \label{fig:idivarplot}
-%\end{figure}
-%
-%In addition to the above, there is the plotting function \fct{paratraceplot} which produces trace plots of all parameters associated with the log variances processes: mean, persistence, and volatility of log variances.
-%
-%In order to provide some guidance when it comes to selecting the number of factors, \factorstochvol{} ships with the function \fct{evdiag}.
-%It computes and visualizes the eigenvalues of $\Loadings^\top\Loadings$ which can be used as a rough guide in analogy to a scree plot for static factor models.
-%To use it, one can fit a model with a relatively large number of factors and assess the importance of each of these (in descending order).
-%For example, the code below produces Figure~\ref{fig:evdiag}, hinting at a model with no more than four factors.
-%
-%<<evdiag, fig.width=10, fig.height=4, echo=2:4, results = 'hide'>>=
-%opar <- par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
-%set.seed(6)
-%largemodel <- fsvsample(y, factors = 6)
-%evdiag(largemodel)
-%par(opar)
-%@
-%
-%\begin{figure}[tp]
-%  \centering
-%  \includegraphics[width=\textwidth]{article-evdiag-1}
-%  \caption{Eigenvalues of $\Loadings^\top\Loadings$ which can be used as a rough guide to selecting the number of factors.}
-%  \label{fig:evdiag}
-%\end{figure}
-%
-%%Deciding on the number of factors is generally not a straightforward procedure and an active area of research. For instance, \cite{kastner2019sparse} finds that for modeling the covariance structure of the members of the S\&P 500, many factors are needed to obtain optimal predictions.
-%
-%
-%
-%%<<densplot, echo=TRUE, fig.width=7, fig.height=10>>=
-%%facloaddensplot(res, rows = 6)
-%%@
-%%%
-%%\begin{figure}[p]
-%%  \centering
-%%  \includegraphics[width=\textwidth]{article-densplot-1}
-%%  \caption{A picture}
-%%  \label{fig:densplot}
-%%\end{figure}
-%%
-%%<<traceplot, echo=TRUE>>=
-%%facloadtraceplot(res)
-%%@
-%%
-%%\begin{figure}[p]
-%%  \centering
-%%  \includegraphics[width=.49\textwidth]{article-traceplot-1}
-%%  \includegraphics[width=.49\textwidth]{article-traceplot-2}
-%%  \includegraphics[width=.49\textwidth]{article-traceplot-3}
-%%  \includegraphics[width=.49\textwidth]{article-traceplot-4}
-%%  \includegraphics[width=.49\textwidth]{article-traceplot-5}
-%%  \includegraphics[width=.49\textwidth]{article-traceplot-6}
-%%  \caption{A picutre}
-%%  \label{fig:densplot3}
-%%\end{figure}
-%
-%\subsection{Predicting covariances, correlations, and future observations}
-%
-%One of the main use cases of \pkg{factorstochvol} might be to predict covariance and correlation matrices of time series. To this end, \fct{predcov} and \fct{predcor} yield draws from the posterior predictive distribution of these, defined in analogy to Equation~\ref{eq:predictive-density}. For instance, the code below can be used to obtain one-step-ahead posterior predictive means and standard deviations for the correlation matrix on April 5, 2012 (using data up to April 4 only).
-%<<predcov1, echo=TRUE>>=
-%set.seed(4)
-%predcor1 <- predcor(res)
-%round(apply(predcor1[,,,1], 1:2, mean), 2)
-%round(apply(predcor1[,,,1], 1:2, sd), 2)
-%@
-%
-%To obtain draws from the posterior predictive distribution of new data points, one can simply draw from the corresponding mixture of multivariate normals. In Figure~\ref{fig:preddist}, these draws are visualized via \fct{heatpairs} from \pkg{LSD} \citep{LSD}.
-%<<preddist, fig.height = 6, fig.width = 9, echo = TRUE>>=
-%set.seed(5)
-%predcov_1 <- predcov(res)
-%preddraws <- t(res$beta)
-%for (i in seq_len(effectivedraws))
-%  preddraws[i,] <- res$beta[,i] + chol(predcov_1[,,i,1]) %*% rnorm(m)
-%plotlims <- quantile(preddraws, c(0.01, 0.99))
-%LSD::heatpairs(preddraws, labels = colnames(y),
-%  cor.cex = 1.5, gap = 0.3, xlim = plotlims, ylim = plotlims)
-%@
-%%
-%\begin{figure}[t]
-%  \centering
-%  \includegraphics[width=\textwidth, trim=20 20 20 40, clip]{article-preddist-1}
-%  \caption{Predictive draws from the one-step-ahead posterior predictive distribution (above the diagonal) and empirical correlation coefficients (below the diagonal).}
-%  \label{fig:preddist}
-%\end{figure}
-%
-%To conclude, we note that convenience functions such as \fct{predloglik} or \fct{predloglikWB} may aid in approximating predictive likelihoods \citep[cf., e.g.,][]{geweke2010comparing}. For instance, assuming that the actually observed value of $\bm y_{n+1} = \bm y_{n+2} = (0,0,0,0,0,0)^\top$, we can approximate the one and two step ahead log predictive scores through code along the following lines.
-%<<echo = TRUE>>=
-%set.seed(6)
-%predloglik(res, matrix(0, nrow = 2, ncol = m), ahead = 1:2, each = 10)
-%@
-%For a more detailed analysis of the out-of-sample performance of \factorstochvol{} for exchange rate data, we refer to \cite{kastner2017efficient}; for a predictive exercise on stock market data, please see \cite{kastner2019sparse}.
+The most common workflow of using \factorstochvol{} for fitting multivariate factor SV models consists of the following steps:
+(1) Prepare the data,
+(2) decide on an identification structure,
+(3) specify the prior hyperparameters,
+(4) run the sampler,
+(5) investigate the output and visualize the results, and
+(6) predict (if required).
+These steps are described in detail in the following sections.
+
+\subsection{Preparing the data} \label{sec:fsvuse1}
+
+The workhorse in \factorstochvol{} is the sampling function \fct{fsvsample}. It expects the data to come in form of a matrix $\bm Y=(\yvec_1,\dots,\yvec_\leny)^\top$ with $\leny$ rows and $\dimy$ columns.
+For illustration, we use the exchange rate data set in \stochvol{} which contains $3140$ daily observations of exchanges rates for $23$ currency pairs against EUR, ranging from March 3, 2000 to April 4, 2012.
+To keep the analysis simple and computation times moderate, we however only model the last $1001$ days of the first six series in alphabetical order (Australian dollar, Canadian dollar, Swiss franc, Czech koruna, Danish krone, Great British pound) for further analysis.
+Instead of using the nominal exchange rates we compute log returns. This leaves us with a data set of size $n = 1000$ and $m = 6$.
+The data is prepared using the code snippet below and visualized in Figure~\ref{fig:exrates} using the \pkg{zoo} package \citep{zoo}.
+<<fsvprepdata, echo=TRUE, fig.width=10, fig.height=5, results='hide'>>=
+library("factorstochvol")
+library("zoo")
+data("exrates", package = "stochvol")
+m <- 6
+n <- 1000
+y <- 100 * logret(tail(exrates[, seq_len(m)], n + 1))
+y <- zoo(y, order.by = tail(exrates$date, n))
+plot(y, main = "", xlab = "Time")
+@
+\begin{figure}[t]
+  \centering
+  \includegraphics[trim=5 40 20 40, clip, width=\textwidth]{jss3813-fsvprepdata-1}
+  \caption{Percentage log returns of six EUR exchange rates.}
+  \label{fig:exrates}
+\end{figure}
+
+\subsection{Deciding on an identification structure}\label{sec:fsvuse2}
+
+The likelihood in factor models is invariant to certain factor transformations such as reordering of factors and their loadings or sign switches thereof. In addition to this, it is often multimodal. Consequently, identifying the factor loadings is far from  trivial.
+The most common way to address this issue in factor SV models is to impose a lower-diagonal factor loadings matrix where all elements above the diagonal are set to zero \citep[e.g.,][]{aguilar2000bayesian, chib2006analysis, han2006asset, zhou2014bayesian}.
+To use this constraint in \factorstochvol, the argument \code{restrict = "upper"} can be passed to the main sampling function \fct{fsvsample}.
+Evidently, this practice imposes an order dependence, as, e.g., the first variable is not allowed to load on anything else but the first factor.
+
+A rather ad hoc method for automatically ordering the data is implemented in the helper function \fct{preorder}.
+After a maximum likelihood factor model fit to the data (using \fct{factanal} from the \pkg{stats} package with the default \code{varimax} rotation), the series are ordered as follows: The variable with the highest loading on factor 1 is placed first, the variable with the highest loading on factor 2 second (unless this variable is already placed first, in which case the variable with the second highest loading is taken), et cetera.
+For the data set at hand, this would imply the following ordering for a two-factor model.
+<<preorder, echo=TRUE>>=
+preorder(y, factors = 2)
+@
+According to this algorithm, the second series should be placed first and the third series should be placed second. Thereafter, the alphabetical ordering remains.
+
+To achieve this effect without reordering the data, a \code{logical} matrix of size $\dimy \times r$ can be passed to \fct{fsvsample} via \code{restrict}, where the entry \code{TRUE} means that this element is restricted to zero; \code{FALSE} means that it is to be estimated from the data.
+Similarly to \fct{preorder}, the function \fct{findrestrict} tries to automate this procedure.
+Again, the maximum likelihood estimates from a static factor analysis are used; however, \fct{findrestrict} uses a slightly different algorithm than the one above:
+The variable with the lowest absolute loadings on factors $2, 3, \dots, r$ (relative to factor 1) is determined to lead the first factor, the variable with the lowest absolute loadings on factors $3, 4, \dots, r$ (relative to factors 1 and 2) is placed second, et cetera.
+Below is the result for the data set at hand.
+<<findrestrict, echo=TRUE>>=
+findrestrict(y, factors = 2)
+@
+If \fct{fsvsample} is called with the argument \code{restrict = "auto"}, it automatically invokes \fct{findrestrict} with the appropriate number of factors.
+Using \code{restrict = "none"} (the default) causes the sampler not to place any constraints on the loadings matrix; thus, the resulting posterior draws may be unstable or suffer from multiple local modes.
+If, however, inference on the factor loadings themselves is not the primary concern of the analysis, leaving the factor loadings unidentified may be the preferred option.
+This is in particular the case when inference for the covariance matrix is sought, as this only depends on $\Loadings$ through the rotation-invariant transformation of Equation~\ref{eq:vardecomp}.
+For a more elaborate discussion of these issues, we refer the reader to \citet{sentana2001identification} who discuss automatic identification through hetero\-skedasticity. A comparison of log predictive scores under different identification schemes for factor SV models is given in \citet{kastner2017efficient}; see also \citet{fruhwirth2018sparse} for related issues in static factor models.
+To continue with the current example, we chose not to place any a priori restrictions on the factor loadings matrix while using a row-wise normal-gamma shrinkage prior on the factor loadings matrix \citep[cf.][]{kastner2019sparse}.
+
+\subsection{Specifying prior hyperparameters} \label{sec:fsvuse3}
+
+Apart from the obvious prior choice about the number of factors and the identification scheme discussed above, a number of hyperparameter choices are available in \factorstochvol.
+Regarding the log-variance processes, the interface is analogous to that of \fct{svsample}.
+In the following, $i=1,\dots,\dimy$ and $j=1,\dots,\nfac$ index the idiosyncratic and the factor log-variance processes, respectively.
+The pair of common prior hyperparameters $(b_\beta, B_\beta)$ can be passed as a sequence of length two to \code{priorbeta}.
+The common prior of $\muidi_i$ can be set by passing a sequence of length two -- the mean and the standard deviation of the normal distribution -- to \code{priormu};
+the common priors of $\phiidi_i$ and $\phifac_j$ can also be set by passing sequences of length two -- the parameters of the corresponding beta distribution -- to \code{priorphiidi} and to \code{priorphifac}, respectively;
+similarly, the common priors of $\sigmaidi_i$ and $\sigmafac_j$ can be specified via the arguments \code{priorsigmaidi} and \code{priorsigmafac}, respectively, that accept as positive numbers the scale $\sigmaprior$ of the corresponding gamma distribution.
+
+As discussed in Section~\ref{sec:fsvpriors}, \factorstochvol{} offers three specifications as priors for $\Loadings$, controlled through the argument \code{priorfacloadtype}.
+To use the first option (\code{priorfacloadtype = "normal"}), one needs to fix the values of $\tau_{ij}$ a priori.
+The user can pass these fixed values to \fct{fsvsample} via the argument \code{priorfacload}, either as an $\dimy\times\nfac$ matrix with positive entries or as a single positive number which will be recycled accordingly.
+For the second option, the normal gamma prior with row-wise or column-wise shrinkage (\code{priorfacloadtype = "rowwiseng"} and \code{priorfacloadtype = "colwiseng"}, respectively), the value of argument \code{priorfacload} is then interpreted as the shrinkage parameter $a$.
+Both specifications of the normal gamma prior need the values $c$ and $d$.
+They can be set as a two-element vector passed to the argument \code{priorng}.
+
+\subsection{Running the MCMC sampler}
+
+Running the sampler corresponds to invoking \fct{fsvsample}. Apart from the prior settings discussed above, its most important arguments are listed below with the default value in brackets. For a complete list of all arguments and more details, see \code{?fsvsample}.
+\begin{itemize}
+  \item \code{y}: the data;
+  \item \code{factors} [\code{1}]: the number of factors;
+  \item \code{draws} [\code{1000}]: the number of MCMC samples to be drawn after burnin;
+  \item \code{thin} [\code{1}]: the amount of thinning (every \code{thin}\textsuperscript{th} draw is kept);
+  \item \code{burnin} [\code{1000}]: the length of the burn-in period, i.e., the number of MCMC draws to be discarded before the samples are considered to emerge from the stationary distribution,
+  \item \code{zeromean} [\code{TRUE}]: a logical value indicating whether $\bm\beta$ is to be estimated from the data or whether $\bm\beta$ is set to zero (the default);
+  \item \code{keeptime} [\code{"last"}]: either \code{"all"}, meaning that all latent log volatilities are being monitored at all points in time, or \code{"last"}, meaning that the latent log volatility draws are only stored at $t = n$, the last point in time; the latter setting is the default to avoid excessive memory usage in higher dimensions;
+  \item \code{heteroskedastic} [\code{TRUE}]: indicator(s) to turn off stochastic volatility for the idiosyncratic variances, the factor variances, or both;
+  \item \code{samplefac} [\code{TRUE}]: indicator to turn off sampling of the factors; useful to work with observed instead of latent factors \citep[see][for a use case of this]{kastner2019sparse};
+  \item \code{runningstore} [\code{6}]: to avoid having to store all MCMC draws, \code{fsvsample}'s default is to compute and store the first two ergodic moments of some interesting quantities (namely log variances, factors, volatilities, covariance matrices, correlation matrices, communalities) only; the default (\code{runningstore = 6}) is to compute and store everything; however, one can set \code{runningstore} to a lower number to save computation time; the argument \code{runningstoremoments} [\code{2}] can further be used to modify the number of moments to be stored;
+  \item \code{runningstorethin} [\code{10}]: indicates how often ergodic moments should be calculated, where \code{1} means that this should be done at every iteration and higher numbers lessen both runtime as well as accuracy;
+  \item \code{quiet} [\code{FALSE}]: a logical indicator determining the verbosity of \code{fsvsample}.
+\end{itemize}
+
+For our illustrative example, most settings are left at their default values. The number of factors is increased from one to two, instead of 1000 we sample 10000 draws, we estimate a constant mean, a thinning of 10 is used, and \code{quiet} is set to \code{TRUE}.
+<<runmodel, echo=TRUE>>=
+set.seed(1)
+res <- fsvsample(y, factors = 2, draws = 10000, zeromean = FALSE,
+  thin = 10, quiet = TRUE)
+@
+
+\subsection{Investigating the output and visualizing the results}
+
+The resulting object 
+<<printrres, echo = TRUE>>=
+res
+@
+holds a rich amount of information. In particular, it contains
+\begin{itemize}
+  \item draws of certain posterior quantities such as the factors $\fvec$, the factor loadings $\Loadings$, the various factor and idiosyncratic SV parameters, the latent factor and idiosyncratic log variances $\bm{\hfac}$ and $\bm{\hidi}$, and the intercept $\bm\beta$,
+  \item configuration settings such as the number of draws, potential restrictions on the loadings matrix, prior hyperparameters, etc.,
+  \item running moments (such as means and standard deviations) of quantities of interest, depending on the values of \code{runningstore} and \code{runningstoremoments} specified when calling \fct{fsvsample},
+  \item the data input $\bm{y}$.
+\end{itemize}
+For more details, please investigate \code{str(res)} and/or \code{?fsvsample}.
+
+Using \fct{covmat}, one can extract the MCMC draws of the implied covariance matrices for all points in time which have been stored during sampling. By default, this is the last point in time (\code{keeptime = "last"}), and thus
+<<covn, echo = TRUE>>=
+dim(cov_n <- covmat(res))
+@
+shows that we have stored $\Sexpr{res$config$draws/res$config$thin}$ posterior draws of a $\Sexpr{m}\times\Sexpr{m}$ covariance matrix at one point in time, $t = n = \Sexpr{n}$. To check convergence, one can take a look at the trace plot and the autocorrelation function of the log determinant, i.e.,
+<<logdetcovn, echo = 2:5, fig.width = 10, fig.height=3.5, results='hide'>>=
+par(mfrow = c(1, 2), mgp = c(1.7, 0.5, 0), mar = c(3, 3, 1, 1))
+logdet <- function (x) log(det(x))
+logdet_n <- apply(cov_n[,,,1], 3, logdet)
+ts.plot(logdet_n)
+acf(logdet_n, main = "")
+@
+The results are visualized in Figure~\ref{fig:logdetcovn}; decent mixing for this quantity is apparent.
+
+\begin{figure}[tp]
+  \centering
+  \includegraphics[width=\textwidth, clip, trim=5 5 10 10]{jss3813-logdetcovn-1}
+  \caption{Trace plot and empirical autocorrelation function of the log determinant of the model-implied covariance matrix at $t = n$.}
+  \label{fig:logdetcovn}
+\end{figure}
+
+To assess the mixing speed of each individual covariance matrix element, one can check, e.g., the estimated effective sample size (out of $\Sexpr{res$config$draws/res$config$thin}$ draws kept) which is implemented in \pkg{coda}. Again, no major convergence problems are apparent.
+<<covess, echo = TRUE>>=
+round(apply(cov_n, 1:2, coda::effectiveSize))
+@
+
+Assuming that \code{runningstore} was set sufficiently high when sampling, several convenience functions can be used for quick visualizations without having to post-process the MCMC draws. For example, to visualize the time-varying correlation matrices, consider
+<<corimageplot, echo=2, results='hide'>>=
+par(mfrow = c(1, 3), xpd = TRUE)
+corimageplot(res, these = seq(1, n, length.out = 3), plotCI = "circle",
+  plotdatedist = 2, date.cex = 1.1)
+@
+\begin{figure}[tp]
+  \centering
+  \includegraphics[width=\textwidth, clip, trim=22 185 0 174]{jss3813-corimageplot-1}
+  \caption{Three estimated correlation matrices and their posterior uncertainty depicted using circles.
+    Inner (outer) radii of the circles illustrate to the posterior mean minus (plus) two standard deviations.
+    Colors blue and red represent negative and positive values, respectively.
+    Furthermore, the transparency of the circles represents the posterior mean.
+  Note that the diagonal is left white as it trivially contains ones (without uncertainty).}
+  \label{fig:corimageplot}
+\end{figure}
+which produces the three estimated posterior correlation matrices depicted in Figure~\ref{fig:corimageplot}. Setting \code{plotCI = "circle"} visualizes posterior uncertainty -- inner and outer radii correspond to the posterior mean plus/minus two standard deviations, respectively.
+
+To get an idea about how the marginal volatilities evolve over time, \fct{voltimeplot} can be used. To exemplify,
+<<voltimeplot, echo=2:3, fig.width = 10, fig.height = 3, cache.rebuild = TRUE, results='hide'>>=
+par(mgp = c(1.7, 0.5, 0), mar = c(2, 1.5, 1, 0.5))
+palette(RColorBrewer::brewer.pal(7, "Dark2")[-5])
+voltimeplot(res, legend = "top")
+@
+\begin{figure}[tp]
+  \centering
+  \includegraphics[width=\textwidth, clip, trim=0 10 2 10]{jss3813-voltimeplot-1}
+  \caption{Posterior means of daily marginal volatilities in percent.}
+  \label{fig:voltimeplot}
+\end{figure}
+yields the estimated volatilities in Figure~\ref{fig:voltimeplot}. The financial crisis of 2008 and the capping of CHF's appreciation in September 2011 are clearly visible, while DKK's volatility (relative to EUR) is practically zero. Note that \fct{voltimeplot} respects palette changes. In the above example, \pkg{RcolorBrewer} \citep{rcolorbrewer} is used. Moreover,
+<<cortimeplot, echo=2:4, fig.width = 10, fig.height = 5, cache.rebuild = TRUE, results='hide'>>=
+par(mfrow = c(2, 1), mgp = c(1.7, 0.5, 0), mar = c(2, 1.5, 1, 0.5))
+palette(RColorBrewer::brewer.pal(6, "Dark2"))
+cortimeplot(res, 1)
+cortimeplot(res, 2)
+@
+\begin{figure}[tp]
+  \centering
+  \includegraphics[width=\textwidth, clip, trim=4 4 0 4]{jss3813-cortimeplot-1}
+  \caption{Posterior means of correlations with AUD (top panel) and CAD (bottom panel).}
+  \label{fig:cortimeplot}
+\end{figure}
+yields the estimated pairwise correlations in Figure~\ref{fig:cortimeplot}. While, relative to EUR, the estimated correlation between AUD and CAD appears to be relatively stable over time, correlations with CHF can become negative at times. To visualize the \emph{communalities}, i.e., the proportions of variances explained through the latent factors, invoke
+<<comtimeplot, echo=2, fig.height = 6.5, results='hide'>>=
+par(mgp = c(1.7, 0.5, 0), mar = c(3, 3, 1, 1))
+comtimeplot(res, maxrows = 6)
+@
+\begin{figure}[tp]
+  \centering
+  \includegraphics[width=\textwidth]{jss3813-comtimeplot-1}
+  \caption{Communalities: Posterior means plus/minus two posterior standard deviations.
+    The six panels correspond to the six observation series and they depict the percentage of volatility explained by the latent factors.
+    The idiosyncratic volatility attributes for the unexplained part.}
+  \label{fig:comtimeplot}
+\end{figure}
+which yields the estimated communalities in Figure~\ref{fig:comtimeplot}.
+
+To gain an even deeper understanding of the estimated model, we now turn towards examining the latent factors and their variances themselves.
+To visualize the loadings, the functions \fct{facloadpairplot}, \fct{facloadcredplot}, \fct{facloadpointplot}, \fct{facloadtraceplot}, and \fct{facloaddensplot} are available; the former two are exemplified in Figure~\ref{fig:loadplot2}.
+Moreover, we can see the factor log variances produced through \code{logvartimeplot(res, show = "fac")}.
+Similarly, \code{logvartimeplot(res, show = "idi")} produces plots of the idiosyncratic log variances which are displayed in Figure~\ref{fig:idivarplot}.
+<<loadplot2, echo=2:3, fig.width=4.5, fig.height=4.5, results='hide'>>=
+par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
+facloadpairplot(res)
+facloadcredplot(res)
+@
+<<varplot, echo=2, fig.width=10, fig.height=4, results='hide'>>=
+par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
+logvartimeplot(res, show = "fac")
+@
+\begin{figure}[tp]
+  \centering
+  \includegraphics[width=0.49\textwidth]{jss3813-loadplot2-1}\hfill
+  \includegraphics[width=0.49\textwidth]{jss3813-loadplot2-2}\\
+  \includegraphics[width=\textwidth]{jss3813-varplot-1}
+  \caption{Factor loadings and factor variances.
+    The top panels visualize the joint posterior distribution of the two factor loadings.
+    While the colored clouds on the left consist of posterior draws and provide details, the posterior $0.01$/$0.99$ credible intervals on the right summarize the marginal distributions. 
+    The bottom panels depict posterior means plus/minus two standard deviations of factor log variances.}
+  \label{fig:loadplot2}
+\end{figure}
+<<varplot2, echo=2, fig.width=7, fig.height=6.5, results='hide'>>=
+par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
+logvartimeplot(res, show = "idi", maxrows = 6)
+@
+\begin{figure}[tp]
+  \centering
+  \includegraphics[width=\textwidth]{jss3813-varplot2-1}
+  \caption{Idiosyncratic log variances: Posterior means plus/minus two standard deviations.
+    Panels illustrate the marginal posterior distributions of the diagonal elements of $\Sigmaidi_t$ in Equation~\ref{eq:fsvcov}.}
+  \label{fig:idivarplot}
+\end{figure}
+
+In addition to the above, there is the plotting function \fct{paratraceplot} which produces trace plots of all parameters associated with the log variances processes: mean, persistence, and volatility of log variances.
+
+In order to provide some guidance when it comes to selecting the number of factors, \factorstochvol{} ships with the function \fct{evdiag}.
+It computes and visualizes the eigenvalues of $\Loadings^\top\Loadings$ which can be used as a rough guide in analogy to a scree plot for static factor models.
+To use it, one can fit a model with a relatively large number of factors and assess the importance of each of these (in descending order).
+For example, the code below produces Figure~\ref{fig:evdiag}, hinting at a model with no more than four factors.
+
+<<evdiag, fig.width=10, fig.height=4, echo=2:4, results = 'hide'>>=
+par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
+set.seed(6)
+largemodel <- fsvsample(y, factors = 6)
+evdiag(largemodel)
+@
+\begin{figure}[tp]
+  \centering
+  \includegraphics[width=\textwidth]{jss3813-evdiag-1}
+  \caption{Eigenvalues of $\Loadings^\top\Loadings$ which can be used as a rough guide to selecting the number of factors.}
+  \label{fig:evdiag}
+\end{figure}
+
+\subsection{Predicting covariances, correlations, and future observations}
+
+One of the main use cases of \factorstochvol might be to predict covariance and correlation matrices of time series. To this end, \fct{predcov} and \fct{predcor} yield draws from the posterior predictive distribution of these, defined in analogy to Equation~\ref{eq:predictive-density}. For instance, the code below can be used to obtain one-step-ahead posterior predictive means and standard deviations for the correlation matrix on April 5, 2012 (using data up to April 4 only).
+<<predcov1, echo=TRUE>>=
+set.seed(4)
+predcor1 <- predcor(res)
+round(apply(predcor1[,,,1], 1:2, mean), 2)
+round(apply(predcor1[,,,1], 1:2, sd), 2)
+@
+
+To obtain draws from the posterior predictive distribution of new data points, one can simply draw from the corresponding mixture of multivariate normals. In Figure~\ref{fig:preddist}, these draws are visualized via \fct{heatpairs} from \pkg{LSD} \citep{LSD}.
+<<preddist, fig.height = 6, fig.width = 9, echo = TRUE, results='hide'>>=
+set.seed(5)
+predcov_1 <- predcov(res)
+preddraws <- t(res$beta)
+for (i in seq_len(NROW(preddraws)))
+  preddraws[i,] <- preddraws[i,] + chol(predcov_1[,,i,1]) %*% rnorm(m)
+plotlims <- quantile(preddraws, c(0.01, 0.99))
+LSD::heatpairs(preddraws, labels = colnames(y), cor.cex = 1.5, gap = 0.3,
+  xlim = plotlims, ylim = plotlims)
+@
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth, trim=20 20 20 40, clip]{jss3813-preddist-1}
+  \caption{Predictive draws from the one-step-ahead posterior predictive distribution (above the diagonal) and empirical correlation coefficients (below the diagonal).}
+  \label{fig:preddist}
+\end{figure}
+
+To conclude, we note that convenience functions such as \fct{predloglik} or \fct{predloglikWB} may aid in approximating predictive likelihoods \citep[cf., e.g.,][]{geweke2010comparing}. For instance, assuming that the actually observed value of $\bm y_{n+1} = \bm y_{n+2} = (0,0,0,0,0,0)^\top$, we can approximate the one and two step ahead log predictive scores through code along the following lines.
+<<echo = TRUE>>=
+set.seed(6)
+predloglik(res, matrix(0, nrow = 2, ncol = m), ahead = 1:2, each = 10)
+@
+For a more detailed analysis of the out-of-sample performance of \factorstochvol{} for exchange rate data, we refer to \cite{kastner2017efficient}; for a predictive exercise on stock market data, please see \cite{kastner2019sparse}.
 
 \section{Summary and discussion} \label{sec:summary}
 
@@ -1235,8 +1090,12 @@ We extended the work of~\citet{kastner2016dealing} to other SV models, including
 We showcased the features that are the most important to end users in \proglang{R}: estimation through the sampler functions, visualization, summary, and prediction methods.
 Due to its more involved nature, however, we did not include the description of the \proglang{C++} interface.
 Two functions called \fct{update\_fast\_sv} and \fct{update\_general\_sv} are exported and programmers have the possibility to access the samplers in \stochvol{} directly from \proglang{C++} after linking to the compiled package.
-For usage examples, see the implementations of \factorstochvol{} or \pkg{shrinkTVP}~\citep{shrinktvp}.
-%
+For usage examples, see the implementations of \factorstochvol{} or \pkg{shrinkTVP} \citep{shrinktvp}.
+
+\section*{Acknowledgments}
+
+Gregor Kastner acknowledges funding from the Austrian Science Fund (FWF) for the project ``High-dimensional statistical learning: New methods to advance economic and sustainability policies'' (ZK 35), jointly carried out by the University of Klagenfurt, WU Vienna University of Economics and Business, Paris Lodron University Salzburg, TU Wien, and the Austrian Institute of Economic Research (WIFO).
+
 \bibliography{ref}
 
 \end{document}

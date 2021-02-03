@@ -266,7 +266,7 @@ namespace stochvol {
       const Rcpp::CharacterVector coln({"Gamma", "Scale", "Acceptance Rate"});
       Rcpp::NumericMatrix storage(memory.capacity(), 3);
       storage.fill(::R_NaReal);
-      for (int i = 0; i < memory.size(); i++) {
+      for (unsigned int i = 0; i < memory.size(); i++) {
         storage(i, 0) = memory[i].gamma;
         storage(i, 1) = memory[i].scale;
         storage(i, 2) = memory[i].rate_acceptance;

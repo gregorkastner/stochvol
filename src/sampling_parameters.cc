@@ -82,7 +82,7 @@ SampledTheta regression(
     const PriorSpec& prior_spec,
     const ExpertSpec_FastSV& expert) {
   switch (expert.mh_blocking_steps) {
-    case 1: [[fallthrough]];
+    case 1: //[[fallthrough]];
     case 2:
       return noncentered::draw_theta_2block(log_data2, mu, phi, sigma, h0, h, r, prior_spec, expert);
     case 3:
