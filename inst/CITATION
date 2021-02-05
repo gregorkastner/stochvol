@@ -5,27 +5,28 @@ if(!exists("meta") || is.null(meta)) meta <- packageDescription("stochvol")
 year <- sub("-.*", "", meta$Packaged)
 note <- sprintf("R package version %s", meta$Version)
 
-bibentry(bibtype = "article",
-  header       = "To cite stochvol in publications use:",
-  title        = "Dealing with Stochastic Volatility in Time Series Using the {R} Package {stochvol}",
-  author       = person(given = "Gregor",
-                        family = "Kastner",
-                        email = "gregor.kastner@wu.ac.at"),
-  journal      = "Journal of Statistical Software",
-  year         = "2016",
-  volume       = "69",
-  number       = "5",
-  pages        = "1--30",
-  doi          = "10.18637/jss.v069.i05",
-  textVersion  =
-  paste("Kastner, Gregor (2016).",
-        "Dealing with Stochastic Volatility in Time Series Using the R Package stochvol.",
-        "Journal of Statistical Software, 69(5), 1-30.",
-        "https://doi.org/10.18637/jss.v069.i05")
-)
+#bibentry(bibtype = "article",
+#  header       = "To cite stochvol in publications use:",
+#  title        = "Dealing with Stochastic Volatility in Time Series Using the {R} Package {stochvol}",
+#  author       = person(given = "Gregor",
+#                        family = "Kastner",
+#                        email = "gregor.kastner@wu.ac.at"),
+#  journal      = "Journal of Statistical Software",
+#  year         = "2016",
+#  volume       = "69",
+#  number       = "5",
+#  pages        = "1--30",
+#  doi          = "10.18637/jss.v069.i05",
+#  textVersion  =
+#  paste("Kastner, Gregor (2016).",
+#        "Dealing with Stochastic Volatility in Time Series Using the R Package stochvol.",
+#        "Journal of Statistical Software, 69(5), 1-30.",
+#        "https://doi.org/10.18637/jss.v069.i05")
+#)
 
 bibentry(bibtype = "article",
-  header       = "When using the sampler that allows for asymmetry (leverage) and/or heavy tails please also cite:",
+#  header       = "When using the sampler that allows for asymmetry (leverage) and/or heavy tails please also cite:",
+  header       = "To cite stochvol in publications use:",
   title        = "Modeling Univariate and Multivariate Stochastic Volatility in {R} with {stochvol} and {factorstochvol}",
   author       = personList(
                    person(given = "Darjus",
@@ -34,14 +35,14 @@ bibentry(bibtype = "article",
                    person(given = "Gregor",
                           family = "Kastner",
                           email = "gregor.kastner@aau.at")),
-  journal      = "Forthcoming in the Journal of Statistical Software",
-  year         = "2021",
+  journal      = "Journal of Statistical Software",
+  year         = "forthcoming",
   url          = "https://CRAN.R-project.org/package=stochvol/vignettes/article2.pdf",
   textVersion  =
-  paste("Hosszejni, Darjus and Kastner, Gregor (2020).",
+  paste("Hosszejni, Darjus and Kastner, Gregor (forthcoming).",
         "Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol.",
-        "Forthcoming in the Journal of Statistical Software.",
-        "URL: https://CRAN.R-project.org/package=stochvol/vignettes/article2.pdf")
+        "Journal of Statistical Software.",
+        "https://arxiv.org/abs/1906.12123")
 )
 
 citEntry(header = "To refer to the sampling methodology used by the sampler without asymmetry (leverage) please cite:",
@@ -66,7 +67,7 @@ citEntry(header = "To refer to the sampling methodology used by the sampler that
                           email = "darjus.hosszejni@wu.ac.at"),
                    person(given = "Gregor",
                           family = "Kastner",
-                          email = "gregor.kastner@wu.ac.at")),
+                          email = "gregor.kastner@aau.at")),
          booktitle = "Bayesian Statistics and New Generations. BAYSM 2018",
          year = "2019",
          series = "Springer Proceedings in Mathematics \\& Statistics",
@@ -91,3 +92,4 @@ citEntry(header = "To refer to the sampling methodology used by the sampler that
 #         url = "https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf",
 #         textVersion = "Kastner, Gregor (2015). Heavy-Tailed Innovations in the R Package stochvol. R Package Vignette. URL: https://CRAN.R-project.org/package=stochvol/vignettes/heavytails.pdf"
 #)
+
