@@ -16,3 +16,6 @@ Session.vim
 dic-example.R
 ^.*\.txt$
 
+Makefile
+article2.Rnw
+

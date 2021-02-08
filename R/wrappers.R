@@ -197,7 +197,7 @@
 #' Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC
 #' estimation of stochastic volatility models. \emph{Computational Statistics &
 #' Data Analysis}, \bold{76}, 408--423,
-#' \url{http://dx.doi.org/10.1016/j.csda.2013.01.002}.
+#' \doi{10.1016/j.csda.2013.01.002}.
 #' @keywords models ts
 #' @example inst/examples/svsample.R
 #' @export

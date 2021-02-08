@@ -31,7 +31,7 @@
 #' @name exrates
 #' @docType data
 #' @seealso \code{\link{svsample}}
-#' @source ECB Statistical Data Warehouse (\url{http://sdw.ecb.europa.eu})
+#' @source ECB Statistical Data Warehouse (\url{https://sdw.ecb.europa.eu})
 #' @keywords datasets
 #' @examples
 #' 
@@ -83,17 +83,17 @@ NULL
 #' Ancillarity-Sufficiency Interweaving Strategy (ASIS) for Boosting MCMC
 #' Estimation of Stochastic Volatility Models. \emph{Computational Statistics &
 #' Data Analysis}, \bold{76}, 408--423,
-#' \url{http://dx.doi.org/10.1016/j.csda.2013.01.002}.
+#' \doi{10.1016/j.csda.2013.01.002}.
 #'
 #' Kastner, G. (2016). Dealing with Stochastic Volatility in Time Series Using the R Package stochvol.
 #' \emph{Journal of Statistical Software}, \bold{69}(5), 1--30,
-#' \url{http://dx.doi.org/10.18637/jss.v069.i05}.
+#' \doi{10.18637/jss.v069.i05}.
 #' 
 #' Yu, Y. and Meng, X.-L. (2011). To Center or Not to Center: That is Not the
 #' Question---An Ancillarity-Suffiency Interweaving Strategy (ASIS) for
 #' Boosting MCMC Efficiency. \emph{Journal of Computational and Graphical
 #' Statistics}, \bold{20}(3), 531--570,
-#' \url{http://dx.doi.org/10.1198/jcgs.2011.203main}.
+#' \doi{10.1198/jcgs.2011.203main}.
 #' @keywords package models ts
 #' @example inst/examples/stochvol-package.R
 NULL
