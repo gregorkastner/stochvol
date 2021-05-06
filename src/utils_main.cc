@@ -2,20 +2,20 @@
  * R package stochvol by
  *     Gregor Kastner Copyright (C) 2013-2020
  *     Darjus Hosszejni Copyright (C) 2019-2020
- *  
+ *
  *  This file is part of the R package stochvol: Efficient Bayesian
  *  Inference for Stochastic Volatility Models.
- *  
+ *
  *  The R package stochvol is free software: you can redistribute it
  *  and/or modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation, either version 2 or
  *  any later version of the License.
- *  
+ *
  *  The R package stochvol is distributed in the hope that it will be
  *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
  *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *  General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with the R package stochvol. If that is not the case, please
  *  refer to <http://www.gnu.org/licenses/>.
@@ -23,7 +23,7 @@
 
 /*
  * utils_main.cc
- * 
+ *
  * Definitions of the functions declared in utils_main.h.
  * Documentation can also be found in utils_main.h.
  */
@@ -182,23 +182,23 @@ List cleanup(
 int progressbar_init(
     const int N) {
   int show;
-  REprintf("\n      ");
+  ::REprintf("\n      ");
   if (N >= 2500) {
-    for (int i = 0; i < 50+1; i++) REprintf(" ");
+    for (int i = 0; i < 50+1; i++) ::REprintf(" ");
     show = N/50;
   }
   else {
-    for (int i = 0; i < (N-1)/50+1; i++) REprintf(" ");
+    for (int i = 0; i < (N-1)/50+1; i++) ::REprintf(" ");
     show = 50;
   }
-  REprintf("] 100%%\r  0%% [");
-  R_FlushConsole();
+  ::REprintf("] 100%%\r  0%% [");
+  ::R_FlushConsole();
   return show;
 }
 
 void progressbar_finish(
     const int N) {
-  if (!(N % 50) && N >= 2500) REprintf("+");
+  if (!(N % 50) && N >= 2500) ::REprintf("+");
   ::REprintf("] 100%%\n\n");
   ::R_FlushConsole();
 }
