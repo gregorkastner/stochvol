@@ -2,20 +2,20 @@
 #  R package stochvol by
 #     Gregor Kastner Copyright (C) 2013-2020
 #     Darjus Hosszejni Copyright (C) 2019-2020
-#  
+#
 #  This file is part of the R package stochvol: Efficient Bayesian
 #  Inference for Stochastic Volatility Models.
-#  
+#
 #  The R package stochvol is free software: you can redistribute it
 #  and/or modify it under the terms of the GNU General Public License
 #  as published by the Free Software Foundation, either version 2 or
 #  any later version of the License.
-#  
+#
 #  The R package stochvol is distributed in the hope that it will be
 #  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 #  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #  General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with the R package stochvol. If that is not the case, please
 #  refer to <http://www.gnu.org/licenses/>.
@@ -47,10 +47,10 @@ general_extractor <- function (x, chain, name) {
 }
 
 #' Common Extractors for 'svdraws' and 'svpredict' Objects
-#' 
+#'
 #' Some simple extractors returning the corresponding element of an
 #' \code{svdraws} and \code{svpredict} object.
-#' 
+#'
 #' @name extractors
 #' @aliases para latent latent0 priors thinning runtime svbeta observations vola
 #' @param x \code{svdraws} object.
@@ -299,16 +299,16 @@ flatten <- function (x) {
 }
 
 #' Updating the Summary of MCMC Draws
-#' 
+#'
 #' Creates or updates a summary of an \code{svdraws} object.
-#' 
+#'
 #' \code{updatesummary} will always calculate the posterior mean and the
 #' posterior standard deviation of the raw draws and some common
 #' transformations thereof. Moroever, the posterior quantiles, specified by the
 #' argument \code{quantiles}, are computed. If \code{esspara} and/or
 #' \code{esslatent} are \code{TRUE}, the corresponding effective sample size
 #' (ESS) will also be included.
-#' 
+#'
 #' @param x \code{svdraws} object.
 #' @param quantiles numeric vector of posterior quantiles to be computed. The
 #' default is \code{c(0.05, 0.5, 0.95)}.
@@ -336,7 +336,7 @@ flatten <- function (x) {
 #' \code{keeptime}.} \item{summary}{\code{list} containing a collection of
 #' summary statistics of the posterior draws for \code{para}, \code{latent},
 #' and \code{latent0}.}
-#' 
+#'
 #' To display the output, use \code{print}, \code{summary} and \code{plot}. The
 #' \code{print} method simply prints the posterior draws (which is very likely
 #' a lot of output); the \code{summary} method displays the summary statistics
@@ -458,12 +458,12 @@ print.summary.svdraws <- function (x, showpriorbeta = !is.null(x$beta), ...) {
   } else {
     cat("Thinning: ", x$mcp[3], ".\n", sep="")
   }
-  
+
   if (exists("para", x)) {
     cat("\nPosterior draws of SV parameters (thinning = ", x$mcp[3], "):\n", sep='')
     print(x$para, digits=2, ...)
   }
-  
+
   if (exists("beta", x)) {
     cat("\nPosterior draws of regression coefficients (thinning = ", x$mcp[3], "):\n", sep='')
     print(x$beta, digits=2, ...)
@@ -501,28 +501,28 @@ residuals.svdraws <- function(object, type = "mean", ...) {
   if (coda::nchain(para(object, "all")) > 1) stop("Multiple chains in the svdraws object: not yet implemented")
   if (!type %in% c("mean", "median")) stop("Argument 'type' must currently be either 'mean' or 'median'.")
 
-  if (object$thinning$time != 'all') stop("Not every point in time has been stored ('keeptime' was not set to 'all' during sampling), thus residuals cannot be extracted.")
+  if (thinning(object)$time != 'all') stop("Not every point in time has been stored ('keeptime' was not set to 'all' during sampling), thus residuals cannot be extracted.")
 
   y <- as.vector(object$y)
   if (contains_beta(object)) {
-    y <- y - object$designmatrix %*% t(object$beta)
+    y <- y - object$designmatrix %*% t(svbeta(object))
   }
 
   if (type == "mean") {
-    res <- rowMeans(y[seq(1, length(y))] / exp(t(object$latent)/2))
+    res <- rowMeans(y[seq(1, length(y))] / exp(t(latent(object)) / 2))
   }
 
   if (type == "median") {
-    res <- apply(y[seq(1, length(y))] / exp(t(object$latent)/2), 1, median)
+    res <- apply(y[seq(1, length(y))] / exp(t(latent(object)) / 2), 1, median)
   }
 
-  names(res) <- sub("h", "r", colnames(object$latent))
+  names(res) <- sub("h", "r", colnames(latent(object)))
   class(res) <- "svresid"
   attr(res, "type") <- type
 
   # Also return posterior mean/median of df parameter if terr = TRUE
   if ("nu" %in% sampled_parameters(object)) {
-    attr(res, "nu") <- get(type)(object$para[,"nu"])
+    attr(res, "nu") <- get(type)(para(object)[, "nu"])
   }
 
   res
@@ -530,13 +530,13 @@ residuals.svdraws <- function(object, type = "mean", ...) {
 
 
 #' Prediction of Future Returns and Log-Volatilities
-#' 
+#'
 #' Simulates draws from the predictive density of the returns and the latent log-volatility
 #' process. The same mean model is used for prediction as was used for fitting, which is
 #' either a) no mean parameter, b) constant mean, c) AR(k) structure, or d) general
 #' Bayesian regression. In the last case, new regressors need to be provided for prediction.
-#' 
-#' 
+#'
+#'
 #' @param object \code{svdraws} or \code{svldraws} object.
 #' @param steps \emph{optional} single number, coercible to integer. Denotes the number of
 #' steps to forecast.

@@ -2,31 +2,31 @@
 #  R package stochvol by
 #     Gregor Kastner Copyright (C) 2013-2020
 #     Darjus Hosszejni Copyright (C) 2019-2020
-#  
+#
 #  This file is part of the R package stochvol: Efficient Bayesian
 #  Inference for Stochastic Volatility Models.
-#  
+#
 #  The R package stochvol is free software: you can redistribute it
 #  and/or modify it under the terms of the GNU General Public License
 #  as published by the Free Software Foundation, either version 2 or
 #  any later version of the License.
-#  
+#
 #  The R package stochvol is distributed in the hope that it will be
 #  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 #  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #  General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with the R package stochvol. If that is not the case, please
 #  refer to <http://www.gnu.org/licenses/>.
 #  #####################################################################################
 
 #' Graphical Summary of the Posterior Predictive Distribution
-#' 
+#'
 #' \code{plot.svpredict} and \code{plot.svlpredict} generate some plots
 #' visualizing the posterior predictive distribution of future volatilites and
 #' future observations.
-#' 
+#'
 #' @param x \code{svpredict} or \code{svlpredict} object.
 #' @param quantiles Which quantiles to plot? Defaults to
 #' \code{c(.05, .25, .5, .75, .95)}.
@@ -40,10 +40,10 @@
 #' @family plotting
 #' @keywords hplot
 #' @examples
-#' 
-#' ## Simulate a short and highly persistent SV process 
+#'
+#' ## Simulate a short and highly persistent SV process
 #' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.1)
-#' 
+#'
 #' ## Obtain 5000 draws from the sampler (that's not a lot)
 #' draws <- svsample(sim$y, draws = 5000, burnin = 1000)
 #'
@@ -52,10 +52,10 @@
 #'
 #' ## Visualize the predicted distributions
 #' plot(pred)
-#' 
+#'
 #' ## Plot the latent volatilities and some forecasts
 #' plot(draws, forecast = pred)
-#' 
+#'
 #' @family plotting
 #' @keywords hplot
 #' @export
@@ -89,15 +89,15 @@ plot.svpredict <- function(x, quantiles = c(.05, .25, .5, .75, .95), ...) {
 }
 
 #' Probability Density Function Plot for the Parameter Posteriors
-#' 
+#'
 #' Displays a plot of the density estimate for the posterior distribution of
 #' the parameters \code{mu}, \code{phi}, \code{sigma} (and potentially
 #' \code{nu} or \code{rho}), computed by the \code{\link[stats]{density}} function.
-#' 
+#'
 #' \code{paradensplot} is modeled after \code{\link[coda]{densplot}} in the
 #' \code{coda} package, with some modifications for parameters that have
 #' (half-)bounded support.
-#' 
+#'
 #' @param x \code{svdraws} object.
 #' @param showobs logical value, indicating whether the observations should be
 #' displayed along the x-axis. If many draws have been obtained, the default
@@ -159,14 +159,14 @@ paradensplot <- function(x, showobs = TRUE, showprior = TRUE, showxlab = TRUE,
 }
 
 #' Trace Plot of MCMC Draws from the Parameter Posteriors
-#' 
+#'
 #' Displays a plot of iterations vs. sampled values the parameters \code{mu},
 #' \code{phi}, \code{sigma} (and potentially \code{nu} or \code{rho}), with a separate plot
 #' per variable.
-#' 
+#'
 #' \code{paratraceplot} is modeled after \code{\link[coda]{traceplot}} in the
 #' \code{coda} package, with very minor modifications.
-#' 
+#'
 #' @param x \code{svdraws} object.
 #' @param mar numerical vector of length 4, indicating the plot margins. See
 #' \code{\link[graphics]{par}} for details. The default value is \code{c(1.9,
@@ -206,11 +206,11 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
 }
 
 #' Plotting Quantiles of the Latent Volatilities
-#' 
+#'
 #' Displays quantiles of the posterior distribution of the volatilities over
 #' time as well as predictive distributions of future volatilities.
-#' 
-#' 
+#'
+#'
 #' @param x \code{svdraws} object.
 #' @param forecast nonnegative integer or object of class \code{svpredict}, as
 #' returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
@@ -253,24 +253,24 @@ paratraceplot.svdraws <- function(x, mar = c(1.9, 1.9, 1.9, .5), mgp = c(2, .6, 
 #' @keywords hplot ts
 #' @family plotting
 #' @examples
-#' 
-#' ## Simulate a short and highly persistent SV process 
+#'
+#' ## Simulate a short and highly persistent SV process
 #' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
-#' 
+#'
 #' ## Obtain 5000 draws from the sampler (that's not a lot)
 #' draws <- svsample(sim$y, draws = 5000, burnin = 100,
 #' 		  priormu = c(-10, 1), priorphi = c(20, 1.5),
 #' 		  priorsigma = 0.2)
-#' 
+#'
 #' ## Plot the latent volatilities and some forecasts
 #' volplot(draws, forecast = 10)
-#' 
+#'
 #' ## Re-plot with different quantiles
 #' newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
 #' draws <- updatesummary(draws, quantiles = newquants)
-#' 
+#'
 #' volplot(draws, forecast = 10)
-#' 
+#'
 #' @export
 volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
                     forecastlty = NULL, tcl = -.4,
@@ -369,14 +369,14 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 
 
 #' Graphical Summary of the Posterior Distribution
-#' 
+#'
 #' \code{plot.svdraws} and \code{plot.svldraws} generate some plots visualizing the posterior
 #' distribution and can also be used to display predictive distributions of
 #' future volatilities.
-#' 
+#'
 #' These functions set up the page layout and call \code{\link{volplot}},
 #' \code{\link{paratraceplot}} and \code{\link{paradensplot}}.
-#' 
+#'
 #' @param x \code{svdraws} object.
 #' @param forecast nonnegative integer or object of class \code{svpredict}, as
 #' returned by \code{\link{predict.svdraws}}. If an integer greater than 0 is
@@ -425,24 +425,24 @@ volplot <- function(x, forecast = 0, dates = NULL, show0 = FALSE,
 #' @family plotting
 #' @keywords hplot
 #' @examples
-#' 
-#' ## Simulate a short and highly persistent SV process 
+#'
+#' ## Simulate a short and highly persistent SV process
 #' sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
-#' 
+#'
 #' ## Obtain 5000 draws from the sampler (that's not a lot)
 #' draws <- svsample(sim$y, draws = 5000, burnin = 1000,
 #'   priormu = c(-10, 1), priorphi = c(20, 1.5), priorsigma = 0.2)
-#' 
+#'
 #' ## Plot the latent volatilities and some forecasts
 #' plot(draws, forecast = 10)
-#' 
+#'
 #' ## Re-plot with different quantiles
 #' newquants <- c(0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
 #' draws <- updatesummary(draws, quantiles = newquants)
-#' 
+#'
 #' plot(draws, forecast = 20, showobs = FALSE,
 #'      forecastlty = 3, showprior = FALSE)
-#' 
+#'
 #' @export
 plot.svdraws <- function(x, forecast = NULL, dates = NULL,
 			 show0 = FALSE, showobs = TRUE, showprior = TRUE,
@@ -458,7 +458,7 @@ plot.svdraws <- function(x, forecast = NULL, dates = NULL,
     message("Simulation object extracted from input")
     simobj <- x$simobj
   }
-  
+
   # Set layout
   index <- 1L
   chart_indices <- c()
@@ -536,7 +536,7 @@ mydensplot <- function(x, show.obs = TRUE, bwf, main = "", ylim, cutat=c(-Inf, I
         ylim <- c(0, max(dens$y))
       }
       if (i == 1) {
-        plot(dens, ylab = "", main = main, type = "l", 
+        plot(dens, ylab = "", main = main, type = "l",
              ylim = ylim, xlab="", mgp = mgp, tcl = tcl, col = i, ...)
       } else {
         lines(dens$x, dens$y, type = "l", col = i)
@@ -565,7 +565,7 @@ mytraceplot <- function (x, type = "l", ylab = "", xlab = "Iterations", mgp = c(
   varname <- coda::varnames(x[[1]])
   xp <- as.vector(time(x[[1]]))
   yp <- simplify2array(x)
-  graphics::matplot(xp, yp, xlab = xlab, ylab = ylab, type = type, 
+  graphics::matplot(xp, yp, xlab = xlab, ylab = ylab, type = type,
                     col = seq_along(x), mgp = mgp, tcl = tcl, ...)
   invisible(x)
 }
@@ -591,10 +591,12 @@ plot.svresid <- function(x, origdata = NA,
   if (!is.null(attr(x, "nu"))) {
     terr <- TRUE
     nu <- attr(x, "nu")
+    correction <- sqrt(nu / (nu - 2))
     xlab <- paste("Theoretical quantiles from a t-distribution with", round(nu, 2), "df")
   } else {
     terr <- FALSE
     nu <- Inf
+    correction <- 1
     xlab <- "Theoretical quantiles from a standard normal distribution"
   }
 
@@ -605,7 +607,7 @@ plot.svresid <- function(x, origdata = NA,
   if (!terr) abline(h=qnorm(c(.025, .975)), lty=2)
   where <- seq(1, length(x), length=min(7, length(x)))
   axis(1, at = where, labels = gsub("r_", "", names(x)[where]))
-  qqplot(qt(ppoints(length(x)), df = nu), sqrt(nu / (nu-2))*x,
+  qqplot(qt(ppoints(length(x)), df = nu), correction * x,
          main=paste(mains[2], "for", attr(x, "type"), "standardized residuals"),
          xlab = xlab, ylab = "Sample quantiles")
   qqline(x, probs = c(0.01, 0.99), distribution = function(x) qt(x, df = nu))
