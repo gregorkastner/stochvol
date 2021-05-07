@@ -31,7 +31,7 @@ those below for use cases.
 }
 \examples{
 
-## Simulate a short and highly persistent SV process 
+## Simulate a short and highly persistent SV process
 sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.1)
 
 ## Obtain 5000 draws from the sampler (that's not a lot)

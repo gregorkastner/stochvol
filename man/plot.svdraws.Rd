@@ -92,7 +92,7 @@ of doing so is given in the Examples section.
 }
 \examples{
 
-## Simulate a short and highly persistent SV process 
+## Simulate a short and highly persistent SV process
 sim <- svsim(100, mu = -10, phi = 0.99, sigma = 0.2)
 
 ## Obtain 5000 draws from the sampler (that's not a lot)

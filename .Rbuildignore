@@ -18,4 +18,5 @@ dic-example.R
 
 Makefile
 article2.Rnw
+vignettes/article2-*
 

@@ -176,6 +176,10 @@ knitr::opts_chunk$set(prompt = TRUE,
                       tidy = FALSE)
 base::options(continue = "+  ", prompt = "R> ", width = 70,
   useFancyQuotes = FALSE)
+
+library("RColorBrewer")
+library("LSD")
+library("zoo")
 @
 
 \section*{Preface}
@@ -778,6 +782,7 @@ As mentioned earlier, the sampling algorithms for the latent states $\hvec$ in \
 The approximation tends to be very good, therefore the default setting is not to correct for model misspecification.
 However, this correction can be enabled in all of the sampling routines through the \code{expert} argument as shown for \fct{svsample} in the following.
 <<results='hide'>>=
+set.seed(3)
 y <- svsim(50)$y
 svsample(y, expert = list(correct_model_misspecification = TRUE))
 @
