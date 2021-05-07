@@ -8,7 +8,6 @@ usePreCalcResultsExtra <- FALSE
 @
 
 %\VignetteIndexEntry{Dealing with Stochastic Volatility in Time Series Using the R Package stochvol}
-
 %\VignetteKeyword{Bayesian inference}
 %\VignetteKeyword{Markov chain Monte Carlo (MCMC)}
 %\VignetteKeyword{heteroskedasticity}
@@ -18,6 +17,8 @@ usePreCalcResultsExtra <- FALSE
 %\VignetteKeyword{predictive density}
 %\VignetteKeyword{predictive Bayes factor}
 %\VignetteKeyword{exchange rates}
+%\VignetteEngine{knitr::knitr}
+%\VignetteEncoding{UTF-8}
 
 \documentclass[article, nojss]{jss}
 %\documentclass[article]{jss}
@@ -111,7 +112,7 @@ plotevery <- 10L # can be used for trace plots to make vignette smaller
 %% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
 
 \section*{Preface}
-This vignette corresponds to an article of the same name which is published in the Journal of Statistical Software. The code base of the vignette has been updated to reflect the changes in recent versions of \stochvol{}. To cite, please use \cite{kas:dea}. Further information about citing \pkg{stochvol} can be obtained in \proglang{R} by installing the package, e.g., through \code{install.packages("stochvol")}, and calling \code{citation("stochvol")}.
+This vignette corresponds to an article of the same name which is published in the Journal of Statistical Software. The code base of the vignette has been updated to reflect the changes in recent versions of \pkg{stochvol}. To cite, please use \cite{kas:dea}. Further information about citing \pkg{stochvol} can be obtained in \proglang{R} by installing the package, e.g., through \code{install.packages("stochvol")}, and calling \code{citation("stochvol")}.
 
 \section{Introduction}
 Returns -- in particular financial returns -- are commonly analyzed by estimating and predicting potentially time-varying volatilities. This focus has a long history, dating back at least to \cite{mar:por} who investigates portfolio construction with optimal expected return-variance trade-off. In his article, he proposes rolling-window-type estimates for the instantaneous volatilities, but already then recognizes the potential for ``better methods, which take into account more information''.
@@ -204,7 +205,7 @@ plot(exrates$date[-1], ret, type = "l", main = "Demeaned log returns")
 @
 \begin{figure}[!ht]
 \begin{center}
- \includegraphics[width=\textwidth]{Figures/jss2014-usd1}
+ \includegraphics[width=\textwidth]{Figures/jss2014-usd1-1}
  \caption{Visualization of EUR-USD exchange rates included in the \pkg{stochvol} package.}
  \label{fig1}
 \end{center}
@@ -219,7 +220,7 @@ plot(sim)
 @
 \begin{figure}[!ht]
 \begin{center}
- \includegraphics[width=\textwidth]{Figures/jss2014-usd2}
+ \includegraphics[width=\textwidth]{Figures/jss2014-usd2-1}
  \caption{Visualization of a simulated time series as provided by the default \code{plot} method.}
  \label{fig2}
 \end{center}
@@ -300,7 +301,7 @@ volplot(res, forecast = 100, dates = exrates$date[-1])
 
 \begin{figure}[!htp]
 \begin{center}
- \includegraphics[width=\textwidth]{Figures/jss2014-usd3}
+ \includegraphics[width=\textwidth]{Figures/jss2014-usd3-1}
  \caption{Visualization of estimated contemporaneous volatilities of EUR-USD exchange rates, as provided by \code{volplot}. If not specified otherwise, posterior medians and 5\%/95\% quantiles are plotted. The dotted lines on the right indicate predicted future volatilities.}
  \label{fig3}
 \end{center}
@@ -315,7 +316,7 @@ volplot(res, forecast = 100, dates = exrates$date[-1])
 
 \begin{figure}[!htp]
 \begin{center}
- \includegraphics[width=\textwidth]{Figures/jss2014-usd4}
+ \includegraphics[width=\textwidth]{Figures/jss2014-usd4-1}
  \caption{As above, now with medians (black line) and 1\%/10\%/90\%/99\% quantiles (gray lines). This behavior can be achieved through a preceding call of \code{updatesummary}.}
  \label{fig4}
 \end{center}
@@ -330,7 +331,7 @@ paratraceplot(res)
 
 \begin{figure}[!htp]
 \begin{center}
- \includegraphics[width=\textwidth]{Figures/jss2014-usd5}
+ \includegraphics[width=\textwidth]{Figures/jss2014-usd5-1}
  \caption{Trace plots of posterior draws for the parameters $\mupar, \phipar, \sigmapar$.}
  %The underlying dataset is again EUR-USD exchange rates.}
  \label{fig5}
@@ -346,7 +347,7 @@ paradensplot(res, showobs = FALSE)
 
 \begin{figure}[!htp]
 \begin{center}
- \includegraphics[width=\textwidth]{Figures/jss2014-usd6}
+ \includegraphics[width=\textwidth]{Figures/jss2014-usd6-1}
  \caption{Posterior density estimates (black solid lines) along with prior densities (dashed gray lines). Individual posterior draws are indicated by the underlying rug.}
  \label{fig6}
 \end{center}
@@ -361,7 +362,7 @@ plot(res, showobs = FALSE)
 
 \begin{figure}[!ht]
 \begin{center}
- \includegraphics[width=\textwidth]{Figures/jss2014-usd7}
+ \includegraphics[width=\textwidth]{Figures/jss2014-usd7-1}
  \caption{Illustration of the default \code{plot} method for \code{svdraws}-objects. This visualization combines \code{volplot} (Figure~\ref{fig4}), \code{traceplot} (Figure~\ref{fig5}), and \code{paradensplot} (Figure~\ref{fig6}) into one single plot.}
  \label{fig7}
 \end{center}
@@ -376,7 +377,7 @@ plot(myresid, ret)
 
 \begin{figure}[!ht]
 \begin{center}
- \includegraphics[width=\textwidth]{Figures/jss2014-usd8}
+ \includegraphics[width=\textwidth]{Figures/jss2014-usd8-1}
  \caption{Mean standardized residual plots for assessing the model fit, as provided by the corresponding \code{plot} method. The dashed lines in the bottom left panel indicate the 2.5\%/97.5\% quantiles of the standard normal distribution.}
  \label{fig8}
 \end{center}
@@ -479,7 +480,7 @@ plot(coda::mcmc(draws1))
 
 \begin{figure}[!ht]
 \begin{center}
-\includegraphics[width=\textwidth]{Figures/jss2014-homo}
+\includegraphics[width=\textwidth]{Figures/jss2014-homo-1}
 \caption{Trace plots and kernel density estimates for some draws from the marginal posterior distributions in the regression model with heteroskedastic errors. Underlying data is simulated with $\betab^\text{true}=(0.1, 0.5)^\top$, $\sigmaepsextrasuper{\text{true}} = 0.01$, $n=1000$.}
 \label{homodraws}
 \end{center}
@@ -490,7 +491,8 @@ plot(coda::mcmc(draws1))
 \subsection{The Bayesian normal linear model with SV errors}
 \label{hetero}
 
-Instead of homoskedastic errors, we now specify the error covariance matrix in Equation~\ref{reg} to be $\Sigmab \equiv \diag{\e^{h_1}, \dots, \e^{h_n}}$, thus introducing nonlinear dependence between the observations due to the AR(1)-nature of $\hb$. Instead of cooking up an entire new sampler, we adapt the code from above utilizing the \pkg{stochvol} package.\footnote{Since \stochvol{} version 3.0, regression is a built-in feature of the function \code{svsample_fast_cpp} through its argument \code{designmatrix}.} To do so, we simply replace the sampling step of $\sigmaepsextrasuper{2}$ from an Inverse-Gamma distribution with a sampling step of $\allpara$ and $\hb$ through a call to \code{svsample_fast_cpp}.\footnote{In earlier version of the \pkg{stochvol} package, this function was called \code{svsample2}.} This function is a minimal-overhead version of the regular \code{svsample}. It provides the full sampling functionality of the original version but has slightly different default values, a simplified return value structure, and it does not perform costly input checks. Thus, it executes faster and is more suited for repeated calls. The drawback is that it needs to be used with proper care.\footnote{Erroneous or incompatible input values most likely result in run-time errors of compiled code, often implying a segmentation fault and the consecutive abnormal termination of \proglang{R}. This can render debugging tedious.} Note that the current draws of the variables need to be passed to the function through \code{startpara} and \code{startlatent}.
+Instead of homoskedastic errors, we now specify the error covariance matrix in Equation~\ref{reg} to be $\Sigmab \equiv \diag{\e^{h_1}, \dots, \e^{h_n}}$, thus introducing nonlinear dependence between the observations due to the AR(1)-nature of $\hb$. Instead of cooking up an entire new sampler, we adapt the code from above utilizing the \pkg{stochvol} package.\footnote{Since \pkg{stochvol} version 3.0, regression is a built-in feature of the function \code{svsample\_fast\_cpp} through its argument
+\code{designmatrix}.} To do so, we simply replace the sampling step of $\sigmaepsextrasuper{2}$ from an Inverse-Gamma distribution with a sampling step of $\allpara$ and $\hb$ through a call to \code{svsample\_fast\_cpp}.\footnote{In earlier version of the \pkg{stochvol} package, this function was called \code{svsample2}.} This function is a minimal-overhead version of the regular \code{svsample}. It provides the full sampling functionality of the original version but has slightly different default values, a simplified return value structure, and it does not perform costly input checks. Thus, it executes faster and is more suited for repeated calls. The drawback is that it needs to be used with proper care.\footnote{Erroneous or incompatible input values most likely result in run-time errors of compiled code, often implying a segmentation fault and the consecutive abnormal termination of \proglang{R}. This can render debugging tedious.} Note that the current draws of the variables need to be passed to the function through \code{startpara} and \code{startlatent}.
 
 Here is how it goes:
 \begin{itemize}
@@ -526,7 +528,7 @@ paranames <- names(paradraw)
 @
  \item Run the main sampler, i.e., iteratively draw
   \begin{itemize}
-   \item the latent volatilities/parameters by conditioning on the regression parameters and calling \code{svsample2},
+   \item the latent volatilities/parameters by conditioning on the regression parameters and calling \code{svsample\_fast\_cpp},
    \item the regression parameters by conditioning on the latent volatilities and calling \code{rmvnorm}:
   \end{itemize}
 <<eval=FALSE, echo=TRUE>>=
@@ -595,7 +597,7 @@ plot(coda::mcmc(draws2selection[seq(1L, nrow(draws2selection), by = plotevery), 
 
 \begin{figure}[!ht]
  \begin{center}
-\includegraphics[width=\textwidth]{Figures/jss2014-hetero}
+\includegraphics[width=\textwidth]{Figures/jss2014-hetero-1}
 \caption{Trace plots and kernel density estimates
 %for draws from the marginal posterior distributions of the parameters
 in the regression model with heteroskedastic errors. Data is simulated with $\betab^\text{true}=(0.1, 0.5)^\top$, $h_1^\text{true} = -8.28$, $h_2^\text{true} = -8.50$, $n=1000$.}
@@ -613,7 +615,7 @@ colMeans(draws2selection)
 
 \end{itemize}
 
-It should be noted that even though \code{svsample2} is considerably faster than \code{svsample}, the cost of interpreting this function in each MCMC iteration is still rather high (which lies in the nature of \proglang{R} as an interpreted language). Thus, as of package version \code{0.8-0}, a single-step \code{update} is also made available at the \proglang{C}/\proglang{C++} level for samplers coded there. For details, please consult the \code{NEWS} file in the package source; for an application case using this approach, see \cite{kas-etal:ana}.
+It should be noted that even though \code{svsample\_fast\_cpp} is considerably faster than \code{svsample}, the cost of interpreting this function in each MCMC iteration is still rather high (which lies in the nature of \proglang{R} as an interpreted language). Thus, as of package version \code{0.8-0}, a single-step \code{update} is also made available at the \proglang{C}/\proglang{C++} level for samplers coded there. For details, please consult the \code{NEWS} file in the package source; for an application case using this approach, see \cite{kas-etal:ana}.
 
 \section{Illustrative predictive exercise}
 In the following, we compare the performance of the Bayesian normal linear model with homoskedastic errors from Section~\ref{homo} with the Bayesian normal linear model with SV errors from Section~\ref{hetero} using the \code{exrates} dataset introduced in Section~\ref{prep}. As a benchmark, we also include the Bayesian normal linear model with GARCH(1,1) errors given through Equation~\ref{reg} with
@@ -659,7 +661,7 @@ abline(0,1)
 Irrespectively of the error specification, we expect the posterior distribution of $\betab$ to spread around $(0,1)^\top$ which corresponds to a random walk. A scatterplot of $\log p_t$ against $\log p_{t+1}$, displayed in Figure~\ref{datascatter}, confirms this.
 \begin{figure}[!ht]
 \begin{center}
- \includegraphics[width=\textwidth]{Figures/jss2014-scatter}
+ \includegraphics[width=\textwidth]{Figures/jss2014-scatter-1}
 \end{center}
 \caption{Scatterplot of daily log prices at time $t$ against daily log prices at time $t+1$. The solid line indicates the identity function $f(x) = x$.}
 \label{datascatter}
@@ -673,14 +675,14 @@ Aiming for comparable results with minimal prior impact on predictive performanc
 
 The samplers yield slightly different posteriors for $\betab$, visualized in Figure~\ref{betapost}. In the top panels, the estimated marginal posterior densities $p(\beta_0|\yb)$ and $p(\beta_1|\yb)$ are displayed; the bottom panel depicts a scatterplot of draws from the joint posterior $\betab|\yb$.
 
-<<>>=
+<<results='hide'>>=
 if (usePreCalcResults) {
  load("vignette_sampling_realworld.RData")
 } else {
 set.seed(34567890)
 
 #configuration parameters
-draws <- 10000  #100000  TODO
+draws <- 100000
 thinning <- 100
 burnin <- 10000
 priormu <- c(-10, 1)
@@ -952,7 +954,7 @@ legend("topright", c("SV", "GARCH", "homosked."), col=c(1,4,2), pch=1:3)
 
 \begin{figure}[!ht]
 \begin{center}
- \includegraphics[width=\textwidth]{Figures/jss2014-betapost}
+ \includegraphics[width=\textwidth]{Figures/jss2014-betapost-1}
  \caption{Visualization of the posterior distributions $\betab|\yb$ for the model with SV regression residuals, the model with GARCH(1,1) regression residuals, and the model with homoskedastic regression residuals. Top panels: Kernel density estimates of the univariate posterior marginal distributions. Bottom panel: Bivariate scatterplot of posterior draws.}
   \label{betapost}
 \end{center}
@@ -985,7 +987,7 @@ abline(0,1)
 
 \begin{figure}[!ht]
  \begin{center}
-  \includegraphics[width=\textwidth]{Figures/jss2014-qqplot}
+  \includegraphics[width=\textwidth]{Figures/jss2014-qqplot-1}
  \end{center}
  \caption{Visualization of mean standardized residuals. Top left panel shows a scatterplot against time for the model with homoskedastic errors, middle left panel shows this plot for the model with GARCH errors, and bottom left panel shows this plot for the model with SV errors. Quantile-Quantile plots of empirical quantiles against expected quantiles from a $\Normal{0,1}$-distribution are displayed on the panels on the right-hand side.}
  \label{qqplot}
@@ -1059,7 +1061,7 @@ A visually barely distinguishable picture emerges when GARCH(1,1) errors are emp
 
 \begin{figure}[!htp]
 \begin{center}
- \includegraphics[width=.984\textwidth]{Figures/jss2014-predlik1}
+ \includegraphics[width=.984\textwidth]{extrafig/predlik1}
 \end{center}
 \caption{Top panel: Observed series (green) and symmetrical 98\% one-day-ahead predictive intervals for the model with homoskedastic errors (red) and the model with SV errors (black). The display also contains a close-up, showing only the period from September 2008 until August 2009. This time span is chosen to include the most noticeable ramifications of the financial crisis. During that phase, predictive performance of the model with homoskedastic errors deteriorates substantially, while SV errors can capture the inflated volatility much better. Bottom panel: Log one-day-ahead predictive likelihoods for both models.}
 \label{predlik1}
@@ -1067,7 +1069,7 @@ A visually barely distinguishable picture emerges when GARCH(1,1) errors are emp
 
 \begin{figure}[!htp]
 \begin{center}
- \includegraphics[width=.984\textwidth]{Figures/jss2014-predlik3}
+ \includegraphics[width=.984\textwidth]{extrafig/predlik3}
 \end{center}
 \caption{Top panel: Observed residuals with respect to the median of the one-day-ahead predictive distribution along with 1\% and 99\% quantiles of the respective predictive distributions. It can clearly be seen that the variances of the predictive distributions in the GARCH and SV models adjust to heteroskedasticity, while the model with homoskedastic errors is much more restrictive. Bottom panel: Cumulative log predictive Bayes factors in favor of the model with SV residuals. Values greater than zero mean that the model with GARCH/SV residuals performs better out of sample up to this point in time.}
 \label{predlik3}

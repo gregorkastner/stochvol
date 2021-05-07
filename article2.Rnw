@@ -93,7 +93,7 @@
 \def\svpars{\bm{\vartheta}}
 \def\svlpars{\bm{\zeta}}
 
-\graphicspath{{Figures/}}
+\graphicspath{{Figures2/}}
 
 \author{Darjus Hosszejni\\[.3em]WU Vienna University\\[-.1em]of Economics and Business
 \And Gregor Kastner\\[.3em]University of Klagenfurt}
@@ -172,7 +172,7 @@ knitr::opts_chunk$set(prompt = TRUE,
                       message = FALSE,
                       echo = FALSE,
                       cache = FALSE,
-                      fig.path = "Figures/jss3813-",
+                      fig.path = "Figures2/jss3813-",
                       tidy = FALSE)
 base::options(continue = "+  ", prompt = "R> ", width = 70,
   useFancyQuotes = FALSE)

@@ -19,5 +19,5 @@ dic-example.R
 Makefile
 article.Rnw
 article2.Rnw
-vignettes/article2-*
+vignettes/article2?-[-1-9a-z.]+
 
