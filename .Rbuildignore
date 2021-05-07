@@ -17,5 +17,6 @@ dic-example.R
 ^.*\.txt$
 
 Makefile
+article.Rnw
 article2.Rnw
 

@@ -456,7 +456,7 @@ This results in a normal prior for each element of the loadings matrix.
 
 The second type is a hierarchical prior which has been developed to induce more flexible and potentially stronger shrinkage,
 \begin{equation} \label{eq:ngprior}
-  \Loading_{ij}\mid\tau_{ij}^2 \sim \Normal{0}{\tau_{ij}^2}, \quad \tau_{ij}^2\mid\lambda_i^2 \sim \Gammadist{a}{a\lambda_i^2/2}. 
+  \Loading_{ij}\mid\tau_{ij}^2 \sim \Normal{0}{\tau_{ij}^2}, \quad \tau_{ij}^2\mid\lambda_i^2 \sim \Gammadist{a}{a\lambda_i^2/2}.
 \end{equation}
 This distribution is termed normal gamma prior by \citet{griffin2010inference} and implies a conditional variance $\mathbb{V}(\Loading_{ij}\mid\lambda_i^2)$ of $2/\lambda_i^2$ and an unconditional excess kurtosis of $3/a$.
 The value of $a$ is treated as a structural parameter to be fixed by the user, where choosing $a$ small ($\lesssim 1$) enforces strong shrinkage towards zero, while choosing $a$ large ($\gtrsim 1$) imposes little shrinkage.
@@ -707,7 +707,7 @@ Furthermore, all sampling functions accept the argument \code{priorbeta} to set 
 The prior for $\nupar$ can be influenced in \fct{svtsample} and \fct{svtlsample} by passing $\nuprior$ as the argument \code{priornu}.
 Finally, \fct{svlsample} and \fct{svtlsample} take the \code{numeric} sequence $(\rhopriorf,\rhopriors)$ through the input argument \code{priorrho}.
 
-The code snippet below shows all the default values of the prior hyperparameters. 
+The code snippet below shows all the default values of the prior hyperparameters.
 <<printpriordefault, echo=TRUE, results='hide'>>=
 svsample(CHF_logret, priormu = c(0, 100), priorphi = c(5, 1.5),
   priorsigma = 1, priorbeta = c(0, 10000))
@@ -896,7 +896,7 @@ res <- fsvsample(y, factors = 2, draws = 10000, zeromean = FALSE,
 
 \subsection{Investigating the output and visualizing the results}
 
-The resulting object 
+The resulting object
 <<printrres, echo = TRUE>>=
 res
 @
@@ -1017,7 +1017,7 @@ logvartimeplot(res, show = "idi", maxrows = 6)
   \includegraphics[width=\textwidth]{jss3813-varplot-1}
   \caption{Factor loadings and factor variances.
     The top panels visualize the joint posterior distribution of the two factor loadings.
-    While the colored clouds on the left consist of posterior draws and provide details, the posterior $0.01$/$0.99$ credible intervals on the right summarize the marginal distributions. 
+    While the colored clouds on the left consist of posterior draws and provide details, the posterior $0.01$/$0.99$ credible intervals on the right summarize the marginal distributions.
     The bottom panels depict posterior means plus/minus two standard deviations of factor log variances.}
   \label{fig:loadplot2}
 \end{figure}
@@ -1097,7 +1097,7 @@ Source code is available in the GitHub repositories \url{https://github.com/greg
 
 Gregor Kastner acknowledges funding from the Austrian Science Fund (FWF) for the project ``High-dimensional statistical learning: New methods to advance economic and sustainability policy'' (ZK 35), jointly carried out by the University of Klagenfurt, WU Vienna University of Economics and Business, Paris Lodron University Salzburg, TU Wien, and the Austrian Institute of Economic Research (WIFO).
 
-\bibliography{ref}
+\bibliography{ref2}
 
 \end{document}
 

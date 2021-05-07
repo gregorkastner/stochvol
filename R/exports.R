@@ -2,35 +2,35 @@
 #  R package stochvol by
 #     Gregor Kastner Copyright (C) 2013-2020
 #     Darjus Hosszejni Copyright (C) 2019-2020
-#  
+#
 #  This file is part of the R package stochvol: Efficient Bayesian
 #  Inference for Stochastic Volatility Models.
-#  
+#
 #  The R package stochvol is free software: you can redistribute it
 #  and/or modify it under the terms of the GNU General Public License
 #  as published by the Free Software Foundation, either version 2 or
 #  any later version of the License.
-#  
+#
 #  The R package stochvol is distributed in the hope that it will be
 #  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 #  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #  General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with the R package stochvol. If that is not the case, please
 #  refer to <http://www.gnu.org/licenses/>.
 #  #####################################################################################
 
 #' Bindings to \code{C++} Functions in \code{stochvol}
-#' 
+#'
 #' All the heavy lifting in \code{stochvol} is implemented in \code{C++}
 #' with the help of \code{R} packages \code{Rcpp} and \code{RcppArmadillo}.
 #' These functions call the MCMC samplers in \code{C++} directly without any
 #' any validation and transformations, expert use only!
-#' 
+#'
 #' The sampling functions are separated into fast SV and general SV. See more details
 #' in the sections below.
-#' 
+#'
 #' @param y numeric vector of the observations
 #' @param draws single positive integer, the number of draws to
 #' return (after the burn-in)
@@ -101,7 +101,7 @@
 #' efficiency of the model parameters, and it employs all-without-a-loop (AWOL)
 #' for computationally efficient Kalman filtering of the conditionally Gaussian state space.
 #' Correction for model misspecification happens as a post-processing step.
-#' 
+#'
 #' Fast SV employs sampling strategies that have been fine-tuned and specified for
 #' vanilla SV (no leverage), and hence it can be fast and efficient but also more limited
 #' in its feature set. The conditions for the fast SV sampler: \code{rho == 0}; \code{mu}
@@ -115,7 +115,7 @@
 #' approximate SV model without leverage, where the approximation comes in through
 #' auxiliary mixture approximations to the exact SV model. The sampler uses
 #' both ASIS and AWOL.
-#' 
+#'
 #' General SV employs adapted random walk Metropolis-Hastings as the proposal for
 #' the parameters \code{mu}, \code{phi}, \code{sigma}, and \code{rho}. Therefore,
 #' more general prior distributions are allowed in this case.
@@ -123,6 +123,7 @@
 #' @rdname svsample_cpp
 #' @export
 svsample_fast_cpp <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA), priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, fast_sv = get_default_fast_sv()) {
+  startpara <- digest_startpara(startpara, priorspec)
   result <- .Call(`_stochvol_svsample_fast_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, fast_sv, PACKAGE = "stochvol")
   if (fast_sv$store_indicators) {
     fast_sv$init_indicators <- result$indicators[NROW(result$indicators), , drop = TRUE]
@@ -137,6 +138,7 @@ svsample_fast_cpp <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA
 #' @rdname svsample_cpp
 #' @export
 svsample_general_cpp <- function(y, draws = 1, burnin = 0, designmatrix = matrix(NA), priorspec = specify_priors(), thinpara = 1, thinlatent = 1, keeptime = "all", startpara, startlatent, keeptau = !inherits(priorspec$nu, "sv_infinity"), print_settings = list(quiet = TRUE, n_chains = 1, chain = 1), correct_model_misspecification = FALSE, interweave = TRUE, myoffset = 0, general_sv = get_default_general_sv(priorspec)) {
+  startpara <- digest_startpara(startpara, priorspec)
   result <- .Call(`_stochvol_svsample_general_cpp`, y, draws, burnin, designmatrix, priorspec, thinpara, thinlatent, keeptime, startpara, startlatent, keeptau, print_settings, correct_model_misspecification, interweave, myoffset, general_sv, PACKAGE = "stochvol")
   if (NROW(result$tau) > 1) {
     general_sv$init_tau <- result$tau[NROW(result$tau), , drop = TRUE]
@@ -156,3 +158,19 @@ methods::setLoadAction(function(ns) {
   .Call('_stochvol_Export_registerCCallable', PACKAGE = 'stochvol')
 })
 
+digest_startpara <- function (startpara, priorspec) {
+  startpara <- as.list(drop(startpara))  # this way, named vectors are also accepted
+  if (is.null(startpara$nu)) {
+    startpara$nu <- mean(priorspec$nu)
+  }
+  if (is.null(startpara$rho)) {
+    startpara$rho <- mean(priorspec$rho)
+  }
+  if (is.null(startpara$beta)) {
+    startpara$beta <- 0
+  }
+  if (is.null(startpara$latent0)) {
+    startpara$latent0 <- startpara$mu
+  }
+  startpara
+}
