@@ -30,3 +30,4 @@ vignettes/Figures2/.*.pdf
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.github$
