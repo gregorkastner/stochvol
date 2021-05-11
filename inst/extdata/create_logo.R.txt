@@ -16,7 +16,6 @@ p <- data.frame(time = seq_along(series), a = series, b = -series) %>%
   ggplot(aes(time, value, group = name)) +
     geom_line(color = rgb(54L, 77L, 146L, 255L, maxColorValue = 255L),
               size = 0.55) +
-    #facet_grid(name ~ .) +
     ggpubr::theme_transparent() +
     theme(legend.position = "none",
           strip.text.y = element_blank())
