@@ -27,3 +27,6 @@ vignettes/Figures/.*.pdf
 vignettes/Figures2/.*.pdf
 ^Rplots.pdf
 
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

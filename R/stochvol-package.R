@@ -2,56 +2,56 @@
 #  R package stochvol by
 #     Gregor Kastner Copyright (C) 2013-2020
 #     Darjus Hosszejni Copyright (C) 2019-2020
-#  
+#
 #  This file is part of the R package stochvol: Efficient Bayesian
 #  Inference for Stochastic Volatility Models.
-#  
+#
 #  The R package stochvol is free software: you can redistribute it
 #  and/or modify it under the terms of the GNU General Public License
 #  as published by the Free Software Foundation, either version 2 or
 #  any later version of the License.
-#  
+#
 #  The R package stochvol is distributed in the hope that it will be
 #  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 #  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #  General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with the R package stochvol. If that is not the case, please
 #  refer to <http://www.gnu.org/licenses/>.
 #  #####################################################################################
 
 #' Euro exchange rate data
-#' 
+#'
 #' The data set contains the daily bilateral prices of one Euro in 23
 #' currencies from January 3, 2000, until April 4, 2012. Conversions to New
 #' Turkish Lira and Fourth Romanian Leu have been incorporated.
-#' 
-#' 
+#'
+#'
 #' @name exrates
 #' @docType data
 #' @seealso \code{\link{svsample}}
 #' @source ECB Statistical Data Warehouse (\url{https://sdw.ecb.europa.eu})
 #' @keywords datasets
 #' @examples
-#' 
+#'
 #' \dontrun{
 #' data(exrates)
 #' dat <- logret(exrates$USD, demean = TRUE)  ## de-meaned log-returns
 #' res <- svsample(dat)                       ## run MCMC sampler
 #' plot(res, forecast = 100)                  ## display results
 #' }
-#' 
+#'
 NULL
 
 #' Efficient Bayesian Inference for Stochastic Volatility (SV) Models
-#' 
+#'
 #' This package provides an efficient algorithm for fully Bayesian estimation
 #' of stochastic volatility (SV) models via Markov chain Monte Carlo (MCMC)
 #' methods. Methodological details are given in Kastner and Frühwirth-Schnatter
 #' (2014); the most common use cases are described in Kastner (2016). Recently,
 #' the package has been extended to allow for the leverage effect.
-#' 
+#'
 #' Bayesian inference for stochastic volatility models using MCMC methods
 #' highly depends on actual parameter values in terms of sampling efficiency.
 #' While draws from the posterior utilizing the standard centered
@@ -64,7 +64,7 @@ NULL
 #' different worlds'' which allows for inference for parameter constellations
 #' that have previously been infeasible to estimate without the need to select
 #' a particular parameterization beforehand.
-#' 
+#'
 #' @name stochvol-package
 #' @aliases stochvol-package stochvol
 #' @docType package
@@ -88,7 +88,7 @@ NULL
 #' Kastner, G. (2016). Dealing with Stochastic Volatility in Time Series Using the R Package stochvol.
 #' \emph{Journal of Statistical Software}, \bold{69}(5), 1--30,
 #' \doi{10.18637/jss.v069.i05}.
-#' 
+#'
 #' Yu, Y. and Meng, X.-L. (2011). To Center or Not to Center: That is Not the
 #' Question---An Ancillarity-Suffiency Interweaving Strategy (ASIS) for
 #' Boosting MCMC Efficiency. \emph{Journal of Computational and Graphical
