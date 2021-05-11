@@ -46,7 +46,7 @@ Changes in Version 3.0.0:
   - Modified backend for 'svdraws' and 'svpredict' objects to
     to incorporate independent chains: they contain 'mcmc.list'
     objects instead of plain 'mcmc' objects.
-    WARNING! This may break code that exploited the backed!
+    WARNING! This may break code that exploited the backend!
   - Additional extractor functions for 'svdraws' objects: 'vola',
     'sv_beta', 'sv_tau', 'sampled_parameters', index chains via [],
     'as.array'
