@@ -1,0 +1,33 @@
+# txt: We do not want anyone else to execute this file
+
+library("hexSticker")
+library("svglite")
+library("tidyr")
+library("magrittr")
+library("ggplot2")
+library("ggpubr")
+
+s <- -(75 - 1:150)^2 / 5000 + 2
+m <- s^2
+set.seed(7)
+series <- rnorm(length(s), m + 3.5, s)
+p <- data.frame(time = seq_along(series), a = series, b = -series) %>%
+  pivot_longer(c(a, b)) %>%
+  ggplot(aes(time, value, group = name)) +
+    geom_line(color = rgb(14L, 77L, 146L, 255L, maxColorValue = 255L),
+              size = 0.55) +
+    #facet_grid(name ~ .) +
+    ggpubr::theme_transparent() +
+    theme(legend.position = "none",
+          strip.text.y = element_blank())
+plot(p)
+
+sticker(p, package = "stochvol", p_size = 10,
+        s_x = 1, s_y = 1, s_width = 1.9, s_height = 2.0,
+        p_x = 1, p_y = 1.05,
+        #p_family = "mono",
+        url = "https://cran.r-project.org/package=stochvol",
+        u_color = "grey89", u_size = 1,
+        h_fill = rgb(0xe1, 0xad, 0x01, 255, maxColorValue = 255L),
+        h_color = "grey85", p_color = "grey96",
+        filename = "man/figures/logo.svg")
