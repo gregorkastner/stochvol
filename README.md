@@ -2,6 +2,8 @@
 
 This is the development repository of the [`R`](https://www.r-project.org/) package [`stochvol`](https://cran.r-project.org/package=stochvol).
 
+![stochvol logo](/man/figures/logo.svg)
+
 ## Features
 
 The package provides methods to estimate the stochastic volatility model, potentially with conditionally heavy tails and/or with leverage.
