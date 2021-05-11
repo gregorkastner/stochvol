@@ -1,0 +1,116 @@
+---
+title: "Quick Guide to `stochvol`&mdash;Stochastic Volatility as a Standalone Model"
+author: "Darjus Hosszejni and Gregor Kastner"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Guide to \texttt{stochvol}---Stochastic Volatility as a Standalone Model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, include=FALSE}
+library(stochvol)
+```
+
+# Intro
+
+# Prior Predictive Check
+
+```{r priors}
+create_prior_generators <- function (priors) {
+  rmu <- switch(class(priors$mu)[1],
+    sv_normal = function (n) rnorm(n, priors$mu$mean, priors$mu$sd),
+    stop("mu NYI"))
+  rphi <- switch(class(priors$phi)[1],
+    sv_beta = function (n) rbeta(n, priors$phi$shape1, priors$phi$shape2),
+    stop("phi NYI"))
+  rsigma2 <- switch(class(priors$sigma2)[1],
+    sv_gamma = function (n) rgamma(n, shape = priors$sigma2$shape, rate = priors$sigma2$rate),
+    stop("sigma2 NYI"))
+  rnu <- switch(class(priors$nu)[1],
+    sv_infinity = function (n) rep_len(Inf, n),
+    sv_exponential = function (n) rexp(n, rate = priors$nu$rate),
+    stop("nu NYI"))
+  rrho <- switch(class(priors$rho)[1],
+    sv_beta = function (n) rbeta(n, priors$rho$shape1, priors$rho$shape2),
+    sv_constant = function (n) rep_len(priors$rho$value, n),
+    stop("rho NYI"))
+  rlatent0 <- if (identical(priors$latent0_variance, "stationary")) {
+    function (n, mu, phi, sigma2) rnorm(n, mu, sqrt(sigma2 / (1 - phi^2)))
+  } else if (inherits(priors$latent0_variance, "sv_constant")) {
+    function (n, mu, phi, sigma2) rnorm(n, mu, sqrt(priors$latent0_variance$value))
+  } else {
+    stop("latent0 NYI")
+  }
+  list(rmu = rmu, rphi = rphi, rsigma2 = rsigma2,
+       rnu = rnu, rrho = rrho, rlatent0 = rlatent0)
+}
+
+generate_series <- function (t, latent0, mu, phi, sigma2, nu, rho) {
+  if (length(latent0) != length(mu) ||
+      length(latent0) != length(phi) ||
+      length(latent0) != length(sigma2)) {
+    stop("Paramter inputs should have the same length")
+  }
+  sigma <- sqrt(sigma2)
+  gen_latent_help <- function (eta, prev_latent) {
+    mu + phi * (prev_latent - mu) + sigma * eta
+  }
+  n_draws <- length(latent0)
+  eta <- replicate(t, rnorm(n_draws), simplify = FALSE)
+  eps <- Map(function (eta_t) rho * eta_t + sqrt(1 - rho^2) * rnorm(length(eta_t)),
+             eta)
+  tau <- replicate(t,
+                   ifelse(is.finite(nu), 1 / rgamma(n_draws, nu / 2, rate = nu / 2 - 1), 1),
+                   simplify = FALSE)
+  latent <- tail(Reduce(gen_latent_help,
+                        eta,
+                        latent0,
+                        accumulate = TRUE),
+                 -1)
+  observed <- Map(function (latent_t, tau_t, eps_t) exp(latent_t / 2) * sqrt(tau_t) * eps_t,
+                  latent, tau, eps)
+  list(y = matrix(unlist(observed), ncol = t),
+       h = matrix(unlist(latent), ncol = t))
+}
+```
+
+```{r pairs}
+n_draws <- 3000L
+n_time <- 3L
+priors <- specify_priors(
+  mu = sv_normal(mean = -9, sd = 0.1),
+  phi = sv_beta(shape1 = 15, shape2 = 0.5),
+  sigma2 = sv_gamma(shape = 0.5, rate = 0.5),
+  nu = sv_infinity(),
+  rho = sv_constant(value = 0),
+  latent0_variance = sv_constant(1)
+)
+print(priors)
+
+prior_generators <- create_prior_generators(priors)
+with(prior_generators, {
+  mu <<- rmu(n_draws)
+  phi <<- rphi(n_draws)
+  sigma2 <<- rsigma2(n_draws)
+  nu <<- rnu(n_draws)
+  rho <<- rrho(n_draws)
+  latent0 <<- rlatent0(n_draws, mu, phi, sigma2)
+})
+data <- generate_series(n_time, latent0, mu, phi, sigma2, nu, rho)
+pairs(data$y)
+```
+
+# Fit Model
+
+# Evaluate Convergence
+
+# Evaluate Parameter Estimates
