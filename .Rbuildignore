@@ -25,4 +25,5 @@ cache
 vignettes/article2?-[-1-9a-z.]+
 vignettes/Figures/.*.pdf
 vignettes/Figures2/.*.pdf
+^Rplots.pdf
 

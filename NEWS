@@ -1,4 +1,5 @@
 Changes in Version 3.0.5:
+  - Re-added first vignette with the necessary updates
   - Bugfix in 'residuals.svdraws' and 'plot.svresid'
 
 Changes in Version 3.0.4:
