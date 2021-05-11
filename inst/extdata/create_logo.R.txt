@@ -14,7 +14,7 @@ series <- rnorm(length(s), m + 3.5, s)
 p <- data.frame(time = seq_along(series), a = series, b = -series) %>%
   pivot_longer(c(a, b)) %>%
   ggplot(aes(time, value, group = name)) +
-    geom_line(color = rgb(14L, 77L, 146L, 255L, maxColorValue = 255L),
+    geom_line(color = rgb(54L, 77L, 146L, 255L, maxColorValue = 255L),
               size = 0.55) +
     #facet_grid(name ~ .) +
     ggpubr::theme_transparent() +
@@ -29,5 +29,5 @@ sticker(p, package = "stochvol", p_size = 10,
         url = "https://cran.r-project.org/package=stochvol",
         u_color = "grey89", u_size = 1,
         h_fill = rgb(0xe1, 0xad, 0x01, 255, maxColorValue = 255L),
-        h_color = "grey85", p_color = "grey96",
+        h_color = "grey85", p_color = rgb(0x28, 0x1f, 0x00, 255L, maxColorValue = 255L),
         filename = "man/figures/logo.svg")
