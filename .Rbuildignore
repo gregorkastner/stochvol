@@ -19,5 +19,10 @@ dic-example.R
 Makefile
 article.Rnw
 article2.Rnw
+cache
+^Figures
+^Figures2
 vignettes/article2?-[-1-9a-z.]+
+vignettes/Figures/.*.pdf
+vignettes/Figures2/.*.pdf
 

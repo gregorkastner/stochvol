@@ -25,6 +25,11 @@
 %% new custom commands
 \usepackage{xparse}  % smarter commands
 
+\DeclareGraphicsExtensions{%
+  .png,.PNG,%
+  .pdf,.PDF,%
+  .jpg,.mps,.jpeg,.jbig2,.jb2,.JPG,.JPEG,.JBIG2,.JB2}
+
 \newcommand{\class}[1]{`\code{#1}'}
 \newcommand{\fct}[1]{\code{#1()}}
 
@@ -169,9 +174,11 @@ knitr::opts_chunk$set(prompt = TRUE,
                       fig.show = "hide",
                       warning = FALSE,
                       error = FALSE,
+                      dev = c("pdf", "png"),
+                      dpi = 90,
                       message = FALSE,
                       echo = FALSE,
-                      cache = FALSE,
+                      cache = TRUE,
                       fig.path = "Figures2/jss3813-",
                       tidy = FALSE)
 base::options(continue = "+  ", prompt = "R> ", width = 70,
@@ -586,7 +593,7 @@ They show high persistence and significant leverage.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\textwidth]{jss3813-svlplot-1.pdf}
+  \includegraphics[width=\textwidth]{jss3813-svlplot-1}
   \caption{The default plot of an estimated model.
   The top row shows a summary of the posterior of the daily volatility (in percent) $100\exp(\bm h/2)$ through its median (black) and 5\% and 95\% quantiles (gray).
   The remaining panels summarize the Markov chains of the parameters $\mupar$, $\phipar$, $\sigmapar$, and $\rhopar$.

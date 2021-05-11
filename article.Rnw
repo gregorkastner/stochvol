@@ -29,9 +29,12 @@ usePreCalcResultsExtra <- FALSE
 \usepackage{textcomp}
 \usepackage{tablefootnote}
 
-\input{macros.tex}
+\DeclareGraphicsExtensions{%
+  .png,.PNG,%
+  .pdf,.PDF,%
+  .jpg,.mps,.jpeg,.jbig2,.jb2,.JPG,.JPEG,.JBIG2,.JB2}
 
-\graphicspath{{extrafig/}}
+\input{macros.tex}
 
 \interfootnotelinepenalty=10000
 
@@ -97,9 +100,11 @@ knitr::opts_chunk$set(prompt = TRUE,
                       fig.keep = "high",
                       warning = FALSE,
                       error = FALSE,
+                      dev = c("png", "pdf"),
+                      dpi = 90,
                       message = FALSE,
                       echo = FALSE,
-                      cache = FALSE,
+                      cache = TRUE,
                       fig.path = "Figures/jss2014-",
                       tidy = FALSE)
 base::options(continue = "+  ", prompt = "R> ", width = 70,
