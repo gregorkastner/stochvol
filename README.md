@@ -1,8 +1,6 @@
-# stochvol
+# stochvol <img src="man/figures/logo.svg" align="right" />
 
 This is the development repository of the [`R`](https://www.r-project.org/) package [`stochvol`](https://cran.r-project.org/package=stochvol).
-
-![stochvol logo](/man/figures/logo.svg)
 
 ## Features
 
