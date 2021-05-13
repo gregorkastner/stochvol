@@ -1,3 +1,39 @@
 template:
   params:
     bootswatch: lumen
+
+reference:
+- title: "Simulation"
+  desc: "Sampling routines, simulation, and prediction"
+- contents:
+  - svsample
+  - svsample_roll
+  - svsample_fast_cpp
+  - svsim
+  - matches("predict")
+- title: "Reporting"
+  desc: "Plotting, extraction, and summary"
+- contents:
+  - matches("plot")
+  - updatesummary
+  - extractors
+- title: "Prior Distributions"
+  desc: "Specification of prior distributions for the sample routines"
+- contents:
+  - specify_priors
+  - sv_constant
+- title: "C++"
+  desc: "Documentation for the C++ functions"
+- contents:
+  - starts_with("update_")
+- title: "Expert Settings"
+  desc: "Helper functions for the 'expert' argument of the sampling routines"
+- contents:
+  - starts_with("get_default")
+  - validate_and_process_expert
+- title: "Other"
+  desc: "Remaining manual pages"
+- contents:
+  - matches("stochvol")
+  - exrates
+  - logret
