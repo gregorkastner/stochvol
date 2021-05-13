@@ -132,8 +132,8 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
+          <h2 id="section-simulation" class="hasAnchor"><a href="#section-simulation" class="anchor"></a>Simulation</h2>
+          <p class="section-desc"><p>Sampling routines, simulation, and prediction</p></p>
         </th>
       </tr>
       
@@ -144,28 +144,54 @@
       <tr>
         
         <td>
-          <p><code><a href="expert_defaults.html">get_default_fast_sv()</a></code> <code><a href="expert_defaults.html">get_default_general_sv()</a></code> <code><a href="expert_defaults.html">default_fast_sv</a></code> </p>
+          <p><code><a href="svsample.html">svsample()</a></code> <code><a href="svsample.html">svtsample()</a></code> <code><a href="svsample.html">svlsample()</a></code> <code><a href="svsample.html">svtlsample()</a></code> <code><a href="svsample.html">svsample2()</a></code> </p>
         </td>
-        <td><p>Default Values for the Expert Settings</p></td>
+        <td><p>Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility (SV)
+Model</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="exrates.html">exrates</a></code> </p>
+          <p><code><a href="svsample_roll.html">svsample_roll()</a></code> <code><a href="svsample_roll.html">svtsample_roll()</a></code> <code><a href="svsample_roll.html">svlsample_roll()</a></code> <code><a href="svsample_roll.html">svtlsample_roll()</a></code> </p>
         </td>
-        <td><p>Euro exchange rate data</p></td>
+        <td><p>Rolling Estimation of Stochastic Volatility Models</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="extractors.html">para()</a></code> <code><a href="extractors.html">latent0()</a></code> <code><a href="extractors.html">latent()</a></code> <code><a href="extractors.html">vola()</a></code> <code><a href="extractors.html">svbeta()</a></code> <code><a href="extractors.html">svtau()</a></code> <code><a href="extractors.html">priors()</a></code> <code><a href="extractors.html">thinning()</a></code> <code><a href="extractors.html">runtime()</a></code> <code><a href="extractors.html">sampled_parameters()</a></code> <code><a href="extractors.html">predy()</a></code> <code><a href="extractors.html">predlatent()</a></code> <code><a href="extractors.html">predvola()</a></code> </p>
+          <p><code><a href="svsample_cpp.html">svsample_fast_cpp()</a></code> <code><a href="svsample_cpp.html">svsample_general_cpp()</a></code> </p>
         </td>
-        <td><p>Common Extractors for 'svdraws' and 'svpredict' Objects</p></td>
+        <td><p>Bindings to <code>C++</code> Functions in <code>stochvol</code></p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="logret.html">logret()</a></code> </p>
+          <p><code><a href="svsim.html">svsim()</a></code> </p>
         </td>
-        <td><p>Computes the Log Returns of a Time Series</p></td>
+        <td><p>Simulating a Stochastic Volatility Process</p></td>
       </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.svpredict.html">plot(<i>&lt;svpredict&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Graphical Summary of the Posterior Predictive Distribution</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="predict.svdraws.html">predict(<i>&lt;svdraws&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Prediction of Future Returns and Log-Volatilities</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-reporting" class="hasAnchor"><a href="#section-reporting" class="anchor"></a>Reporting</h2>
+          <p class="section-desc"><p>Plotting, extraction, and summary</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="paradensplot.html">paradensplot()</a></code> </p>
@@ -198,10 +224,35 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="predict.svdraws.html">predict(<i>&lt;svdraws&gt;</i>)</a></code> </p>
+          <p><code><a href="volplot.html">volplot()</a></code> </p>
         </td>
-        <td><p>Prediction of Future Returns and Log-Volatilities</p></td>
+        <td><p>Plotting Quantiles of the Latent Volatilities</p></td>
       </tr><tr>
+        
+        <td>
+          <p><code><a href="updatesummary.html">updatesummary()</a></code> </p>
+        </td>
+        <td><p>Updating the Summary of MCMC Draws</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="extractors.html">para()</a></code> <code><a href="extractors.html">latent0()</a></code> <code><a href="extractors.html">latent()</a></code> <code><a href="extractors.html">vola()</a></code> <code><a href="extractors.html">svbeta()</a></code> <code><a href="extractors.html">svtau()</a></code> <code><a href="extractors.html">priors()</a></code> <code><a href="extractors.html">thinning()</a></code> <code><a href="extractors.html">runtime()</a></code> <code><a href="extractors.html">sampled_parameters()</a></code> <code><a href="extractors.html">predy()</a></code> <code><a href="extractors.html">predlatent()</a></code> <code><a href="extractors.html">predvola()</a></code> </p>
+        </td>
+        <td><p>Common Extractors for 'svdraws' and 'svpredict' Objects</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-prior-distributions" class="hasAnchor"><a href="#section-prior-distributions" class="anchor"></a>Prior Distributions</h2>
+          <p class="section-desc"><p>Specification of prior distributions for the sample routines</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="specify_priors.html">specify_priors()</a></code> </p>
@@ -210,41 +261,23 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="stochvol-package.html">stochvol-package</a></code> </p>
-        </td>
-        <td><p>Efficient Bayesian Inference for Stochastic Volatility (SV) Models</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="sv_prior.html">sv_constant()</a></code> <code><a href="sv_prior.html">sv_normal()</a></code> <code><a href="sv_prior.html">sv_multinormal()</a></code> <code><a href="sv_prior.html">sv_gamma()</a></code> <code><a href="sv_prior.html">sv_inverse_gamma()</a></code> <code><a href="sv_prior.html">sv_beta()</a></code> <code><a href="sv_prior.html">sv_exponential()</a></code> <code><a href="sv_prior.html">sv_infinity()</a></code> </p>
         </td>
         <td><p>Prior Distributions in <code>stochvol</code></p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="svsample.html">svsample()</a></code> <code><a href="svsample.html">svtsample()</a></code> <code><a href="svsample.html">svlsample()</a></code> <code><a href="svsample.html">svtlsample()</a></code> <code><a href="svsample.html">svsample2()</a></code> </p>
-        </td>
-        <td><p>Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility (SV)
-Model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="svsample_cpp.html">svsample_fast_cpp()</a></code> <code><a href="svsample_cpp.html">svsample_general_cpp()</a></code> </p>
-        </td>
-        <td><p>Bindings to <code>C++</code> Functions in <code>stochvol</code></p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="svsample_roll.html">svsample_roll()</a></code> <code><a href="svsample_roll.html">svtsample_roll()</a></code> <code><a href="svsample_roll.html">svlsample_roll()</a></code> <code><a href="svsample_roll.html">svtlsample_roll()</a></code> </p>
-        </td>
-        <td><p>Rolling Estimation of Stochastic Volatility Models</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="svsim.html">svsim()</a></code> </p>
-        </td>
-        <td><p>Simulating a Stochastic Volatility Process</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-c-" class="hasAnchor"><a href="#section-c-" class="anchor"></a>C++</h2>
+          <p class="section-desc"><p>Documentation for the C++ functions</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="update_fast_sv.html">update_fast_sv()</a></code> </p>
@@ -268,24 +301,62 @@ Model</p></td>
           <p><code><a href="update_t_error.html">update_t_error()</a></code> </p>
         </td>
         <td><p>Single MCMC update to Student's t-distribution</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-expert-settings" class="hasAnchor"><a href="#section-expert-settings" class="anchor"></a>Expert Settings</h2>
+          <p class="section-desc"><p>Helper functions for the ‘expert’ argument of the sampling routines</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
-          <p><code><a href="updatesummary.html">updatesummary()</a></code> </p>
+          <p><code><a href="expert_defaults.html">get_default_fast_sv()</a></code> <code><a href="expert_defaults.html">get_default_general_sv()</a></code> <code><a href="expert_defaults.html">default_fast_sv</a></code> </p>
         </td>
-        <td><p>Updating the Summary of MCMC Draws</p></td>
+        <td><p>Default Values for the Expert Settings</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="validate_and_process_expert.html">validate_and_process_expert()</a></code> </p>
         </td>
         <td><p>Validate and Process Argument 'expert'</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-other" class="hasAnchor"><a href="#section-other" class="anchor"></a>Other</h2>
+          <p class="section-desc"><p>Remaining manual pages</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="stochvol-package.html">stochvol-package</a></code> </p>
+        </td>
+        <td><p>Efficient Bayesian Inference for Stochastic Volatility (SV) Models</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="volplot.html">volplot()</a></code> </p>
+          <p><code><a href="exrates.html">exrates</a></code> </p>
         </td>
-        <td><p>Plotting Quantiles of the Latent Volatilities</p></td>
+        <td><p>Euro exchange rate data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="logret.html">logret()</a></code> </p>
+        </td>
+        <td><p>Computes the Log Returns of a Time Series</p></td>
       </tr>
     </tbody>
     </table>
