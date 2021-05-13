@@ -1,8 +1,6 @@
-# stochvol
+# stochvol <img src="man/figures/logo.svg" align="right" padding-left="3px" />
 
 This is the development repository of the [`R`](https://www.r-project.org/) package [`stochvol`](https://cran.r-project.org/package=stochvol).
-
-![stochvol logo](/man/figures/logo.svg)
 
 ## Features
 
@@ -15,7 +13,7 @@ Additional features:
 * Choose from a range of prior distrubutions; see `help("specify_priors", package="stochvol")`
 * Built-in support for linear regression and autoregressive processes with stochastic volatility errors; look for function argument `designmatrix`
 * Easy interfacing with [`bayesplot`](https://cran.r-project.org/web/packages/bayesplot/) functions through the `as.array()` specialization
-* Rolling or expanding window estimation can be used for backtesting; see `help("svsample_roll, package="stochvol")`
+* Rolling or expanding window estimation can be used for backtesting; see `help("svsample_roll", package="stochvol")`
 * Run independent Markov chains using `R`'s cross-platform parallelization; look for function arguments `n_chains`, `parallel`, `n_cpus`, and `cl` (for "cluster")
 * For plug&play Bayesian modeling, when stochastic volatility is part of a larger model, fast-access functions can speed up execution in `R`; see `help("svsample_fast_cpp", package="stochvol")`
 * For advanced users, there is a `C++` interface; see e.g. `help("update_fast_sv", package="stochvol")`
