@@ -21,7 +21,7 @@ reference:
   desc: "Specification of prior distributions for the sample routines"
 - contents:
   - specify_priors
-  - sv_constant
+  - sv_prior
 - title: "C++"
   desc: "Documentation for the C++ functions"
 - contents:
