@@ -66,26 +66,5 @@ can be created two ways: either \code{sv_multinormal(mean, sd, dim = D)} or
 \seealso{
 Other priors: 
 \code{\link{specify_priors}()}
-
-Other priors: 
-\code{\link{specify_priors}()}
-
-Other priors: 
-\code{\link{specify_priors}()}
-
-Other priors: 
-\code{\link{specify_priors}()}
-
-Other priors: 
-\code{\link{specify_priors}()}
-
-Other priors: 
-\code{\link{specify_priors}()}
-
-Other priors: 
-\code{\link{specify_priors}()}
-
-Other priors: 
-\code{\link{specify_priors}()}
 }
 \concept{priors}

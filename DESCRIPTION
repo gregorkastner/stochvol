@@ -20,3 +20,4 @@ RoxygenNote: 7.1.1
 BuildResaveData: best
 VignetteBuilder: knitr
 BugReports: https://github.com/gregorkastner/stochvol/issues
+URL: https://gregorkastner.github.io/stochvol/

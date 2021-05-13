@@ -27,7 +27,10 @@ The result of \code{get_default_fast_sv} should be provided as
 \code{expert$fast_sv} and \code{get_default_general_sv} as \code{expert$general_sv}
 when relevant.
 }
+\note{
+\code{\link{default_fast_sv}} is deprecated.
+}
 \seealso{
-\code{link{svsample}}, \code{\link{specify_priors}}, \code{\link{svsample_roll}}, \code{\link{svsample_fast_cpp}}, \code{\link{svsample_general_cpp}}
+\code{\link{svsample}}, \code{\link{specify_priors}}, \code{\link{svsample_roll}}, \code{\link{svsample_fast_cpp}}, \code{\link{svsample_general_cpp}}
 }
 \keyword{datasets}

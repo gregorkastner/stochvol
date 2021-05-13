@@ -15,21 +15,21 @@ specify_priors(
 )
 }
 \arguments{
-\item{mu}{one of sv_normal and sv_constant}
+\item{mu}{one of \code{sv_normal} or \code{sv_constant}}
 
-\item{phi}{one of sv_beta, sv_normal, and sv_constant. If sv_beta, then the specified beta distribution is the prior for (phi+1)/2}
+\item{phi}{one of \code{sv_beta}, \code{sv_normal}, or \code{sv_constant}. If \code{sv_beta}, then the specified beta distribution is the prior for \code{(phi+1)/2}}
 
-\item{sigma2}{one of sv_gamma, sv_inverse_gamma, and sv_constant}
+\item{sigma2}{one of \code{sv_gamma}, code{sv_inverse_gamma}, or \code{sv_constant}}
 
-\item{nu}{one of sv_infinity, sv_exponential, and sv_constant. If sv_exponential, then the specified exponential distribution is the prior for nu-2}
+\item{nu}{one of \code{sv_infinity}, \code{sv_exponential}, or \code{sv_constant}. If \code{sv_exponential}, then the specified exponential distribution is the prior for \code{nu-2}}
 
-\item{rho}{one of sv_beta and sv_constant. If sv_beta, then the specified beta distribution is the prior for (rho+1)/2}
+\item{rho}{one of \code{sv_beta} or \code{sv_constant}. If \code{sv_beta}, then the specified beta distribution is the prior for \code{(rho+1)/2}}
 
-\item{latent0_variance}{either the character string \code{"stationary"} or an sv_constant object.
-If \code{"stationary"}, then h0 ~ N(\code{mu}, \code{sigma^2/(1-phi^2)}). If an sv_constant object with value \code{v}, then h0 ~ N(\code{mu}, \code{v}).
+\item{latent0_variance}{either the character string \code{"stationary"} or an \code{sv_constant} object.
+If \code{"stationary"}, then h0 ~ N(\code{mu}, \code{sigma^2/(1-phi^2)}). If an \code{sv_constant} object with value \code{v}, then h0 ~ N(\code{mu}, \code{v}).
 Here, N(b, B) stands for mean b and variance B}
 
-\item{beta}{an sv_multinormal object}
+\item{beta}{an \code{sv_multinormal} object}
 }
 \description{
 This function gives access to a larger set of prior distributions

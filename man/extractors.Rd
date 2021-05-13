@@ -92,12 +92,13 @@ sim <- svsim(150)
 # Draw from vanilla SV
 draws <- svsample(sim, draws = 2000)
 
-## Summarize all parameter draws as a merged mcmc object
-summary(para(draws))
+## Summarize all estimated parameter draws as a merged mcmc object
+summary(para(draws)[, sampled_parameters(draws)])
 ## Extract the draws as an mcmc.list object
-para(draws, chain = "all")
+params <- para(draws, chain = "all")[, sampled_parameters(draws)]
 
 \donttest{
+options(max.print = 100)
 ## Further short examples
 summary(latent0(draws))
 summary(latent(draws))

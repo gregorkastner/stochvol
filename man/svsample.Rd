@@ -345,6 +345,8 @@ Frühwirth-Schnatter (2014).
 \note{
 If \code{y} contains zeros, you might want to consider de-meaning your
 returns or use \code{designmatrix = "ar0"}.
+
+\code{\link{svsample2}} is deprecated.
 }
 \examples{
 ###############

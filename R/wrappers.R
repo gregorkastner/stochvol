@@ -192,6 +192,8 @@
 #' \code{\link{densplot}} and displaying the results on a single page.
 #' @note If \code{y} contains zeros, you might want to consider de-meaning your
 #' returns or use \code{designmatrix = "ar0"}.
+#' 
+#' \code{\link{svsample2}} is deprecated.
 #' @seealso \code{\link{svsim}}, \code{\link{specify_priors}}
 #' @references Kastner, G. and Frühwirth-Schnatter, S. (2014).
 #' Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC
@@ -602,7 +604,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' \code{expert$fast_sv} and \code{get_default_general_sv} as \code{expert$general_sv}
 #' when relevant.
 #' @rdname expert_defaults
-#' @seealso \code{link{svsample}}, \code{\link{specify_priors}}, \code{\link{svsample_roll}}, \code{\link{svsample_fast_cpp}}, \code{\link{svsample_general_cpp}}
+#' @seealso \code{\link{svsample}}, \code{\link{specify_priors}}, \code{\link{svsample_roll}}, \code{\link{svsample_fast_cpp}}, \code{\link{svsample_general_cpp}}
 #' @export
 get_default_fast_sv <- function () {
   list(baseline_parameterization = "centered",  # "centered" or "noncentered"
@@ -664,6 +666,7 @@ get_default_adaptation <- function (priorspec, multi_asis) {
 }
 
 #' @rdname expert_defaults
+#' @note \code{\link{default_fast_sv}} is deprecated.
 #' @export
 default_fast_sv <- get_default_fast_sv()
 

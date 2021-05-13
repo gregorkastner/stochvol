@@ -36,15 +36,15 @@ logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
 #' 
 #' This function gives access to a larger set of prior distributions
 #' in case the default choice is unsatisfactory.
-#' @param mu one of sv_normal and sv_constant
-#' @param phi one of sv_beta, sv_normal, and sv_constant. If sv_beta, then the specified beta distribution is the prior for (phi+1)/2
-#' @param sigma2 one of sv_gamma, sv_inverse_gamma, and sv_constant
-#' @param nu one of sv_infinity, sv_exponential, and sv_constant. If sv_exponential, then the specified exponential distribution is the prior for nu-2
-#' @param rho one of sv_beta and sv_constant. If sv_beta, then the specified beta distribution is the prior for (rho+1)/2
-#' @param latent0_variance either the character string \code{"stationary"} or an sv_constant object.
-#' If \code{"stationary"}, then h0 ~ N(\code{mu}, \code{sigma^2/(1-phi^2)}). If an sv_constant object with value \code{v}, then h0 ~ N(\code{mu}, \code{v}).
+#' @param mu one of \code{sv_normal} or \code{sv_constant}
+#' @param phi one of \code{sv_beta}, \code{sv_normal}, or \code{sv_constant}. If \code{sv_beta}, then the specified beta distribution is the prior for \code{(phi+1)/2}
+#' @param sigma2 one of \code{sv_gamma}, code{sv_inverse_gamma}, or \code{sv_constant}
+#' @param nu one of \code{sv_infinity}, \code{sv_exponential}, or \code{sv_constant}. If \code{sv_exponential}, then the specified exponential distribution is the prior for \code{nu-2}
+#' @param rho one of \code{sv_beta} or \code{sv_constant}. If \code{sv_beta}, then the specified beta distribution is the prior for \code{(rho+1)/2}
+#' @param latent0_variance either the character string \code{"stationary"} or an \code{sv_constant} object.
+#' If \code{"stationary"}, then h0 ~ N(\code{mu}, \code{sigma^2/(1-phi^2)}). If an \code{sv_constant} object with value \code{v}, then h0 ~ N(\code{mu}, \code{v}).
 #' Here, N(b, B) stands for mean b and variance B
-#' @param beta an sv_multinormal object
+#' @param beta an \code{sv_multinormal} object
 #' @family priors
 #' @export
 specify_priors <- function (mu = sv_normal(mean = 0, sd = 100),
@@ -147,7 +147,6 @@ range.sv_constant <- function (x, na.rm = FALSE, ...) {
 #' @param mean Expected value for the univariate normal distribution or mean vector of the multivariate normal distribution
 #' @param sd Standard deviation for the univariate normal distribution or constant scale of the multivariate normal distribution
 #' @rdname sv_prior
-#' @family priors
 #' @export
 sv_normal <- function (mean = 0, sd = 1) {
   assert_single(mean, "mean of sv_normal")
@@ -188,7 +187,6 @@ range.sv_normal <- function (x, na.rm = FALSE, ...) {
 #' @param precision Precision matrix for the multivariate normal distribution
 #' @param dim (optional) Dimension of the multivariate distribution
 #' @rdname sv_prior
-#' @family priors
 #' @export
 sv_multinormal <- function (mean = 0, precision = NULL, sd = 1, dim = NA) {
   if (!is.null(precision)) {
@@ -288,7 +286,6 @@ range.sv_multinormal <- function (x, na.rm = FALSE, ...) {
 #' @param shape Shape parameter for the distribution
 #' @param rate Rate parameter for the distribution
 #' @rdname sv_prior
-#' @family priors
 #' @export
 sv_gamma <- function (shape, rate) {
   assert_single(shape, "shape of sv_gamma")
@@ -322,7 +319,6 @@ range.sv_gamma <- function (x, na.rm = FALSE, ...) {
 
 #' @param scale Scale parameter for the distribution
 #' @rdname sv_prior
-#' @family priors
 #' @export
 sv_inverse_gamma <- function (shape, scale) {
   assert_single(shape, "shape of sv_inverse_gamma")
@@ -357,7 +353,6 @@ range.sv_inverse_gamma <- function (x, na.rm = FALSE, ...) {
 #' @param shape1 First shape parameter for the distribution
 #' @param shape2 Second shape parameter for the distribution
 #' @rdname sv_prior
-#' @family priors
 #' @export
 sv_beta <- function (shape1, shape2) {  # rename 2beta_m1
   assert_single(shape1, "shape of sv_beta")
@@ -391,7 +386,6 @@ range.sv_beta <- function (x, na.rm = FALSE, ...) {
 
 #' @param rate Rate parameter for the distribution
 #' @rdname sv_prior
-#' @family priors
 #' @export
 sv_exponential <- function (rate) {
   assert_single(rate, "rate of sv_exponential")
@@ -421,7 +415,6 @@ range.sv_exponential <- function (x, na.rm = FALSE, ...) {
 }
 
 #' @rdname sv_prior
-#' @family priors
 #' @export
 sv_infinity <- function () {
   structure(list(),
