@@ -14,7 +14,7 @@ reference:
   - svsample_roll
   - svsample_fast_cpp
   - svsim
-  - matches("predict")
+  - predict.svdraws
 - title: "Reporting"
   desc: "Plotting, extraction, and summary"
 - contents:
@@ -25,7 +25,7 @@ reference:
   desc: "Specification of prior distributions for the sample routines"
 - contents:
   - specify_priors
-  - sv_prior
+  - sv_constant
 - title: "C++"
   desc: "Documentation for the C++ functions"
 - contents:
