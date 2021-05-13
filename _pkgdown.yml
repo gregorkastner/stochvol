@@ -18,7 +18,11 @@ reference:
 - title: "Reporting"
   desc: "Plotting, extraction, and summary"
 - contents:
-  - matches("plot")
+  - plot.svdraws
+  - plot.svpredict
+  - paradensplot
+  - paratraceplot
+  - volplot
   - updatesummary
   - extractors
 - title: "Prior Distributions"
