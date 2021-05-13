@@ -1,4 +1,4 @@
-# stochvol <img src="man/figures/logo.svg" align="right" padding-left:"5px" />
+# stochvol <img src="man/figures/logo.svg" align="right" padding-left="3px" />
 
 This is the development repository of the [`R`](https://www.r-project.org/) package [`stochvol`](https://cran.r-project.org/package=stochvol).
 
