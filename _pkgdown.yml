@@ -3,6 +3,10 @@ template:
     bootswatch: lumen
 
 reference:
+- title: "Preface"
+  desc: "The front page of the manual"
+- contents:
+  - matches("stochvol")
 - title: "Simulation"
   desc: "Sampling routines, simulation, and prediction"
 - contents:
@@ -34,6 +38,5 @@ reference:
 - title: "Other"
   desc: "Remaining manual pages"
 - contents:
-  - matches("stochvol")
   - exrates
   - logret
