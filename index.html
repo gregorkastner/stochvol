@@ -78,7 +78,7 @@
   <div class="contents col-md-9">
 <div id="stochvol-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#stochvol-" class="anchor"></a>stochvol <img src="reference/figures/logo.svg" align="right">
+<a href="#stochvol-" class="anchor"></a>stochvol <img src="reference/figures/logo.svg" align="right" padding-left="3px">
 </h1></div>
 <p>This is the development repository of the <a href="https://www.r-project.org/"><code>R</code></a> package <a href="https://cran.r-project.org/package=stochvol"><code>stochvol</code></a>.</p>
 <div id="features" class="section level2">
@@ -93,7 +93,7 @@
 <li>Built-in support for linear regression and autoregressive processes with stochastic volatility errors; look for function argument <code>designmatrix</code>
 </li>
 <li>Easy interfacing with <a href="https://cran.r-project.org/web/packages/bayesplot/"><code>bayesplot</code></a> functions through the <code><a href="https://rdrr.io/r/base/array.html">as.array()</a></code> specialization</li>
-<li>Rolling or expanding window estimation can be used for backtesting; see <code>help("svsample_roll, package="stochvol")</code>
+<li>Rolling or expanding window estimation can be used for backtesting; see <code><a href="reference/svsample_roll.html">help("svsample_roll", package="stochvol")</a></code>
 </li>
 <li>Run independent Markov chains using <code>R</code>’s cross-platform parallelization; look for function arguments <code>n_chains</code>, <code>parallel</code>, <code>n_cpus</code>, and <code>cl</code> (for “cluster”)</li>
 <li>For plug&amp;play Bayesian modeling, when stochastic volatility is part of a larger model, fast-access functions can speed up execution in <code>R</code>; see <code><a href="reference/svsample_fast_cpp.html">help("svsample_fast_cpp", package="stochvol")</a></code>
