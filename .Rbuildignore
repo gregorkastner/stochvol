@@ -14,8 +14,9 @@ pre-commit.sh
 
 Session.vim
 dic-example.R
-^.*\.txt$
+speedtest_output.txt
 
+vignettes
 Makefile
 article.Rnw
 article2.Rnw
