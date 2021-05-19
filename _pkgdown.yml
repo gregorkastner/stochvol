@@ -3,6 +3,10 @@ template:
     bootswatch: lumen
 
 reference:
+- title: "Preface"
+  desc: "The front page of the manual"
+- contents:
+  - matches("stochvol")
 - title: "Simulation"
   desc: "Sampling routines, simulation, and prediction"
 - contents:
@@ -10,18 +14,22 @@ reference:
   - svsample_roll
   - svsample_fast_cpp
   - svsim
-  - matches("predict")
+  - predict.svdraws
 - title: "Reporting"
   desc: "Plotting, extraction, and summary"
 - contents:
-  - matches("plot")
+  - plot.svdraws
+  - plot.svpredict
+  - paradensplot
+  - paratraceplot
+  - volplot
   - updatesummary
   - extractors
 - title: "Prior Distributions"
   desc: "Specification of prior distributions for the sample routines"
 - contents:
   - specify_priors
-  - sv_prior
+  - sv_constant
 - title: "C++"
   desc: "Documentation for the C++ functions"
 - contents:
@@ -34,6 +42,5 @@ reference:
 - title: "Other"
   desc: "Remaining manual pages"
 - contents:
-  - matches("stochvol")
   - exrates
   - logret
