@@ -1,7 +1,7 @@
 <<echo=FALSE, results='hide'>>=
 # This should be set to FALSE in case you want to redo the sampling as well.
 # Default is TRUE to save CRAN some time.
-usePreCalcResults <- FALSE
+usePreCalcResults <- TRUE
 
 # Default here is FALSE because the object created is rather large
 usePreCalcResultsExtra <- FALSE
@@ -34,7 +34,58 @@ usePreCalcResultsExtra <- FALSE
   .pdf,.PDF,%
   .jpg,.mps,.jpeg,.jbig2,.jb2,.JPG,.JPEG,.JBIG2,.JB2}
 
-\input{macros.tex}
+\newcommand{\mupar}{\mu}
+\newcommand{\phipar}{\phi}
+\newcommand{\sigmapar}{{\sigma_\eta}}
+\newcommand{\sigmapartwo}{{\sigma_\eta^2}}
+\newcommand{\sigmaparextrasub}[1]{\sigma_{\eta,{#1}}}
+\newcommand{\allpara}{\bm{\theta}}
+\newcommand{\etat}{\eta}
+\newcommand{\error}{\epsilon}
+\newcommand{\hsv}{h}
+\newcommand{\hsvm}{\hb}
+\newcommand{\y}{y}
+\newcommand{\unobs}{\bm{\kappa}}
+\newcommand{\sigmaeps}{{\sigma_\epsilon}}
+\newcommand{\sigmaepsextrasub}[1]{\sigma_{\epsilon,{#1}}}
+\newcommand{\sigmaepsextrasuper}[1]{\sigma^{#1}_\epsilon}
+\newcommand{\taug}{\tau}
+\newcommand{\taugm}{\bm{\taug}}
+\newcommand{\df}{\nu}
+\newcommand{\ML}{M\!L}
+\newcommand{\PL}{P\!L}
+\newcommand{\CLPBF}{C\!L\!P\!B\!F}
+
+\newcommand{\Xb}{\bm{X}}
+\newcommand{\yb}{\bm{y}}
+\newcommand{\betab}{\bm{\beta}}
+\newcommand{\Ib}{\bm{I}}
+\newcommand{\bb}[1]{\bm{b}_{#1}}
+\newcommand{\Bb}[1]{\bm{B}_{#1}}
+\newcommand{\bpostb}{\bm{b}_T}
+\newcommand{\Bpostb}{\bm{B}_T}
+\newcommand{\Sigmab}{\bm{\Sigma}}
+\newcommand{\hb}{\bm{h}}
+\newcommand{\pb}{\bm{p}}
+
+\newcommand{\XtX}{\Xb^\top \Xb}
+
+\newcommand{\Normal}[1]{\mathcal{N}\!\left(#1\right)}
+\newcommand{\Normult}[2]{\mathcal{N}_{#1}\left(#2\right)}
+\newcommand{\Gammainv}[1]{\mathcal{G}^{-1}\!\left(#1\right)}
+\newcommand{\diag}[1]{\text{diag}({#1})}
+\newcommand{\Betafun}[1]{B (#1)}
+\newcommand{\Betadis}[1]{\mathcal{B}\left(#1\right)}
+\newcommand{\Gammad}[1]{ \mathcal{G}\left(#1\right)}
+\newcommand{\Tdist}[2]{t_{#1}\!\left(#2\right)}
+\newcommand{\Uniform}[1]{\mathcal{U}\!\left(#1\right)}
+
+
+%\DeclareMathOperator{\e}{e}
+\newcommand{\e}{e}
+\newcommand{\dif}{\mathrm{d}}
+
+\newtheorem{alg}{Algorithm}
 
 \interfootnotelinepenalty=10000
 
@@ -104,12 +155,13 @@ knitr::opts_chunk$set(prompt = TRUE,
                       dpi = 90,
                       message = FALSE,
                       echo = FALSE,
-                      cache = TRUE,
+                      eval=TRUE,
+                      #cache = TRUE,
                       fig.path = "Figures/jss2014-",
                       tidy = FALSE)
 base::options(continue = "+  ", prompt = "R> ", width = 70,
   useFancyQuotes = FALSE)
-plotevery <- 10L # can be used for trace plots to make vignette smaller
+plotevery <- 1L # can be used for trace plots to make vignette smaller
 @
 
 \shortcites{r:mvt}
@@ -253,33 +305,35 @@ Any further arguments (\code{\dots}) are forwarded to \code{updatesummary}, cont
 
 \subsection{Running the sampler}
 
-At the heart of the package \pkg{stochvol} lies the function \code{svsample} which serves as an \proglang{R}-wrapper for the actual sampler coded in \proglang{C}. Exemplary usage of this function is given in the code snipped below, along with the default output.
+At the heart of the package \pkg{stochvol} lies the function \code{svsample} which serves as an \proglang{R}-wrapper for the actual sampler coded in \proglang{C}.
+Exemplary usage of this function is given in the code snipped below, along with the default output.\footnote{In order to decrease compilation time and PDF size on CRAN, we shrink the data set \code{ret} to contain only a smaller number of data points and we apply thinning of size 10. In the original paper, the entire object was used without thinning.}
 
-<<echo=TRUE>>=
+<<svsample, eval=TRUE, echo=TRUE>>=
+ret <- ret[1:200]
 res <- svsample(ret, priormu = c(-10, 1), priorphi = c(20, 1.1),
-  priorsigma = 0.1)
+  priorsigma = 0.1, thin = 10)
 @
 
-<<results='hide'>>=
-if (usePreCalcResultsExtra) {
- load("vignette_sampling_draws1.RData")
-} else {
- res <- svsample(ret, priormu = c(-10, 1), priorphi = c(20, 1.1), priorsigma = .1)
- #save(res, file = "vignette_sampling_draws1.RData")
-}
-@
+%<<include=FALSE, results='hide'>>=
+%if (usePreCalcResultsExtra) {
+% load("vignette_sampling_draws1.RData")
+%} else {
+% res <- svsample(ret, priormu = c(-10, 1), priorphi = c(20, 1.1), priorsigma = .1)
+% #save(res, file = "vignette_sampling_draws1.RData")
+%}
+%@
 
-\begin{Soutput}
-Calling GIS_C MCMC sampler with 11000 iter. Series length is 3139.
-
-  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
-
-Timing (elapsed): 12.92 seconds.
-851 iterations per second.
-
-Converting results to coda objects... Done!
-Summarizing posterior draws... Done!
-\end{Soutput}
+%\begin{Soutput}
+%Calling GIS_C MCMC sampler with 11000 iter. Series length is 3139.
+%
+%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
+%
+%Timing (elapsed): 12.92 seconds.
+%851 iterations per second.
+%
+%Converting results to coda objects... Done!
+%Summarizing posterior draws... Done!
+%\end{Soutput}
 
 As can be seen, this function calls the main MCMC sampler and converts its output to \pkg{coda}-compatible objects. The latter is done mainly for reasons of compatibility and in order to have straightforward access to the convergence diagnostics checks implemented there. Moreover, some summary statistics for the posterior draws are calculated. The return value of \code{svsample} is an object of type \code{svdraws} which is a named list with eight elements, holding (1) the parameter draws in \code{para}, (2) the latent log-volatilities in \code{latent}, (3) the initial latent log-volatility draw in \code{latent0}, (4) the data provided in \code{y}, (5) the sampling runtime in \code{runtime}, (6) the prior hyperparameters in \code{priors}, (7) the thinning values in \code{thinning}, and (8) summary statistics of these draws, alongside some common transformations thereof, in \code{summary}.
 
@@ -288,7 +342,7 @@ As can be seen, this function calls the main MCMC sampler and converts its outpu
 
  Following common practice, \code{print} and \code{summary} methods are available for \code{svdraws} objects. Each of these has two optional parameters, \code{showpara} and \code{showlatent}, specifying which output should be displayed. If \code{showpara} is \code{TRUE} (the default), values/summaries of the parameter draws are shown. If \code{showlatent} is \code{TRUE} (the default), values/summaries of the latent variable draws are shown. In the example below, the summary for the parameter draws only is displayed.
 
-<<echo=TRUE>>=
+<<summary, echo=TRUE>>=
 summary(res, showlatent = FALSE)
 @
 
@@ -301,7 +355,7 @@ par(mfrow = c(1, 1))
 @
 
 <<usd3, echo=TRUE, fig.width=11, fig.height=7>>=
-volplot(res, forecast = 100, dates = exrates$date[-1])
+volplot(res, forecast = 100, dates = exrates$date[seq_along(ret)])
 @
 
 \begin{figure}[!htp]
@@ -316,7 +370,7 @@ In case the user wants to display different posterior quantiles, the \code{updat
 
 <<usd4, echo=TRUE, fig.width=11, fig.height=7>>=
 res <- updatesummary(res, quantiles = c(0.01, 0.1, 0.5, 0.9, 0.99))
-volplot(res, forecast = 100, dates = exrates$date[-1])
+volplot(res, forecast = 100, dates = exrates$date[seq_along(ret)])
 @
 
 \begin{figure}[!htp]
@@ -424,9 +478,9 @@ C_n = C_0 + \frac{1}{2}
 In \proglang{R}, this can straightforwardly be coded as follows:
 \begin{itemize}
  \item Set the seed to make results reproducible and simulate some data from the underlying model:
-<<echo=TRUE>>=
+<<beta1, echo=TRUE>>=
 set.seed(123456)
-n <- 1000
+n <- 200
 beta.true <- c(0.1, 0.5)
 sigma.true <- 0.01
 X <- matrix(c(rep(1, n), rnorm(n, sd = sigma.true)), nrow = n)
@@ -434,16 +488,16 @@ y <- rnorm(n, X %*% beta.true, sigma.true)
 @
 
 \item Specify the size of the burn-in and the number of draws thereafter; set the prior parameters:
-<<echo=TRUE>>=
+<<betaprior, echo=TRUE>>=
 burnin <- 100
-draws <- 5000
+draws <- 1000
 b0 <- matrix(c(0, 0), nrow = ncol(X))
 B0inv <- diag(c(10^-10, 10^-10))
 c0 <- 0.001
 C0 <- 0.001
 @
  \item Pre-calculate some values outside the main MCMC loop:
-<<echo=TRUE>>=
+<<betaprecalc, echo=TRUE>>=
 p <- ncol(X)
 preCov <- solve(crossprod(X) + B0inv)
 preMean <- preCov %*% (crossprod(X, y) + B0inv %*% b0)
@@ -456,7 +510,7 @@ colnames(draws1) <- c(paste("beta", 0:(p-1), sep = "_"), "sigma")
 sigma2draw <- 1
 @
 \item Run the main sampler: Iteratively draw from the conditional bivariate Gaussian distribution $\betab|\yb,\sigmaepsextrasuper2$, e.g., through the use of \pkg{mvtnorm} \citep{r:mvt}, and the conditional Inverse Gamma distribution $\sigmaepsextrasuper2|\yb,\betab$.
-<<echo=TRUE>>=
+<<betaloop, echo=TRUE>>=
 for (i in -(burnin-1):draws) {
   betadraw <- as.numeric(mvtnorm::rmvnorm(1, preMean,
     sigma2draw * preCov))
@@ -467,26 +521,26 @@ for (i in -(burnin-1):draws) {
 }
 @
 \item Calculate posterior means in order to obtain point estimates for the parameters:
-<<echo=TRUE>>=
+<<colmeansbeta, echo=TRUE>>=
 colMeans(draws1)
 @
 
 \item Visualize the draws through \pkg{coda}'s native \code{plot} method:
 
-<<homo, echo=TRUE, fig.width=7.5, fig.height=6>>=
-par(mar = c(3.1, 1.8, 1.9, .5), mgp = c(1.8, .6, 0))
-plot(coda::mcmc(draws1[seq(1L, nrow(draws1), by = plotevery),]))
-@
+%<<homo, eval=TRUE, fig.width=7.5, fig.height=6>>=
+%par(mar = c(3.1, 1.8, 1.9, .5), mgp = c(1.8, .6, 0))
+%plot(coda::mcmc(draws1[seq(1L, nrow(draws1), by = plotevery),]))
+%@
 
-<<eval=FALSE, echo=TRUE>>=
+<<draws1, eval=TRUE, echo=TRUE, fig.width=7.5, fig.height=6>>=
 plot(coda::mcmc(draws1))
 @
 
 
 \begin{figure}[!ht]
 \begin{center}
-\includegraphics[width=\textwidth]{Figures/jss2014-homo-1}
-\caption{Trace plots and kernel density estimates for some draws from the marginal posterior distributions in the regression model with heteroskedastic errors. Underlying data is simulated with $\betab^\text{true}=(0.1, 0.5)^\top$, $\sigmaepsextrasuper{\text{true}} = 0.01$, $n=1000$.}
+\includegraphics[width=\textwidth]{Figures/jss2014-draws1-1}
+\caption{Trace plots and kernel density estimates for some draws from the marginal posterior distributions in the regression model with heteroskedastic errors. Underlying data is simulated with $\betab^\text{true}=(0.1, 0.5)^\top$, $\sigmaepsextrasuper{\text{true}} = 0.01$, $n=200$.}
 \label{homodraws}
 \end{center}
 \end{figure}
@@ -511,8 +565,8 @@ y <- X %*% beta.true + simresid$y
 @
  \item Specify configuration parameters and prior values:
 <<echo=TRUE>>=
-draws <- 50000
-burnin <- 1000
+draws <- 5000
+burnin <- 500
 thinning <- 10
 priors <- specify_priors(
   mu = sv_normal(-10, 2),
@@ -557,7 +611,7 @@ for (i in -(burnin-1):draws) {
 }
 @
 
-<<>>=
+<<longerbeta>>=
 if (usePreCalcResults) {
  load("vignette_sampling_draws2.RData")
 } else {
@@ -586,13 +640,13 @@ for (i in -(burnin-1):draws) {
  }
 }
  draws2selection <- draws2[,4:8]
- #save(draws2selection, file = 'vignette_sampling_draws2.RData')
+ save(draws2selection, file = 'vignette_sampling_draws2.RData')
 }
 @
 \item Finally, visualize and summarize (some) posterior draws:
 
-<<eval=FALSE, echo=TRUE>>=
-plot(coda::mcmc(draws2[, 4:7]))
+<<betaplot2, echo=TRUE, eval=FALSE>>=
+plot(coda::mcmc(draws2[, 4:8]))
 @
 
 <<hetero, fig.width=7.5, fig.height=8>>=
@@ -605,16 +659,16 @@ plot(coda::mcmc(draws2selection[seq(1L, nrow(draws2selection), by = plotevery), 
 \includegraphics[width=\textwidth]{Figures/jss2014-hetero-1}
 \caption{Trace plots and kernel density estimates
 %for draws from the marginal posterior distributions of the parameters
-in the regression model with heteroskedastic errors. Data is simulated with $\betab^\text{true}=(0.1, 0.5)^\top$, $h_1^\text{true} = -8.28$, $h_2^\text{true} = -8.50$, $n=1000$.}
+in the regression model with heteroskedastic errors. Data is simulated with $\betab^\text{true}=(0.1, 0.5)^\top$, $h_1^\text{true} = -8.28$, $h_2^\text{true} = -8.50$, $n=200$.}
 \label{heterodraws}
  \end{center}
 \end{figure}
 
-<<eval=FALSE, echo=TRUE>>=
+<<colmeans2, eval=FALSE, echo=TRUE>>=
 colMeans(draws2[, 4:8])
 @
 
-<<echo=FALSE, echo=TRUE>>=
+<<echo=FALSE, eval=TRUE>>=
 colMeans(draws2selection)
 @
 
@@ -909,7 +963,7 @@ realresselection <- vector("list", 3)
 realresselection[[1]] <- realres[[1]][,c('beta_0', 'beta_1')]
 realresselection[[2]] <- realres[[2]][,c('beta_0', 'beta_1')]
 realresselection[[3]] <- realres[[3]][,c('beta_0', 'beta_1')]
-#save(realresselection, standresidmeans, standresidmeans2, standresidmeans3, file = 'vignette_sampling_realworld.RData')
+save(realresselection, standresidmeans, standresidmeans2, standresidmeans3, file = 'vignette_sampling_realworld.RData')
 }
 @
 
@@ -1066,7 +1120,7 @@ A visually barely distinguishable picture emerges when GARCH(1,1) errors are emp
 
 \begin{figure}[!htp]
 \begin{center}
- \includegraphics[width=.984\textwidth]{extrafig/predlik1}
+ \includegraphics[width=.984\textwidth]{predlik1}
 \end{center}
 \caption{Top panel: Observed series (green) and symmetrical 98\% one-day-ahead predictive intervals for the model with homoskedastic errors (red) and the model with SV errors (black). The display also contains a close-up, showing only the period from September 2008 until August 2009. This time span is chosen to include the most noticeable ramifications of the financial crisis. During that phase, predictive performance of the model with homoskedastic errors deteriorates substantially, while SV errors can capture the inflated volatility much better. Bottom panel: Log one-day-ahead predictive likelihoods for both models.}
 \label{predlik1}
@@ -1074,7 +1128,7 @@ A visually barely distinguishable picture emerges when GARCH(1,1) errors are emp
 
 \begin{figure}[!htp]
 \begin{center}
- \includegraphics[width=.984\textwidth]{extrafig/predlik3}
+ \includegraphics[width=.984\textwidth]{predlik3}
 \end{center}
 \caption{Top panel: Observed residuals with respect to the median of the one-day-ahead predictive distribution along with 1\% and 99\% quantiles of the respective predictive distributions. It can clearly be seen that the variances of the predictive distributions in the GARCH and SV models adjust to heteroskedasticity, while the model with homoskedastic errors is much more restrictive. Bottom panel: Cumulative log predictive Bayes factors in favor of the model with SV residuals. Values greater than zero mean that the model with GARCH/SV residuals performs better out of sample up to this point in time.}
 \label{predlik3}

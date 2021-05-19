@@ -1,9 +1,3 @@
-doc/article.Rtex
-doc/article2.Rtex
-doc/predlik[13].pdf
-doc/jss2014-.*
-doc/jss3813-.*
-doc/ref1.bib
-doc/ref2.bib
-doc/macros.tex
-
+bib$
+RData$
+predlik

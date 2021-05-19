@@ -175,10 +175,11 @@ knitr::opts_chunk$set(prompt = TRUE,
                       warning = FALSE,
                       error = FALSE,
                       dev = c("pdf", "png"),
+                      eval = FALSE,
                       dpi = 90,
                       message = FALSE,
                       echo = FALSE,
-                      cache = TRUE,
+                      #cache = TRUE,
                       fig.path = "Figures2/jss3813-",
                       tidy = FALSE)
 base::options(continue = "+  ", prompt = "R> ", width = 70,
@@ -499,7 +500,8 @@ Then, we show how to adapt the values of the prior hyperparameters and how to co
 \subsection{Preparing the data and running the MCMC sampler} \label{sec:svuse1}
 
 We estimate three models that exemplify the features and the user interface of \stochvol.
-Using the \code{exrates} data found in the package, we model the EURCHF exchange rate (the price of 1 euro in Swiss franc) in the period between March 1, 2008 and March 1, 2012 (1028 data points) in three different ways.
+Using the \code{exrates} data found in the package, we model the EURCHF exchange rate (the price of 1 euro in Swiss franc) in the period between March 1, 2011 and March 1, 2012 (260 data points) in three different ways.\footnote{In the original article, the period between March 1, 2008 and March 1, 2012 (1028 data points) is used.
+Here, to reduce compilation time and document size for CRAN, this shorter period is employed.}
 
 \subsubsection{AR(1) model with SV residuals}
 
@@ -518,7 +520,7 @@ In order to estimate this AR(1)-SV model, we need to prepare the input $\yvec$ a
 set.seed(1)
 library("stochvol")
 data("exrates")
-ind <- which(exrates$date >= as.Date("2008-03-01") &
+ind <- which(exrates$date >= as.Date("2011-03-01") &
   exrates$date <= as.Date("2012-03-01"))
 CHF_price <- exrates$CHF[ind]
 @
@@ -543,7 +545,7 @@ Otherwise, there is little evidence for high kurtosis.
 
 We compute the log returns by applying \fct{logret} on the previously calculated \code{CHF\_price}.
 Then, to estimate the constant mean model with heavy tailed SV residuals, we pass the vector of log returns to \fct{svtsample} with \code{designmatrix} set to \code{"ar0"}.
-<<presvtrunmodel, results='hide', eval=TRUE, dependson="presvrunmodel">>=
+<<presvtrunmodel, results='hide', echo=TRUE, eval=TRUE>>=
 set.seed(2)
 CHF_logret <- 100 * logret(CHF_price)
 @
@@ -565,12 +567,13 @@ The third example is a multiple regression model with an intercept, two regresso
 For illustration, we regress EURCHF log returns onto the contemporaneous log returns on EURUSD and EURJPY, the value of 1 euro per US dollar and Japanese yen, respectively.
 
 To estimate a multiple regression model using \stochvol, we need to prepare a \code{numeric} matrix $\bm X$ of dimension $\leny\times\nreg$, where rows correspond to time points and columns to covariates.
-We create an intercept as the first column of $\bm X$, and we set the second and the third columns to the EURUSD log returns and the EURJPY log returns, respectively; finally, we use the columns of $\bm X$ as covariates in the multiple regression.
-<<svlrunmodel, echo=TRUE, eval=TRUE, dependson="presvtrunmodel">>=
+We create an intercept as the first column of $\bm X$, and we set the second and the third columns to the EURUSD log returns and the EURJPY log returns, respectively; finally, we use the columns of $\bm X$ as covariates in the multiple regression.\footnote{Thinning is applied in order to reduce the size of the PDF document on CRAN.}
+<<svlrunmodel, eval=TRUE, echo=TRUE>>=
 set.seed(3)
 X <- cbind(constant = 1, 100 * logret(exrates$USD[ind]),
   100 * logret(exrates$JPY[ind]))
-res_svl <- svlsample(CHF_logret, designmatrix = X)
+res_svl <- svlsample(CHF_logret, designmatrix = X,
+  thin = 20)
 @
 
 \subsection{Visualizing the results} \label{sec:svuse2}
@@ -582,7 +585,7 @@ For this reason, inspired by the \pkg{coda} package, \stochvol{} provides its ow
 In order to introduce the tools that \stochvol{} provides for analyzing MCMC output, we briefly examine the results of the third example (multiple regression with SVl errors) in the remaining part of the section.
 
 First, we plot the output of the estimation.
-<<svlplot, echo=TRUE, dependson="svlrunmodel", fig.height=4, results='hide'>>=
+<<svlplot, echo=TRUE, fig.height=4, results='hide', eval=TRUE>>=
 plot(res_svl, showobs = FALSE, dates = exrates$date[ind[-1]])
 @
 The result is shown in Figure~\ref{fig:svlall}.
@@ -602,7 +605,7 @@ They show high persistence and significant leverage.
 \end{figure}
 
 Next, we observe the AR coefficients.
-<<svlbetaplot, echo=2, dependson="svlrunmodel", fig.width=6.7, fig.height=3.5, results='hide'>>=
+<<svlbetaplot, echo=2, fig.width=6.7, fig.height=3.5, eval=TRUE, results='hide'>>=
 par(mar = c(2.5, 1.5, 0.5, 0.5), mfrow = c(3, 2), mgp = c(1.7, 0.5, 0))
 for (i in seq_len(3)) {
   coda::traceplot(svbeta(res_svl)[, i])
@@ -636,14 +639,14 @@ Higher values of ESS indicate better mixing.
 
 \subsection[Prediction with stochvol]{Prediction with \stochvol}
 We employ our estimated model to predict log returns for the remaining days in the data set.
-To do so, we first prepare the covariates for the next 24 days and pass them via the argument \code{newdata} of the generic \fct{predict} function along with the estimation output.
-Note that we need 25 days of price data to obtain 24 returns.
+To do so, we first prepare the covariates for the next 4 days and pass them via the argument \code{newdata} of the generic \fct{predict} function along with the estimation output.
+Note that we need 5 days of price data to obtain 4 returns.\footnote{In the original document, the next 25 days are predicted; here, we restrict ourselves to the next five days.}
 <<svlpredict, echo=TRUE, eval=TRUE>>=
 set.seed(4)
-pred_ind <- seq(tail(ind, 1), length.out = 25)
+pred_ind <- seq(tail(ind, 1), length.out = 5)
 pred_X <- cbind(constant = 1, 100 * logret(exrates$USD[pred_ind]),
   100 * logret(exrates$JPY[pred_ind]))
-pred_svl <- predict(res_svl, 24, newdata = pred_X)
+pred_svl <- predict(res_svl, 4, newdata = pred_X)
 @
 As we have access to the entire distribution of future log returns, we can quantify the uncertainty around our predictions through quantiles.
 In the following code snippet, we visualize the $k$-step-ahead predictive distributions for $k=1,\dots,24$, along with the truly observed values.
@@ -788,7 +791,7 @@ Finally, in case ``SNOW'' is applied, the sampling routines optionally accept an
 As mentioned earlier, the sampling algorithms for the latent states $\hvec$ in \stochvol{} rely on a Gaussian mixture approximation as in~\citet{omori2007stochastic} and~\citet{kastner2014ancillarity}.
 The approximation tends to be very good, therefore the default setting is not to correct for model misspecification.
 However, this correction can be enabled in all of the sampling routines through the \code{expert} argument as shown for \fct{svsample} in the following.
-<<results='hide'>>=
+<<misspecification, echo=TRUE, results='hide'>>=
 set.seed(3)
 y <- svsim(50)$y
 svsample(y, expert = list(correct_model_misspecification = TRUE))
@@ -814,15 +817,16 @@ These steps are described in detail in the following sections.
 
 The workhorse in \factorstochvol{} is the sampling function \fct{fsvsample}. It expects the data to come in form of a matrix $\bm Y=(\yvec_1,\dots,\yvec_\leny)^\top$ with $\leny$ rows and $\dimy$ columns.
 For illustration, we use the exchange rate data set in \stochvol{} which contains $3140$ daily observations of exchanges rates for $23$ currency pairs against EUR, ranging from March 3, 2000 to April 4, 2012.
-To keep the analysis simple and computation times moderate, we however only model the last $1001$ days of the first six series in alphabetical order (Australian dollar, Canadian dollar, Swiss franc, Czech koruna, Danish krone, Great British pound) for further analysis.
-Instead of using the nominal exchange rates we compute log returns. This leaves us with a data set of size $n = 1000$ and $m = 6$.
+To keep the analysis simple and computation times moderate, we however only model the last $201$ days of the first six series in alphabetical order (Australian dollar, Canadian dollar, Swiss franc, Czech koruna, Danish krone, Great British pound) for further analysis.
+Instead of using the nominal exchange rates we compute log returns.
+This leaves us with a data set of size $n = 200$ and $m = 6$.\footnote{In the original paper, $n = 1000$ is used.}
 The data is prepared using the code snippet below and visualized in Figure~\ref{fig:exrates} using the \pkg{zoo} package \citep{zoo}.
-<<fsvprepdata, echo=TRUE, fig.width=10, fig.height=5, results='hide'>>=
+<<fsvprepdata, echo=TRUE, eval=TRUE, fig.width=10, fig.height=5, results='hide'>>=
 library("factorstochvol")
 library("zoo")
 data("exrates", package = "stochvol")
 m <- 6
-n <- 1000
+n <- 200
 y <- 100 * logret(tail(exrates[, seq_len(m)], n + 1))
 y <- zoo(y, order.by = tail(exrates$date, n))
 plot(y, main = "", xlab = "Time")
@@ -844,7 +848,7 @@ Evidently, this practice imposes an order dependence, as, e.g., the first variab
 A rather ad hoc method for automatically ordering the data is implemented in the helper function \fct{preorder}.
 After a maximum likelihood factor model fit to the data (using \fct{factanal} from the \pkg{stats} package with the default \code{varimax} rotation), the series are ordered as follows: The variable with the highest loading on factor 1 is placed first, the variable with the highest loading on factor 2 second (unless this variable is already placed first, in which case the variable with the second highest loading is taken), et cetera.
 For the data set at hand, this would imply the following ordering for a two-factor model.
-<<preorder, echo=TRUE>>=
+<<preorder, echo=TRUE, eval=TRUE>>=
 preorder(y, factors = 2)
 @
 According to this algorithm, the second series should be placed first and the third series should be placed second. Thereafter, the alphabetical ordering remains.
@@ -854,7 +858,7 @@ Similarly to \fct{preorder}, the function \fct{findrestrict} tries to automate t
 Again, the maximum likelihood estimates from a static factor analysis are used; however, \fct{findrestrict} uses a slightly different algorithm than the one above:
 The variable with the lowest absolute loadings on factors $2, 3, \dots, r$ (relative to factor 1) is determined to lead the first factor, the variable with the lowest absolute loadings on factors $3, 4, \dots, r$ (relative to factors 1 and 2) is placed second, et cetera.
 Below is the result for the data set at hand.
-<<findrestrict, echo=TRUE>>=
+<<findrestrict, echo=TRUE, eval=TRUE>>=
 findrestrict(y, factors = 2)
 @
 If \fct{fsvsample} is called with the argument \code{restrict = "auto"}, it automatically invokes \fct{findrestrict} with the appropriate number of factors.
@@ -899,17 +903,18 @@ Running the sampler corresponds to invoking \fct{fsvsample}. Apart from the prio
   \item \code{quiet} [\code{FALSE}]: a logical indicator determining the verbosity of \code{fsvsample}.
 \end{itemize}
 
-For our illustrative example, most settings are left at their default values. The number of factors is increased from one to two, instead of 1000 we sample 10000 draws, we estimate a constant mean, a thinning of 10 is used, and \code{quiet} is set to \code{TRUE}.
-<<runmodel, echo=TRUE>>=
+For our illustrative example, most settings are left at their default values.
+The number of factors is increased from one to two, instead of 1000 we sample 3000 draws\footnote{In the original paper, 10000 draws are sampled.}, we estimate a constant mean, a thinning of 10 is used, and \code{quiet} is set to \code{TRUE}.
+<<runmodel, echo=TRUE, eval=TRUE>>=
 set.seed(1)
-res <- fsvsample(y, factors = 2, draws = 10000, zeromean = FALSE,
+res <- fsvsample(y, factors = 2, draws = 3000, zeromean = FALSE,
   thin = 10, quiet = TRUE)
 @
 
 \subsection{Investigating the output and visualizing the results}
 
 The resulting object
-<<printrres, echo = TRUE>>=
+<<printrres, echo = TRUE, eval=TRUE>>=
 res
 @
 holds a rich amount of information. In particular, it contains
@@ -922,11 +927,11 @@ holds a rich amount of information. In particular, it contains
 For more details, please investigate \code{str(res)} and/or \code{?fsvsample}.
 
 Using \fct{covmat}, one can extract the MCMC draws of the implied covariance matrices for all points in time which have been stored during sampling. By default, this is the last point in time (\code{keeptime = "last"}), and thus
-<<covn, echo = TRUE>>=
+<<covn, echo = TRUE, eval=TRUE>>=
 dim(cov_n <- covmat(res))
 @
 shows that we have stored $\Sexpr{res$config$draws/res$config$thin}$ posterior draws of a $\Sexpr{m}\times\Sexpr{m}$ covariance matrix at one point in time, $t = n = \Sexpr{n}$. To check convergence, one can take a look at the trace plot and the autocorrelation function of the log determinant, i.e.,
-<<logdetcovn, echo = 2:5, fig.width = 10, fig.height=3.5, results='hide'>>=
+<<logdetcovn, echo = 2:5, fig.width = 10, fig.height=3.5, results='hide', eval=TRUE>>=
 par(mfrow = c(1, 2), mgp = c(1.7, 0.5, 0), mar = c(3, 3, 1, 1))
 logdet <- function (x) log(det(x))
 logdet_n <- apply(cov_n[,,,1], 3, logdet)
@@ -942,13 +947,14 @@ The results are visualized in Figure~\ref{fig:logdetcovn}; decent mixing for thi
   \label{fig:logdetcovn}
 \end{figure}
 
-To assess the mixing speed of each individual covariance matrix element, one can check, e.g., the estimated effective sample size (out of $\Sexpr{res$config$draws/res$config$thin}$ draws kept) which is implemented in \pkg{coda}. Again, no major convergence problems are apparent.
+To assess the mixing speed of each individual covariance matrix element, one can check, e.g., the estimated effective sample size (out of $\Sexpr{res$config$draws/res$config$thin}$ draws kept) which is implemented in \pkg{coda}.
+Again, no major convergence problems are apparent.
 <<covess, echo = TRUE>>=
 round(apply(cov_n, 1:2, coda::effectiveSize))
 @
 
 Assuming that \code{runningstore} was set sufficiently high when sampling, several convenience functions can be used for quick visualizations without having to post-process the MCMC draws. For example, to visualize the time-varying correlation matrices, consider
-<<corimageplot, echo=2, results='hide'>>=
+<<corimageplot, echo=2, eval=TRUE, results='hide'>>=
 par(mfrow = c(1, 3), xpd = TRUE)
 corimageplot(res, these = seq(1, n, length.out = 3), plotCI = "circle",
   plotdatedist = 2, date.cex = 1.1)
@@ -966,7 +972,7 @@ corimageplot(res, these = seq(1, n, length.out = 3), plotCI = "circle",
 which produces the three estimated posterior correlation matrices depicted in Figure~\ref{fig:corimageplot}. Setting \code{plotCI = "circle"} visualizes posterior uncertainty -- inner and outer radii correspond to the posterior mean plus/minus two standard deviations, respectively.
 
 To get an idea about how the marginal volatilities evolve over time, \fct{voltimeplot} can be used. To exemplify,
-<<voltimeplot, echo=2:3, fig.width = 10, fig.height = 3, cache.rebuild = TRUE, results='hide'>>=
+<<voltimeplot, echo=2:3, eval=TRUE, fig.width = 10, fig.height = 3, results='hide'>>=
 par(mgp = c(1.7, 0.5, 0), mar = c(2, 1.5, 1, 0.5))
 palette(RColorBrewer::brewer.pal(7, "Dark2")[-5])
 voltimeplot(res, legend = "top")
@@ -978,7 +984,7 @@ voltimeplot(res, legend = "top")
   \label{fig:voltimeplot}
 \end{figure}
 yields the estimated volatilities in Figure~\ref{fig:voltimeplot}. The financial crisis of 2008 and the capping of CHF's appreciation in September 2011 are clearly visible, while DKK's volatility (relative to EUR) is practically zero. Note that \fct{voltimeplot} respects palette changes. In the above example, \pkg{RcolorBrewer} \citep{rcolorbrewer} is used. Moreover,
-<<cortimeplot, echo=2:4, fig.width = 10, fig.height = 5, cache.rebuild = TRUE, results='hide'>>=
+<<cortimeplot, echo=2:4, eval=TRUE, fig.width = 10, fig.height = 5, results='hide'>>=
 par(mfrow = c(2, 1), mgp = c(1.7, 0.5, 0), mar = c(2, 1.5, 1, 0.5))
 palette(RColorBrewer::brewer.pal(6, "Dark2"))
 cortimeplot(res, 1)
@@ -991,7 +997,7 @@ cortimeplot(res, 2)
   \label{fig:cortimeplot}
 \end{figure}
 yields the estimated pairwise correlations in Figure~\ref{fig:cortimeplot}. While, relative to EUR, the estimated correlation between AUD and CAD appears to be relatively stable over time, correlations with CHF can become negative at times. To visualize the \emph{communalities}, i.e., the proportions of variances explained through the latent factors, invoke
-<<comtimeplot, echo=2, fig.height = 6.5, results='hide'>>=
+<<comtimeplot, echo=2, eval=TRUE, fig.height = 6.5, results='hide'>>=
 par(mgp = c(1.7, 0.5, 0), mar = c(3, 3, 1, 1))
 comtimeplot(res, maxrows = 6)
 @
@@ -1009,16 +1015,16 @@ To gain an even deeper understanding of the estimated model, we now turn towards
 To visualize the loadings, the functions \fct{facloadpairplot}, \fct{facloadcredplot}, \fct{facloadpointplot}, \fct{facloadtraceplot}, and \fct{facloaddensplot} are available; the former two are exemplified in Figure~\ref{fig:loadplot2}.
 Moreover, we can see the factor log variances produced through \code{logvartimeplot(res, show = "fac")}.
 Similarly, \code{logvartimeplot(res, show = "idi")} produces plots of the idiosyncratic log variances which are displayed in Figure~\ref{fig:idivarplot}.
-<<loadplot2, echo=2:3, fig.width=4.5, fig.height=4.5, results='hide'>>=
+<<loadplot2, echo=2:3, eval=TRUE, fig.width=4.5, fig.height=4.5, results='hide'>>=
 par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
 facloadpairplot(res)
 facloadcredplot(res)
 @
-<<varplot, echo=2, fig.width=10, fig.height=4, results='hide'>>=
+<<varplot, echo=2, eval=TRUE, fig.width=10, fig.height=4, results='hide'>>=
 par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
 logvartimeplot(res, show = "fac")
 @
-<<varplot2, echo=2, fig.width=7, fig.height=6.5, results='hide'>>=
+<<varplot2, echo=2, eval=TRUE, fig.width=7, fig.height=6.5, results='hide'>>=
 par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
 logvartimeplot(res, show = "idi", maxrows = 6)
 @
@@ -1048,7 +1054,7 @@ It computes and visualizes the eigenvalues of $\Loadings^\top\Loadings$ which ca
 To use it, one can fit a model with a relatively large number of factors and assess the importance of each of these (in descending order).
 For example, the code below produces Figure~\ref{fig:evdiag}, hinting at a model with no more than four factors.
 
-<<evdiag, fig.width=10, fig.height=4, echo=2:4, results = 'hide'>>=
+<<evdiag, fig.width=10, fig.height=4, eval=TRUE, echo=2:4, results = 'hide'>>=
 par(mgp = c(1.7, 0.5, 0), mar = c(2.7, 2.7, 2, 0.5))
 set.seed(6)
 largemodel <- fsvsample(y, factors = 6)
@@ -1064,7 +1070,7 @@ evdiag(largemodel)
 \subsection{Predicting covariances, correlations, and future observations}
 
 One of the main use cases of \factorstochvol{} might be to predict covariance and correlation matrices of time series. To this end, \fct{predcov} and \fct{predcor} yield draws from the posterior predictive distribution of these, defined in analogy to Equation~\ref{eq:predictive-density}. For instance, the code below can be used to obtain one-step-ahead posterior predictive means and standard deviations for the correlation matrix on April 5, 2012 (using data up to April 4 only).
-<<predcov1, echo=TRUE>>=
+<<predcov1, eval=TRUE, echo=TRUE>>=
 set.seed(4)
 predcor1 <- predcor(res)
 round(apply(predcor1[,,,1], 1:2, mean), 2)
@@ -1072,7 +1078,7 @@ round(apply(predcor1[,,,1], 1:2, sd), 2)
 @
 
 To obtain draws from the posterior predictive distribution of new data points, one can simply draw from the corresponding mixture of multivariate normals. In Figure~\ref{fig:preddist}, these draws are visualized via \fct{heatpairs} from \pkg{LSD} \citep{LSD}.
-<<preddist, fig.height = 6, fig.width = 9, echo = TRUE, results='hide'>>=
+<<preddist, eval=TRUE, fig.height = 6, fig.width = 9, echo = TRUE, results='hide'>>=
 set.seed(5)
 predcov_1 <- predcov(res)
 preddraws <- t(res$beta)
@@ -1090,7 +1096,7 @@ LSD::heatpairs(preddraws, labels = colnames(y), cor.cex = 1.5, gap = 0.3,
 \end{figure}
 
 To conclude, we note that convenience functions such as \fct{predloglik} or \fct{predloglikWB} may aid in approximating predictive likelihoods \citep[cf., e.g.,][]{geweke2010comparing}. For instance, assuming that the actually observed value of $\bm y_{n+1} = \bm y_{n+2} = (0,0,0,0,0,0)^\top$, we can approximate the one and two step ahead log predictive scores through code along the following lines.
-<<echo = TRUE>>=
+<<predloglik, eval=TRUE, echo = TRUE>>=
 set.seed(6)
 predloglik(res, matrix(0, nrow = 2, ncol = m), ahead = 1:2, each = 10)
 @

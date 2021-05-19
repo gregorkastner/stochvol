@@ -1,3 +1,7 @@
+# stochvol 3.0.6
+
+- Correct wrongly submitted vignettes
+
 # stochvol 3.0.5
 
 - Re-added first vignette with the necessary updates

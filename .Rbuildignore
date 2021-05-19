@@ -16,18 +16,6 @@ Session.vim
 dic-example.R
 speedtest_output.txt
 
-vignettes
-Makefile
-article.Rnw
-article2.Rnw
-cache
-^Figures
-^Figures2
-vignettes/article2?-[-1-9a-z.]+
-vignettes/Figures/.*.pdf
-vignettes/Figures2/.*.pdf
-^Rplots.pdf
-
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
