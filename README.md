@@ -1,6 +1,7 @@
 # stochvol <img src="man/figures/logo.svg" align="right" padding-left="3px" />
 
 This is the development repository of the [`R`](https://www.r-project.org/) package [`stochvol`](https://cran.r-project.org/package=stochvol).
+You find the same information as a [`pkgdown`](https://pkgdown.r-lib.org/) website [**here**](https://gregorkastner.github.io/stochvol/).
 
 ## Features
 
