@@ -2,20 +2,20 @@
 #  R package stochvol by
 #     Gregor Kastner Copyright (C) 2013-2020
 #     Darjus Hosszejni Copyright (C) 2019-2020
-#  
+#
 #  This file is part of the R package stochvol: Efficient Bayesian
 #  Inference for Stochastic Volatility Models.
-#  
+#
 #  The R package stochvol is free software: you can redistribute it
 #  and/or modify it under the terms of the GNU General Public License
 #  as published by the Free Software Foundation, either version 2 or
 #  any later version of the License.
-#  
+#
 #  The R package stochvol is distributed in the hope that it will be
 #  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 #  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #  General Public License for more details.
-#  
+#
 #  You should have received a copy of the GNU General Public License
 #  along with the R package stochvol. If that is not the case, please
 #  refer to <http://www.gnu.org/licenses/>.
@@ -23,20 +23,20 @@
 
 #' Markov Chain Monte Carlo (MCMC) Sampling for the Stochastic Volatility (SV)
 #' Model
-#' 
+#'
 #' \code{svsample} simulates from the joint posterior distribution of the SV
 #' parameters \code{mu}, \code{phi}, \code{sigma} (and potentially \code{nu} and \code{rho}),
 #' along with the latent log-volatilities \code{h_0,...,h_n} and returns the
 #' MCMC draws. If a design matrix is provided, simple Bayesian regression can
 #' also be conducted.
-#' 
+#'
 #' Functions \code{svtsample}, \code{svlsample}, and \code{svtlsample} are
 #' wrappers around \code{svsample} with convenient default values for the SV
 #' model with t-errors, leverage, and both t-errors and leverage, respectively.
-#' 
+#'
 #' For details concerning the algorithm please see the paper by Kastner and
 #' Frühwirth-Schnatter (2014).
-#' 
+#'
 #' @param y numeric vector containing the data (usually log-returns), which
 #' must not contain zeros. Alternatively, \code{y} can be an \code{svsim}
 #' object. In this case, the returns will be extracted and a message is signalled.
@@ -116,7 +116,7 @@
 #' and \code{1}, and \code{sigma} is a positive real number. Moreover, if
 #' \code{priornu} is not \code{0}, \code{startpara} must also contain an
 #' element named \code{nu} (the degrees of freedom parameter for the
-#' t-innovations). The default value is equal to the prior mean. 
+#' t-innovations). The default value is equal to the prior mean.
 #' In case of parallel execution with \code{cl} provided, \code{startpara} can be a list of
 #' named lists that initialize the parallel chains.
 #' @param startlatent \emph{optional} vector of length \code{length(y)},
@@ -182,7 +182,7 @@
 #' and \code{latent0}.}
 #' \item{meanmodel}{\code{character} containing information about how \code{designmatrix}
 #' was employed.}
-#' 
+#'
 #' To display the output, use \code{print}, \code{summary} and \code{plot}. The
 #' \code{print} method simply prints the posterior draws (which is very likely
 #' a lot of output); the \code{summary} method displays the summary statistics
@@ -192,7 +192,7 @@
 #' \code{\link{densplot}} and displaying the results on a single page.
 #' @note If \code{y} contains zeros, you might want to consider de-meaning your
 #' returns or use \code{designmatrix = "ar0"}.
-#' 
+#'
 #' \code{\link{svsample2}} is deprecated.
 #' @seealso \code{\link{svsim}}, \code{\link{specify_priors}}
 #' @references Kastner, G. and Frühwirth-Schnatter, S. (2014).
@@ -418,7 +418,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     (inherits(priorspec$sigma2, "sv_gamma") && priorspec$sigma2$shape == 0.5)
 
   # Pick sampling function
-  myquiet <- (.Platform$OS.type != "unix") || quiet  # Hack to prevent console flushing problems with Windows
+  #myquiet <- (.Platform$OS.type != "unix") || quiet  # Hack to prevent console flushing problems with Windows
+  myquiet <- quiet
   ## print progress
   print_settings <- if (is.character(print_progress)) {
     print_progress <- match.arg(print_progress, c("automatic", "progressbar", "iteration"))
@@ -597,7 +598,7 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 }
 
 #' Default Values for the Expert Settings
-#' 
+#'
 #' These functions define meaningful expert settings for
 #' argument \code{expert} of \code{\link{svsample}} and its derivatives.
 #' The result of \code{get_default_fast_sv} should be provided as
@@ -766,14 +767,14 @@ svsample2 <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 }
 
 #' Rolling Estimation of Stochastic Volatility Models
-#' 
+#'
 #' \code{svsample_roll} performs rolling window estimation based on \link{svsample}.
 #' A convenience function for backtesting purposes.
-#' 
+#'
 #' Functions \code{svtsample_roll}, \code{svlsample_roll}, and \code{svtlsample_roll} are
 #' wrappers around \code{svsample_roll} with convenient default values for the SV
 #' model with t-errors, leverage, and both t-errors and leverage, respectively.
-#' 
+#'
 #' @param y numeric vector containing the data (usually log-returns), which
 #' must not contain zeros. Alternatively, \code{y} can be an \code{svsim}
 #' object. In this case, the returns will be extracted and a message is signalled.
@@ -800,7 +801,7 @@ svsample2 <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' These quantiles are predicted using \code{\link{predict.svdraws}}
 #' for each time window.
 #' @param calculate_predictive_likelihood boolean. If \code{TRUE},
-#' the \code{n_ahead} predictive density is evaluated at the 
+#' the \code{n_ahead} predictive density is evaluated at the
 #' \code{n_ahead} time observation after each time window.
 #' @param keep_draws boolean. If \code{TRUE}, the \code{svdraws} and
 #' the \code{svpredict} objects are kept from each time window.
@@ -834,7 +835,7 @@ svsample2 <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
 #' \code{svdraws} object as returned by \code{\link{svsample}}.}
 #' \item{prediction}{present only if \code{keep_draws} is \code{TRUE}. Then it is an
 #' \code{svpredict} object as returned by \code{\link{predict.svdraws}}.}
-#' 
+#'
 #' To display the output, use \code{print} and \code{summary}. The
 #' \code{print} method simply prints a short summary of the setup;
 #' the \code{summary} method displays the summary statistics

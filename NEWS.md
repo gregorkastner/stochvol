@@ -1,3 +1,7 @@
+# stochvol 3.0.7
+
+- Turn on printing on Windows
+
 # stochvol 3.0.6
 
 - Correct wrongly submitted vignettes
