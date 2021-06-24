@@ -1,21 +1,21 @@
 /*
  * R package stochvol by
- *     Gregor Kastner Copyright (C) 2013-2020
- *     Darjus Hosszejni Copyright (C) 2019-2020
- *  
+ *     Gregor Kastner Copyright (C) 2013-2021
+ *     Darjus Hosszejni Copyright (C) 2019-2021
+ *
  *  This file is part of the R package stochvol: Efficient Bayesian
  *  Inference for Stochastic Volatility Models.
- *  
+ *
  *  The R package stochvol is free software: you can redistribute it
  *  and/or modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation, either version 2 or
  *  any later version of the License.
- *  
+ *
  *  The R package stochvol is distributed in the hope that it will be
  *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
  *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *  General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with the R package stochvol. If that is not the case, please
  *  refer to <http://www.gnu.org/licenses/>.
@@ -23,7 +23,7 @@
 
 /*
  * exports.cc
- * 
+ *
  * Transform Rcpp implementations to .Call()-conform ones.
  */
 
@@ -165,7 +165,7 @@ END_RCPP
 RcppExport SEXP run_testthat_tests ();
 
 // Register entry points for exported C++ functions
-RcppExport SEXP _stochvol_Export_registerCCallable() { 
+RcppExport SEXP _stochvol_Export_registerCCallable() {
     R_RegisterCCallable("stochvol", "update_fast_sv", (DL_FUNC)stochvol::update_fast_sv);
     R_RegisterCCallable("stochvol", "update_t_error", (DL_FUNC)stochvol::update_t_error);
     R_RegisterCCallable("stochvol", "update_general_sv", (DL_FUNC)stochvol::update_general_sv);

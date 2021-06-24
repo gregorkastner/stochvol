@@ -1,21 +1,21 @@
 /*
  * R package stochvol by
- *     Gregor Kastner Copyright (C) 2013-2020
- *     Darjus Hosszejni Copyright (C) 2019-2020
- *  
+ *     Gregor Kastner Copyright (C) 2013-2021
+ *     Darjus Hosszejni Copyright (C) 2019-2021
+ *
  *  This file is part of the R package stochvol: Efficient Bayesian
  *  Inference for Stochastic Volatility Models.
- *  
+ *
  *  The R package stochvol is free software: you can redistribute it
  *  and/or modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation, either version 2 or
  *  any later version of the License.
- *  
+ *
  *  The R package stochvol is distributed in the hope that it will be
  *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
  *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *  General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with the R package stochvol. If that is not the case, please
  *  refer to <http://www.gnu.org/licenses/>.
@@ -23,7 +23,7 @@
 
 /*
  * single_update.cc
- * 
+ *
  * Definitions of the functions declared in single_update.h.
  * Documentation can also be found in single_update.h.
  */
@@ -193,7 +193,7 @@ void update_t_error(
   if (prior_spec.nu.distribution == PriorSpec::Nu::EXPONENTIAL) {
     const double lambda = prior_spec.nu.exponential.rate;
     const double numean = newton_raphson(nu, sum_tau, T, lambda);
-    const double auxsd = std::sqrt(-1/ddlogdnu(numean, T)); 
+    const double auxsd = std::sqrt(-1/ddlogdnu(numean, T));
     const double nuprop = R::rnorm(numean, auxsd);
     const double log_ar =
       logdnu(nuprop, sum_tau, lambda, T) - logdnorm(nuprop, numean, auxsd) -
@@ -222,7 +222,7 @@ void update_regressors(
   bool success = true;
   // cholesky factor of posterior precision matrix
   success = success and arma::chol(postprecchol, independent_variables.t() * independent_variables + prior_spec.beta.multivariate_normal.precision);
-  // inverse cholesky factor of posterior precision matrix 
+  // inverse cholesky factor of posterior precision matrix
   success = success and arma::inv(postpreccholinv, arma::trimatu(postprecchol));
   if (!success) {
     Rcpp::stop("Cholesky or its inverse failed");

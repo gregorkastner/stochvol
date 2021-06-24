@@ -1,21 +1,21 @@
 /*
  * R package stochvol by
- *     Gregor Kastner Copyright (C) 2013-2020
- *     Darjus Hosszejni Copyright (C) 2019-2020
- *  
+ *     Gregor Kastner Copyright (C) 2013-2021
+ *     Darjus Hosszejni Copyright (C) 2019-2021
+ *
  *  This file is part of the R package stochvol: Efficient Bayesian
  *  Inference for Stochastic Volatility Models.
- *  
+ *
  *  The R package stochvol is free software: you can redistribute it
  *  and/or modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation, either version 2 or
  *  any later version of the License.
- *  
+ *
  *  The R package stochvol is distributed in the hope that it will be
  *  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
  *  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *  General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with the R package stochvol. If that is not the case, please
  *  refer to <http://www.gnu.org/licenses/>.
@@ -23,7 +23,7 @@
 
 /*
  * sampling_main.cc
- * 
+ *
  * Definitions of the functions declared in sampling_main.h.
  * Documentation can also be found in sampling_main.h.
  */
@@ -414,5 +414,64 @@ List svsample_general_cpp(
   return cleanup(T, para_store, latent0_store_mat, latent_store, tau_store, beta_store, adaptation_collection);
 }
 
+arma::vec arma_rnorm(const unsigned int n) {
+  arma::vec result(n);
+  result.imbue(R::norm_rand);
+  return result;
 }
 
+arma::vec arma_rsign(const unsigned int n) {
+  arma::vec result(n);
+  result.imbue([]() -> double { if (R::unif_rand() > 0) return 1; else return -1; });
+  return result;
+}
+
+namespace fast_sv {
+
+arma::vec simulate_data(
+    const arma::uvec& r,
+    const arma::vec& h) {
+  return arma_rsign(r.size()) * arma::exp(0.5 * (h + mix_mean[r] + mix_sd[r] * arma_rnorm(r.size())));
+}
+
+Rcpp::List geweke_test() {
+  const unsigned int n = 30;
+
+  // initial values
+  double mu = -9;
+  double phi = 0.9;
+  double sigma = 1;
+  double h0 = mu;
+
+  // initial latent vector
+  arma::vec h(n);
+  double h_prev = h0;
+  for (int t = 0; t < n; t++) {
+    h[t] = 0;// TODO
+  }
+}
+
+}
+
+namespace general_sv {
+
+arma::vec simulate_data(
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const arma::vec& h) {
+  const unsigned int n = h.size();
+  arma::vec y(n);
+  y.head(n - 1) = arma::exp(0.5 * h.head(n - 1)) *
+    (rho * (h.tail(n - 1) - mu - phi * (h.head(n - 1) - mu)) / sigma +
+    std::sqrt(1 - std::pow(rho, 2)) * arma_rnorm(n - 1));
+  y[n - 1] = std::exp(0.5 * h[n - 1]) * R::norm_rand();
+  return y;
+}
+
+Rcpp::List geweke_test();
+
+}
+
+}
