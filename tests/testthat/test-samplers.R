@@ -3,6 +3,8 @@ context("Samplers are correct")
 test_that("vanilla SV passes Geweke test", {
   skip_on_cran()
 
+  #result <- .Call(`_stochvol_geweke_general_cpp`, PACKAGE = "stochvol")
+
   # general helper functions
   increment_fun <- function (mu, phi, sigma) {
     function (h_t, eps) { mu + phi * (h_t - mu) + sigma * eps }

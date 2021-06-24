@@ -31,8 +31,10 @@
 #include <RcppArmadillo.h>
 #include <expert.hpp>
 #include <adaptation.hpp>
+#include "Rcpp/Rmath.h"
 #include "sampling_main.h"
 #include "single_update.h"
+#include "type_definitions.hpp"
 #include "utils_main.h"
 #include "utils_latent_states.h"
 #include "utils.h"
@@ -431,11 +433,12 @@ namespace fast_sv {
 arma::vec simulate_data(
     const arma::uvec& r,
     const arma::vec& h) {
-  return arma_rsign(r.size()) * arma::exp(0.5 * (h + mix_mean[r] + mix_sd[r] * arma_rnorm(r.size())));
+  return arma_rsign(r.size()) % arma::exp(0.5 * (h + mix_mean.elem(r) + mix_sd.elem(r) % arma_rnorm(r.size())));
 }
 
 Rcpp::List geweke_test() {
   const unsigned int n = 30;
+  arma::vec y;
 
   // initial values
   double mu = -9;
@@ -445,10 +448,72 @@ Rcpp::List geweke_test() {
 
   // initial latent vector
   arma::vec h(n);
+  arma::uvec r(n);
+  {
   double h_prev = h0;
-  for (int t = 0; t < n; t++) {
-    h[t] = 0;// TODO
+  for (unsigned int t = 0; t < n; t++) {
+    h[t] = mu + phi * (h_prev - mu) + sigma * R::norm_rand();
+    h_prev = h[t];
+    r[t] = 3 + std::floor(3 * R::unif_rand());
   }
+  }
+
+  // storage
+  const unsigned int draws = 100000;
+  arma::mat store_y_c(n, draws);
+  arma::mat store_h_c(n, draws);
+  arma::umat store_r_c(n, draws);
+  arma::mat store_para_c(3, draws);
+  arma::mat store_y_n(n, draws);
+  arma::mat store_h_n(n, draws);
+  arma::umat store_r_n(n, draws);
+  arma::mat store_para_n(3, draws);
+
+  for (const Parameterization para : {Parameterization::CENTERED, Parameterization::NONCENTERED}) {
+    ::Rprintf("Starting %s\n", para == Parameterization::CENTERED ? "centered" : "noncentered");
+    const PriorSpec prior_spec(
+        {}, PriorSpec::Normal(-9, (para == Parameterization::CENTERED ? 0.9 : 0.1)),
+        PriorSpec::Beta((para == Parameterization::CENTERED ? 2 : 5), 1.5),
+        PriorSpec::Gamma(0.9, para == Parameterization::CENTERED ? 0.9 : 9));
+    const ExpertSpec_FastSV expert(false, para);
+
+    for (unsigned int m = 0; m < draws; m++) {
+      if (m > 0 and (m + 1) % 10000 == 0) {
+        ::Rprintf("Done with %d%\r", (100 * (m + 1)) / draws);
+      }
+      // updates
+      y = simulate_data(r, h);
+      update_fast_sv(arma::log(arma::square(y) + 1e-9), mu, phi, sigma, h0, h, r, prior_spec, expert);
+
+      // store results
+      if (para == Parameterization::CENTERED) {
+        store_y_c.col(m) = y;
+        store_h_c.col(m) = h;
+        store_r_c.col(m) = r;
+        store_para_c.col(m) = arma::vec({mu, phi, sigma});
+      } else {
+        store_y_n.col(m) = y;
+        store_h_n.col(m) = h;
+        store_r_n.col(m) = r;
+        store_para_n.col(m) = arma::vec({mu, phi, sigma});
+      }
+    }
+    ::Rprintf("\n\n");
+  }
+
+  return List::create(
+      _["draws"] = draws,
+      _["centered"] = List::create(
+        _["y"] = store_y_c,
+        _["h"] = store_h_c,
+        _["r"] = store_r_c,
+        _["para"] = store_para_c),
+      _["noncentered"] = List::create(
+        _["y"] = store_y_n,
+        _["h"] = store_h_n,
+        _["r"] = store_r_n,
+        _["para"] = store_para_n)
+      );
 }
 
 }
@@ -460,17 +525,115 @@ arma::vec simulate_data(
     const double phi,
     const double sigma,
     const double rho,
+    const arma::vec& tau,
     const arma::vec& h) {
   const unsigned int n = h.size();
   arma::vec y(n);
-  y.head(n - 1) = arma::exp(0.5 * h.head(n - 1)) *
+  y.head(n - 1) = arma::exp(0.5 * h.head(n - 1)) % tau.head(n - 1) %
     (rho * (h.tail(n - 1) - mu - phi * (h.head(n - 1) - mu)) / sigma +
     std::sqrt(1 - std::pow(rho, 2)) * arma_rnorm(n - 1));
-  y[n - 1] = std::exp(0.5 * h[n - 1]) * R::norm_rand();
+  y[n - 1] = std::exp(0.5 * h[n - 1]) * tau[n - 1] * R::norm_rand();
   return y;
 }
 
-Rcpp::List geweke_test();
+Rcpp::List geweke_test() {
+  const unsigned int n = 30;
+  arma::vec y;
+  arma::vec& data_demean = y;
+  arma::vec data_demean_normal;
+  arma::vec log_data2_normal;
+  arma::vec tau(n);
+  arma::vec exp_h_half_inv;
+  arma::ivec d;
+
+  // initial values
+  double mu = -9;
+  double phi = 0.9;
+  double sigma = 1;
+  double rho = -0.2;
+  double nu = 10;
+  double h0 = mu;
+
+  // initial latent vector
+  arma::vec h(n);
+  {
+  double h_prev = h0;
+  for (unsigned int t = 0; t < n; t++) {
+    h[t] = mu + phi * (h_prev - mu) + sigma * R::norm_rand();
+    h_prev = h[t];
+  }
+  }
+  tau.imbue([nu]() -> double { return 1 / R::rgamma(nu / 2, 2 / (nu - 2)); });
+
+  auto conditional_moments = decorrelate(mu, phi, sigma, rho, h);
+  exp_h_half_inv = arma::exp(-.5 * h);
+
+  // storage
+  const unsigned int draws = 20000;
+  const unsigned int burnin = 0;
+  arma::mat store_y_c(n, draws);
+  arma::mat store_h_c(n, draws);
+  arma::mat store_tau_c(n, draws);
+  arma::mat store_para_c(5, draws);
+  arma::mat store_y_n(n, draws);
+  arma::mat store_h_n(n, draws);
+  arma::mat store_tau_n(n, draws);
+  arma::mat store_para_n(5, draws);
+  AdaptationCollection adaptation_collection(4, draws + burnin);
+
+  for (const Parameterization para : {Parameterization::CENTERED, Parameterization::NONCENTERED}) {
+    const PriorSpec prior_spec(
+        {}, PriorSpec::Normal(-9, 0.1), PriorSpec::Beta(10, 3),
+        PriorSpec::Gamma(0.5, 0.5 / (para == Parameterization::CENTERED ? 0.1 : 0.01)));
+    const ExpertSpec_GeneralSV expert({para, para}, true);
+
+    for (unsigned int m = -burnin; m < draws; m++) {
+      // updates
+      data_demean = simulate_data(mu, phi, sigma, rho, tau, h);
+      data_demean_normal = data_demean / arma::sqrt(tau);
+      log_data2_normal = arma::log(arma::square(data_demean) / tau);
+      clamp_log_data2(log_data2_normal);
+      d = arma_sign(data_demean);
+      update_general_sv(data_demean_normal, log_data2_normal, d,
+          mu, phi, sigma, rho, h0, h, adaptation_collection, prior_spec, expert);
+      exp_h_half_inv = arma::exp(-.5 * h);
+      conditional_moments = decorrelate(mu, phi, sigma, rho, h);
+      update_t_error(data_demean % exp_h_half_inv, tau,
+          conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec);
+      data_demean_normal = data_demean / arma::sqrt(tau);
+      log_data2_normal = arma::log(arma::square(data_demean) / tau);
+      clamp_log_data2(log_data2_normal);
+
+      // store results
+      if (para == Parameterization::CENTERED) {
+        store_y_c.col(m) = y;
+        store_h_c.col(m) = h;
+        store_tau_c.col(m) = tau;
+        store_para_c.col(m) = arma::vec({mu, phi, sigma, rho, nu});
+      } else {
+        store_y_n.col(m) = y;
+        store_h_n.col(m) = h;
+        store_tau_n.col(m) = tau;
+        store_para_n.col(m) = arma::vec({mu, phi, sigma, rho, nu});
+      }
+    }
+  }
+
+  return List::create(
+      _["draws"] = draws,
+      _["adaptation"] = adaptation_collection.serialize(),
+      _["centered"] = List::create(
+        _["y"] = store_y_c,
+        _["h"] = store_h_c,
+        _["tau"] = store_tau_c,
+        _["para"] = store_para_c),
+      _["noncentered"] = List::create(
+        _["y"] = store_y_n,
+        _["h"] = store_h_n,
+        _["tau"] = store_tau_n,
+        _["para"] = store_para_n)
+      );
+}
 
 }
 

@@ -161,6 +161,26 @@ BEGIN_RCPP
 END_RCPP
 }
 
+// geweke_fast_cpp
+RcppExport SEXP _stochvol_geweke_fast_cpp() {
+BEGIN_RCPP
+  Rcpp::RObject rcpp_result_gen;
+  Rcpp::RNGScope rcpp_rngScope_gen;
+  rcpp_result_gen = Rcpp::wrap(stochvol::fast_sv::geweke_test());
+  return rcpp_result_gen;
+END_RCPP
+}
+
+// geweke_general_cpp
+RcppExport SEXP _stochvol_geweke_general_cpp() {
+BEGIN_RCPP
+  Rcpp::RObject rcpp_result_gen;
+  Rcpp::RNGScope rcpp_rngScope_gen;
+  rcpp_result_gen = Rcpp::wrap(stochvol::general_sv::geweke_test());
+  return rcpp_result_gen;
+END_RCPP
+}
+
 // Declare testthat function for the C++ unit tests
 RcppExport SEXP run_testthat_tests ();
 
@@ -182,6 +202,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_stochvol_svsample_fast_cpp", (DL_FUNC) &_stochvol_svsample_fast_cpp, 16},
     {"_stochvol_svsample_general_cpp", (DL_FUNC) &_stochvol_svsample_general_cpp, 16},
     {"_stochvol_get_omori_constants", (DL_FUNC) &_stochvol_get_omori_constants, 0},
+    {"_stochvol_geweke_fast_cpp", (DL_FUNC) &_stochvol_geweke_fast_cpp, 0},
+    {"_stochvol_geweke_general_cpp", (DL_FUNC) &_stochvol_geweke_general_cpp, 0},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 0},
     {"_stochvol_Export_registerCCallable", (DL_FUNC) &_stochvol_Export_registerCCallable, 0},
     {NULL, NULL, 0}
