@@ -470,7 +470,7 @@ Rcpp::List geweke_test() {
   arma::mat store_para_n(3, draws);
 
   for (const Parameterization para : {Parameterization::CENTERED, Parameterization::NONCENTERED}) {
-    ::Rprintf("Starting %s\n", para == Parameterization::CENTERED ? "centered" : "noncentered");
+    ::Rprintf("Starting %s fast_sv\n", para == Parameterization::CENTERED ? "centered" : "noncentered");
     const PriorSpec prior_spec(
         {}, PriorSpec::Normal(-9, (para == Parameterization::CENTERED ? 0.9 : 0.1)),
         PriorSpec::Beta((para == Parameterization::CENTERED ? 2 : 5), 1.5),
@@ -529,10 +529,10 @@ arma::vec simulate_data(
     const arma::vec& h) {
   const unsigned int n = h.size();
   arma::vec y(n);
-  y.head(n - 1) = arma::exp(0.5 * h.head(n - 1)) % tau.head(n - 1) %
+  y.head(n - 1) = arma::exp(0.5 * h.head(n - 1)) % arma::sqrt(tau.head(n - 1)) %
     (rho * (h.tail(n - 1) - mu - phi * (h.head(n - 1) - mu)) / sigma +
     std::sqrt(1 - std::pow(rho, 2)) * arma_rnorm(n - 1));
-  y[n - 1] = std::exp(0.5 * h[n - 1]) * tau[n - 1] * R::norm_rand();
+  y[n - 1] = std::exp(0.5 * h[n - 1]) * std::sqrt(tau[n - 1]) * R::norm_rand();
   return y;
 }
 
@@ -541,7 +541,7 @@ Rcpp::List geweke_test() {
   arma::vec y;
   arma::vec& data_demean = y;
   arma::vec data_demean_normal;
-  arma::vec log_data2_normal;
+  arma::vec log_data2_normal(n);
   arma::vec tau(n);
   arma::vec exp_h_half_inv;
   arma::ivec d;
@@ -569,29 +569,38 @@ Rcpp::List geweke_test() {
   exp_h_half_inv = arma::exp(-.5 * h);
 
   // storage
-  const unsigned int draws = 20000;
-  const unsigned int burnin = 0;
-  arma::mat store_y_c(n, draws);
-  arma::mat store_h_c(n, draws);
-  arma::mat store_tau_c(n, draws);
-  arma::mat store_para_c(5, draws);
-  arma::mat store_y_n(n, draws);
-  arma::mat store_h_n(n, draws);
-  arma::mat store_tau_n(n, draws);
-  arma::mat store_para_n(5, draws);
+  const int draws = 450000;
+  const int thin = 100;
+  const int burnin = 50000;
+  arma::mat store_y_c(n, draws / thin);
+  arma::mat store_h_c(n, draws / thin);
+  arma::mat store_tau_c(n, draws / thin);
+  arma::mat store_para_c(5, draws / thin);
+  arma::mat store_y_n(n, draws / thin);
+  arma::mat store_h_n(n, draws / thin);
+  arma::mat store_tau_n(n, draws / thin);
+  arma::mat store_para_n(5, draws / thin);
   AdaptationCollection adaptation_collection(4, draws + burnin);
 
   for (const Parameterization para : {Parameterization::CENTERED, Parameterization::NONCENTERED}) {
+    ::Rprintf("Starting %s general_sv\n", para == Parameterization::CENTERED ? "centered" : "noncentered");
+
     const PriorSpec prior_spec(
-        {}, PriorSpec::Normal(-9, 0.1), PriorSpec::Beta(10, 3),
-        PriorSpec::Gamma(0.5, 0.5 / (para == Parameterization::CENTERED ? 0.1 : 0.01)));
+        {}, PriorSpec::Normal(-9, (para == Parameterization::CENTERED ? 0.9 : 0.1)),
+        PriorSpec::Beta((para == Parameterization::CENTERED ? 2 : 5), 1.5),
+        PriorSpec::Gamma(0.9, para == Parameterization::CENTERED ? 0.9 : 9),
+        PriorSpec::Exponential(0.1), PriorSpec::Beta(5, 5));
     const ExpertSpec_GeneralSV expert({para, para}, true);
 
-    for (unsigned int m = -burnin; m < draws; m++) {
+    for (int m = -burnin; m < draws; m++) {
+      if ((m + burnin + 1) % 10000 == 0) {
+        ::Rprintf("Done with %d%\r", (100 * (m + burnin + 1)) / (burnin + draws));
+      }
+
       // updates
       data_demean = simulate_data(mu, phi, sigma, rho, tau, h);
       data_demean_normal = data_demean / arma::sqrt(tau);
-      log_data2_normal = arma::log(arma::square(data_demean) / tau);
+      log_data2_normal = arma::log(arma::square(data_demean_normal));
       clamp_log_data2(log_data2_normal);
       d = arma_sign(data_demean);
       update_general_sv(data_demean_normal, log_data2_normal, d,
@@ -601,26 +610,31 @@ Rcpp::List geweke_test() {
       update_t_error(data_demean % exp_h_half_inv, tau,
           conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec);
       data_demean_normal = data_demean / arma::sqrt(tau);
-      log_data2_normal = arma::log(arma::square(data_demean) / tau);
+      log_data2_normal = arma::log(arma::square(data_demean_normal));
       clamp_log_data2(log_data2_normal);
 
       // store results
-      if (para == Parameterization::CENTERED) {
-        store_y_c.col(m) = y;
-        store_h_c.col(m) = h;
-        store_tau_c.col(m) = tau;
-        store_para_c.col(m) = arma::vec({mu, phi, sigma, rho, nu});
-      } else {
-        store_y_n.col(m) = y;
-        store_h_n.col(m) = h;
-        store_tau_n.col(m) = tau;
-        store_para_n.col(m) = arma::vec({mu, phi, sigma, rho, nu});
+      if (m >= 0 and (m % thin) == 0) {
+        const unsigned int index = m / thin;
+        if (para == Parameterization::CENTERED) {
+          store_y_c.col(index) = y;
+          store_h_c.col(index) = h;
+          store_tau_c.col(index) = tau;
+          store_para_c.col(index) = arma::vec({mu, phi, sigma, rho, nu});
+        } else {
+          store_y_n.col(index) = y;
+          store_h_n.col(index) = h;
+          store_tau_n.col(index) = tau;
+          store_para_n.col(index) = arma::vec({mu, phi, sigma, rho, nu});
+        }
       }
     }
+    ::Rprintf("\n\n");
   }
 
   return List::create(
       _["draws"] = draws,
+      _["thin"] = thin,
       _["adaptation"] = adaptation_collection.serialize(),
       _["centered"] = List::create(
         _["y"] = store_y_c,

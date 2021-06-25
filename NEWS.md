@@ -1,6 +1,7 @@
 # stochvol 3.0.7
 
 - Turn on printing on Windows
+- Implement Geweke test in C++
 
 # stochvol 3.0.6
 

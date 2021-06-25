@@ -85,6 +85,7 @@ void clamp_log_data2(
   // -100 ~= log(4e-44)
   std::for_each(log_data2.begin(), log_data2.end(), [](double& value) { value = std::max(value, -100.0); });
   if (not arma::is_finite(log_data2)) {
+    Rcpp::Rcout << log_data2 << std::endl;
     ::Rf_error("Non-finite (+-inf or NaN) elements in the data set. This should not happen. It would help us if you could contact the maintainer with a reproducible example.");
   }
 }
