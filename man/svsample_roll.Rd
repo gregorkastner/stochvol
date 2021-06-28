@@ -110,7 +110,7 @@ These quantiles are predicted using \code{\link{predict.svdraws}}
 for each time window.}
 
 \item{calculate_predictive_likelihood}{boolean. If \code{TRUE},
-the \code{n_ahead} predictive density is evaluated at the 
+the \code{n_ahead} predictive density is evaluated at the
 \code{n_ahead} time observation after each time window.}
 
 \item{keep_draws}{boolean. If \code{TRUE}, the \code{svdraws} and

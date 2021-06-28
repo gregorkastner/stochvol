@@ -242,7 +242,7 @@ an arbitrary numerical value, \code{phi} is a real number between \code{-1}
 and \code{1}, and \code{sigma} is a positive real number. Moreover, if
 \code{priornu} is not \code{0}, \code{startpara} must also contain an
 element named \code{nu} (the degrees of freedom parameter for the
-t-innovations). The default value is equal to the prior mean. 
+t-innovations). The default value is equal to the prior mean.
 In case of parallel execution with \code{cl} provided, \code{startpara} can be a list of
 named lists that initialize the parallel chains.}
 
@@ -332,7 +332,8 @@ distribution by calling \code{\link{volplot}}, \code{\link{traceplot}} and
 parameters \code{mu}, \code{phi}, \code{sigma} (and potentially \code{nu} and \code{rho}),
 along with the latent log-volatilities \code{h_0,...,h_n} and returns the
 MCMC draws. If a design matrix is provided, simple Bayesian regression can
-also be conducted.
+also be conducted. For similar functionality with a formula interface,
+see \code{\link{svlm}}.
 }
 \details{
 Functions \code{svtsample}, \code{svlsample}, and \code{svtlsample} are
@@ -340,7 +341,7 @@ wrappers around \code{svsample} with convenient default values for the SV
 model with t-errors, leverage, and both t-errors and leverage, respectively.
 
 For details concerning the algorithm please see the paper by Kastner and
-Frühwirth-Schnatter (2014).
+Frühwirth-Schnatter (2014) and Hosszejni and Kastner (2019).
 }
 \note{
 If \code{y} contains zeros, you might want to consider de-meaning your
@@ -402,7 +403,7 @@ res <- svsample(y, designmatrix = "ar1")
 preddraws <- predict(res, steps = ahead)
 
 ## Calculate predictive quantiles
-predquants <- apply(preddraws$y[[1]], 2, quantile, c(.1, .5, .9))
+predquants <- apply(predy(preddraws), 2, quantile, c(.1, .5, .9))
 
 ## Visualize
 expost <- tail(head(exrates$USD, len+ahead), ahead)
@@ -434,7 +435,7 @@ res <- svsample(logretUSD, designmatrix = regressors)
 predregressors <- cbind(1, as.matrix(logreturns[(len+1):(len+ahead), ]))
 preddraws <- predict(res, steps = ahead,
                      newdata = predregressors)
-predprice <- exrates[len+2, "USD"] * exp(t(apply(preddraws$y[[1]], 1, cumsum)))
+predprice <- exrates[len+2, "USD"] * exp(t(apply(predy(preddraws), 1, cumsum)))
 
 ## Calculate predictive quantiles
 predquants <- apply(predprice, 2, quantile, c(.1, .5, .9))
@@ -508,9 +509,14 @@ Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC
 estimation of stochastic volatility models. \emph{Computational Statistics &
 Data Analysis}, \bold{76}, 408--423,
 \doi{10.1016/j.csda.2013.01.002}.
+
+Hosszejni, D. and Kastner, G. (2019).
+Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage.
+\emph{Springer Proceedings in Mathematics & Statistics}, \bold{296}, 75--83,
+\doi{10.1007/978-3-030-30611-3_8}.
 }
 \seealso{
-\code{\link{svsim}}, \code{\link{specify_priors}}
+\code{\link{svlm}}, \code{\link{svsim}}, \code{\link{specify_priors}}
 }
 \keyword{models}
 \keyword{ts}

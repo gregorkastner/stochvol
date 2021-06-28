@@ -36,7 +36,7 @@
 #' model with t-errors, leverage, and both t-errors and leverage, respectively.
 #'
 #' For details concerning the algorithm please see the paper by Kastner and
-#' Frühwirth-Schnatter (2014).
+#' Frühwirth-Schnatter (2014) and Hosszejni and Kastner (2019).
 #'
 #' @param y numeric vector containing the data (usually log-returns), which
 #' must not contain zeros. Alternatively, \code{y} can be an \code{svsim}
@@ -201,6 +201,11 @@
 #' estimation of stochastic volatility models. \emph{Computational Statistics &
 #' Data Analysis}, \bold{76}, 408--423,
 #' \doi{10.1016/j.csda.2013.01.002}.
+#'
+#' Hosszejni, D. and Kastner, G. (2019).
+#' Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage.
+#' \emph{Springer Proceedings in Mathematics & Statistics}, \bold{296}, 75--83,
+#' \doi{10.1007/978-3-030-30611-3_8}.
 #' @keywords models ts
 #' @example inst/examples/svsample.R
 #' @export
@@ -1236,7 +1241,7 @@ svtlsample_roll <- function (y, designmatrix = NA,
 #' MCMC draws.
 #'
 #' For details concerning the algorithm please see the paper by Kastner and
-#' Frühwirth-Schnatter (2014).
+#' Frühwirth-Schnatter (2014) and Hosszejni and Kastner (2019).
 #'
 #' @param formula an object of class \code{"formula"}, as in \code{\link{lm}}.
 #' @param data an optional data frame, list or environment (or object
@@ -1263,12 +1268,6 @@ svtlsample_roll <- function (y, designmatrix = NA,
 #' Every \code{thinpara}th parameter and latent draw is kept and returned. The default
 #' value is 1, corresponding to no thinning of the parameter draws i.e. every
 #' draw is stored.
-#' @param thinpara single number greater or equal to 1, coercible to integer.
-#' Every \code{thinpara}th parameter draw is kept and returned. The default
-#' value is \code{thin}.
-#' @param thinlatent single number greater or equal to 1, coercible to integer.
-#' Every \code{thinlatent}th latent variable draw is kept and returned. The
-#' default value is \code{thin}
 #' @param keeptime Either 'all' (the default) or 'last'. Indicates which latent
 #' volatility draws should be stored.
 #' @param quiet logical value indicating whether the progress bar and other
@@ -1347,6 +1346,10 @@ svtlsample_roll <- function (y, designmatrix = NA,
 #' and \code{latent0}.}
 #' \item{meanmodel}{\code{character} containing information about how \code{designmatrix}
 #' was employed.}
+#' \item{svlm}{a flag for the use of \code{svlm}}
+#' \item{model_terms}{helper object that represents the formula}
+#' \item{formula}{argument \code{formula}}
+#' \item{xlevels}{helper object that is needed to interpret the formula}
 #'
 #' To display the output, use \code{print}, \code{summary} and \code{plot}. The
 #' \code{print} method simply prints the posterior draws (which is very likely
@@ -1355,16 +1358,17 @@ svtlsample_roll <- function (y, designmatrix = NA,
 #' \code{\link{plot.svdraws}} gives a graphical overview of the posterior
 #' distribution by calling \code{\link{volplot}}, \code{\link{traceplot}} and
 #' \code{\link{densplot}} and displaying the results on a single page.
-#' @note If \code{y} contains zeros, you might want to consider de-meaning your
-#' returns or use \code{designmatrix = "ar0"}.
-#'
-#' \code{\link{svsample2}} is deprecated.
 #' @seealso \code{\link{svsample}}, \code{\link{svsim}}, \code{\link{specify_priors}}
 #' @references Kastner, G. and Frühwirth-Schnatter, S. (2014).
 #' Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC
 #' estimation of stochastic volatility models. \emph{Computational Statistics &
 #' Data Analysis}, \bold{76}, 408--423,
 #' \doi{10.1016/j.csda.2013.01.002}.
+#'
+#' Hosszejni, D. and Kastner, G. (2019).
+#' Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage.
+#' \emph{Springer Proceedings in Mathematics & Statistics}, \bold{296}, 75--83,
+#' \doi{10.1007/978-3-030-30611-3_8}.
 #' @keywords models ts
 #' @example inst/examples/svlm.R
 #' @export

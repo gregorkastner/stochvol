@@ -8,6 +8,8 @@
 - Small change in the behavior of 'predict.svdraws':
   when 'newdata' is given then 'steps' is ignored;
   A warning is shown if this is relevant
+- Updated examples for 'svsample' and 'predict' so
+  that they use the extractors as intended
 
 # stochvol 3.0.6
 
