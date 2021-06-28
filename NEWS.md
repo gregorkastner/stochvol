@@ -1,7 +1,8 @@
 # stochvol 3.0.7
 
 - NEW FUNCTION 'svlm', which has a formula interface;
-  it is a wrapper around 'svsample'
+  it is a wrapper around 'svsample'; many thanks
+  to Peter Knaus for his help
 - Turn on printing on Windows
 - Implement Geweke test in C++; it is feasible to
   execute it as a CRAN test now

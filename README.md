@@ -7,6 +7,7 @@ You find the same information as a [`pkgdown`](https://pkgdown.r-lib.org/) websi
 
 The package provides methods to estimate the stochastic volatility model, potentially with conditionally heavy tails and/or with leverage.
 Using functions `svsample`, `svtsample`, `svlsample`, and `svtlsample`, one can conduct Bayesian inference on all parameters, including the time-varying volatilities (the states in the state space).
+The same functionality is reachable using the formula interface of `svlm`.
 
 Additional features:
 
