@@ -51,7 +51,7 @@ res <- svsample(y, designmatrix = "ar1")
 preddraws <- predict(res, steps = ahead)
 
 ## Calculate predictive quantiles
-predquants <- apply(preddraws$y[[1]], 2, quantile, c(.1, .5, .9))
+predquants <- apply(predy(preddraws), 2, quantile, c(.1, .5, .9))
 
 ## Visualize
 expost <- tail(head(exrates$USD, len+ahead), ahead)
@@ -83,7 +83,7 @@ res <- svsample(logretUSD, designmatrix = regressors)
 predregressors <- cbind(1, as.matrix(logreturns[(len+1):(len+ahead), ]))
 preddraws <- predict(res, steps = ahead,
                      newdata = predregressors)
-predprice <- exrates[len+2, "USD"] * exp(t(apply(preddraws$y[[1]], 1, cumsum)))
+predprice <- exrates[len+2, "USD"] * exp(t(apply(predy(preddraws), 1, cumsum)))
 
 ## Calculate predictive quantiles
 predquants <- apply(predprice, 2, quantile, c(.1, .5, .9))
