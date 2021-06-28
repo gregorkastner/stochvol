@@ -559,6 +559,12 @@ residuals.svdraws <- function(object, type = "mean", ...) {
 predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   if (!(inherits(object, "svdraws"))) stop("Argument 'object' must be of class 'svdraws'.")
 
+  if (isTRUE(object$svlm)) {
+    terms <- delete.response(object$model_terms)
+    m <- model.frame(terms, data = newdata, xlev = object$xlevels)
+    newdata <- model.matrix(terms, m)
+  }
+
   steps <- as.integer(steps)
   if (steps < 1) stop("Argument 'steps' must be greater or equal to 1.")
   # Error checking for the mean model
@@ -569,8 +575,14 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   } else if (object$meanmodel == "matrix") {
     if (is.null(newdata)) stop("Regressors needed for prediction. Please provide regressors through parameter 'newdata'.")
     newdata <- as.matrix(newdata)
-    if (is.null(object$beta) || coda::nvar(object$beta[[1]]) != NCOL(newdata)) stop(paste0("The number of fitted regression coefficients (", coda::nvar(object$beta[[1]]), ") does not equal the number of given regressors (", NCOL(newdata), ")."))
-    if (NROW(newdata) != steps) stop("The size of the design matrix (", NROW(newdata), " rows) does not match the number of steps to predict (", steps, ").")
+    if (is.null(object$beta) || coda::nvar(object$beta[[1]]) != NCOL(newdata)) {
+      if (isTRUE(object$svlm)) stop("Mismatch of covariates. The formula interface of 'svlm' was used for fitting the data. Now at prediction, please use the same structure of data for argument 'newdata' as the one used for argument 'data' when calling 'svlm'.")
+      else stop(paste0("The number of fitted regression coefficients (", coda::nvar(object$beta[[1]]), ") does not equal the number of given regressors (", NCOL(newdata), ")."))
+    }
+    if (NROW(newdata) != steps) {
+      warning("The size of the design matrix (", NROW(newdata), " rows) does not match the number of steps to predict (", steps, "). Argument 'steps' is ignored.")
+      steps <- NROW(newdata)
+    }
     regressors <- function (y, newdata, stepind) matrix(newdata[stepind, ], nrow = NROW(y), ncol = NCOL(newdata), byrow = TRUE)  # matches the format in the ar* case
   } else if (object$meanmodel == "constant") {
     if (!is.null(newdata)) warning("Constant mean was assumed when estimating the model. Omitting 'newdata'.")
