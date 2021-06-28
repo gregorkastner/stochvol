@@ -80,11 +80,12 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#stochvol-" class="anchor"></a>stochvol <img src="reference/figures/logo.svg" align="right" padding-left="3px">
 </h1></div>
+
 <p>This is the development repository of the <a href="https://www.r-project.org/"><code>R</code></a> package <a href="https://cran.r-project.org/package=stochvol"><code>stochvol</code></a>. You find the same information as a <a href="https://pkgdown.r-lib.org/"><code>pkgdown</code></a> website <a href="https://gregorkastner.github.io/stochvol/"><strong>here</strong></a>.</p>
 <div id="features" class="section level2">
 <h2 class="hasAnchor">
 <a href="#features" class="anchor"></a>Features</h2>
-<p>The package provides methods to estimate the stochastic volatility model, potentially with conditionally heavy tails and/or with leverage. Using functions <code>svsample</code>, <code>svtsample</code>, <code>svlsample</code>, and <code>svtlsample</code>, one can conduct Bayesian inference on all parameters, including the time-varying volatilities (the states in the state space).</p>
+<p>The package provides methods to estimate the stochastic volatility model, potentially with conditionally heavy tails and/or with leverage. Using functions <code>svsample</code>, <code>svtsample</code>, <code>svlsample</code>, and <code>svtlsample</code>, one can conduct Bayesian inference on all parameters, including the time-varying volatilities (the states in the state space). The same functionality is reachable using the formula interface of <code>svlm</code>.</p>
 <p>Additional features:</p>
 <ul>
 <li>Prediction, plotting, residual extraction work with the usual functions in <code>R</code> (<code>predict</code>, <code>plot</code>, and <code>residuals</code>)</li>
@@ -170,7 +171,15 @@
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/gregorkastner/stochvol/actions"><img src="https://github.com/gregorkastner/stochvol/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://codecov.io/gh/gregorkastner/stochvol?branch=master"><img src="https://codecov.io/gh/gregorkastner/covr/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://cran.r-project.org/package=stochvol"><img src="http://www.r-pkg.org/badges/version/stochvol" alt="CRAN version"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
