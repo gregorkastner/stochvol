@@ -53,7 +53,8 @@ Model — svsample" />
 parameters mu, phi, sigma (and potentially nu and rho),
 along with the latent log-volatilities h_0,...,h_n and returns the
 MCMC draws. If a design matrix is provided, simple Bayesian regression can
-also be conducted." />
+also be conducted. For similar functionality with a formula interface,
+see svlm." />
 <meta property="og:image" content="/logo.svg" />
 
 
@@ -136,7 +137,8 @@ Model</h1>
 parameters <code>mu</code>, <code>phi</code>, <code>sigma</code> (and potentially <code>nu</code> and <code>rho</code>),
 along with the latent log-volatilities <code>h_0,...,h_n</code> and returns the
 MCMC draws. If a design matrix is provided, simple Bayesian regression can
-also be conducted.</p>
+also be conducted. For similar functionality with a formula interface,
+see <code><a href='svlm.html'>svlm</a></code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>svsample</span><span class='op'>(</span>
@@ -410,7 +412,7 @@ an arbitrary numerical value, <code>phi</code> is a real number between <code>-1
 and <code>1</code>, and <code>sigma</code> is a positive real number. Moreover, if
 <code>priornu</code> is not <code>0</code>, <code>startpara</code> must also contain an
 element named <code>nu</code> (the degrees of freedom parameter for the
-t-innovations). The default value is equal to the prior mean. 
+t-innovations). The default value is equal to the prior mean.
 In case of parallel execution with <code>cl</code> provided, <code>startpara</code> can be a list of
 named lists that initialize the parallel chains.</p></td>
     </tr>
@@ -519,7 +521,7 @@ densplot and displaying the results on a single page.
 wrappers around <code>svsample</code> with convenient default values for the SV
 model with t-errors, leverage, and both t-errors and leverage, respectively.</p>
 <p>For details concerning the algorithm please see the paper by Kastner and
-Frühwirth-Schnatter (2014).</p>
+Frühwirth-Schnatter (2014) and Hosszejni and Kastner (2019).</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
     <p>If <code>y</code> contains zeros, you might want to consider de-meaning your
@@ -533,9 +535,14 @@ estimation of stochastic volatility models. <em>Computational Statistics &amp;
 Data Analysis</em>, <b>76</b>, 408--423,
 doi: <a href='https://doi.org/10.1016/j.csda.2013.01.002'>10.1016/j.csda.2013.01.002</a>
 .</p>
+<p>Hosszejni, D. and Kastner, G. (2019).
+Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage.
+<em>Springer Proceedings in Mathematics &amp; Statistics</em>, <b>296</b>, 75--83,
+doi: <a href='https://doi.org/10.1007/978-3-030-30611-3_8'>10.1007/978-3-030-30611-3_8</a>
+.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='svsim.html'>svsim</a></code>, <code><a href='specify_priors.html'>specify_priors</a></code></p></div>
+    <div class='dont-index'><p><code><a href='svlm.html'>svlm</a></code>, <code><a href='svsim.html'>svsim</a></code>, <code><a href='specify_priors.html'>specify_priors</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'>###############</span>
@@ -568,11 +575,11 @@ doi: <a href='https://doi.org/10.1016/j.csda.2013.01.002'>10.1016/j.csda.2013.01
 #&gt; 
 #&gt; Posterior draws of SV parameters (thinning = 1):
 #&gt;               mean     sd       5%      50%     95%  ESS
-#&gt; mu        -10.3074 0.3109 -10.8123 -10.2893 -9.8546 1142
-#&gt; phi         0.8701 0.1013   0.6667   0.8971  0.9814  263
-#&gt; sigma       0.2301 0.1214   0.0603   0.2155  0.4477  290
-#&gt; exp(mu/2)   0.0058 0.0009   0.0045   0.0058  0.0072 1142
-#&gt; sigma^2     0.0677 0.0708   0.0036   0.0464  0.2004  290
+#&gt; mu        -10.5305 0.5104 -11.2811 -10.5545 -9.6307 1925
+#&gt; phi         0.9245 0.0506   0.8257   0.9359  0.9843  456
+#&gt; sigma       0.3506 0.1083   0.2036   0.3332  0.5588  292
+#&gt; exp(mu/2)   0.0053 0.0015   0.0036   0.0051  0.0081 1925
+#&gt; sigma^2     0.1346 0.0886   0.0415   0.1110  0.3123  292
 #&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Simulation object extracted from input</span></div><div class='img'><img src='svsample-1.png' alt='' width='700' height='433' /></div><div class='input'>
 
@@ -608,13 +615,13 @@ doi: <a href='https://doi.org/10.1016/j.csda.2013.01.002'>10.1016/j.csda.2013.01
 #&gt; No thinning.
 #&gt; 
 #&gt; Posterior draws of SV parameters (thinning = 1):
-#&gt;              mean     sd       5%     50%   95%  ESS
-#&gt; mu        -9.8020 0.3685 -10.3919 -9.7975 -9.22 2250
-#&gt; phi        0.8687 0.0838   0.7012  0.8865  0.97  201
-#&gt; sigma      0.4418 0.1531   0.2256  0.4237  0.72  169
-#&gt; rho       -0.0783 0.1890  -0.3851 -0.0795  0.24  277
-#&gt; exp(mu/2)  0.0076 0.0014   0.0055  0.0075  0.01 2250
-#&gt; sigma^2    0.2186 0.1510   0.0509  0.1796  0.51  169
+#&gt;             mean    sd      5%    50%    95% ESS
+#&gt; mu        -8.925 0.372 -9.5675 -8.875 -8.433 934
+#&gt; phi        0.846 0.110  0.6304  0.876  0.966 180
+#&gt; sigma      0.377 0.150  0.1666  0.359  0.651 169
+#&gt; rho        0.013 0.240 -0.3809  0.015  0.406 210
+#&gt; exp(mu/2)  0.012 0.002  0.0084  0.012  0.015 934
+#&gt; sigma^2    0.165 0.136  0.0278  0.129  0.424 169
 #&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>advanced_draws</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Simulation object extracted from input</span></div><div class='img'><img src='svsample-2.png' alt='' width='700' height='433' /></div><div class='input'>
 
@@ -632,7 +639,7 @@ doi: <a href='https://doi.org/10.1016/j.csda.2013.01.002'>10.1016/j.csda.2013.01
 <span class='va'>preddraws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>res</span>, steps <span class='op'>=</span> <span class='va'>ahead</span><span class='op'>)</span>
 
 <span class='co'>## Calculate predictive quantiles</span>
-<span class='va'>predquants</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='va'>preddraws</span><span class='op'>$</span><span class='va'>y</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, <span class='fl'>2</span>, <span class='va'>quantile</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.1</span>, <span class='fl'>.5</span>, <span class='fl'>.9</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>predquants</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>predy</a></span><span class='op'>(</span><span class='va'>preddraws</span><span class='op'>)</span>, <span class='fl'>2</span>, <span class='va'>quantile</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.1</span>, <span class='fl'>.5</span>, <span class='fl'>.9</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'>## Visualize</span>
 <span class='va'>expost</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>$</span><span class='va'>USD</span>, <span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='va'>ahead</span><span class='op'>)</span>
@@ -664,7 +671,7 @@ doi: <a href='https://doi.org/10.1016/j.csda.2013.01.002'>10.1016/j.csda.2013.01
 <span class='va'>predregressors</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>logreturns</span><span class='op'>[</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>preddraws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>res</span>, steps <span class='op'>=</span> <span class='va'>ahead</span>,
                      newdata <span class='op'>=</span> <span class='va'>predregressors</span><span class='op'>)</span>
-<span class='va'>predprice</span> <span class='op'>&lt;-</span> <span class='va'>exrates</span><span class='op'>[</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>2</span>, <span class='st'>"USD"</span><span class='op'>]</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='va'>preddraws</span><span class='op'>$</span><span class='va'>y</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span>, <span class='fl'>1</span>, <span class='va'>cumsum</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>predprice</span> <span class='op'>&lt;-</span> <span class='va'>exrates</span><span class='op'>[</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>2</span>, <span class='st'>"USD"</span><span class='op'>]</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>predy</a></span><span class='op'>(</span><span class='va'>preddraws</span><span class='op'>)</span>, <span class='fl'>1</span>, <span class='va'>cumsum</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'>## Calculate predictive quantiles</span>
 <span class='va'>predquants</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='va'>predprice</span>, <span class='fl'>2</span>, <span class='va'>quantile</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.1</span>, <span class='fl'>.5</span>, <span class='fl'>.9</span><span class='op'>)</span><span class='op'>)</span>
@@ -727,18 +734,18 @@ doi: <a href='https://doi.org/10.1016/j.csda.2013.01.002'>10.1016/j.csda.2013.01
 #&gt; No thinning.
 #&gt; 
 #&gt; Posterior draws of SV parameters (thinning = 1):
-#&gt;             mean    sd      5%    50%    95%
-#&gt; mu        -8.629 0.425 -9.2107 -8.613 -8.102
-#&gt; phi        0.619 0.277  0.0808  0.680  0.954
-#&gt; sigma      0.343 0.224  0.0403  0.312  0.751
-#&gt; exp(mu/2)  0.014 0.046  0.0100  0.013  0.017
-#&gt; sigma^2    0.168 0.213  0.0016  0.098  0.564
+#&gt;              mean    sd       5%     50%    95%
+#&gt; mu        -9.6184 0.703 -10.6479 -9.5879 -8.731
+#&gt; phi        0.6596 0.229   0.2034  0.7095  0.937
+#&gt; sigma      0.7641 0.373   0.2343  0.7160  1.459
+#&gt; exp(mu/2)  0.0092 0.032   0.0049  0.0083  0.013
+#&gt; sigma^2    0.7227 0.686   0.0549  0.5127  2.128
 #&gt; 
 #&gt; Posterior draws from the auxiliary SV model were re-sampled after the MCMC
 #&gt; procedure ended to correct for model mis-specification.
 #&gt;   Re-sampling of parameters and latents was of little practical importance:
 #&gt;     - max reachable entropy for this sample size: 9.21034,
-#&gt;     - entropy of the re-sampling weight distribution: 9.210287
+#&gt;     - entropy of the re-sampling weight distribution: 9.20993
 #&gt; </div><div class='input'>
 <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># Parallel multicore chains (not available on Windows)</span>

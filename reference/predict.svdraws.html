@@ -191,7 +191,7 @@ print, plot, or summarize the predictions.</p>
 <span class='va'>fore</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>draws</span>, <span class='fl'>10</span><span class='op'>)</span>
 
 <span class='co'>## Check out the results</span>
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>fore</span><span class='op'>$</span><span class='va'>h</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>predlatent</a></span><span class='op'>(</span><span class='va'>fore</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; 
 #&gt; Iterations = 1:5000
 #&gt; Thinning interval = 1 
@@ -226,7 +226,7 @@ print, plot, or summarize the predictions.</p>
 #&gt; h_108 -14.34 -13.43 -13.04 -12.61 -11.64
 #&gt; h_109 -14.35 -13.42 -13.03 -12.61 -11.58
 #&gt; h_110 -14.38 -13.43 -13.01 -12.58 -11.51
-#&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>fore</span><span class='op'>$</span><span class='va'>y</span><span class='op'>)</span>
+#&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>predy</a></span><span class='op'>(</span><span class='va'>fore</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; 
 #&gt; Iterations = 1:5000
 #&gt; Thinning interval = 1 
@@ -304,8 +304,8 @@ print, plot, or summarize the predictions.</p>
 <span class='va'>forereg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>drawsreg</span>, <span class='va'>predlen</span>, <span class='va'>predregressors</span><span class='op'>)</span>
 
 <span class='co'>## Check out the results</span>
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>forereg</span><span class='op'>$</span><span class='va'>h</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>forereg</span><span class='op'>$</span><span class='va'>y</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>predlatent</a></span><span class='op'>(</span><span class='va'>forereg</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>predy</a></span><span class='op'>(</span><span class='va'>forereg</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>forereg</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>drawsreg</span>, forecast <span class='op'>=</span> <span class='va'>forereg</span><span class='op'>)</span>
 <span class='op'>}</span>

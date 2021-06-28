@@ -127,8 +127,11 @@
 <a href="#stochvol-307" class="anchor"></a>stochvol 3.0.7<small> Unreleased </small>
 </h1>
 <ul>
+<li>NEW FUNCTION ‘svlm’, which has a formula interface; it is a wrapper around ‘svsample’</li>
 <li>Turn on printing on Windows</li>
-<li>Implement Geweke test in C++</li>
+<li>Implement Geweke test in C++; it is feasible to execute it as a CRAN test now</li>
+<li>Small change in the behavior of ‘predict.svdraws’: when ‘newdata’ is given then ‘steps’ is ignored; A warning is shown if this is relevant</li>
+<li>Updated examples for ‘svsample’ and ‘predict’ so that they use the extractors as intended</li>
 </ul>
 </div>
     <div id="stochvol-306" class="section level1">
