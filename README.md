@@ -1,7 +1,7 @@
 # stochvol <img src="man/figures/logo.svg" align="right" padding-left="3px" />
 
 [![R-CMD-check](https://github.com/gregorkastner/stochvol/workflows/R-CMD-check/badge.svg)](https://github.com/gregorkastner/stochvol/actions)
-[![Codecov test coverage](https://codecov.io/gh/gregorkastner/covr/branch/master/graph/badge.svg)](https://codecov.io/gh/gregorkastner/stochvol?branch=master)
+[![test-coverage](https://github.com/gregorkastner/stochvol/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/gregorkastner/stochvol/actions/workflows/test-coverage.yaml)
 [![CRAN version](http://www.r-pkg.org/badges/version/stochvol)](https://cran.r-project.org/package=stochvol)
 
 This is the development repository of the [`R`](https://www.r-project.org/) package [`stochvol`](https://cran.r-project.org/package=stochvol).
