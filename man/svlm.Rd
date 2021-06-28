@@ -185,9 +185,8 @@ designmatrix <- matrix(c(dat$x, dat$x^2, log10(dat$x),
                          dat$z), ncol = 4)
 betas <- matrix(c(-1, 1, 2, 0), ncol = 1)
 y <- designmatrix \%*\% betas + svsim(n)$y
-# Formula interface
 dat$y <- y
-preddata <- as.data.frame(preddat)
+# Formula interface
 res <- svlm(y ~ 0 + x + I(x^2) + log10(x) + z, data = dat)
 # Prediction
 predn <- 10L
