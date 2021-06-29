@@ -155,29 +155,38 @@ double h_aux_log_posterior(
     const double mu,
     const double h0) {
   const int n = y_star.size();
+  const arma::vec eps_star = y_star - h;
+  const arma::vec eta = (h.tail(n-1) - mu) - phi*(h.head(n-1) - mu);
+
+  // TODO delete: log_prior pipa
+
   static const int mix_count = mix_a.n_elem;
-  const double sigma2 = std::pow(sigma, 2);
+  const double sigma2_used = std::pow(sigma, 2);
+  static const arma::vec::fixed<10> mix_log_prob = arma::log(mix_prob);
+  static const arma::vec::fixed<10> likelihood_normalizer = 0.5 * arma::log(2 * arma::datum::pi * mix_var);
   static const arma::vec::fixed<10> exp_m_half = arma::exp(mix_mean * .5);
-  const arma::vec C = rho * sigma * exp_m_half;  // re-used constant
+  const arma::vec help_eta_mean = rho * sigma * exp_m_half;  // re-used constant
 
   double result = logdnorm2(h[0], mu + phi * (h0 - mu), sigma);  // log p(h_1 | theta)
-  for (int t = 0; t < n; t++) {  // TODO parallel?
-    double subresult = 0;
-    if (t < n - 1) {
-      for (int j = 0; j < mix_count; j++) {
-        const double h_mean = mu + phi * (h[t] - mu) + d[t] * C[j] * mix_a[j];
-        const double h_var = mix_var[j] * std::pow(C[j] * mix_b[j], 2) + sigma2 * (1 - rho * rho);
-        const double yh_cov = d[t] * C[j] * mix_b[j] * mix_var[j];
-        const double y_mean = h[t] + mix_mean[j] + yh_cov / h_var * (h[t + 1] - h_mean);
-        const double y_var = (1 - std::pow(yh_cov, 2) / (mix_var[j] * h_var)) * mix_var[j];
-        subresult += std::exp(-.5 * (std::pow(y_star[t] - y_mean, 2) / y_var + std::pow(h[t + 1] - h_mean, 2) / h_var)) / std::sqrt(y_var * h_var) * mix_prob[j];
-      }
-    } else {
-      for (int j = 0; j < mix_count; j++) {
-        subresult += std::exp(-.5 * std::pow(y_star[t] - (h[t] + mix_mean[j]), 2) / mix_var[j]) / std::sqrt(mix_var[j]) * mix_prob[j];
-      }
+
+  const double log_eta_coefficient = -0.5 / (sigma2_used * (1 - rho * rho));
+  const double log_eta_constant = -0.5 * std::log(2 * arma::datum::pi * sigma2_used * (1 - rho * rho));
+  for (int r = 0; r < n; r++) {
+    arma::vec::fixed<mix_count> post_dist;
+    for (int c = 0; c < mix_count; c++) {
+      const double a = mix_a[c];
+      const double b = mix_b[c];
+      const double m = mix_mean[c];
+      const double v2 = mix_var[c];
+      const double log_prior = mix_log_prob[c];
+
+      const double log_eps_star_lik = -0.5 * std::pow((eps_star[r] - m), 2) / v2 - likelihood_normalizer[c];
+      const double log_eta_lik = r == n - 1 ?
+        0 :
+        log_eta_coefficient * std::pow(eta[r] - d[r] * help_eta_mean[c] * (a + b * (eps_star[r] - m)), 2) + log_eta_constant;
+      /*log_*/post_dist[c] = log_prior + log_eps_star_lik + log_eta_lik;
     }
-    result += std::log(subresult);
+    result += std::log(arma::sum(arma::exp(/*log_*/post_dist)));
   }
 
   return result;

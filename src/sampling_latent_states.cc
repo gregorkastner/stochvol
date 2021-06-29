@@ -240,8 +240,8 @@ arma::vec draw_h_auxiliary(
   //   Omega_{t-1,t; tt; t,t+1}
 
   // Compile time constants
-  static const arma::vec::fixed<10> exp_m2 = arma::exp(.5 * mix_mean);
-  static const arma::vec::fixed<10> b_exp_m2 = mix_b % exp_m2;
+  static const arma::vec::fixed<10> exp_m_half = arma::exp(.5 * mix_mean);
+  static const arma::vec::fixed<10> b_exp_m2 = mix_b % exp_m_half;
   static const arma::vec::fixed<10> b2_exp_m = arma::square(b_exp_m2);
 
   // Runtime constants
@@ -262,7 +262,7 @@ arma::vec draw_h_auxiliary(
 
   // X.beta and W.beta as the function of z
   const arma::vec::fixed<10>& X_z__beta = mix_mean,
-                              help_W_z = rho * sigma * mix_a % exp_m2;
+                              help_W_z = rho * sigma * mix_a % exp_m_half;
 
   // Partial calculations
   double /*A_tm1_11,*/ A_t_11,
@@ -427,7 +427,6 @@ arma::uvec draw_s_auxiliary(
   static const int mix_count = mix_a.n_elem;
   arma::vec eps_star;
   arma::vec eta;
-  arma::vec unif_vec;
   arma::uvec new_states(n);
 
   switch (centering) {
@@ -443,9 +442,9 @@ arma::uvec draw_s_auxiliary(
 
   static const arma::vec::fixed<10> mix_log_prob = arma::log(mix_prob);
   static const arma::vec::fixed<10> likelihood_normalizer = 0.5 * arma::log(2 * arma::datum::pi * mix_var);
-  static const arma::vec::fixed<10> exp_m2 = arma::exp(0.5 * mix_mean);
+  static const arma::vec::fixed<10> exp_m_half = arma::exp(0.5 * mix_mean);
 
-  const arma::vec::fixed<10> help_eta_mean = rho * std::sqrt(sigma2_used) * exp_m2;
+  const arma::vec::fixed<10> help_eta_mean = rho * std::sqrt(sigma2_used) * exp_m_half;
   const double log_eta_coefficient = -0.5 / (sigma2_used * (1 - rho * rho));
   const double log_eta_constant = -0.5 * std::log(2 * arma::datum::pi * sigma2_used * (1 - rho * rho));
   for (int r = 0; r < n; r++) {
@@ -457,13 +456,10 @@ arma::uvec draw_s_auxiliary(
       const double v2 = mix_var[c];
       const double log_prior = mix_log_prob[c];
 
-      double log_eps_star_lik = -0.5 * std::pow((eps_star[r] - m), 2) / v2 - likelihood_normalizer[c];
-      double log_eta_lik;
-      if (r < n - 1) {
-        log_eta_lik = log_eta_coefficient * std::pow(eta[r] - d[r] * help_eta_mean[c] * (a + b * (eps_star[r] - m)), 2) + log_eta_constant;
-      } else {
-        log_eta_lik = 0.0;
-      }
+      const double log_eps_star_lik = -0.5 * std::pow((eps_star[r] - m), 2) / v2 - likelihood_normalizer[c];
+      const double log_eta_lik = r == n - 1 ?
+        0 :
+        log_eta_coefficient * std::pow(eta[r] - d[r] * help_eta_mean[c] * (a + b * (eps_star[r] - m)), 2) + log_eta_constant;
       /*log_*/post_dist[c] = log_prior + log_eps_star_lik + log_eta_lik;
     }
     const double max_log_post_dist = arma::max(/*log_*/post_dist);
