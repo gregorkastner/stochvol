@@ -229,13 +229,10 @@ informative output during sampling should be omitted. The default value is
     <tr>
       <th>startpara</th>
       <td><p><em>optional</em> named list, containing the starting values
-for the parameter draws. If supplied, <code>startpara</code> must contain three
-elements named <code>mu</code>, <code>phi</code>, and <code>sigma</code>, where <code>mu</code> is
-an arbitrary numerical value, <code>phi</code> is a real number between <code>-1</code>
-and <code>1</code>, and <code>sigma</code> is a positive real number. Moreover, if
-<code>priornu</code> is not <code>0</code>, <code>startpara</code> must also contain an
-element named <code>nu</code> (the degrees of freedom parameter for the
-t-innovations). The default value is equal to the prior mean.
+for the parameter draws. If supplied, <code>startpara</code> may contain
+elements named <code>mu</code>, <code>phi</code>, <code>sigma</code>, <code>nu</code>, <code>rho</code>,
+<code>beta</code>, and <code>latent0</code>.
+The default value is equal to the prior mean.
 In case of parallel execution with <code>cl</code> provided, <code>startpara</code> can be a list of
 named lists that initialize the parallel chains.</p></td>
     </tr>
