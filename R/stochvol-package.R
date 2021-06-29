@@ -72,7 +72,7 @@ NULL
 #' @importFrom utils tail head flush.console
 #' @importFrom graphics plot par hist mtext lines title matplot points abline layout plot.default axis boxplot
 #' @importFrom grDevices col2rgb rgb
-#' @importFrom stats cov rt rgamma rnorm sd IQR density time lowess dnorm dbeta dgamma dexp qnorm qt ppoints ts.plot median quantile predict plot.ts qqline qqnorm qqplot coefficients lm
+#' @importFrom stats cov rt rgamma rnorm sd IQR density time lowess dnorm dbeta dgamma dexp qnorm qt ppoints ts.plot median quantile predict plot.ts qqline qqnorm qqplot coefficients lm .getXlevels delete.response model.frame model.matrix na.pass
 #' @importFrom coda mcmc nvar niter varnames traceplot mcmc.list nvar nchain effectiveSize mcpar
 #' @importFrom Rcpp sourceCpp
 #' @importFrom parallel parLapply stopCluster clusterSetRNGStream makePSOCKcluster mclapply makeCluster clusterExport clusterEvalQ

@@ -1388,7 +1388,7 @@ svlm <- function(formula, data, draws = 10000, burnin = 1000,
   m <- base::match(x = c("formula", "data"), table = names(mf), nomatch = 0L)
   mf <- mf[c(1L, m)]
   mf$drop.unused.levels <- TRUE
-  mf$na.action <- na.pass
+  mf$na.action <- stats::na.pass
   mf[[1L]] <- base::quote(stats::model.frame)
   mf <- base::eval(expr = mf, envir = parent.frame())
   # Create Vector y
@@ -1435,6 +1435,6 @@ svlm <- function(formula, data, draws = 10000, burnin = 1000,
   result$svlm <- TRUE
   result$model_terms <- mt
   result$formula <- formula
-  result$xlevels <- .getXlevels(mt, mf)
+  result$xlevels <- stats::.getXlevels(mt, mf)
   result
 }

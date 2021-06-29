@@ -16,6 +16,9 @@ Session.vim
 dic-example.R
 speedtest_output.txt
 
+.lintr
+compile_flags.txt
+
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
