@@ -45,8 +45,11 @@ jobs:
       - name: Install further Tex packages
         run: |
           install.packages('tinytex')
-          tinytex::install_tinytex()
+          library('tinytex')
+          install_tinytex()
           tinytex:::install_yihui_pkgs()
+          tlmgr_install('tablefootnote')
+          tlmgr_update()
         shell: Rscript {0}
 
       - name: Query dependencies
