@@ -31,7 +31,8 @@ stochvol.Rproj
 
 # produced vignettes
 vignettes/*.html
-vignettes/*.pdf
+vignettes/article.pdf
+vignettes/article2.pdf
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
