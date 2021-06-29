@@ -54,8 +54,7 @@ for (dataset in names(dat)) {
                                 priormu = c(-9, 1),  # stability
                                 priorphi = c(10, 10), priorsigma = 0.01, priorrho = c(10, 10),
                                 expert = list(#parameterization = c("centered", "noncentered"),
-                                              mhcontrol = list(use.mala = FALSE),
-                                              correct.latent.draws = FALSE)),
+                                              correct_model_misspecification = TRUE)),
                    simplify = FALSE)
 }
 
@@ -71,8 +70,7 @@ if (FALSE) {
   tmp <- svlsample(dat[[dataset]], draws = 182, burnin = 1000,
                    #priormu = c(-9, 1),
                                 expert = list(#parameterization = c("centered", "noncentered"),
-                                              mhcontrol = list(use.mala = FALSE),
-                                              correct.latent.draws = FALSE))
+                                              correct_model_misspecification = FALSE))
   plot(tmp)
   plot(tmp$adaptation_centered[, 1], type = "l")
   plot(tmp$adaptation_centered[, 2], type = "l")
