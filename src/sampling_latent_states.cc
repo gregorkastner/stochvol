@@ -30,6 +30,7 @@
 
 #include <RcppArmadillo.h>
 #include <expert.hpp>
+#include "densities.h"
 #include "sampling_latent_states.h"
 #include "utils.h"
 #include "utils_latent_states.h"
@@ -403,7 +404,7 @@ arma::vec correct_latent_auxiliaryMH(
   const double hlp1 = h_log_posterior(proposed, y, phi, rho, sigma, mu, h0);
   const double hlp2 = h_log_posterior(h, y, phi, rho, sigma, mu, h0);
   const double halp1 = h_aux_log_posterior(proposed, y_star, d, phi, rho, sigma, mu, h0);
-  const double halp2 = s_integral;  //h_aux_log_posterior(h, y_star, d, phi, rho, sigma, mu, h0);
+  const double halp2 = s_integral + logdnorm2(h[0], mu + phi * (h0 - mu), sigma);  //h_aux_log_posterior(h, y_star, d, phi, rho, sigma, mu, h0);
   const double log_acceptance = hlp1-hlp2-(halp1-halp2);
   arma::vec result;
   if (log_acceptance > 0 || std::exp(log_acceptance) > R::unif_rand()) {
