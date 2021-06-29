@@ -44,6 +44,8 @@ jobs:
       - uses: r-lib/actions/setup-tinytex@v1
       - name: Install further Tex packages
         run: |
+          install.packages('tinytex')
+          tinytex::install_tinytex()
           tinytex:::install_yihui_pkgs()
         shell: Rscript {0}
 
