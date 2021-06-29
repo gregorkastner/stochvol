@@ -74,11 +74,13 @@ test_that("general SV passes Geweke test", {
     thin_skip <- ceiling(draws / min(c(4500, apply(store_para, 2, coda::effectiveSize))))
     thin_index <- seq(1, draws, by = thin_skip)
 
-    expect_gt(shapiro.test(qnorm(pgamma(store_para[thin_index, "sigma"]^2, priorspec$sigma2$shape, rate = priorspec$sigma2$rate)))$p.value, 1e-5)
-    expect_gt(shapiro.test(qnorm(pnorm(store_para[thin_index, "mu"], priorspec$mu$mean, priorspec$mu$sd)))$p.value, 1e-5)
-    expect_gt(shapiro.test(qnorm(pbeta(0.5 * (1 + store_para[thin_index, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2)))$p.value, 1e-5)
-    expect_gt(shapiro.test(qnorm(pbeta(0.5 * (1 + store_para[thin_index, "rho"]), priorspec$rho$shape1, priorspec$rho$shape2)))$p.value, 1e-5)
-    expect_gt(shapiro.test(qnorm(pexp(store_para[thin_index, "nu"] - 2, rate = priorspec$nu$rate)))$p.value, 1e-5)
+    expect_gt(length(thin_index), 250)
+
+    expect_gt(shapiro.test(qnorm(pgamma(store_para[thin_index, "sigma"]^2, priorspec$sigma2$shape, rate = priorspec$sigma2$rate)))$p.value, 1e-2)
+    expect_gt(shapiro.test(qnorm(pnorm(store_para[thin_index, "mu"], priorspec$mu$mean, priorspec$mu$sd)))$p.value, 1e-2)
+    expect_gt(shapiro.test(qnorm(pbeta(0.5 * (1 + store_para[thin_index, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2)))$p.value, 1e-2)
+    expect_gt(shapiro.test(qnorm(pbeta(0.5 * (1 + store_para[thin_index, "rho"]), priorspec$rho$shape1, priorspec$rho$shape2)))$p.value, 1e-2)
+    expect_gt(shapiro.test(qnorm(pexp(store_para[thin_index, "nu"] - 2, rate = priorspec$nu$rate)))$p.value, 1e-2)
 
     # visual tests for manual checks
     if (FALSE) {
