@@ -188,5 +188,5 @@ test_that("default general SV is efficient", {
   print(eff_size)
 
   expect_gt(min(geweke_test), 0.01)
-  expect_gt(min(eff_size), 300)
+  expect_gt(min(eff_size), 280)
 })
