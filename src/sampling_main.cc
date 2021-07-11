@@ -569,9 +569,9 @@ Rcpp::List geweke_test() {
   exp_h_half_inv = arma::exp(-.5 * h);
 
   // storage
-  const int draws = 450000;
+  const int draws = 300000;
   const int thin = 100;
-  const int burnin = 50000;
+  const int burnin = 30000;
   arma::mat store_y_c(n, draws / thin);
   arma::mat store_h_c(n, draws / thin);
   arma::mat store_tau_c(n, draws / thin);
@@ -580,7 +580,10 @@ Rcpp::List geweke_test() {
   arma::mat store_h_n(n, draws / thin);
   arma::mat store_tau_n(n, draws / thin);
   arma::mat store_para_n(5, draws / thin);
-  AdaptationCollection adaptation_collection(4, draws + burnin);
+
+  const double target_acceptance = 1 - std::pow(1 - 0.234, 0.5);
+  const int batch_size = std::ceil(20 / target_acceptance);
+  AdaptationCollection adaptation_collection(4, draws + burnin, batch_size, target_acceptance);
 
   for (const Parameterization para : {Parameterization::CENTERED, Parameterization::NONCENTERED}) {
     ::Rprintf("Starting %s general_sv\n", para == Parameterization::CENTERED ? "centered" : "noncentered");

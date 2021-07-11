@@ -74,11 +74,13 @@ test_that("general SV passes Geweke test", {
     thin_skip <- ceiling(draws / min(c(4500, apply(store_para, 2, coda::effectiveSize))))
     thin_index <- seq(1, draws, by = thin_skip)
 
-    expect_gt(shapiro.test(qnorm(pgamma(store_para[thin_index, "sigma"]^2, priorspec$sigma2$shape, rate = priorspec$sigma2$rate)))$p.value, 1e-5)
-    expect_gt(shapiro.test(qnorm(pnorm(store_para[thin_index, "mu"], priorspec$mu$mean, priorspec$mu$sd)))$p.value, 1e-5)
-    expect_gt(shapiro.test(qnorm(pbeta(0.5 * (1 + store_para[thin_index, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2)))$p.value, 1e-5)
-    expect_gt(shapiro.test(qnorm(pbeta(0.5 * (1 + store_para[thin_index, "rho"]), priorspec$rho$shape1, priorspec$rho$shape2)))$p.value, 1e-5)
-    expect_gt(shapiro.test(qnorm(pexp(store_para[thin_index, "nu"] - 2, rate = priorspec$nu$rate)))$p.value, 1e-5)
+    expect_gt(length(thin_index), 250)
+
+    expect_gt(shapiro.test(qnorm(pgamma(store_para[thin_index, "sigma"]^2, priorspec$sigma2$shape, rate = priorspec$sigma2$rate)))$p.value, 1e-2)
+    expect_gt(shapiro.test(qnorm(pnorm(store_para[thin_index, "mu"], priorspec$mu$mean, priorspec$mu$sd)))$p.value, 1e-2)
+    expect_gt(shapiro.test(qnorm(pbeta(0.5 * (1 + store_para[thin_index, "phi"]), priorspec$phi$shape1, priorspec$phi$shape2)))$p.value, 1e-2)
+    expect_gt(shapiro.test(qnorm(pbeta(0.5 * (1 + store_para[thin_index, "rho"]), priorspec$rho$shape1, priorspec$rho$shape2)))$p.value, 1e-2)
+    expect_gt(shapiro.test(qnorm(pexp(store_para[thin_index, "nu"] - 2, rate = priorspec$nu$rate)))$p.value, 1e-2)
 
     # visual tests for manual checks
     if (FALSE) {
@@ -101,4 +103,90 @@ test_that("general SV passes Geweke test", {
       par(opar)
     }
   }
+})
+
+test_that("default fast SV is efficient", {
+  set.seed(61)
+  n <- 150L
+  # Pro-centered
+  cat("Centered\n")
+  priorspec <-
+      specify_priors(mu = sv_normal(mean = -9, sd = 0.9),
+                     phi = sv_beta(shape1 = 2, shape2 = 1.5),
+                     sigma2 = sv_gamma(shape = 0.9, rate = 0.4))
+  ## Simulate data
+  sim <- svsim(n, mu = -9, phi = 0.45, sigma = 2)
+  samp <- svsample(sim$y, draws = 10000, burnin = 1000, priorspec = priorspec,
+                   startpara = list(mu = -9, phi = 0.45, sigma = 2))
+  eff_size <- coda::effectiveSize(para(samp)[, sampled_parameters(samp)])
+  geweke_test <- 0.5 - abs(0.5 - pnorm(coda::geweke.diag(para(samp)[, sampled_parameters(samp)])$z))
+
+  cat("Effective size\n")
+  print(eff_size)
+
+  expect_gt(min(geweke_test), 0.01)
+  expect_gt(min(eff_size), 300)
+  # Pro-noncentered
+  cat("Non-centered\n")
+  priorspec <-
+      specify_priors(mu = sv_normal(mean = -9, sd = 0.1),
+                     phi = sv_beta(shape1 = 20, shape2 = 1.5),
+                     sigma2 = sv_gamma(shape = 0.9, rate = 0.9))
+  ## Simulate data
+  sim <- svsim(n, mu = -9, phi = 0.99, sigma = 1.5)
+  samp <- svsample(sim$y, draws = 30000, burnin = 1000, priorspec = priorspec,
+                   startpara = list(mu = -9, phi = 0.99, sigma = 1.5))
+  eff_size <- coda::effectiveSize(para(samp)[, sampled_parameters(samp)])
+  geweke_test <- 0.5 - abs(0.5 - pnorm(coda::geweke.diag(para(samp)[, sampled_parameters(samp)])$z))
+
+  cat("Effective size\n")
+  print(eff_size)
+
+  expect_gt(min(geweke_test), 0.01)
+  expect_gt(min(eff_size), 300)
+})
+
+test_that("default general SV is efficient", {
+  set.seed(61)
+  n <- 150L
+  # Pro-centered
+  cat("Centered\n")
+  priorspec <-
+      specify_priors(mu = sv_normal(mean = -9, sd = 0.9),
+                     phi = sv_beta(shape1 = 2, shape2 = 1.5),
+                     sigma2 = sv_gamma(shape = 0.9, rate = 0.4),
+                     nu = sv_exponential(rate = 0.5),
+                     rho = sv_beta(shape1 = 5, shape2 = 5))
+  ## Simulate data
+  sim <- svsim(n, mu = -9, phi = 0.45, sigma = 2, nu = 5, rho = -0.6)
+  samp <- svsample(sim$y, draws = 30000, burnin = 1000, priorspec = priorspec,
+                   startpara = list(mu = -9, phi = 0.45, sigma = 2, nu = 12, rho = -0.6))
+  eff_size <- coda::effectiveSize(para(samp)[, sampled_parameters(samp)])
+  geweke_test <- 0.5 - abs(0.5 - pnorm(coda::geweke.diag(para(samp)[, sampled_parameters(samp)])$z))
+
+  cat("Effective size\n")
+  print(eff_size)
+
+  expect_gt(min(geweke_test), 0.01)
+  expect_gt(min(eff_size), 120)
+  # Pro-noncentered
+  cat("Non-centered\n")
+  priorspec <-
+      specify_priors(mu = sv_normal(mean = -9, sd = 0.1),
+                     phi = sv_beta(shape1 = 20, shape2 = 1.5),
+                     sigma2 = sv_gamma(shape = 0.9, rate = 0.9),
+                     nu = sv_exponential(rate = 0.1),
+                     rho = sv_beta(shape1 = 5, shape2 = 5))
+  ## Simulate data
+  sim <- svsim(n, mu = -9, phi = 0.95, sigma = 1.5, nu = 12, rho = -0.6)
+  samp <- svsample(sim$y, draws = 30000, burnin = 1000, priorspec = priorspec,
+                   startpara = list(mu = -9, phi = 0.95, sigma = 1.5, nu = 12, rho = -0.6))
+  eff_size <- coda::effectiveSize(para(samp)[, sampled_parameters(samp)])
+  geweke_test <- 0.5 - abs(0.5 - pnorm(coda::geweke.diag(para(samp)[, sampled_parameters(samp)])$z))
+
+  cat("Effective size\n")
+  print(eff_size)
+
+  expect_gt(min(geweke_test), 0.01)
+  expect_gt(min(eff_size), 150)
 })

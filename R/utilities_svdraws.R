@@ -560,9 +560,9 @@ predict.svdraws <- function(object, steps = 1L, newdata = NULL, ...) {
   if (!(inherits(object, "svdraws"))) stop("Argument 'object' must be of class 'svdraws'.")
 
   if (isTRUE(object$svlm)) {
-    terms <- delete.response(object$model_terms)
-    m <- model.frame(terms, data = newdata, xlev = object$xlevels)
-    newdata <- model.matrix(terms, m)
+    terms <- stats::delete.response(object$model_terms)
+    m <- stats::model.frame(terms, data = newdata, xlev = object$xlevels)
+    newdata <- stats::model.matrix(terms, m)
   }
 
   steps <- as.integer(steps)

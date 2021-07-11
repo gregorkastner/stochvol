@@ -111,13 +111,10 @@
 #' informative output during sampling should be omitted. The default value is
 #' \code{FALSE}, implying verbose output.
 #' @param startpara \emph{optional} named list, containing the starting values
-#' for the parameter draws. If supplied, \code{startpara} must contain three
-#' elements named \code{mu}, \code{phi}, and \code{sigma}, where \code{mu} is
-#' an arbitrary numerical value, \code{phi} is a real number between \code{-1}
-#' and \code{1}, and \code{sigma} is a positive real number. Moreover, if
-#' \code{priornu} is not \code{0}, \code{startpara} must also contain an
-#' element named \code{nu} (the degrees of freedom parameter for the
-#' t-innovations). The default value is equal to the prior mean.
+#' for the parameter draws. If supplied, \code{startpara} may contain
+#' elements named \code{mu}, \code{phi}, \code{sigma}, \code{nu}, \code{rho},
+#' \code{beta}, and \code{latent0}.
+#' The default value is equal to the prior mean.
 #' In case of parallel execution with \code{cl} provided, \code{startpara} can be a list of
 #' named lists that initialize the parallel chains.
 #' @param startlatent \emph{optional} vector of length \code{length(y)},
@@ -1274,13 +1271,10 @@ svtlsample_roll <- function (y, designmatrix = NA,
 #' informative output during sampling should be omitted. The default value is
 #' \code{FALSE}, implying verbose output.
 #' @param startpara \emph{optional} named list, containing the starting values
-#' for the parameter draws. If supplied, \code{startpara} must contain three
-#' elements named \code{mu}, \code{phi}, and \code{sigma}, where \code{mu} is
-#' an arbitrary numerical value, \code{phi} is a real number between \code{-1}
-#' and \code{1}, and \code{sigma} is a positive real number. Moreover, if
-#' \code{priornu} is not \code{0}, \code{startpara} must also contain an
-#' element named \code{nu} (the degrees of freedom parameter for the
-#' t-innovations). The default value is equal to the prior mean.
+#' for the parameter draws. If supplied, \code{startpara} may contain
+#' elements named \code{mu}, \code{phi}, \code{sigma}, \code{nu}, \code{rho},
+#' \code{beta}, and \code{latent0}.
+#' The default value is equal to the prior mean.
 #' In case of parallel execution with \code{cl} provided, \code{startpara} can be a list of
 #' named lists that initialize the parallel chains.
 #' @param startlatent \emph{optional} vector of length \code{length(y)},
@@ -1388,7 +1382,7 @@ svlm <- function(formula, data, draws = 10000, burnin = 1000,
   m <- base::match(x = c("formula", "data"), table = names(mf), nomatch = 0L)
   mf <- mf[c(1L, m)]
   mf$drop.unused.levels <- TRUE
-  mf$na.action <- na.pass
+  mf$na.action <- stats::na.pass
   mf[[1L]] <- base::quote(stats::model.frame)
   mf <- base::eval(expr = mf, envir = parent.frame())
   # Create Vector y
@@ -1435,6 +1429,6 @@ svlm <- function(formula, data, draws = 10000, burnin = 1000,
   result$svlm <- TRUE
   result$model_terms <- mt
   result$formula <- formula
-  result$xlevels <- .getXlevels(mt, mf)
+  result$xlevels <- stats::.getXlevels(mt, mf)
   result
 }
