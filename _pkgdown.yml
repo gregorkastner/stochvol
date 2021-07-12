@@ -10,6 +10,7 @@ reference:
 - title: "Simulation"
   desc: "Sampling routines, simulation, and prediction"
 - contents:
+  - svlm
   - svsample
   - svsample_roll
   - svsample_fast_cpp
