@@ -1,4 +1,4 @@
-# stochvol 3.0.7
+# stochvol 3.0.10
 
 - NEW FUNCTION 'svlm', which has a formula interface;
   it is a wrapper around 'svsample'; many thanks
@@ -11,6 +11,8 @@
   A warning is shown if this is relevant
 - Updated examples for 'svsample' and 'predict' so
   that they use the extractors as intended
+- Simplified vignette: cache some results to
+  reduce dependencies
 
 # stochvol 3.0.6
 
