@@ -11,6 +11,8 @@
   A warning is shown if this is relevant
 - Updated examples for 'svsample' and 'predict' so
   that they use the extractors as intended
+- Bugfix in adaptation that does not affect
+  correctness
 
 # stochvol 3.0.6
 
