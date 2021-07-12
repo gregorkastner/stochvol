@@ -9,12 +9,16 @@ speedtest_sessioninfo.txt
 .undodir
 pre-commit.sh
 
+.gdbinit
+
 ^.*\.Rproj$
 ^\.Rproj\.user$
 
 Session.vim
 dic-example.R
 speedtest_output.txt
+
+debug.Rprofile
 
 .lintr
 compile_flags.txt

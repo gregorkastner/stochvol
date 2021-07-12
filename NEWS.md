@@ -1,4 +1,4 @@
-# stochvol 3.0.10
+# stochvol 3.1.0
 
 - NEW FUNCTION 'svlm', which has a formula interface;
   it is a wrapper around 'svsample'; many thanks

@@ -47,6 +47,9 @@ test_that("vanilla SV passes Geweke test", {
 })
 
 test_that("general SV passes Geweke test", {
+  skip_on_cran()
+  skip_on_ci()
+
   set.seed(60)
   result <- .Call(`_stochvol_geweke_general_cpp`, PACKAGE = "stochvol")
   draws <- result$draws / result$thin
@@ -106,6 +109,9 @@ test_that("general SV passes Geweke test", {
 })
 
 test_that("default fast SV is efficient", {
+  skip_on_cran()
+  skip_on_ci()
+
   set.seed(61)
   n <- 150L
   # Pro-centered
@@ -147,6 +153,9 @@ test_that("default fast SV is efficient", {
 })
 
 test_that("default general SV is efficient", {
+  skip_on_cran()
+  skip_on_ci()
+
   set.seed(61)
   n <- 150L
   # Pro-centered
