@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.1.0</span>
       </span>
     </div>
 
@@ -233,12 +233,12 @@ See the examples below for more details.</p>
 #&gt; No thinning.
 #&gt; 
 #&gt; Posterior draws of SV parameters (thinning = 1):
-#&gt;              mean     sd       5%    50%    95% ESS
-#&gt; mu        -9.6800 0.8419 -11.0032 -9.662 -8.404 566
-#&gt; phi        0.8677 0.1133   0.6414  0.900  0.983 161
-#&gt; sigma      0.4894 0.2005   0.2106  0.460  0.866 125
-#&gt; exp(mu/2)  0.0089 0.0098   0.0041  0.008  0.015 566
-#&gt; sigma^2    0.2797 0.2336   0.0443  0.212  0.751 125
+#&gt;            mean     sd      5%   50%    95% ESS
+#&gt; mu        -9.23 0.4591 -9.9274 -9.22 -8.552 598
+#&gt; phi        0.75 0.1887  0.3910  0.80  0.967 124
+#&gt; sigma      0.40 0.2499  0.0811  0.36  0.852 118
+#&gt; exp(mu/2)  0.01 0.0027  0.0070  0.01  0.014 598
+#&gt; sigma^2    0.22 0.3126  0.0066  0.13  0.727 118
 #&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>)</span>
 </div><div class='img'><img src='updatesummary-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## Look at other quantiles and calculate ESS of latents:</span>
@@ -261,18 +261,12 @@ See the examples below for more details.</p>
 #&gt; No thinning.
 #&gt; 
 #&gt; Posterior draws of SV parameters (thinning = 1):
-#&gt;              mean     sd       1%       5%      25%    50%     75%    95%
-#&gt; mu        -9.6800 0.8419 -11.8047 -11.0032 -10.0965 -9.662 -9.2678 -8.404
-#&gt; phi        0.8677 0.1133   0.4862   0.6414   0.8233  0.900  0.9498  0.983
-#&gt; sigma      0.4894 0.2005   0.1448   0.2106   0.3429  0.460  0.6053  0.866
-#&gt; exp(mu/2)  0.0089 0.0098   0.0027   0.0041   0.0064  0.008  0.0097  0.015
-#&gt; sigma^2    0.2797 0.2336   0.0210   0.0443   0.1176  0.212  0.3664  0.751
-#&gt;              99% ESS
-#&gt; mu        -7.404 566
-#&gt; phi        0.996 161
-#&gt; sigma      1.052 125
-#&gt; exp(mu/2)  0.025 566
-#&gt; sigma^2    1.107 125
+#&gt;            mean     sd       1%      5%     25%   50%    75%    95%    99% ESS
+#&gt; mu        -9.23 0.4591 -1.0e+01 -9.9274 -9.4563 -9.22 -9.003 -8.552 -7.925 598
+#&gt; phi        0.75 0.1887  8.6e-02  0.3910  0.6581  0.80  0.894  0.967  0.985 124
+#&gt; sigma      0.40 0.2499  1.2e-02  0.0811  0.2281  0.36  0.528  0.852  1.290 118
+#&gt; exp(mu/2)  0.01 0.0027  5.4e-03  0.0070  0.0088  0.01  0.011  0.014  0.019 598
+#&gt; sigma^2    0.22 0.3126  1.5e-04  0.0066  0.0520  0.13  0.278  0.727  1.665 118
 #&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>)</span>
 </div><div class='img'><img src='updatesummary-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>

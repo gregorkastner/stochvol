@@ -87,7 +87,7 @@ see svlm." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.0.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.1.0</span>
       </span>
     </div>
 
@@ -571,12 +571,12 @@ doi: <a href='https://doi.org/10.1007/978-3-030-30611-3_8'>10.1007/978-3-030-306
 #&gt; No thinning.
 #&gt; 
 #&gt; Posterior draws of SV parameters (thinning = 1):
-#&gt;               mean     sd       5%      50%     95%  ESS
-#&gt; mu        -10.5305 0.5104 -11.2811 -10.5545 -9.6307 1925
-#&gt; phi         0.9245 0.0506   0.8257   0.9359  0.9843  456
-#&gt; sigma       0.3506 0.1083   0.2036   0.3332  0.5588  292
-#&gt; exp(mu/2)   0.0053 0.0015   0.0036   0.0051  0.0081 1925
-#&gt; sigma^2     0.1346 0.0886   0.0415   0.1110  0.3123  292
+#&gt;             mean     sd       5%    50%   95% ESS
+#&gt; mu        -8.211 0.2993 -8.69418 -8.171 -7.86 620
+#&gt; phi        0.842 0.1170  0.61635  0.868  0.98 298
+#&gt; sigma      0.146 0.1112  0.01288  0.125  0.35 322
+#&gt; exp(mu/2)  0.017 0.0022  0.01294  0.017  0.02 620
+#&gt; sigma^2    0.034 0.0520  0.00017  0.016  0.12 322
 #&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Simulation object extracted from input</span></div><div class='img'><img src='svsample-1.png' alt='' width='700' height='433' /></div><div class='input'>
 
@@ -612,13 +612,13 @@ doi: <a href='https://doi.org/10.1007/978-3-030-30611-3_8'>10.1007/978-3-030-306
 #&gt; No thinning.
 #&gt; 
 #&gt; Posterior draws of SV parameters (thinning = 1):
-#&gt;             mean    sd      5%    50%    95% ESS
-#&gt; mu        -8.925 0.372 -9.5675 -8.875 -8.433 934
-#&gt; phi        0.846 0.110  0.6304  0.876  0.966 180
-#&gt; sigma      0.377 0.150  0.1666  0.359  0.651 169
-#&gt; rho        0.013 0.240 -0.3809  0.015  0.406 210
-#&gt; exp(mu/2)  0.012 0.002  0.0084  0.012  0.015 934
-#&gt; sigma^2    0.165 0.136  0.0278  0.129  0.424 169
+#&gt;             mean      sd      5%    50%    95%  ESS
+#&gt; mu        -8.870 0.16735 -9.1495 -8.866 -8.611 2704
+#&gt; phi        0.571 0.25720  0.0721  0.621  0.893   99
+#&gt; sigma      0.275 0.15898  0.0403  0.262  0.553  228
+#&gt; rho        0.091 0.27088 -0.3531  0.090  0.552  106
+#&gt; exp(mu/2)  0.012 0.00099  0.0103  0.012  0.013 2704
+#&gt; sigma^2    0.101 0.10923  0.0016  0.068  0.306  228
 #&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>advanced_draws</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Simulation object extracted from input</span></div><div class='img'><img src='svsample-2.png' alt='' width='700' height='433' /></div><div class='input'>
 
@@ -731,18 +731,18 @@ doi: <a href='https://doi.org/10.1007/978-3-030-30611-3_8'>10.1007/978-3-030-306
 #&gt; No thinning.
 #&gt; 
 #&gt; Posterior draws of SV parameters (thinning = 1):
-#&gt;              mean    sd       5%     50%    95%
-#&gt; mu        -9.6184 0.703 -10.6479 -9.5879 -8.731
-#&gt; phi        0.6596 0.229   0.2034  0.7095  0.937
-#&gt; sigma      0.7641 0.373   0.2343  0.7160  1.459
-#&gt; exp(mu/2)  0.0092 0.032   0.0049  0.0083  0.013
-#&gt; sigma^2    0.7227 0.686   0.0549  0.5127  2.128
+#&gt;              mean     sd       5%     50%   95%
+#&gt; mu        -9.7334 0.6994 -10.2968 -9.7166 -9.16
+#&gt; phi        0.5891 0.2816   0.0279  0.6398  0.94
+#&gt; sigma      0.4356 0.2511   0.0658  0.4092  0.89
+#&gt; exp(mu/2)  0.0079 0.0027   0.0058  0.0078  0.01
+#&gt; sigma^2    0.2528 0.2714   0.0043  0.1675  0.78
 #&gt; 
 #&gt; Posterior draws from the auxiliary SV model were re-sampled after the MCMC
 #&gt; procedure ended to correct for model mis-specification.
 #&gt;   Re-sampling of parameters and latents was of little practical importance:
 #&gt;     - max reachable entropy for this sample size: 9.21034,
-#&gt;     - entropy of the re-sampling weight distribution: 9.20993
+#&gt;     - entropy of the re-sampling weight distribution: 9.210266
 #&gt; </div><div class='input'>
 <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 <span class='co'># Parallel multicore chains (not available on Windows)</span>
