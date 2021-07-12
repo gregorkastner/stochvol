@@ -1,7 +1,7 @@
 /*
  * R package stochvol by
- *     Gregor Kastner Copyright (C) 2013-2020
- *     Darjus Hosszejni Copyright (C) 2019-2020
+ *     Gregor Kastner Copyright (C) 2013-2021
+ *     Darjus Hosszejni Copyright (C) 2019-2021
  *
  *  This file is part of the R package stochvol: Efficient Bayesian
  *  Inference for Stochastic Volatility Models.

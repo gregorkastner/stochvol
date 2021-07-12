@@ -13,6 +13,8 @@
   that they use the extractors as intended
 - Simplified vignette: cache some results to
   reduce dependencies
+- Bugfix in adaptation that does not affect
+  correctness
 
 # stochvol 3.0.6
 
