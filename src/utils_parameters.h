@@ -188,6 +188,65 @@ struct SampledTheta {
        rho_accepted;
 };
 
+namespace centered {  // sufficient augmentation
+
+// Encapsulate the sufficient statistics for
+// the sufficient augmentation 
+struct SufficientStatistic {
+  unsigned int length;  // T == length(y)
+  double h_zero,  // h_0
+         h_one,  // h_1
+         sum_h,  // sum_{t=2}^{T-1} h_t
+         sum_h_square,  // sum_{t=2}^{T-1} h_t^2
+         h_last,  // h_T
+         h_first_autocov,  // h_1 h_0
+         sum_h_autocov,  // sum_{t=2}^T h_t h_{t-1}
+         normalized_data,  // sum_{t=1}^{T-1} y_t / sqrt(tau_t) / exp(h_t / 2)
+         normalized_data_square,  // sum_{t=1}^{T-1} y_t^2 / tau_t / exp(h_t)
+         normalized_cov,  // sum_{t=1}^{T-1} y_t h_t / sqrt(tau_t) / exp(h_t / 2)
+         normalized_leverage;  // sum_{t=1}^{T-1} y_t h_{t+1} / sqrt(tau_t) / exp(h_t / 2)
+};
+
+// Compute the log-likelihood for mu, phi, sigma,
+// and rho in the exact SV model.
+double theta_log_likelihood(
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const SufficientStatistic& sufficient_statistic,
+    const PriorSpec& prior_spec);
+
+// Compute the sufficient statistic for mu, phi,
+// sigma, and rho in the centered parameterization.
+SufficientStatistic compute_sufficient_statistic(
+    const arma::vec& data,
+    const double h0,
+    const arma::vec& h);
+
+}  // END namespace centered
+
+namespace noncentered {
+
+// Encapsulate the sufficient statistics for
+// the ancillary augmentation 
+struct SufficientStatistic {
+  const arma::vec& data;  // y_t / sqrt(tau_t)
+  const arma::vec& c;  // ancillary latent states
+};
+
+// Compute the log-likelihood for mu, phi, sigma,
+// and rho in the exact SV model.
+double theta_log_likelihood(
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const SufficientStatistic& sufficient_statistic,
+    const PriorSpec& prior_spec);
+
+}  // END namespace noncentered
+
 // Compute the log-likelihood for mu, phi, sigma,
 // and rho in the exact SV model.
 double theta_log_likelihood(

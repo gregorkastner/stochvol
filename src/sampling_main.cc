@@ -29,6 +29,7 @@
  */
 
 #include <RcppArmadillo.h>
+#include <cmath>
 #include <expert.hpp>
 #include <adaptation.hpp>
 #include "Rcpp/Rmath.h"
@@ -356,7 +357,10 @@ List svsample_general_cpp(
     }
 
     // update theta and h
-    update_general_sv(data_demean_normal, log_data2_normal, d, mu, phi, sigma, rho, h0, h, adaptation_collection, prior_spec, expert);
+    general_sv::update(data_demean_normal, log_data2_normal, d, mu, phi, sigma, rho, h0, h, adaptation_collection, prior_spec, expert);
+if (not (std::isfinite(mu) and std::isfinite(phi) and std::isfinite(sigma) and std::isfinite(rho) and arma::arma_isfinite(h))) {
+  ::Rf_error("Bad values generated");
+}
     if (is_regression or is_heavy_tail) {
       exp_h_half_inv = arma::exp(-.5 * h);
       if (is_leverage) {

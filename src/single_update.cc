@@ -34,6 +34,7 @@
 #include "densities.h"
 #include "sampling_latent_states.h"
 #include "sampling_parameters.h"
+#include "type_definitions.hpp"
 #include "utils_latent_states.h"
 #include "utils_parameters.h"
 #include "utils.h"
@@ -255,14 +256,15 @@ void update_general_sv(
     const ExpertSpec_GeneralSV& expert) {  // strategy, correct, use_mala feed into this
   double ht0;
   arma::vec ht;
-  ht0 = centered_to_noncentered(mu, sigma, h0);
-  ht = centered_to_noncentered(mu, sigma, h);
 
   if (expert.update.latent_vector) {  // Sample the latent states
     //const  // not const to be able to std::move
-    LatentVector h_full = general_sv::draw_latent(data, log_data2, sign_data, mu, phi, sigma, rho, h, ht, prior_spec, expert);
+    LatentVector h_full = general_sv::draw_latent(data, log_data2, sign_data, mu, phi, sigma, rho, h, prior_spec, expert);
     h0 = h_full.h0;
     h = std::move(h_full.h);
+    ht0 = centered_to_noncentered(mu, sigma, h0);
+    ht = centered_to_noncentered(mu, sigma, h);
+  } else {
     ht0 = centered_to_noncentered(mu, sigma, h0);
     ht = centered_to_noncentered(mu, sigma, h);
   }
@@ -314,6 +316,85 @@ void update_general_sv(
 
   return;
 }
+
+namespace general_sv {
+
+// Single update accoring to general SV.
+// See documentation above the declaration
+void update(
+    const arma::vec& data,
+    const arma::vec& log_data2,
+    const arma::ivec& sign_data,
+    double& mu,
+    double& phi,
+    double& sigma,
+    double& rho,
+    double& h0,
+    arma::vec& h,
+    AdaptationCollection& adaptation_collection,
+    const PriorSpec& prior_spec,  // prior_mu, prior_phi, prior_sigma2, prior_rho, gammaprior, dontupdatemu feed into this (plus priorlatent0, truncnormal nyi)
+    const ExpertSpec_GeneralSV& expert) {  // strategy, correct, use_mala feed into this
+
+  if (expert.update.latent_vector) {  // Sample the latent states
+    //const  // not const to be able to std::move
+    LatentVector h_full = draw_latent(data, log_data2, sign_data, mu, phi, sigma, rho, h, prior_spec, expert);
+    h0 = h_full.h0;
+    h = std::move(h_full.h);
+  }
+
+  if (expert.update.parameters) {  // Sample the parameters
+    const arma::uvec update_indicator {
+          prior_spec.mu.distribution != PriorSpec::Mu::CONSTANT,
+          prior_spec.phi.distribution != PriorSpec::Phi::CONSTANT,
+          prior_spec.sigma2.distribution != PriorSpec::Sigma2::CONSTANT,
+          prior_spec.rho.distribution != PriorSpec::Rho::CONSTANT};
+
+    for (const Parameterization par : expert.strategy) {
+      bool accepted;
+      Adaptation& adaptation = adaptation_collection[par];
+      const ProposalDiffusionKen& adapted_proposal = expert.adapt ? adaptation.get_proposal() : expert.proposal_diffusion_ken;
+      switch (par) {
+          case Parameterization::CENTERED: {
+            const auto sufficient_statistic = centered::compute_sufficient_statistic(data, h0, h);
+            const auto theta = centered::draw_theta(
+                mu, phi, sigma, rho,
+                sufficient_statistic,
+                update_indicator,
+                prior_spec, expert,
+                adapted_proposal);
+            mu = theta.mu, phi = theta.phi, sigma = theta.sigma, rho = theta.rho;
+            accepted = theta.mu_accepted or theta.phi_accepted or theta.sigma_accepted or theta.rho_accepted;  // was anything accepted?
+            break;
+          }
+          case Parameterization::NONCENTERED: {
+            const arma::vec c = centered_to_noncentered(mu, sigma, phi, rho, data, h0, h, prior_spec);
+            const noncentered::SufficientStatistic sufficient_statistic {data, c};
+            const auto theta = noncentered::draw_theta(
+                mu, phi, sigma, rho,
+                sufficient_statistic,
+                update_indicator,
+                prior_spec, expert,
+                adapted_proposal);
+            mu = theta.mu, phi = theta.phi, sigma = theta.sigma, rho = theta.rho;
+            accepted = theta.mu_accepted or theta.phi_accepted or theta.sigma_accepted or theta.rho_accepted;  // was anything accepted?
+            LatentVector h_full = noncentered_to_centered(mu, sigma, phi, rho, data, c, prior_spec);
+            h0 = h_full.h0;
+            h = std::move(h_full.h);
+            break;
+          }
+      }
+      if (expert.adapt) {
+        adaptation.register_sample(
+            accepted,
+            general_sv::theta_transform_inv(mu, phi, sigma, rho, prior_spec).elem(arma::find(update_indicator)));  // current sample
+      }
+    }
+  }
+
+  return;
+}
+
+}  // END namespace general_sv
 
 }
 

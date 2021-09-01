@@ -36,6 +36,7 @@
 #include "utils_latent_states.h"
 #include "densities.h"
 #include <array>
+#include <numeric>
 #include <utility>
 
 using namespace Rcpp;
@@ -561,6 +562,104 @@ SampledTheta draw_theta_3block(
 }  // END namespace fast_sv
 
 namespace general_sv {
+
+namespace centered {
+
+double square(
+    const double x) {
+  return std::pow(x, 2);
+}
+
+// Compute the log-likelihood for mu, phi, sigma,
+// and rho in the exact SV model.
+double theta_log_likelihood(
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const SufficientStatistic& sufficient_statistic,
+    const PriorSpec& prior_spec) {
+  const double sigma2 = square(sigma),
+               phi2 = square(phi),
+               rho2 = square(rho),
+               phi_constant = square(1 - phi),
+               rho_constant = 1 - rho2;
+  const unsigned int t = sufficient_statistic.length;
+  return -.5 * ((t + 1) * 2 * std::log(sigma) + (t - 1) * std::log(rho_constant) +
+      (prior_spec.latent0.variance == PriorSpec::Latent0::STATIONARY ? -std::log(1 - phi2) : 0) +
+      (prior_spec.latent0.variance == PriorSpec::Latent0::STATIONARY ?
+       square(mu / sigma) * ((t - 1) * (rho2 / rho_constant * phi_constant +
+          square(t / (t - 1.) - phi)) - 1. / (t - 1)) :
+       square(mu) * (1 / sigma2 / prior_spec.latent0.constant.value) + phi_constant * (t - rho2) / sigma2 / rho_constant) +
+      sufficient_statistic.h_zero * (sufficient_statistic.h_zero - 2 * mu * (1 - phi)) / sigma2 +
+      -2 * sufficient_statistic.h_one * mu * (phi_constant - rho2 * phi * (1 - phi) / rho_constant) / sigma2 +
+      square(sufficient_statistic.h_one) * (rho_constant + phi2) / sigma2 / rho_constant +
+      -2 * sufficient_statistic.sum_h * mu * phi_constant / rho_constant / sigma2 +
+      sufficient_statistic.sum_h_square * (1 + phi2) / sigma2 / rho_constant +
+      -2 * sufficient_statistic.h_last * mu * (1 - phi) / rho_constant / sigma2 +
+      square(sufficient_statistic.h_last) / sigma2 / rho_constant +
+      -2 * sufficient_statistic.h_first_autocov * phi / sigma2 +
+      -2 * sufficient_statistic.sum_h_autocov * phi / sigma2 / rho_constant +
+      2 * sufficient_statistic.normalized_data * rho * mu * (1 - phi) / sigma / rho_constant +
+      sufficient_statistic.normalized_data_square / rho_constant +
+      -2 * sufficient_statistic.normalized_leverage * rho / sigma / rho_constant +
+      2 * sufficient_statistic.normalized_cov * phi * rho / sigma / rho_constant);
+}
+
+SufficientStatistic compute_sufficient_statistic(
+    const arma::vec& data,
+    const double h0,
+    const arma::vec& h) {
+  const unsigned int n = data.n_elem;
+  const arma::vec normalized_data = data.head(n - 1) % arma::exp(-0.5 * h.head(n - 1));
+  return {
+      n,
+      h0,
+      h(0),
+      std::accumulate(h.cbegin() + 1, h.cend() - 1, 0.),  // C++17 version is reduce
+      std::inner_product(h.cbegin() + 1, h.cend() - 1, h.cbegin() + 1, 0.),  // C++17 version is transform_reduce
+      h(h.n_elem - 1),
+      h(0) * h0,
+      std::inner_product(h.cbegin() + 1, h.cend(), h.cbegin(), 0.),
+      std::accumulate(normalized_data.cbegin(), normalized_data.cend(), 0.),
+      std::inner_product(normalized_data.cbegin(), normalized_data.cend(), normalized_data.cbegin(), 0.),
+      std::inner_product(normalized_data.cbegin(), normalized_data.cend(), h.cbegin(), 0.),
+      std::inner_product(normalized_data.cbegin(), normalized_data.cend(), h.cbegin() + 1, 0.)};
+}
+
+}  // END namespace centered
+
+namespace noncentered {
+
+double theta_log_likelihood(
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const SufficientStatistic& sufficient_statistic,
+    const PriorSpec& prior_spec) {
+  const arma::vec& c = sufficient_statistic.c,
+                 & data = sufficient_statistic.data;
+  const double rho_constant = std::sqrt(1 - std::pow(rho, 2));
+  double h,
+         exp_h_half;
+  double likelihood = 0;
+
+  h = mu + sigma * std::pow(determine_Bh0inv(phi, prior_spec), -0.5) * c(0);
+  h = mu + phi * (h - mu) + sigma * c(1);
+  exp_h_half = std::exp(0.5 * h);
+  likelihood += h + std::pow(data(0) / exp_h_half, 2);
+  for (unsigned int t = 1; t < data.n_elem; t++) {
+    h = mu + phi * (h - mu) + sigma * (rho * data(t) / exp_h_half + rho_constant * c(t + 1));
+    exp_h_half = std::exp(0.5 * h);
+    likelihood += h + std::pow(data(t) / exp_h_half, 2);
+  }
+  likelihood *= -0.5;
+
+  return likelihood;
+}
+
+}  // END namespace noncentered
 
 double theta_log_likelihood_c(
     const arma::vec& data,

@@ -91,7 +91,6 @@ LatentVector draw_latent(
     const double sigma,
     const double rho,
     const arma::vec& h,
-    const arma::vec& ht,
     const PriorSpec& prior_spec,
     const ExpertSpec_GeneralSV& expert);
 

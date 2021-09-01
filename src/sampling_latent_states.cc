@@ -185,8 +185,6 @@ Draw_s_auxiliary_out draw_s_auxiliary(
     const double sigma,
     const double rho,
     const arma::vec& h,
-    const arma::vec& ht,
-    const Parameterization centering,
     const bool do_compute_s_integral);
 
 // Main sampling function for the latent states.
@@ -200,7 +198,6 @@ LatentVector draw_latent(
     const double sigma,
     const double rho,
     const arma::vec& h,
-    const arma::vec& ht,
     const PriorSpec& prior_spec,
     const ExpertSpec_GeneralSV& expert) {
   // Draw h0 | h1, mu, phi, sigma
@@ -214,7 +211,7 @@ LatentVector draw_latent(
   const double h0 = R::rnorm(mean, std::sqrt(var));
 
   // Draw h from AUX
-  const auto draw_s_out = draw_s_auxiliary(y_star, d, mu, phi, sigma, rho, h, ht, Parameterization::CENTERED, expert.correct_latent_draws);
+  const auto draw_s_out = draw_s_auxiliary(y_star, d, mu, phi, sigma, rho, h, expert.correct_latent_draws);
   const arma::vec proposed = draw_h_auxiliary(y_star, d, mu, phi, sigma, rho, draw_s_out.s, h0, Parameterization::CENTERED);
 
   return {h0,
@@ -425,27 +422,15 @@ Draw_s_auxiliary_out draw_s_auxiliary(
     const double sigma,
     const double rho,
     const arma::vec& h,
-    const arma::vec& ht,
-    const Parameterization centering,
     const bool do_compute_s_integral) {
   const int n = y_star.size();
-  const double sigma2_used = centering == Parameterization::CENTERED ? std::pow(sigma, 2) : 1.0;
+  const double sigma2_used = std::pow(sigma, 2);  //centering == Parameterization::CENTERED ? std::pow(sigma, 2) : 1.0;
   static const int mix_count = mix_a.n_elem;
-  arma::vec eps_star;
-  arma::vec eta;
   arma::uvec new_states(n);
   double s_integral = 0;
 
-  switch (centering) {
-    case Parameterization::CENTERED:
-      eps_star = y_star - h;
-      eta = (h.tail(n-1) - mu) - phi*(h.head(n-1) - mu);
-      break;
-    case Parameterization::NONCENTERED:
-      eps_star = y_star - mu - sigma*ht;
-      eta = ht.tail(n-1) - phi*ht.head(n-1);
-      break;
-  }
+  const arma::vec eps_star = y_star - h;
+  const arma::vec eta = (h.tail(n-1) - mu) - phi*(h.head(n-1) - mu);
 
   static const arma::vec::fixed<10> mix_log_prob = arma::log(mix_prob);
   static const arma::vec::fixed<10> likelihood_normalizer = 0.5 * arma::log(2 * arma::datum::pi * mix_var);

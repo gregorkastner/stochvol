@@ -98,6 +98,52 @@ SampledTheta draw_theta(
     const ProposalDiffusionKen& diffusion_ken,
     const Parameterization parameterization);
 
+namespace centered {
+
+// Draw mu, phi, sigma, and rho in the sufficient augmentation.
+// All parameters are sampled together according to a random
+// walk Metropolis-Hastings algorithm. The tuning parameters
+// of the random walk are passed in the diffusion_ken object.
+// Input parameter update_indicator controls which of the four
+// model parameters are to be updated.
+// Finally, sufficient_statistic is a vector of sufficient
+// statistic.
+SampledTheta draw_theta(
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const SufficientStatistic& sufficient_statistic,
+    const arma::uvec& update_indicator,
+    const PriorSpec& prior_spec,
+    const ExpertSpec_GeneralSV& expert,
+    const ProposalDiffusionKen& diffusion_ken);
+
+}  // END namespace centered
+
+namespace noncentered {
+
+// Draw mu, phi, sigma, and rho in the sufficient augmentation.
+// All parameters are sampled together according to a random
+// walk Metropolis-Hastings algorithm. The tuning parameters
+// of the random walk are passed in the diffusion_ken object.
+// Input parameter update_indicator controls which of the four
+// model parameters are to be updated.
+// Finally, sufficient_statistic is a vector of sufficient
+// statistic.
+SampledTheta draw_theta(
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const SufficientStatistic& sufficient_statistic,
+    const arma::uvec& update_indicator,
+    const PriorSpec& prior_spec,
+    const ExpertSpec_GeneralSV& expert,
+    const ProposalDiffusionKen& diffusion_ken);
+
+}  // END namespace noncentered
+
 }  // END namespace general_sv
 
 }

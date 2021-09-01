@@ -30,7 +30,8 @@
 #ifndef _STOCHVOL_UTILS_H_
 #define _STOCHVOL_UTILS_H_
 
-#include <R.h>
+#include "sampling_latent_states.h"
+#include "type_definitions.hpp"
 #include <expert.hpp>
 
 namespace stochvol {
@@ -96,6 +97,62 @@ T noncentered_to_centered(
     const T& ht) {
   return mu + sigma * ht;
 }
+
+namespace general_sv {
+
+// Transform the latent vector from centered to
+// noncentered.
+inline
+arma::vec centered_to_noncentered(
+    const double mu,
+    const double sigma,
+    const double phi,
+    const double rho,
+    const arma::vec& data,
+    const double h0,
+    const arma::vec& h,
+    const PriorSpec& prior_spec) {
+  arma::vec c(data.n_elem + 1);
+  const double rho_constant = 1 / std::sqrt(1 - std::pow(rho, 2)),
+               sigma_inv = 1 / sigma;
+
+  c(0) = (h0 - mu) * std::sqrt(1 - std::pow(phi, 2)) * sigma_inv;  // c_{-1}
+  c(1) = (h(0) - (mu + phi * (h0 - mu))) * sigma_inv;
+  for (unsigned int t = 2; t < c.n_elem; t++) {
+    c(t) = ((h(t - 1) - (mu + phi * (h(t - 2) - mu))) * sigma_inv - rho * data(t - 2) * std::exp(-0.5 * h(t - 2))) * rho_constant;
+  }
+
+  return c;
+}
+
+// Transform the latent vector from noncentered to
+// centered.
+inline
+LatentVector noncentered_to_centered(
+    const double mu,
+    const double sigma,
+    const double phi,
+    const double rho,
+    const arma::vec& data,
+    const arma::vec& c,
+    const PriorSpec& prior_spec) {
+  arma::vec h(c.n_elem - 1);
+  double h0,
+         exp_h_half_inv,
+         rho_constant = std::sqrt(1 - std::pow(rho, 2));
+
+  h0 = mu + sigma * std::sqrt(determine_Bh0inv(phi, prior_spec)) * c(0);
+  h(0) = mu + phi * (h0 - mu) + sigma * c(1);
+  exp_h_half_inv = std::exp(-0.5 * h(0));
+  for (unsigned int t = 1; t < h.n_elem; t++) {
+    h(t) = mu + phi * (h(t - 1) - mu) + sigma * (rho * data(t - 1) * exp_h_half_inv + rho_constant * c(t));
+    exp_h_half_inv = std::exp(-0.5 * h(t));
+  }
+
+  return {h0, h};
+}
+
+}  // END namespace general_sv
 
 }
 

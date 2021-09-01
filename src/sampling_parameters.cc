@@ -32,6 +32,7 @@
 #include <cmath>
 #include <expert.hpp>
 #include "sampling_parameters.h"
+#include "type_definitions.hpp"
 #include "utils_parameters.h"
 #include "utils_latent_states.h"
 #include "densities.h"
@@ -146,7 +147,7 @@ SampledTheta draw_theta(
   const double mu_prop = proposed[0], phi_prop = proposed[1], sigma_prop = proposed[2],
     rho_prop = proposed[3], prop_old_logdens = proposed[4], prop_new_logdens = proposed[5];
   if (parameterization == Parameterization::NONCENTERED) {
-    exp_h_half_proposal_nc = arma::exp(.5 * noncentered_to_centered(mu_prop, sigma_prop, ht));
+    exp_h_half_proposal_nc = arma::exp(.5 * ::stochvol::noncentered_to_centered(mu_prop, sigma_prop, ht));
   }
   const arma::vec& exp_h_half_proposal = parameterization == Parameterization::CENTERED ? exp_h_half : exp_h_half_proposal_nc;
 
@@ -165,6 +166,112 @@ SampledTheta draw_theta(
     return {mu, phi, sigma, rho, false, false, false, false};
   }
 }
+
+namespace centered {
+
+// Main function for drawing the parameters.
+// See documentation above the declaration
+SampledTheta draw_theta(
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const SufficientStatistic& sufficient_statistic,
+    const arma::uvec& update_indicator,
+    const PriorSpec& prior_spec,
+    const ExpertSpec_GeneralSV& expert,
+    const ProposalDiffusionKen& diffusion_ken) {
+  const std::array<double, 6> proposed = theta_propose_rwmh(mu, phi, sigma, rho, prior_spec, diffusion_ken, update_indicator);
+  const double mu_prop = proposed[0], phi_prop = proposed[1], sigma_prop = proposed[2],
+    rho_prop = proposed[3], prop_old_logdens = proposed[4], prop_new_logdens = proposed[5];
+
+  const double log_acceptance =
+    (theta_log_prior(mu_prop, phi_prop, sigma_prop, rho_prop, prior_spec) +
+     theta_log_likelihood(mu_prop, phi_prop, sigma_prop, rho_prop, sufficient_statistic, prior_spec)) -
+    (theta_log_prior(mu, phi, sigma, rho, prior_spec) +
+     theta_log_likelihood(mu, phi, sigma, rho, sufficient_statistic, prior_spec)) -
+    (prop_new_logdens - prop_old_logdens);
+
+  const bool accepted = log_acceptance > 0 or
+    std::exp(log_acceptance) > R::unif_rand();
+  if (accepted) {
+    return {mu_prop, phi_prop, sigma_prop, rho_prop, update_indicator[0] == 1u, update_indicator[1] == 1u, update_indicator[2] == 1u, update_indicator[3] == 1u};
+  } else {
+    return {mu, phi, sigma, rho, false, false, false, false};
+  }
+}
+
+#ifndef NDEBUG
+
+double test_function (
+    const double d1,
+    const double d2,
+    const double d3,
+    const double h0,
+    const double h1,
+    const double h2,
+    const double h3,
+    const double mu1,
+    const double mu2,
+    const double phi1,
+    const double phi2,
+    const double sigma1,
+    const double sigma2,
+    const double rho1,
+    const double rho2) {
+  const PriorSpec prior_spec;
+  const arma::vec data{d1, d2, d3};
+  const arma::vec h{h1, h2, h3};
+  const arma::vec exp_h_half = arma::exp(.5 * h);
+  const auto sufficient_statistic2 = compute_sufficient_statistic(data, h0, h);
+  const double hmmmmm = 
+    theta_log_likelihood(mu1, phi1, sigma1, rho1, sufficient_statistic2, prior_spec) -
+    theta_log_likelihood(mu2, phi2, sigma2, rho2, sufficient_statistic2, prior_spec);
+  const double hnnnnn =
+    ::stochvol::general_sv::theta_log_likelihood(data, mu1, phi1, sigma1, rho1, h0, h0, h, h, exp_h_half, prior_spec, Parameterization::CENTERED) -
+    ::stochvol::general_sv::theta_log_likelihood(data, mu2, phi2, sigma2, rho2, h0, h0, h, h, exp_h_half, prior_spec, Parameterization::CENTERED);
+  return hmmmmm - hnnnnn;
+}
+
+#endif
+
+}  // END namespace centered
+
+namespace noncentered {
+
+// Main function for drawing the parameters.
+// See documentation above the declaration
+SampledTheta draw_theta(
+    const double mu,
+    const double phi,
+    const double sigma,
+    const double rho,
+    const SufficientStatistic& sufficient_statistic,
+    const arma::uvec& update_indicator,
+    const PriorSpec& prior_spec,
+    const ExpertSpec_GeneralSV& expert,
+    const ProposalDiffusionKen& diffusion_ken) {
+  const std::array<double, 6> proposed = theta_propose_rwmh(mu, phi, sigma, rho, prior_spec, diffusion_ken, update_indicator);
+  const double mu_prop = proposed[0], phi_prop = proposed[1], sigma_prop = proposed[2],
+    rho_prop = proposed[3], prop_old_logdens = proposed[4], prop_new_logdens = proposed[5];
+
+  const double log_acceptance =
+    (theta_log_prior(mu_prop, phi_prop, sigma_prop, rho_prop, prior_spec) +
+     theta_log_likelihood(mu_prop, phi_prop, sigma_prop, rho_prop, sufficient_statistic, prior_spec)) -
+    (theta_log_prior(mu, phi, sigma, rho, prior_spec) +
+     theta_log_likelihood(mu, phi, sigma, rho, sufficient_statistic, prior_spec)) -
+    (prop_new_logdens - prop_old_logdens);
+
+  const bool accepted = log_acceptance > 0 or
+    std::exp(log_acceptance) > R::unif_rand();
+  if (accepted) {
+    return {mu_prop, phi_prop, sigma_prop, rho_prop, update_indicator[0] == 1u, update_indicator[1] == 1u, update_indicator[2] == 1u, update_indicator[3] == 1u};
+  } else {
+    return {mu, phi, sigma, rho, false, false, false, false};
+  }
+}
+
+}  // END namespace noncentered
 
 }  // END namespace general_sv
 
