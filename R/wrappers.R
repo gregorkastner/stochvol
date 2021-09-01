@@ -379,7 +379,9 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   } else {
     init_beta(y, designmatrix)
   }
-  startmudefault <- if (meanmodel == "none") {
+  startmudefault <- if (inherits(priorspec$mu, "sv_constant")) {
+    mean(priorspec$mu)
+  } else if (meanmodel == "none") {
     init_mu(y, priorspec)
   } else {
     init_mu(y, priorspec, X = designmatrix, beta_hat = startbetadefault)
