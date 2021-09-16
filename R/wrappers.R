@@ -598,6 +598,9 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     updatesummary(res, ...)
   }
 
+  warning("adaptation information kept")
+  res$general_sv <- reslist[[1]]$general_sv
+
   if (!quiet) cat("Done!\n\n", file=stderr())
   res
 }
@@ -630,11 +633,12 @@ get_default_fast_sv <- function () {
 #' @param priorspec a \code{priorspec} object created by
 #' \code{\link{specify_priors}}
 #' @export
-get_default_general_sv <- function (priorspec) {
+get_default_general_sv <- function (priorspec, multi_asis = 5L) {
   if (!inherits(priorspec, "sv_priorspec")) {
     stop("Argument 'priorspec' must be an sv_priorspec object.")
   }
-  multi_asis <- 5
+  nu_adaptation <- get_default_adaptation(NULL, 1L, 1L)
+  nu_adaptation$target_acceptance <- 0.44  # univariate adapted MH
   list(multi_asis = multi_asis,  # positive integer
        starting_parameterization = "centered",  # "centered" or "noncentered"
        update = list(latent_vector = TRUE, parameters = TRUE),
@@ -642,13 +646,16 @@ get_default_general_sv <- function (priorspec) {
        proposal_diffusion_ken = FALSE,  # FALSE turns on adaptation
        adaptation_object =  # used iff identical(proposal_diffusion_ken, FALSE)
          list(centered = get_default_adaptation(priorspec, multi_asis),
-              noncentered = get_default_adaptation(priorspec, multi_asis)))
+              noncentered = get_default_adaptation(priorspec, multi_asis)),
+       adaptation_nu_noncentered = nu_adaptation)
 }
 
-get_default_adaptation <- function (priorspec, multi_asis) {
+get_default_adaptation <- function (priorspec, multi_asis, dim = NULL) {
   lambda <- 0.1
   C <- 0.99
-  dim <- length(setdiff(sampled_parameters(priorspec), "nu"))
+  if (is.null(dim)) {
+    dim <- length(setdiff(sampled_parameters(priorspec), "nu"))
+  }
   Sigma <- diag(rep_len(1, dim))
   target_acceptance <- 1 - (1-0.234)^(1/multi_asis)
   batch_size <- ceiling(20 / target_acceptance)

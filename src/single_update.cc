@@ -30,6 +30,8 @@
 
 #include <RcppArmadillo.h>
 #include <expert.hpp>
+#include <adaptation.hpp>
+#include "Rcpp/Rmath.h"
 #include "single_update.h"
 #include "densities.h"
 #include "sampling_latent_states.h"
@@ -203,6 +205,76 @@ void update_t_error(
     if (log_ar >= 0 or R::unif_rand() < std::exp(log_ar)) {
       nu = nuprop;
     }
+  }
+}
+
+double pinvgamma(
+    const double tau,
+    const double nu) {
+  return R::pgamma(1 / tau, 0.5 * nu, 2 / (nu - 2), false, false);
+}
+
+double qinvgamma(
+    const double u,
+    const double nu) {
+  return 1 / R::qgamma(1 - u, 0.5 * nu, 2 / (nu - 2), true, false);
+}
+
+double log_likelihood_t_noncentered(
+    const arma::vec& homosked_data,
+    const arma::vec& u,
+    const arma::vec& mean,
+    const arma::vec& sd,
+    const double nu) {
+  double loglik = 0;
+  for (unsigned int i = 0; i < homosked_data.n_elem; i++) {
+    const double sqrt_tau_i = std::sqrt(qinvgamma(u(i), nu));
+    loglik += R::dnorm4(homosked_data(i), sqrt_tau_i * mean(i), sqrt_tau_i * sd(i), true);
+  }
+  return loglik;
+}
+
+// Single update of the degrees of freedom.
+// See documentation above the declaration
+void update_t_error(
+    const arma::vec& homosked_data,
+    arma::vec& tau,
+    const arma::vec& mean,
+    const arma::vec& sd,
+    double& nu,
+    const PriorSpec& prior_spec,
+    const bool do_tau_acceptance_rejection,
+    Adaptation& adaptation) {
+  update_t_error(homosked_data, tau, mean, sd, nu, prior_spec, do_tau_acceptance_rejection);
+
+  const arma::vec u = ([](const arma::vec& tau, const double nu) -> arma::vec {
+      arma::vec result (tau.n_elem);
+      result.transform([nu](const double tau_i) -> double { return pinvgamma(tau_i, nu); });
+      return result;
+      })(tau, nu);
+  const ProposalDiffusionKen& adapted_proposal = adaptation.get_proposal();
+  const double random_walk_sd = std::sqrt(adapted_proposal.get_scale()) * arma::as_scalar(adapted_proposal.get_covariance_chol()),
+               lower_bound = 2,
+               log_nu = std::log(nu - lower_bound),
+               log_nu_prop = R::rnorm(log_nu, random_walk_sd),
+               nu_prop = std::exp(log_nu_prop) + lower_bound;
+
+  const double acceptance_rate = log_likelihood_t_noncentered(homosked_data, u, mean, sd, nu_prop) +
+    R::dexp(nu_prop - lower_bound, 1 / prior_spec.nu.exponential.rate, true) -
+    R::dnorm4(nu_prop, nu, random_walk_sd, true) + log_nu_prop -
+    log_likelihood_t_noncentered(homosked_data, u, mean, sd, nu) -
+    R::dexp(nu - lower_bound, 1 / prior_spec.nu.exponential.rate, true) +
+    R::dnorm4(nu, nu_prop, random_walk_sd, true) - log_nu;
+  const bool accepted = acceptance_rate > 0 or std::exp(acceptance_rate) > R::unif_rand();
+
+  adaptation.register_sample(accepted, {std::log(nu - lower_bound)});  // current sample
+  if (accepted) {
+    nu = nu_prop;
+    tau = ([](const arma::vec& u, const double nu) -> arma::vec {
+        arma::vec result (u.n_elem);
+        result.transform([nu](const double u_i) -> double { return qinvgamma(u_i, nu); });
+        return result;
+        })(u, nu);
   }
 }
 

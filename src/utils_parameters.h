@@ -199,7 +199,6 @@ struct SufficientStatistic {
          sum_h,  // sum_{t=2}^{T-1} h_t
          sum_h_square,  // sum_{t=2}^{T-1} h_t^2
          h_last,  // h_T
-         h_first_autocov,  // h_1 h_0
          sum_h_autocov,  // sum_{t=2}^T h_t h_{t-1}
          normalized_data,  // sum_{t=1}^{T-1} y_t / sqrt(tau_t) / exp(h_t / 2)
          normalized_data_square,  // sum_{t=1}^{T-1} y_t^2 / tau_t / exp(h_t)

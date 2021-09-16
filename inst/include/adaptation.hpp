@@ -346,7 +346,7 @@ namespace stochvol {
       inline
       bool update_covariance(arma::mat draws, const double gamma) {  // TODO maybe prevent copy of 'draws'
         draws.each_col() -= mu;
-        mu += gamma * (arma::sum(draws, 1) / batch_size - mu);
+        mu += gamma * arma::sum(draws, 1) / batch_size;
         Sigma += gamma * (draws * draws.t() / (batch_size - 1) - Sigma);
         return true;
       }

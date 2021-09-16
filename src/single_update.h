@@ -102,6 +102,7 @@ void update_fast_sv(
 // @param sd: the vector of the conditional standard deviations
 // @param nu: parameter nu. The degrees of freedom for the t-distribution. Updated in place
 // @param prior_spec: prior specification object. See type_definitions.h
+// @param do_tau_acceptance_rejection: should be 'true' if the Student-t distribution has a non-zero mean
 void update_t_error(
     const arma::vec& homosked_data,
     arma::vec& tau,
@@ -110,6 +111,38 @@ void update_t_error(
     double& nu,
     const PriorSpec& prior_spec,
     const bool do_tau_acceptance_rejection = true);
+
+// Single MCMC update Student's t-distribution using ASIS
+// 
+// Samples the degrees of freedom parameter of standardized and homoskedastic
+// t-distributed input variates. Marginal data augmentation (MDA) is applied, tau
+// is the vector of auxiliary latent states.
+// Depending on the prior specification, nu might not be updated, just tau.
+//
+// The function samples tau and nu from the following hierarchical model:
+//   homosked_data_i = sqrt(tau_i) * (mean_i + sd_i * N(0, 1))
+//   tau_i ~ InvGamma(.5*nu, .5*(nu-2))
+// Naming: The data is homoskedastic ex ante in the model, mean_i and sd_i are conditional
+// on some other parameter in the model.
+// The prior on tau corresponds to a standardized t-distributed heavy tail on the data.
+// 
+// @param homosked_data: de-meaned and homoskedastic observations
+// @param tau: the vector of the latent states used in MDA. Updated in place
+// @param mean: the vector of the conditional means  // TODO update docs in R
+// @param sd: the vector of the conditional standard deviations
+// @param nu: parameter nu. The degrees of freedom for the t-distribution. Updated in place
+// @param prior_spec: prior specification object. See type_definitions.h
+// @param do_tau_acceptance_rejection: should be 'true' if the Student-t distribution has a non-zero mean
+// @param adaptation: necessary for the adapted random walk Metropolis algorithm
+void update_t_error(
+    const arma::vec& homosked_data,
+    arma::vec& tau,
+    const arma::vec& mean,
+    const arma::vec& sd,
+    double& nu,
+    const PriorSpec& prior_spec,
+    const bool do_tau_acceptance_rejection,
+    Adaptation& adaptation);
 
 // Single MCMC update using general SV
 // 

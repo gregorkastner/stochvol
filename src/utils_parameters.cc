@@ -598,7 +598,7 @@ double theta_log_likelihood(
       sufficient_statistic.sum_h_square * (1 + phi2) / sigma2 / rho_constant +
       -2 * sufficient_statistic.h_last * mu * (1 - phi) / rho_constant / sigma2 +
       square(sufficient_statistic.h_last) / sigma2 / rho_constant +
-      -2 * sufficient_statistic.h_first_autocov * phi / sigma2 +
+      -2 * sufficient_statistic.h_zero * sufficient_statistic.h_one * phi / sigma2 +
       -2 * sufficient_statistic.sum_h_autocov * phi / sigma2 / rho_constant +
       2 * sufficient_statistic.normalized_data * rho * mu * (1 - phi) / sigma / rho_constant +
       sufficient_statistic.normalized_data_square / rho_constant +
@@ -619,7 +619,6 @@ SufficientStatistic compute_sufficient_statistic(
       std::accumulate(h.cbegin() + 1, h.cend() - 1, 0.),  // C++17 version is reduce
       std::inner_product(h.cbegin() + 1, h.cend() - 1, h.cbegin() + 1, 0.),  // C++17 version is transform_reduce
       h(h.n_elem - 1),
-      h(0) * h0,
       std::inner_product(h.cbegin() + 1, h.cend(), h.cbegin(), 0.),
       std::accumulate(normalized_data.cbegin(), normalized_data.cend(), 0.),
       std::inner_product(normalized_data.cbegin(), normalized_data.cend(), normalized_data.cbegin(), 0.),
@@ -910,16 +909,16 @@ std::array<double, 6> theta_propose_rwmh(
                rho_new = theta_new_full[3];
 
   // Proposal density for theta_new given theta_old
-  const double theta_density_new = theta_transform_inv_log_det_jac(mu_new, phi_new, sigma_new, rho_new, prior_spec) +
-    (-0.5) * arma::sum(arma::square(theta_new_t_standardized));
+  const double theta_density_new = theta_transform_inv_log_det_jac(mu_new, phi_new, sigma_new, rho_new, prior_spec);  // +
+    //(-0.5) * arma::sum(arma::square(theta_new_t_standardized));
 
   // Proposal density for theta_old given theta_new
-  const arma::vec &proposal_mean_new = theta_new_t;
-  const arma::vec theta_old_t_standardized =
-    1 / std::sqrt(diffusion_ken.get_scale()) * diffusion_ken.get_covariance_chol_inv() *
-    (theta_old_t - proposal_mean_new);
-  const double theta_density_old = theta_transform_inv_log_det_jac(mu, phi, sigma, rho, prior_spec) +
-    (-0.5) * arma::sum(arma::square(theta_old_t_standardized));
+  //const arma::vec &proposal_mean_new = theta_new_t;
+  //const arma::vec theta_old_t_standardized =
+  //  1 / std::sqrt(diffusion_ken.get_scale()) * diffusion_ken.get_covariance_chol_inv() *
+  //  (theta_old_t - proposal_mean_new);
+  const double theta_density_old = theta_transform_inv_log_det_jac(mu, phi, sigma, rho, prior_spec);  // +
+    //(-0.5) * arma::sum(arma::square(theta_old_t_standardized));
 
   return {mu_new, phi_new, sigma_new, rho_new, theta_density_old, theta_density_new};
 }

@@ -215,7 +215,8 @@ Rcpp::List cleanup(
     Rcpp::NumericMatrix& latent,
     Rcpp::NumericMatrix& tau,
     Rcpp::NumericMatrix& betas,
-    AdaptationCollection& adaptation_collection);
+    AdaptationCollection& adaptation_collection,
+    Adaptation& nu_adaptation);
 
 // Sets up the progress bar
 int progressbar_init(

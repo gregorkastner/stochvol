@@ -327,6 +327,7 @@ List svsample_general_cpp(
 
   // adaptive random walk
   AdaptationCollection adaptation_collection {expert.adapt ? list_to_adaptationcollection(expert_in["adaptation_object"]) : AdaptationCollection()};
+  Adaptation nu_adaptation {list_to_adaptation(expert_in["adaptation_nu_noncentered"])};
 
   // initializes the progress bar
   // "show" holds the number of iterations per progress sign
@@ -358,9 +359,13 @@ List svsample_general_cpp(
 
     // update theta and h
     general_sv::update(data_demean_normal, log_data2_normal, d, mu, phi, sigma, rho, h0, h, adaptation_collection, prior_spec, expert);
-if (not (std::isfinite(mu) and std::isfinite(phi) and std::isfinite(sigma) and std::isfinite(rho) and arma::arma_isfinite(h))) {
-  ::Rf_error("Bad values generated");
-}
+
+#ifndef NDEBUG
+  if (not (std::isfinite(mu) and std::isfinite(phi) and std::isfinite(sigma) and std::isfinite(rho) and arma::arma_isfinite(h))) {
+    ::Rf_error("Bad values generated");
+  }
+#endif
+
     if (is_regression or is_heavy_tail) {
       exp_h_half_inv = arma::exp(-.5 * h);
       if (is_leverage) {
@@ -370,7 +375,7 @@ if (not (std::isfinite(mu) and std::isfinite(phi) and std::isfinite(sigma) and s
 
     // update tau and nu
     if (is_heavy_tail) {
-      update_t_error(data_demean % exp_h_half_inv, tau, conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec);
+      update_t_error(data_demean % exp_h_half_inv, tau, conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec, is_leverage, nu_adaptation);
       // update cached data arrays after the regression
     }
 
@@ -417,7 +422,7 @@ if (not (std::isfinite(mu) and std::isfinite(phi) and std::isfinite(sigma) and s
 
   Rcpp::NumericMatrix latent0_store_mat(latent0_store.length(), 1);
   latent0_store_mat(_, 0) = latent0_store;
-  return cleanup(T, para_store, latent0_store_mat, latent_store, tau_store, beta_store, adaptation_collection);
+  return cleanup(T, para_store, latent0_store_mat, latent_store, tau_store, beta_store, adaptation_collection, nu_adaptation);
 }
 
 arma::vec arma_rnorm(const unsigned int n) {

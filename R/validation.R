@@ -32,8 +32,9 @@ prettify <- function (x) {
     x <- paste0("\"", x, "\"")
   }
   out <- paste0("c(", paste(x, collapse = ", "), ")")
-  if (nchar(out) > 40L) {
-    out <- paste(substr(out, start = 1, stop = 40L), "...)")
+  max_length <- 80L
+  if (nchar(out) > max_length) {
+    out <- paste(substr(out, start = 1, stop = max_length), "...)")
   }
   out
 }

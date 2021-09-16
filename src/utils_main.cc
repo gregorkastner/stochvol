@@ -167,12 +167,14 @@ List cleanup(
     NumericMatrix& latent,
     NumericMatrix& tau,
     NumericMatrix& betas,
-    AdaptationCollection& adaptation_collection) {
+    AdaptationCollection& adaptation_collection,
+    Adaptation& nu_adaptation) {
   transpose_and_rename(T, para, latent0, latent, tau, betas);
 
   return List::create(
       _["para"] = para,
       _["adaptation"] = adaptation_collection.serialize(),
+      _["adaptation_nu"] = nu_adaptation.serialize(),
       _["latent"] = latent,
       _["latent0"] = latent0,
       _["tau"] = tau,

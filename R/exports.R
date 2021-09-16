@@ -144,7 +144,9 @@ svsample_general_cpp <- function(y, draws = 1, burnin = 0, designmatrix = matrix
     general_sv$init_tau <- result$tau[NROW(result$tau), , drop = TRUE]
   }
   general_sv$adaptation_object <- result$adaptation
+  general_sv$adaptation_nu_noncentered <- result$adaptation_nu
   result$adaptation <- NULL
+  result$adaptation_nu <- NULL
   result$general_sv <- general_sv
   result
 }
