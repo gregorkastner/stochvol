@@ -105,8 +105,8 @@ namespace general_sv {
 inline
 arma::vec centered_to_noncentered(
     const double mu,
-    const double sigma,
     const double phi,
+    const double sigma,
     const double rho,
     const arma::vec& data,
     const double h0,
@@ -116,7 +116,7 @@ arma::vec centered_to_noncentered(
   const double rho_constant = 1 / std::sqrt(1 - std::pow(rho, 2)),
                sigma_inv = 1 / sigma;
 
-  c(0) = (h0 - mu) * std::sqrt(1 - std::pow(phi, 2)) * sigma_inv;  // c_{-1}
+  c(0) = (h0 - mu) / std::sqrt(determine_Bh0inv(phi, prior_spec)) * sigma_inv;  // c_{-1}
   c(1) = (h(0) - (mu + phi * (h0 - mu))) * sigma_inv;
   for (unsigned int t = 2; t < c.n_elem; t++) {
     c(t) = ((h(t - 1) - (mu + phi * (h(t - 2) - mu))) * sigma_inv - rho * data(t - 2) * std::exp(-0.5 * h(t - 2))) * rho_constant;
@@ -130,8 +130,8 @@ arma::vec centered_to_noncentered(
 inline
 LatentVector noncentered_to_centered(
     const double mu,
-    const double sigma,
     const double phi,
+    const double sigma,
     const double rho,
     const arma::vec& data,
     const arma::vec& c,
@@ -145,7 +145,7 @@ LatentVector noncentered_to_centered(
   h(0) = mu + phi * (h0 - mu) + sigma * c(1);
   exp_h_half_inv = std::exp(-0.5 * h(0));
   for (unsigned int t = 1; t < h.n_elem; t++) {
-    h(t) = mu + phi * (h(t - 1) - mu) + sigma * (rho * data(t - 1) * exp_h_half_inv + rho_constant * c(t));
+    h(t) = mu + phi * (h(t - 1) - mu) + sigma * (rho * data(t - 1) * exp_h_half_inv + rho_constant * c(t + 1));
     exp_h_half_inv = std::exp(-0.5 * h(t));
   }
 

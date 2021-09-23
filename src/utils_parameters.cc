@@ -644,12 +644,12 @@ double theta_log_likelihood(
          exp_h_half;
   double likelihood = 0;
 
-  h = mu + sigma * std::pow(determine_Bh0inv(phi, prior_spec), -0.5) * c(0);
+  h = mu + sigma * std::sqrt(determine_Bh0inv(phi, prior_spec)) * c(0);
   h = mu + phi * (h - mu) + sigma * c(1);
   exp_h_half = std::exp(0.5 * h);
   likelihood += h + std::pow(data(0) / exp_h_half, 2);
   for (unsigned int t = 1; t < data.n_elem; t++) {
-    h = mu + phi * (h - mu) + sigma * (rho * data(t) / exp_h_half + rho_constant * c(t + 1));
+    h = mu + phi * (h - mu) + sigma * (rho * data(t - 1) / exp_h_half + rho_constant * c(t + 1));
     exp_h_half = std::exp(0.5 * h);
     likelihood += h + std::pow(data(t) / exp_h_half, 2);
   }
