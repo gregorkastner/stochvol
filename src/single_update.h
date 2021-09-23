@@ -85,9 +85,10 @@ void update_fast_sv(
 // Single MCMC update Student's t-distribution
 // 
 // Samples the degrees of freedom parameter of standardized and homoskedastic
-// t-distributed input variates. Marginal data augmentation (MDA) is applied, tau
+// t-distributed input variates. Conditional data augmentation (DA) is applied, tau
 // is the vector of auxiliary latent states.
 // Depending on the prior specification, nu might not be updated, just tau.
+// There are several overloaded variants of this function
 //
 // The function samples tau and nu from the following hierarchical model:
 //   homosked_data_i = sqrt(tau_i) * (mean_i + sd_i * N(0, 1))
@@ -97,12 +98,13 @@ void update_fast_sv(
 // The prior on tau corresponds to a standardized t-distributed heavy tail on the data.
 // 
 // @param homosked_data: de-meaned and homoskedastic observations
-// @param tau: the vector of the latent states used in MDA. Updated in place
+// @param tau: the vector of the latent states used in DA. Updated in place
 // @param mean: the vector of the conditional means  // TODO update docs in R
 // @param sd: the vector of the conditional standard deviations
 // @param nu: parameter nu. The degrees of freedom for the t-distribution. Updated in place
 // @param prior_spec: prior specification object. See type_definitions.h
 // @param do_tau_acceptance_rejection: should be 'true' if the Student-t distribution has a non-zero mean
+// @param n_repeat: how many times should nu be (re-)sampled given the newly sampled tau?
 void update_t_error(
     const arma::vec& homosked_data,
     arma::vec& tau,
@@ -110,30 +112,50 @@ void update_t_error(
     const arma::vec& sd,
     double& nu,
     const PriorSpec& prior_spec,
-    const bool do_tau_acceptance_rejection = true);
+    const bool do_tau_acceptance_rejection = true,
+    const unsigned int n_repeat = 1);
+
+// This function samples nu but does not sample tau.
+// @param sum_tau: the sufficient statistic for nu
+void update_t_error(
+    const arma::vec& homosked_data,
+    const double sum_tau,
+    const arma::vec& mean,
+    const arma::vec& sd,
+    double& nu,
+    const PriorSpec& prior_spec,
+    const unsigned int n_repeat = 1);
 
 // Single MCMC update Student's t-distribution using ASIS
 // 
 // Samples the degrees of freedom parameter of standardized and homoskedastic
-// t-distributed input variates. Marginal data augmentation (MDA) is applied, tau
-// is the vector of auxiliary latent states.
+// t-distributed input variates. Conditional data augmentation (DA) is applied using
+// two models: a sufficiency augmentation (SA) and an ancillarity augmentation (AA). For SA, tau
+// is the vector of auxiliary latent states; for AA, u is the vector of auxiliary variables.
 // Depending on the prior specification, nu might not be updated, just tau.
 //
-// The function samples tau and nu from the following hierarchical model:
+// The function samples tau and nu from the following hierarchical model (SA):
 //   homosked_data_i = sqrt(tau_i) * (mean_i + sd_i * N(0, 1))
 //   tau_i ~ InvGamma(.5*nu, .5*(nu-2))
+// Then, the function computes u and samples nu from the following hierarchical model (AA):
+//   homosked_data_i = sqrt(F^{-1}(u_i; nu)) * (mean_i + sd_i * N(0, 1))
+//   u_i ~ Uniform(0, 1)
+// where F^{-1}(.; nu) denotes the quantile function of tau_i | nu from the SA model. In general,
+// u_i = F^{-1}(u_i; nu) and tau_i = F(u_i; nu).
+// Finally, tau is computed from u.
 // Naming: The data is homoskedastic ex ante in the model, mean_i and sd_i are conditional
 // on some other parameter in the model.
 // The prior on tau corresponds to a standardized t-distributed heavy tail on the data.
 // 
 // @param homosked_data: de-meaned and homoskedastic observations
-// @param tau: the vector of the latent states used in MDA. Updated in place
+// @param tau: the vector of the latent states used in DA. Updated in place
 // @param mean: the vector of the conditional means  // TODO update docs in R
 // @param sd: the vector of the conditional standard deviations
 // @param nu: parameter nu. The degrees of freedom for the t-distribution. Updated in place
 // @param prior_spec: prior specification object. See type_definitions.h
 // @param do_tau_acceptance_rejection: should be 'true' if the Student-t distribution has a non-zero mean
 // @param adaptation: necessary for the adapted random walk Metropolis algorithm
+// @param repetition: a pair of numbers that specify how many times the sufficiency and, resp., the ancillarity sampling should be repeated
 void update_t_error(
     const arma::vec& homosked_data,
     arma::vec& tau,
@@ -142,7 +164,8 @@ void update_t_error(
     double& nu,
     const PriorSpec& prior_spec,
     const bool do_tau_acceptance_rejection,
-    Adaptation& adaptation);
+    Adaptation& adaptation,
+    const ExpertSpec_GeneralSV::Strategy& repetition = {1, 1, 1});
 
 // Single MCMC update using general SV
 // 

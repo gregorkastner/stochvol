@@ -31,6 +31,7 @@
 #include <RcppArmadillo.h>
 #include <cmath>
 #include <expert.hpp>
+#include "sampling_latent_states.h"
 #include "sampling_parameters.h"
 #include "type_definitions.hpp"
 #include "utils_parameters.h"
@@ -236,6 +237,45 @@ double test_function (
 #endif
 
 }  // END namespace centered
+
+#ifndef NDEBUG
+
+double test_function (
+    const double d1,
+    const double d2,
+    const double d3,
+    const double h0,
+    const double h1,
+    const double h2,
+    const double h3,
+    const double mu1,
+    const double mu2,
+    const double phi1,
+    const double phi2,
+    const double sigma1,
+    const double sigma2,
+    const double rho1,
+    const double rho2) {
+  const PriorSpec prior_spec;
+  const arma::vec data{d1, d2, d3};
+  const arma::vec h{h1, h2, h3};
+  const arma::vec exp_h_half = arma::exp(.5 * h);
+  const arma::vec c1 = centered_to_noncentered(mu1, phi1, sigma1, rho1, data, h0, h, prior_spec);
+  const arma::vec c2 = centered_to_noncentered(mu2, phi2, sigma2, rho2, data, h0, h, prior_spec);
+  // compute back
+  const LatentVector h_back1 = noncentered_to_centered(mu1, phi1, sigma1, rho1, data, c1, prior_spec);
+  const LatentVector h_back2 = noncentered_to_centered(mu2, phi2, sigma2, rho2, data, c2, prior_spec);
+  const auto sufficient_statistic2 = centered::compute_sufficient_statistic(data, h0, h);
+  const double hmmmmm = 
+    centered::theta_log_likelihood(mu1, phi1, sigma1, rho1, sufficient_statistic2, prior_spec) -
+    centered::theta_log_likelihood(mu2, phi2, sigma2, rho2, sufficient_statistic2, prior_spec);
+  const double hnnnnn =
+    noncentered::theta_log_likelihood(mu1, phi1, sigma1, rho1, {data, c1}, prior_spec) -
+    noncentered::theta_log_likelihood(mu2, phi2, sigma2, rho2, {data, c2}, prior_spec);
+  return hmmmmm - hnnnnn;
+}
+
+#endif
 
 namespace noncentered {
 

@@ -598,8 +598,8 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
     updatesummary(res, ...)
   }
 
-  warning("adaptation information kept")
-  res$general_sv <- reslist[[1]]$general_sv
+  #warning("adaptation information kept")
+  #res$general_sv <- reslist[[1]]$general_sv
 
   if (!quiet) cat("Done!\n\n", file=stderr())
   res
@@ -640,6 +640,7 @@ get_default_general_sv <- function (priorspec, multi_asis = 5L) {
   nu_adaptation <- get_default_adaptation(NULL, 1L, 1L)
   nu_adaptation$target_acceptance <- 0.44  # univariate adapted MH
   list(multi_asis = multi_asis,  # positive integer
+       nu_asis_setup = c(1L, 1L, 1L),  # 3 positive integers for repeating SA, AA, and ASIS
        starting_parameterization = "centered",  # "centered" or "noncentered"
        update = list(latent_vector = TRUE, parameters = TRUE),
        init_tau = 1,

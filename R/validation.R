@@ -300,6 +300,9 @@ validate_expert <- function (expert) {
   assert_single(expert$general_sv$multi_asis,
                 "General SV expert argument 'multi_asis'")
 
+  assert_length(expert$general_sv$nu_asis_setup, 3,
+                "General SV expert argument 'nu_asis_setup'")
+
   assert_element(expert$general_sv$starting_parameterization, c("centered", "noncentered"),
                  "General SV expert argument 'starting_parameterization'",
                  "the allowed values")

@@ -398,6 +398,7 @@ ExpertSpec_GeneralSV list_to_general_sv(
   const std::string starting_parameterization_str = as<std::string>(list["starting_parameterization"]);
   const SEXP proposal_diffusion_ken_sexp = list["proposal_diffusion_ken"];
   const Rcpp::List update_list = list["update"];
+  const IntegerVector nu_strategy_r = list["nu_asis_setup"];
 
   // starting parameterization
   Parameterization starting_parameterization;
@@ -429,6 +430,15 @@ ExpertSpec_GeneralSV list_to_general_sv(
     }
   }
 
+  // parameterization strategy for nu
+  if (nu_strategy_r.size() != 3) {
+    ::Rf_error("'nu_asis_setup' should have length 3.");
+  }
+  ExpertSpec_GeneralSV::Strategy nu_strategy;
+  nu_strategy.r_sa = nu_strategy_r[0];
+  nu_strategy.r_aa = nu_strategy_r[1];
+  nu_strategy.r_asis = nu_strategy_r[2];
+
   // adaptation or fix proposal diffusion
   const bool adapt = ::Rf_isLogical(proposal_diffusion_ken_sexp);
   ProposalDiffusionKen proposal_diffusion_ken;
@@ -449,7 +459,8 @@ ExpertSpec_GeneralSV list_to_general_sv(
     proposal_para,
     adapt,
     proposal_diffusion_ken,
-    update
+    update,
+    nu_strategy
   };
 }
 

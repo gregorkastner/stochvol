@@ -187,7 +187,7 @@ RcppExport SEXP run_testthat_tests ();
 // Register entry points for exported C++ functions
 RcppExport SEXP _stochvol_Export_registerCCallable() {
     R_RegisterCCallable("stochvol", "update_fast_sv", (DL_FUNC)stochvol::update_fast_sv);
-    R_RegisterCCallable("stochvol", "update_t_error", (DL_FUNC)(static_cast<void (*)(const arma::vec&, arma::vec&, const arma::vec&, const arma::vec&, double&, const stochvol::PriorSpec&, const bool)>(stochvol::update_t_error)));
+    R_RegisterCCallable("stochvol", "update_t_error", (DL_FUNC)(static_cast<void (*)(const arma::vec&, arma::vec&, const arma::vec&, const arma::vec&, double&, const stochvol::PriorSpec&, const bool, const unsigned int)>(stochvol::update_t_error)));
     R_RegisterCCallable("stochvol", "update_general_sv", (DL_FUNC)stochvol::update_general_sv);
     R_RegisterCCallable("stochvol", "update_regressors", (DL_FUNC)stochvol::update_regressors);
     R_RegisterCCallable("stochvol", "list_to_priorspec", (DL_FUNC)stochvol::list_to_priorspec);

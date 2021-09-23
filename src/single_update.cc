@@ -141,7 +141,7 @@ void update_fast_sv(
   }
 }
 
-// Single update of a single tau: the marginal data augmentation for the degrees of freedom.
+// Single update of a single tau: the sufficiency data augmentation for the degrees of freedom.
 double update_single_tau(
     const double homosked_data_i,
     const double tau_i,
@@ -173,6 +173,32 @@ double update_single_tau(
   }
 }
 
+// Update the entire vector tau
+double update_tau(
+    const arma::vec& homosked_data,
+    arma::vec& tau,
+    const arma::vec& mean,
+    const arma::vec& sd,
+    double& nu,
+    const PriorSpec& prior_spec,
+    const bool do_tau_acceptance_rejection) {
+  const int T = homosked_data.n_elem;
+
+  double sum_tau = 0;
+  for (int i = 0; i < T; i++) {
+    tau[i] = update_single_tau(homosked_data[i], tau[i], mean[i], sd[i], nu, do_tau_acceptance_rejection);
+    sum_tau += std::log(tau[i]) + 1. / tau[i];
+  }
+
+  return sum_tau;
+}
+
+// Compute the sufficient statistic for nu given tau (code duplication)
+double compute_tau_sufficient_stats(
+    const arma::vec& tau) {
+  return arma::accu(arma::log(tau) + 1. / tau);
+}
+
 // Single update of the degrees of freedom.
 // See documentation above the declaration
 void update_t_error(
@@ -182,28 +208,39 @@ void update_t_error(
     const arma::vec& sd,
     double& nu,
     const PriorSpec& prior_spec,
-    const bool do_tau_acceptance_rejection) {
+    const bool do_tau_acceptance_rejection,
+    const unsigned int n_repeat) {
   R_assert(prior_spec.nu.distribution != PriorSpec::Nu::INFINITE, "Call to update_t_error: Non-matching model specification. Prior for nu should not be infinity.");
 
+  const double sum_tau = update_tau(homosked_data, tau, mean, sd, nu, prior_spec, do_tau_acceptance_rejection);
+  update_t_error(homosked_data, sum_tau, mean, sd, nu, prior_spec, n_repeat);
+}
+
+// Single update of the degrees of freedom.
+// See documentation above the declaration
+void update_t_error(
+    const arma::vec& homosked_data,
+    const double sum_tau,
+    const arma::vec& mean,
+    const arma::vec& sd,
+    double& nu,
+    const PriorSpec& prior_spec,
+    const unsigned int n_repeat) {
   const int T = homosked_data.n_elem;
 
-  double sum_tau = 0;
-  for (int i = 0; i < T; i++) {
-    tau[i] = update_single_tau(homosked_data[i], tau[i], mean[i], sd[i], nu, do_tau_acceptance_rejection);
-    sum_tau += std::log(tau[i]) + 1. / tau[i];
-  }
-
   if (prior_spec.nu.distribution == PriorSpec::Nu::EXPONENTIAL) {
-    const double lambda = prior_spec.nu.exponential.rate;
-    const double numean = newton_raphson(nu, sum_tau, T, lambda);
-    const double auxsd = std::sqrt(-1/ddlogdnu(numean, T));
-    const double nuprop = R::rnorm(numean, auxsd);
-    const double log_ar =
-      logdnu(nuprop, sum_tau, lambda, T) - logdnorm(nuprop, numean, auxsd) -
-      (logdnu(nu, sum_tau, lambda, T) - logdnorm(nu, numean, auxsd));
+    for (unsigned int r = 0; r < n_repeat; r++) {
+      const double lambda = prior_spec.nu.exponential.rate;
+      const double numean = newton_raphson(nu, sum_tau, T, lambda);
+      const double auxsd = std::sqrt(-1/ddlogdnu(numean, T));
+      const double nuprop = R::rnorm(numean, auxsd);
+      const double log_ar =
+        logdnu(nuprop, sum_tau, lambda, T) - logdnorm(nuprop, numean, auxsd) -
+        (logdnu(nu, sum_tau, lambda, T) - logdnorm(nu, numean, auxsd));
 
-    if (log_ar >= 0 or R::unif_rand() < std::exp(log_ar)) {
-      nu = nuprop;
+      if (log_ar >= 0 or R::unif_rand() < std::exp(log_ar)) {
+        nu = nuprop;
+      }
     }
   }
 }
@@ -244,37 +281,50 @@ void update_t_error(
     double& nu,
     const PriorSpec& prior_spec,
     const bool do_tau_acceptance_rejection,
-    Adaptation& adaptation) {
-  update_t_error(homosked_data, tau, mean, sd, nu, prior_spec, do_tau_acceptance_rejection);
+    Adaptation& adaptation,
+    const ExpertSpec_GeneralSV::Strategy& repetition) {
+  for (unsigned int i = 0; i < repetition.r_asis; i++) {
+    const double sum_tau = (i == 0) ?
+      update_tau(homosked_data, tau, mean, sd, nu, prior_spec, do_tau_acceptance_rejection) :
+      compute_tau_sufficient_stats(tau);
+    update_t_error(homosked_data, sum_tau, mean, sd, nu, prior_spec, repetition.r_sa);
 
-  const arma::vec u = ([](const arma::vec& tau, const double nu) -> arma::vec {
-      arma::vec result (tau.n_elem);
-      result.transform([nu](const double tau_i) -> double { return pinvgamma(tau_i, nu); });
-      return result;
-      })(tau, nu);
-  const ProposalDiffusionKen& adapted_proposal = adaptation.get_proposal();
-  const double random_walk_sd = std::sqrt(adapted_proposal.get_scale()) * arma::as_scalar(adapted_proposal.get_covariance_chol()),
-               lower_bound = 2,
-               log_nu = std::log(nu - lower_bound),
-               log_nu_prop = R::rnorm(log_nu, random_walk_sd),
-               nu_prop = std::exp(log_nu_prop) + lower_bound;
-
-  const double acceptance_rate = log_likelihood_t_noncentered(homosked_data, u, mean, sd, nu_prop) +
-    R::dexp(nu_prop - lower_bound, 1 / prior_spec.nu.exponential.rate, true) -
-    R::dnorm4(nu_prop, nu, random_walk_sd, true) + log_nu_prop -
-    log_likelihood_t_noncentered(homosked_data, u, mean, sd, nu) -
-    R::dexp(nu - lower_bound, 1 / prior_spec.nu.exponential.rate, true) +
-    R::dnorm4(nu, nu_prop, random_walk_sd, true) - log_nu;
-  const bool accepted = acceptance_rate > 0 or std::exp(acceptance_rate) > R::unif_rand();
-
-  adaptation.register_sample(accepted, {std::log(nu - lower_bound)});  // current sample
-  if (accepted) {
-    nu = nu_prop;
-    tau = ([](const arma::vec& u, const double nu) -> arma::vec {
-        arma::vec result (u.n_elem);
-        result.transform([nu](const double u_i) -> double { return qinvgamma(u_i, nu); });
+    const arma::vec u = ([](const arma::vec& tau, const double nu) -> arma::vec {
+        arma::vec result (tau.n_elem);
+        std::transform(tau.cbegin(), tau.cend(), result.begin(), [nu](const double tau_i) -> double { return pinvgamma(tau_i, nu); });
         return result;
-        })(u, nu);
+        })(tau, nu);
+
+    bool accepted_at_least_once = false;
+    for (unsigned int r = 0; r < repetition.r_aa; r++) {
+      const ProposalDiffusionKen& adapted_proposal = adaptation.get_proposal();
+      const double random_walk_sd = std::sqrt(adapted_proposal.get_scale()) * arma::as_scalar(adapted_proposal.get_covariance_chol()),
+            lower_bound = 2,
+            log_nu = std::log(nu - lower_bound),
+            log_nu_prop = R::rnorm(log_nu, random_walk_sd),
+            nu_prop = std::exp(log_nu_prop) + lower_bound;
+
+      const double acceptance_rate = log_likelihood_t_noncentered(homosked_data, u, mean, sd, nu_prop) +
+        R::dexp(nu_prop - lower_bound, 1 / prior_spec.nu.exponential.rate, true) -
+        R::dnorm4(nu_prop, nu, random_walk_sd, true) + log_nu_prop -
+        log_likelihood_t_noncentered(homosked_data, u, mean, sd, nu) -
+        R::dexp(nu - lower_bound, 1 / prior_spec.nu.exponential.rate, true) +
+        R::dnorm4(nu, nu_prop, random_walk_sd, true) - log_nu;
+      const bool accepted = acceptance_rate > 0 or std::exp(acceptance_rate) > R::unif_rand();
+      accepted_at_least_once = accepted or accepted_at_least_once;
+
+      adaptation.register_sample(accepted, {accepted ? log_nu_prop : log_nu});  // current sample
+      if (accepted) {
+        nu = nu_prop;
+      }
+    }
+    if (accepted_at_least_once) {
+      tau = ([](const arma::vec& u, const double nu) -> arma::vec {
+          arma::vec result (u.n_elem);
+          std::transform(u.cbegin(), u.cend(), result.begin(), [nu](const double u_i) -> double { return qinvgamma(u_i, nu); });
+          return result;
+          })(u, nu);
+    }
   }
 }
 
@@ -421,44 +471,56 @@ void update(
           prior_spec.sigma2.distribution != PriorSpec::Sigma2::CONSTANT,
           prior_spec.rho.distribution != PriorSpec::Rho::CONSTANT};
 
-    for (const Parameterization par : expert.strategy) {
+    for (unsigned int i = 0; i < expert.strategy.size(); ) {
+      const Parameterization par = expert.strategy[i];
       bool accepted;
       Adaptation& adaptation = adaptation_collection[par];
       const ProposalDiffusionKen& adapted_proposal = expert.adapt ? adaptation.get_proposal() : expert.proposal_diffusion_ken;
       switch (par) {
           case Parameterization::CENTERED: {
             const auto sufficient_statistic = centered::compute_sufficient_statistic(data, h0, h);
-            const auto theta = centered::draw_theta(
-                mu, phi, sigma, rho,
-                sufficient_statistic,
-                update_indicator,
-                prior_spec, expert,
-                adapted_proposal);
-            mu = theta.mu, phi = theta.phi, sigma = theta.sigma, rho = theta.rho;
-            accepted = theta.mu_accepted or theta.phi_accepted or theta.sigma_accepted or theta.rho_accepted;  // was anything accepted?
+            while (i < expert.strategy.size() and expert.strategy[i] == par) {
+              const auto theta = centered::draw_theta(
+                  mu, phi, sigma, rho,
+                  sufficient_statistic,
+                  update_indicator,
+                  prior_spec, expert,
+                  adapted_proposal);
+              mu = theta.mu, phi = theta.phi, sigma = theta.sigma, rho = theta.rho;
+              accepted = theta.mu_accepted or theta.phi_accepted or theta.sigma_accepted or theta.rho_accepted;  // was anything accepted?
+              if (expert.adapt) {
+                adaptation.register_sample(
+                    accepted,
+                    general_sv::theta_transform_inv(mu, phi, sigma, rho, prior_spec).elem(arma::find(update_indicator)));  // current sample
+              }
+              i++;
+            }
             break;
           }
           case Parameterization::NONCENTERED: {
-            const arma::vec c = centered_to_noncentered(mu, sigma, phi, rho, data, h0, h, prior_spec);
+            const arma::vec c = centered_to_noncentered(mu, phi, sigma, rho, data, h0, h, prior_spec);
             const noncentered::SufficientStatistic sufficient_statistic {data, c};
-            const auto theta = noncentered::draw_theta(
-                mu, phi, sigma, rho,
-                sufficient_statistic,
-                update_indicator,
-                prior_spec, expert,
-                adapted_proposal);
-            mu = theta.mu, phi = theta.phi, sigma = theta.sigma, rho = theta.rho;
-            accepted = theta.mu_accepted or theta.phi_accepted or theta.sigma_accepted or theta.rho_accepted;  // was anything accepted?
-            LatentVector h_full = noncentered_to_centered(mu, sigma, phi, rho, data, c, prior_spec);
+            while (i < expert.strategy.size() and expert.strategy[i] == par) {
+              const auto theta = noncentered::draw_theta(
+                  mu, phi, sigma, rho,
+                  sufficient_statistic,
+                  update_indicator,
+                  prior_spec, expert,
+                  adapted_proposal);
+              mu = theta.mu, phi = theta.phi, sigma = theta.sigma, rho = theta.rho;
+              accepted = theta.mu_accepted or theta.phi_accepted or theta.sigma_accepted or theta.rho_accepted;  // was anything accepted?
+              if (expert.adapt) {
+                adaptation.register_sample(
+                    accepted,
+                    general_sv::theta_transform_inv(mu, phi, sigma, rho, prior_spec).elem(arma::find(update_indicator)));  // current sample
+              }
+              i++;
+            }
+            LatentVector h_full = noncentered_to_centered(mu, phi, sigma, rho, data, c, prior_spec);
             h0 = h_full.h0;
             h = std::move(h_full.h);
             break;
           }
-      }
-      if (expert.adapt) {
-        adaptation.register_sample(
-            accepted,
-            general_sv::theta_transform_inv(mu, phi, sigma, rho, prior_spec).elem(arma::find(update_indicator)));  // current sample
       }
     }
   }

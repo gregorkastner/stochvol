@@ -181,7 +181,7 @@ List svsample_fast_cpp(
     // update tau and nu
     if (is_heavy_tail) {
       update_t_error(data_demean % exp_h_half_inv, tau, conditional_mean, conditional_sd, nu, prior_spec, false);
-      // update cached data arrays after the regression
+      // update cached data arrays after the regression, and not here
     }
 
     // update beta
@@ -375,8 +375,9 @@ List svsample_general_cpp(
 
     // update tau and nu
     if (is_heavy_tail) {
-      update_t_error(data_demean % exp_h_half_inv, tau, conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec, is_leverage, nu_adaptation);
-      // update cached data arrays after the regression
+      update_t_error(data_demean % exp_h_half_inv, tau, conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec, is_leverage, nu_adaptation,
+          expert.nu_strategy);
+      // update cached data arrays after the regression, and not here
     }
 
     // update beta
@@ -593,6 +594,7 @@ Rcpp::List geweke_test() {
   const double target_acceptance = 1 - std::pow(1 - 0.234, 0.5);
   const int batch_size = std::ceil(20 / target_acceptance);
   AdaptationCollection adaptation_collection(4, draws + burnin, batch_size, target_acceptance);
+  Adaptation nu_adaptation(1, draws + burnin, 60, 0.44);
 
   for (const Parameterization para : {Parameterization::CENTERED, Parameterization::NONCENTERED}) {
     ::Rprintf("Starting %s general_sv\n", para == Parameterization::CENTERED ? "centered" : "noncentered");
@@ -602,7 +604,9 @@ Rcpp::List geweke_test() {
         PriorSpec::Beta((para == Parameterization::CENTERED ? 2 : 5), 1.5),
         PriorSpec::Gamma(0.9, para == Parameterization::CENTERED ? 0.9 : 9),
         PriorSpec::Exponential(0.1), PriorSpec::Beta(5, 5));
-    const ExpertSpec_GeneralSV expert({para, para}, true);
+    ExpertSpec_GeneralSV expert({para, para}, true);
+    expert.nu_strategy.r_aa = 2 * (para == Parameterization::NONCENTERED);
+    expert.nu_strategy.r_sa = 2 - expert.nu_strategy.r_aa;
 
     for (int m = -burnin; m < draws; m++) {
       if ((m + burnin + 1) % 10000 == 0) {
@@ -615,12 +619,12 @@ Rcpp::List geweke_test() {
       log_data2_normal = arma::log(arma::square(data_demean_normal));
       clamp_log_data2(log_data2_normal);
       d = arma_sign(data_demean);
-      update_general_sv(data_demean_normal, log_data2_normal, d,
+      update(data_demean_normal, log_data2_normal, d,
           mu, phi, sigma, rho, h0, h, adaptation_collection, prior_spec, expert);
       exp_h_half_inv = arma::exp(-.5 * h);
       conditional_moments = decorrelate(mu, phi, sigma, rho, h);
       update_t_error(data_demean % exp_h_half_inv, tau,
-          conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec);
+          conditional_moments.conditional_mean, conditional_moments.conditional_sd, nu, prior_spec, true, nu_adaptation, expert.nu_strategy);
       data_demean_normal = data_demean / arma::sqrt(tau);
       log_data2_normal = arma::log(arma::square(data_demean_normal));
       clamp_log_data2(log_data2_normal);

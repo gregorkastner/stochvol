@@ -82,12 +82,19 @@ namespace stochvol {
 
     enum class ProposalPara {RANDOM_WALK};  //, METROPOLIS_ADJUSTED_LANGEVIN_ALGORITHM};
 
+    struct Strategy {
+      unsigned int r_sa,
+                   r_aa,
+                   r_asis;
+    };
+
     StrategyVector strategy;
     bool correct_latent_draws;
     ProposalPara proposal_para;
     bool adapt;
     ProposalDiffusionKen proposal_diffusion_ken;
     Update update;
+    Strategy nu_strategy;
 
     ExpertSpec_GeneralSV(
         const StrategyVector& _strategy = {Parameterization::CENTERED, Parameterization::NONCENTERED},
@@ -95,13 +102,15 @@ namespace stochvol {
         const ProposalPara _proposal_para = ProposalPara::RANDOM_WALK,
         const bool _adapt = true,
         const ProposalDiffusionKen& _proposal_diffusion_ken = {0, {}},
-        const Update& _update = {true, true})
+        const Update& _update = {true, true},
+        const Strategy& _nu_strategy = {1, 1, 1})
       : strategy {_strategy},
         correct_latent_draws {_correct_latent_draws},
         proposal_para {_proposal_para},
         adapt {_adapt},
         proposal_diffusion_ken {_proposal_diffusion_ken},
-        update (_update) {}
+        update (_update),
+        nu_strategy (_nu_strategy) {}
   };
 
 }
