@@ -123,7 +123,8 @@ test_that("default fast SV is efficient", {
   ## Simulate data
   sim <- svsim(n, mu = -9, phi = 0.45, sigma = 2)
   samp <- svsample(sim$y, draws = 10000, burnin = 1000, priorspec = priorspec,
-                   startpara = list(mu = -9, phi = 0.45, sigma = 2))
+                   startpara = list(mu = -9, phi = 0.45, sigma = 2),
+                   quiet = TRUE)
   eff_size <- coda::effectiveSize(para(samp)[, sampled_parameters(samp)])
   geweke_test <- 0.5 - abs(0.5 - pnorm(coda::geweke.diag(para(samp)[, sampled_parameters(samp)])$z))
 
@@ -141,7 +142,8 @@ test_that("default fast SV is efficient", {
   ## Simulate data
   sim <- svsim(n, mu = -9, phi = 0.99, sigma = 1.5)
   samp <- svsample(sim$y, draws = 30000, burnin = 1000, priorspec = priorspec,
-                   startpara = list(mu = -9, phi = 0.99, sigma = 1.5))
+                   startpara = list(mu = -9, phi = 0.99, sigma = 1.5),
+                   quiet = TRUE)
   eff_size <- coda::effectiveSize(para(samp)[, sampled_parameters(samp)])
   geweke_test <- 0.5 - abs(0.5 - pnorm(coda::geweke.diag(para(samp)[, sampled_parameters(samp)])$z))
 
@@ -169,7 +171,8 @@ test_that("default general SV is efficient", {
   ## Simulate data
   sim <- svsim(n, mu = -9, phi = 0.45, sigma = 2, nu = 5, rho = -0.6)
   samp <- svsample(sim$y, draws = 30000, burnin = 1000, priorspec = priorspec,
-                   startpara = list(mu = -9, phi = 0.45, sigma = 2, nu = 12, rho = -0.6))
+                   startpara = list(mu = -9, phi = 0.45, sigma = 2, nu = 12, rho = -0.6),
+                   quiet = TRUE)
   eff_size <- coda::effectiveSize(para(samp)[, sampled_parameters(samp)])
   geweke_test <- 0.5 - abs(0.5 - pnorm(coda::geweke.diag(para(samp)[, sampled_parameters(samp)])$z))
 
@@ -189,7 +192,8 @@ test_that("default general SV is efficient", {
   ## Simulate data
   sim <- svsim(n, mu = -9, phi = 0.95, sigma = 1.5, nu = 12, rho = -0.6)
   samp <- svsample(sim$y, draws = 30000, burnin = 1000, priorspec = priorspec,
-                   startpara = list(mu = -9, phi = 0.95, sigma = 1.5, nu = 12, rho = -0.6))
+                   startpara = list(mu = -9, phi = 0.95, sigma = 1.5, nu = 12, rho = -0.6),
+                   quiet = TRUE)
   eff_size <- coda::effectiveSize(para(samp)[, sampled_parameters(samp)])
   geweke_test <- 0.5 - abs(0.5 - pnorm(coda::geweke.diag(para(samp)[, sampled_parameters(samp)])$z))
 

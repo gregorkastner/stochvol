@@ -17,14 +17,14 @@ test_that("formula interface and prediction work", {
   y <- designmatrix %*% betas + svsim(n)$y
   # standard interface
   set.seed(57)
-  res1 <- svsample(y, designmatrix = designmatrix)
+  res1 <- svsample(y, designmatrix = designmatrix, quiet = TRUE)
   pred1 <- suppressWarnings(predict(res1, newdata = predmatrix))
   # formula interface
   data <- as.data.frame(dat)
   data$y <- y
   preddata <- as.data.frame(preddat)
   set.seed(57)
-  res2 <- svlm(y ~ 0 + x + I(x^2) + log10(x) + z, data = data)
+  res2 <- svlm(y ~ 0 + x + I(x^2) + log10(x) + z, data = data, quiet = TRUE)
   pred2 <- suppressWarnings(predict(res2, newdata = preddata))
 
   expect_equal(para(res1)[, "mu"], para(res2)[, "mu"])
