@@ -17,6 +17,8 @@ c++
 /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/progress/include
 -I
 inst/include
+-U
+NDEBUG
 -fPIC
 -pedantic
 -Wall
