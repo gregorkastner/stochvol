@@ -1,6 +1,6 @@
 #####
- Tue Jun 29 18:10:50 2021 
-R version 4.0.5 (2021-03-31)
+ Sat Sep 25 11:09:46 2021 
+R version 4.1.1 (2021-08-10)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: Ubuntu 20.04.1 LTS
 
@@ -18,75 +18,74 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 loaded via a namespace (and not attached):
-[1] compiler_4.0.5
+[1] compiler_4.1.1
 ### Some benchmark tests ###
 Source: https://mac.r-project.org/benchmarks/bench.R
 
 BEGIN
 [1] "hilbert n=500"
    user  system elapsed 
-  0.305   0.019   0.325 
+  0.192   0.009   0.203 
    user  system elapsed 
-  0.312   0.000   0.313 
+  0.217   0.000   0.216 
    user  system elapsed 
-  0.260   0.010   0.271 
+  0.199   0.000   0.199 
 [1] "hilbert n=1000"
    user  system elapsed 
-  2.194   0.030   2.224 
+  1.581   0.039   1.621 
    user  system elapsed 
-  1.655   0.000   1.655 
+  1.613   0.010   1.624 
    user  system elapsed 
-  1.632   0.010   1.642 
+  1.591   0.020   1.611 
 [1] "sort n=6"
    user  system elapsed 
-  0.143   0.000   0.144 
+  0.143   0.001   0.143 
    user  system elapsed 
-  0.135   0.010   0.146 
+  0.146   0.000   0.146 
    user  system elapsed 
-  0.145   0.000   0.144 
+  0.134   0.009   0.144 
 [1] "sort n=7"
    user  system elapsed 
-  1.611   0.060   1.680 
+  1.487   0.090   1.577 
    user  system elapsed 
-  1.586   0.040   1.645 
+  1.478   0.059   1.558 
    user  system elapsed 
-  1.596   0.049   1.663 
+  1.470   0.080   1.569 
 [1] "loess n=3"
    user  system elapsed 
-  0.057   0.000   0.057 
+  0.052   0.000   0.051 
    user  system elapsed 
-  0.051   0.000   0.063 
+   0.05    0.00    0.07 
    user  system elapsed 
   0.047   0.000   0.047 
    user  system elapsed 
-  0.048   0.000   0.048 
+  0.047   0.000   0.047 
    user  system elapsed 
-  0.048   0.000   0.048 
+  0.047   0.000   0.047 
 [1] "loess n=4"
    user  system elapsed 
-  4.356   0.000   4.356 
+  4.328   0.000   4.329 
    user  system elapsed 
-  4.352   0.000   4.353 
+  4.319   0.000   4.318 
    user  system elapsed 
-  4.499   0.000   4.499 
+  4.338   0.000   4.339 
    user  system elapsed 
-  4.355   0.000   4.356 
+  4.467   0.000   4.468 
    user  system elapsed 
-   4.47    0.00    4.47 
+  4.337   0.000   4.338 
 END
 
 #####
 
 START stochvol speedtest
 
-Loading stochvol
 
 Calling GIS_C MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.066 seconds.
-166667 iterations per second.
+Timing (elapsed): 0.062 seconds.
+177419 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -97,8 +96,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.072 seconds.
-152778 iterations per second.
+Timing (elapsed): 0.062 seconds.
+177419 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -109,8 +108,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.129 seconds.
-85271 iterations per second.
+Timing (elapsed): 0.125 seconds.
+88000 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -121,8 +120,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.129 seconds.
-85271 iterations per second.
+Timing (elapsed): 0.126 seconds.
+87302 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -133,8 +132,8 @@ Calling ASISx5 MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.245 seconds.
-44898 iterations per second.
+Timing (elapsed): 0.304 seconds.
+36184 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -145,8 +144,8 @@ Calling ASISx5 MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.252 seconds.
-43651 iterations per second.
+Timing (elapsed): 0.303 seconds.
+36304 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -157,8 +156,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 5.136 seconds.
-2142 iterations per second.
+Timing (elapsed): 4.917 seconds.
+2237 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -169,8 +168,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 5.764 seconds.
-1908 iterations per second.
+Timing (elapsed): 4.919 seconds.
+2236 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -181,8 +180,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 9.11 seconds.
-1207 iterations per second.
+Timing (elapsed): 8.408 seconds.
+1308 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -193,8 +192,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 9.102 seconds.
-1209 iterations per second.
+Timing (elapsed): 9.524 seconds.
+1155 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -205,8 +204,8 @@ Calling ASISx5 MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 16.336 seconds.
-673 iterations per second.
+Timing (elapsed): 24.706 seconds.
+445 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -217,8 +216,8 @@ Calling ASISx5 MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 14.491 seconds.
-759 iterations per second.
+Timing (elapsed): 22.888 seconds.
+481 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -229,8 +228,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.122 seconds.
-90164 iterations per second.
+Timing (elapsed): 0.063 seconds.
+174603 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -241,8 +240,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.151 seconds.
-72848 iterations per second.
+Timing (elapsed): 0.247 seconds.
+44534 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -253,8 +252,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.257 seconds.
-42802 iterations per second.
+Timing (elapsed): 0.333 seconds.
+33033 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -265,8 +264,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.202 seconds.
-54455 iterations per second.
+Timing (elapsed): 0.248 seconds.
+44355 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -277,8 +276,8 @@ Calling ASISx5 MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.35 seconds.
-31429 iterations per second.
+Timing (elapsed): 0.578 seconds.
+19031 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -289,8 +288,8 @@ Calling ASISx5 MCMC sampler with 11000 iter. Series length is 20.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 0.416 seconds.
-26442 iterations per second.
+Timing (elapsed): 0.633 seconds.
+17378 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -301,8 +300,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 7.007 seconds.
-1570 iterations per second.
+Timing (elapsed): 8.501 seconds.
+1294 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -313,8 +312,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 5.746 seconds.
-1914 iterations per second.
+Timing (elapsed): 6.177 seconds.
+1781 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -325,8 +324,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 9.032 seconds.
-1218 iterations per second.
+Timing (elapsed): 9.075 seconds.
+1212 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -337,8 +336,8 @@ Calling GIS_C MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 8.983 seconds.
-1225 iterations per second.
+Timing (elapsed): 9.624 seconds.
+1143 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -349,8 +348,8 @@ Calling ASISx5 MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 15.811 seconds.
-696 iterations per second.
+Timing (elapsed): 22.945 seconds.
+479 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...
@@ -361,8 +360,8 @@ Calling ASISx5 MCMC sampler with 11000 iter. Series length is 2000.
 
                                                          ] 100%  0% [+++++++++++++++++++++++++++++++++++++++++++++++++++] 100%
 
-Timing (elapsed): 15.391 seconds.
-715 iterations per second.
+Timing (elapsed): 23.91 seconds.
+460 iterations per second.
 
 Converting results to coda objects... Done!
 Summarizing posterior draws...

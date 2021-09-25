@@ -38,7 +38,7 @@ loess.me(4)
 
 cat("END\n\n#####\n\nSTART stochvol speedtest\n\n")
 
-devtools::load_all(".")
+library(stochvol)
 set.seed(19891109)
 dat <- list(
   normsmall = rnorm(20),
