@@ -27,3 +27,7 @@ compile_flags.txt
 ^docs$
 ^pkgdown$
 ^\.github$
+
+cachegrind_output.txt
+callgrind_output.txt
+callgrind_output_exclusive.txt

@@ -1,0 +1,2621 @@
+--------------------------------------------------------------------------------
+Profile data file 'callgrind.out.9087' (creator: callgrind-3.15.0)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 4542298008
+Trigger: Program termination
+Profiled target:  /usr/lib/R/bin/exec/R --no-echo --no-restore --no-init-file --no-save --no-restore --file=cache-opt-stochvol.R (PID 9087, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+Ir             
+--------------------------------------------------------------------------------
+28,017,928,033  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir             file:function
+--------------------------------------------------------------------------------
+4,142,025,310  ???:0x000000000025f740 [/usr/lib/R/lib/libR.so]
+3,532,142,052  ???:0x000000000025eea0 [/usr/lib/R/lib/libR.so]
+2,951,008,897  ???:Rf_pgamma [/usr/lib/R/lib/libR.so]
+2,416,473,957  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_log.c:__ieee754_log_fma [/usr/lib/x86_64-linux-gnu/libm-2.31.so]
+2,285,702,157  ???:Rf_qgamma [/usr/lib/R/lib/libR.so]
+1,604,884,641  ???:0x0000000000252250 [/usr/lib/R/lib/libR.so]
+1,481,502,726  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_exp.c:__ieee754_exp_fma [/usr/lib/x86_64-linux-gnu/libm-2.31.so]
+  933,216,546  ???:Rf_dpois_raw [/usr/lib/R/lib/libR.so]
+  723,584,494  /build/glibc-eX1tMB/glibc-2.31/math/./w_exp_template.c:exp@@GLIBC_2.29 [/usr/lib/x86_64-linux-gnu/libm-2.31.so]
+  535,291,783  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/s_log1p.c:__log1p [/usr/lib/x86_64-linux-gnu/libm-2.31.so]
+  527,685,880  ???:Rf_qnorm5 [/usr/lib/R/lib/libR.so]
+  520,176,950  ???:0x0000000000276ea0 [/usr/lib/R/lib/libR.so]
+  498,001,937  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_pow.c:__ieee754_pow_fma [/usr/lib/x86_64-linux-gnu/libm-2.31.so]
+  463,140,840  ???:0x0000000000269d30 [/usr/lib/R/lib/libR.so]
+  422,004,592  ???:0x0000000000257e60 [/usr/lib/R/lib/libR.so]
+  296,033,072  ???:Rf_lgammafn_sign [/usr/lib/R/lib/libR.so]
+  282,487,230  ???:Rf_fmax2 [/usr/lib/R/lib/libR.so]
+  263,545,825  /build/glibc-eX1tMB/glibc-2.31/math/./w_log_template.c:log@@GLIBC_2.29 [/usr/lib/x86_64-linux-gnu/libm-2.31.so]
+  218,283,143  ???:0x000000000025ed60 [/usr/lib/R/lib/libR.so]
+  192,038,400  ???:Rf_dnorm4 [/usr/lib/R/lib/libR.so]
+  178,220,810  ???:unif_rand [/usr/lib/R/lib/libR.so]
+  151,165,824  ???:0x000000000025e2a0 [/usr/lib/R/lib/libR.so]
+  134,702,783  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/math_config.h:__ieee754_exp_fma
+  122,612,087  ???:Rf_getAttrib [/usr/lib/R/lib/libR.so]
+  112,018,400  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/utils_parameters.cc:stochvol::general_sv::noncentered::theta_log_likelihood(double, double, double, double, stochvol::general_sv::noncentered::SufficientStatistic const&, stochvol::PriorSpec const&) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+  106,680,314  ???:0x000000000012e770'2 [/usr/lib/R/lib/libR.so]
+  105,420,018  ???:0x0000000004f702f0 [???]
+   96,494,630  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/sampling_latent_states.cc:stochvol::general_sv::draw_s_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<double> const&, bool) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+   94,620,380  /build/glibc-eX1tMB/glibc-2.31/math/./w_pow_template.c:pow@@GLIBC_2.29 [/usr/lib/x86_64-linux-gnu/libm-2.31.so]
+   91,495,030  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/utils_latent_states.cc:stochvol::general_sv::h_aux_log_posterior(arma::Col<double> const&, arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, double) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+   90,969,424  /build/glibc-eX1tMB/glibc-2.31/mathvec/../sysdeps/x86_64/fpu/multiarch/svml_d_exp2_core_sse4.S:_ZGVbN2v_exp_sse4 [/usr/lib/x86_64-linux-gnu/libmvec-2.31.so]
+   90,444,068  ???:0x0000000004f703a0 [???]
+   72,112,721  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S:__memset_avx2_unaligned_erms [/usr/lib/x86_64-linux-gnu/libc-2.31.so]
+   69,259,759  ???:0x00000000001f0330'2 [/usr/lib/R/lib/libR.so]
+   60,022,400  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/single_update.cc:stochvol::log_likelihood_t_noncentered(arma::Col<double> const&, arma::Col<double> const&, arma::Col<double> const&, arma::Col<double> const&, double) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+   59,760,000  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/single_update.cc:stochvol::qinvgamma(double, double) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+   58,731,385  ???:0x0000000000008d60 [/usr/lib/x86_64-linux-gnu/libz.so.1.2.11]
+   52,710,009  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/math_config.h:__ieee754_log_fma
+   46,544,855  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__memcpy_avx_unaligned_erms [/usr/lib/x86_64-linux-gnu/libc-2.31.so]
+   44,221,733  ???:inflate [/usr/lib/x86_64-linux-gnu/libz.so.1.2.11]
+   43,210,798  ???:0x00000000001de600 [/usr/lib/R/lib/libR.so]
+   42,015,100  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/utils.h:stochvol::general_sv::update(arma::Col<double> const&, arma::Col<double> const&, arma::Col<int> const&, double&, double&, double&, double&, double&, arma::Col<double>&, stochvol::AdaptationCollection&, stochvol::PriorSpec const&, stochvol::ExpertSpec_GeneralSV const&) [clone .cold]
+   41,686,875  /build/glibc-eX1tMB/glibc-2.31/sunrpc/xdr.c:xdr_int [/usr/lib/x86_64-linux-gnu/libc-2.31.so]
+   40,517,210  ???:0x000000000b6e6770 [???]
+   39,715,204  ???:Rf_dgamma [/usr/lib/R/lib/libR.so]
+   38,299,075  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/single_update.cc:stochvol::update_single_tau(double, double, double, double, double, bool) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+   37,325,756  ???:0x00000000001896b0 [/usr/lib/R/lib/libR.so]
+   34,504,234  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/sampling_latent_states.cc:stochvol::general_sv::draw_h_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<unsigned int> const&, double, stochvol::Parameterization) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+   33,299,485  /build/glibc-eX1tMB/glibc-2.31/math/./w_log1p_template.c:log1p [/usr/lib/x86_64-linux-gnu/libm-2.31.so]
+   33,000,495  ???:Rf_allocVector3 [/usr/lib/R/lib/libR.so]
+   32,663,540  /build/glibc-eX1tMB/glibc-2.31/mathvec/../sysdeps/x86_64/fpu/multiarch/svml_d_log2_core_sse4.S:_ZGVbN2v_log_sse4 [/usr/lib/x86_64-linux-gnu/libmvec-2.31.so]
+   31,592,162  ???:norm_rand [/usr/lib/R/lib/libR.so]
+   30,970,314  ???:Rf_mkCharLenCE [/usr/lib/R/lib/libR.so]
+   30,864,850  ???:0x00000000001ed680 [/usr/lib/R/lib/libR.so]
+   29,880,000  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/Rmath.h:stochvol::qinvgamma(double, double)
+   29,162,368  ???:SETCAR [/usr/lib/R/lib/libR.so]
+   28,593,557  ???:Rf_rgamma [/usr/lib/R/lib/libR.so]
+   27,302,877  ???:0x00000000001ecbb0 [/usr/lib/R/lib/libR.so]
+   26,001,386  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/eop_core_meat.hpp:stochvol::general_sv::draw_s_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<double> const&, bool)
+   25,064,685  /build/glibc-eX1tMB/glibc-2.31/sunrpc/xdr_mem.c:xdrmem_getlong [/usr/lib/x86_64-linux-gnu/libc-2.31.so]
+   25,000,037  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/eop_aux.hpp:stochvol::general_sv::draw_s_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<double> const&, bool)
+   25,000,000  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/densities.h:stochvol::update_single_tau(double, double, double, double, double, bool)
+   24,953,429  ???:0x000000000489f5e0 [???]
+   24,900,094  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/math_config.h:__ieee754_pow_fma
+   24,538,821  ???:adler32_z [/usr/lib/x86_64-linux-gnu/libz.so.1.2.11]
+   24,276,117  ???:0x0000000000183a50 [/usr/lib/R/lib/libR.so]
+   24,000,000  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/Rmath.h:stochvol::log_likelihood_t_noncentered(arma::Col<double> const&, arma::Col<double> const&, arma::Col<double> const&, arma::Col<double> const&, double)
+   23,000,713  ???:Rf_isMatrix [/usr/lib/R/lib/libR.so]
+   21,519,000  /usr/include/c++/10/bits/stl_numeric.h:stochvol::general_sv::centered::compute_sufficient_statistic(arma::Col<double> const&, double, arma::Col<double> const&)
+   20,392,071  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/s_expm1.c:expm1 [/usr/lib/x86_64-linux-gnu/libm-2.31.so]
+   18,895,728  ???:Rf_lgammafn [/usr/lib/R/lib/libR.so]
+   18,690,893  ???:Rf_findVarInFrame3 [/usr/lib/R/lib/libR.so]
+   18,006,684  ???:SET_VECTOR_ELT [/usr/lib/R/lib/libR.so]
+   17,809,093  ???:Rf_eval'2 [/usr/lib/R/lib/libR.so]
+   17,002,261  ???:LENGTH_EX [/usr/lib/R/lib/libR.so]
+   17,000,002  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/vector/Vector.h:stochvol::svsample_general_cpp(arma::Col<double> const&, int, int, arma::Mat<double> const&, Rcpp::Vector<19, Rcpp::PreserveStorage> const&, int, int, Rcpp::Vector<16, Rcpp::PreserveStorage> const&, Rcpp::Vector<19, Rcpp::PreserveStorage> const&, arma::Col<double> const&, bool, Rcpp::Vector<19, Rcpp::PreserveStorage>, bool, bool, double, Rcpp::Vector<19, Rcpp::PreserveStorage> const&)
+   16,908,100  /usr/include/c++/10/bits/stl_algobase.h:stochvol::general_sv::draw_s_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<double> const&, bool)
+   16,767,719  ???:0x000000000014e310'2 [/usr/lib/R/lib/libR.so]
+   16,500,228  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/Proxy.hpp:stochvol::general_sv::draw_s_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<double> const&, bool)
+   16,311,670  ???:SET_STRING_ELT [/usr/lib/R/lib/libR.so]
+   15,255,452  ???:0x000000000018dcc0 [/usr/lib/R/lib/libR.so]
+   15,189,301  ???:0x00000000000f1b90 [/usr/lib/x86_64-linux-gnu/libicuuc.so.66.1]
+   15,135,983  ???:0x00000000001114b0 [/usr/lib/R/lib/libR.so]
+   15,000,037  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/eop_aux.hpp:stochvol::general_sv::h_aux_log_posterior(arma::Col<double> const&, arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, double)
+   14,063,582  ???:SET_TAG [/usr/lib/R/lib/libR.so]
+   13,706,155  ???:0x000000000000ccf0 [/usr/lib/x86_64-linux-gnu/libz.so.1.2.11]
+   13,002,700  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/single_update.cc:stochvol::update_tau(arma::Col<double> const&, arma::Col<double>&, arma::Col<double> const&, arma::Col<double> const&, double&, stochvol::PriorSpec const&, bool) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+   12,636,425  ???:0x00000000001f1fa0'2 [/usr/lib/R/lib/libR.so]
+   12,431,100  ???:SETCDR [/usr/lib/R/lib/libR.so]
+   12,376,250  ???:0x00000000001118b0 [/usr/lib/R/lib/libR.so]
+   11,863,798  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/strcmp-avx2.S:__strcmp_avx2 [/usr/lib/x86_64-linux-gnu/libc-2.31.so]
+   11,496,681  /build/glibc-eX1tMB/glibc-2.31/sunrpc/xdr_mem.c:xdrmem_create [/usr/lib/x86_64-linux-gnu/libc-2.31.so]
+   11,016,200  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/utils_latent_states.cc:stochvol::general_sv::h_log_posterior(arma::Col<double> const&, arma::Col<double> const&, double, double, double, double, double) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+   11,000,341  ???:Rf_isVector [/usr/lib/R/lib/libR.so]
+   10,500,000  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/op_cumsum_meat.hpp:stochvol::general_sv::draw_s_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<double> const&, bool)
+   10,472,011  ???:0x000000000018cfd0 [/usr/lib/R/lib/libR.so]
+   10,439,656  ???:Rf_applyClosure'2 [/usr/lib/R/lib/libR.so]
+   10,005,252  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/vector/Matrix.h:Rcpp::Matrix<14, Rcpp::PreserveStorage> Rcpp::tranpose_impl<14, Rcpp::PreserveStorage>(Rcpp::Matrix<14, Rcpp::PreserveStorage> const&) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+    9,960,040  ???:0x0000000004f70310 [???]
+    9,960,000  ???:0x000000000b6e5c30 [???]
+    9,960,000  ???:0x000000000b6e5e30 [???]
+    9,625,636  ???:icu_66::RuleBasedCollator::compare(UCharIterator&, UCharIterator&, UErrorCode&) const [/usr/lib/x86_64-linux-gnu/libicui18n.so.66.1]
+    9,190,779  ???:Rf_cons [/usr/lib/R/lib/libR.so]
+    8,324,144  ???:icu_66::CollationCompare::compareUpToQuaternary(icu_66::CollationIterator&, icu_66::CollationIterator&, icu_66::CollationSettings const&, UErrorCode&) [/usr/lib/x86_64-linux-gnu/libicui18n.so.66.1]
+    8,122,834  ???:Rf_allocSExp [/usr/lib/R/lib/libR.so]
+    8,001,600  ???:0x000000000b6e67d0 [???]
+    7,400,692  /usr/include/c++/10/bits/stl_algo.h:stochvol::update_t_error(arma::Col<double> const&, arma::Col<double>&, arma::Col<double> const&, arma::Col<double> const&, double&, stochvol::PriorSpec const&, bool, stochvol::Adaptation&, stochvol::ExpertSpec_GeneralSV::Strategy const&) [clone .cold]'2
+    7,389,071  ???:0x000000000028d2c0 [/usr/lib/R/lib/libR.so]
+    7,038,682  ???:0x000000000b6e5d30 [???]
+    7,000,000  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/fn_accu.hpp:stochvol::general_sv::draw_s_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<double> const&, bool)
+    7,000,000  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/fn_accu.hpp:stochvol::general_sv::h_aux_log_posterior(arma::Col<double> const&, arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, double)
+    7,000,000  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/single_update.cc:stochvol::pinvgamma(double, double) [/home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/stochvol/libs/stochvol.so]
+    6,713,388  ???:0x000000000012e770 [/usr/lib/R/lib/libR.so]
+    6,659,897  ???:0x000000000489f5f0 [???]
+    6,605,372  ???:SET_PRVALUE [/usr/lib/R/lib/libR.so]
+    6,516,382  /build/glibc-eX1tMB/glibc-2.31/elf/dl-lookup.c:do_lookup_x [/usr/lib/x86_64-linux-gnu/ld-2.31.so]
+    6,449,124  ???:0x000000000018deb0 [/usr/lib/R/lib/libR.so]
+    6,262,700  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/utils_main.h:stochvol::svsample_general_cpp(arma::Col<double> const&, int, int, arma::Mat<double> const&, Rcpp::Vector<19, Rcpp::PreserveStorage> const&, int, int, Rcpp::Vector<16, Rcpp::PreserveStorage> const&, Rcpp::Vector<19, Rcpp::PreserveStorage> const&, arma::Col<double> const&, bool, Rcpp::Vector<19, Rcpp::PreserveStorage>, bool, bool, double, Rcpp::Vector<19, Rcpp::PreserveStorage> const&)
+    6,177,229  ???:0x000000000010e700 [/usr/lib/R/lib/libR.so]
+    5,617,146  ???:SET_PRENV [/usr/lib/R/lib/libR.so]
+    5,523,521  /build/glibc-eX1tMB/glibc-2.31/malloc/malloc.c:_int_malloc [/usr/lib/x86_64-linux-gnu/libc-2.31.so]
+    5,376,805  ???:0x00000000000cc3e0 [/usr/lib/R/lib/libR.so]
+    5,032,543  ???:0x000000000014f420'2 [/usr/lib/R/lib/libR.so]
+    5,029,499  ???:Rf_defineVar [/usr/lib/R/lib/libR.so]
+    5,001,285  ???:XLENGTH_EX [/usr/lib/R/lib/libR.so]
+    5,000,760  ???:INTEGER [/usr/lib/R/lib/libR.so]
+    5,000,000  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/Rmath.h:stochvol::pinvgamma(double, double)
+    4,930,640  ???:uiter_setUTF8_66 [/usr/lib/x86_64-linux-gnu/libicuuc.so.66.1]
+    4,685,780  ???:Rf_translateCharUTF8 [/usr/lib/R/lib/libR.so]
+    4,531,907  ???:Rf_NewEnvironment [/usr/lib/R/lib/libR.so]
+    4,496,873  ???:0x00000000001f5100 [/usr/lib/R/lib/libR.so]
+    4,459,124  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/single_update.cc:stochvol::update_t_error(arma::Col<double> const&, arma::Col<double>&, arma::Col<double> const&, arma::Col<double> const&, double&, stochvol::PriorSpec const&, bool, stochvol::Adaptation&, stochvol::ExpertSpec_GeneralSV::Strategy const&) [clone .cold]'2
+    4,316,251  ???:SET_ATTRIB [/usr/lib/R/lib/libR.so]
+    4,285,089  ???:0x000000000014e1d0'2 [/usr/lib/R/lib/libR.so]
+    4,268,901  ???:Rf_checkArityCall [/usr/lib/R/lib/libR.so]
+    4,036,653  ???:0x000000000010f8f0 [/usr/lib/R/lib/libR.so]
+    4,003,200  /usr/include/c++/10/cmath:stochvol::general_sv::noncentered::theta_log_likelihood(double, double, double, double, stochvol::general_sv::noncentered::SufficientStatistic const&, stochvol::PriorSpec const&)
+    4,002,800  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/densities.h:stochvol::general_sv::h_log_posterior(arma::Col<double> const&, arma::Col<double> const&, double, double, double, double, double)
+    4,000,000  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/Mat_meat.hpp:stochvol::log_likelihood_t_noncentered(arma::Col<double> const&, arma::Col<double> const&, arma::Col<double> const&, arma::Col<double> const&, double)
+    3,923,879  ???:Rf_findFun [/usr/lib/R/lib/libR.so]
+    3,844,410  ???:0x00000000001842e0 [/usr/lib/R/lib/libR.so]
+    3,830,112  ???:0x000000000010e580 [/usr/lib/R/lib/libR.so]
+    3,828,792  ???:Rf_begincontext [/usr/lib/R/lib/libR.so]
+    3,736,913  ???:0x0000000000002c10 [/usr/lib/x86_64-linux-gnu/libz.so.1.2.11]
+    3,695,416  ???:icu_66::UIterCollationIterator::handleNextCE32(int&, UErrorCode&) [/usr/lib/x86_64-linux-gnu/libicui18n.so.66.1]
+    3,693,760  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/strlen-avx2.S:__strlen_avx2 [/usr/lib/x86_64-linux-gnu/libc-2.31.so]
+    3,691,812  ???:SET_PRCODE [/usr/lib/R/lib/libR.so]
+    3,506,798  ???:0x00000000001eff90 [/usr/lib/R/lib/libR.so]
+    3,498,824  ???:0x000000000b6e5bf0 [???]
+    3,418,433  ???:0x000000000012cc70 [/usr/lib/R/lib/libR.so]
+    3,375,944  ???:0x00000000000fff10 [/usr/lib/R/lib/libR.so]
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/Proxy.hpp
+--------------------------------------------------------------------------------
+Ir         
+
+-- line 90 ----------------------------------------
+         .      }
+         .    
+         .    static constexpr uword get_n_rows() { return T1::n_rows; }
+         .    static constexpr uword get_n_cols() { return T1::n_cols; }
+         .    static constexpr uword get_n_elem() { return T1::n_elem; }
+         .    
+         .    arma_inline elem_type operator[] (const uword i)                    const { return Q[i];           }
+         .    arma_inline elem_type at         (const uword row, const uword col) const { return Q.at(row, col); }
+16,500,274    arma_inline elem_type at_alt     (const uword i)                    const { return Q.at_alt(i);    }
+         .    
+         .    arma_inline         ea_type         get_ea() const { return Q.memptr(); }
+         .    arma_inline aligned_ea_type get_aligned_ea() const { return Q;          }
+         .    
+         .    template<typename eT2>
+         .    arma_inline bool is_alias(const Mat<eT2>& X) const { return (void_ptr(&Q) == void_ptr(&X)); }
+         .    
+         .    template<typename eT2>
+-- line 106 ----------------------------------------
+-- line 158 ----------------------------------------
+         .    
+         .    static constexpr bool is_row  = false;
+         .    static constexpr bool is_col  = false;
+         .    static constexpr bool is_xvec = false;
+         .    
+         .    arma_aligned const Mat<eT>& Q;
+         .    
+         .    inline explicit Proxy(const Mat<eT>& A)
+         3      : Q(A)
+         .      {
+         .      arma_extra_debug_sigprint();
+         .      }
+         .    
+         5    arma_inline uword get_n_rows() const { return Q.n_rows; }
+         2    arma_inline uword get_n_cols() const { return Q.n_cols; }
+     1,602    arma_inline uword get_n_elem() const { return Q.n_elem; }
+         .    
+       400    arma_inline elem_type operator[] (const uword i)                    const { return Q[i];           }
+         3    arma_inline elem_type at         (const uword row, const uword col) const { return Q.at(row, col); }
+        68    arma_inline elem_type at_alt     (const uword i)                    const { return Q.at_alt(i);    }
+         .    
+         .    arma_inline         ea_type         get_ea() const { return Q.memptr(); }
+         .    arma_inline aligned_ea_type get_aligned_ea() const { return Q;          }
+         .    
+         .    template<typename eT2>
+         1    arma_inline bool is_alias(const Mat<eT2>& X) const { return (is_same_type<eT,eT2>::value) ? (void_ptr(&Q) == void_ptr(&X)) : false; }
+         .    
+         .    template<typename eT2>
+         .    arma_inline bool has_overlap(const subview<eT2>& X) const { return is_alias(X.m); }
+         .    
+         .    arma_inline bool is_aligned() const { return memory::is_aligned(Q.memptr()); }
+         .    };
+         .  
+         .  
+-- line 191 ----------------------------------------
+-- line 207 ----------------------------------------
+         .    
+         .    static constexpr bool is_row  = false;
+         .    static constexpr bool is_col  = true;
+         .    static constexpr bool is_xvec = false;
+         .    
+         .    arma_aligned const Col<eT>& Q;
+         .    
+         .    inline explicit Proxy(const Col<eT>& A)
+     3,006      : Q(A)
+         .      {
+         .      arma_extra_debug_sigprint();
+         .      }
+         .    
+     2,504    arma_inline uword get_n_rows() const { return Q.n_rows; }
+         .    constexpr   uword get_n_cols() const { return 1;        }
+     1,306    arma_inline uword get_n_elem() const { return Q.n_elem; }
+         .    
+         .    arma_inline elem_type operator[] (const uword i)                const { return Q[i];        }
+         .    arma_inline elem_type at         (const uword row, const uword) const { return Q[row];      }
+ 4,632,500    arma_inline elem_type at_alt     (const uword i)                const { return Q.at_alt(i); }
+         .    
+         .    arma_inline         ea_type         get_ea() const { return Q.memptr(); }
+         .    arma_inline aligned_ea_type get_aligned_ea() const { return Q;          }
+         .    
+         .    template<typename eT2>
+         .    arma_inline bool is_alias(const Mat<eT2>& X) const { return (is_same_type<eT,eT2>::value) ? (void_ptr(&Q) == void_ptr(&X)) : false; }
+         .    
+         .    template<typename eT2>
+-- line 234 ----------------------------------------
+-- line 452 ----------------------------------------
+         .    
+         .    static constexpr bool is_row  = eOp<T1, eop_type>::is_row;
+         .    static constexpr bool is_col  = eOp<T1, eop_type>::is_col;
+         .    static constexpr bool is_xvec = eOp<T1, eop_type>::is_xvec;
+         .    
+         .    arma_aligned const eOp<T1, eop_type>& Q;
+         .    
+         .    inline explicit Proxy(const eOp<T1, eop_type>& A)
+       408      : Q(A)
+         .      {
+         .      arma_extra_debug_sigprint();
+         .      }
+         .    
+       101    arma_inline uword get_n_rows() const { return is_row ? 1 : Q.get_n_rows(); }
+         .    arma_inline uword get_n_cols() const { return is_col ? 1 : Q.get_n_cols(); }
+         1    arma_inline uword get_n_elem() const { return Q.get_n_elem();              }
+         .    
+         .    arma_inline elem_type operator[] (const uword i)                    const { return Q[i];           }
+         .    arma_inline elem_type at         (const uword row, const uword col) const { return Q.at(row, col); }
+         .    arma_inline elem_type at_alt     (const uword i)                    const { return Q.at_alt(i);    }
+         .    
+         .    arma_inline         ea_type         get_ea() const { return Q; }
+         .    arma_inline aligned_ea_type get_aligned_ea() const { return Q; }
+         .    
+         .    template<typename eT2>
+         .    arma_inline bool is_alias(const Mat<eT2>& X) const { return Q.P.is_alias(X); }
+         .    
+         .    template<typename eT2>
+         .    arma_inline bool has_overlap(const subview<eT2>& X) const { return Q.P.has_overlap(X); }
+         .    
+         1    arma_inline bool is_aligned() const { return Q.P.is_aligned(); }
+         .    };
+         .  
+         .  
+         .  
+         .  template<typename T1, typename T2, typename eglue_type>
+         .  class Proxy< eGlue<T1, T2, eglue_type> >
+         .    {
+         .    public:
+-- line 490 ----------------------------------------
+-- line 501 ----------------------------------------
+         .    
+         .    static constexpr bool is_row  = eGlue<T1, T2, eglue_type>::is_row;
+         .    static constexpr bool is_col  = eGlue<T1, T2, eglue_type>::is_col;
+         .    static constexpr bool is_xvec = eGlue<T1, T2, eglue_type>::is_xvec;
+         .    
+         .    arma_aligned const eGlue<T1, T2, eglue_type>& Q;
+         .    
+         .    inline explicit Proxy(const eGlue<T1, T2, eglue_type>& A)
+         2      : Q(A)
+         .      {
+         .      arma_extra_debug_sigprint();
+         .      }
+         .    
+         1    arma_inline uword get_n_rows() const { return is_row ? 1 : Q.get_n_rows(); }
+         .    arma_inline uword get_n_cols() const { return is_col ? 1 : Q.get_n_cols(); }
+         .    arma_inline uword get_n_elem() const { return Q.get_n_elem();              }
+         .    
+         .    arma_inline elem_type operator[] (const uword i)                    const { return Q[i];           }
+         3    arma_inline elem_type at         (const uword row, const uword col) const { return Q.at(row, col); }
+         .    arma_inline elem_type at_alt     (const uword i)                    const { return Q.at_alt(i);    }
+         .    
+         .    arma_inline         ea_type         get_ea() const { return Q; }
+         .    arma_inline aligned_ea_type get_aligned_ea() const { return Q; }
+         .    
+         .    template<typename eT2>
+         .    arma_inline bool is_alias(const Mat<eT2>& X) const { return (Q.P1.is_alias(X) || Q.P2.is_alias(X)); }
+         .    
+         .    template<typename eT2>
+         .    arma_inline bool has_overlap(const subview<eT2>& X) const { return (Q.P1.has_overlap(X) || Q.P2.has_overlap(X)); }
+         .    
+       216    arma_inline bool is_aligned() const { return (Q.P1.is_aligned() && Q.P2.is_aligned()); }
+         .    };
+         .  
+         .  
+         .  
+         .  template<typename T1, typename op_type>
+         .  class Proxy< Op<T1, op_type> >
+         .    {
+         .    public:
+-- line 539 ----------------------------------------
+-- line 557 ----------------------------------------
+         .    inline explicit Proxy(const Op<T1, op_type>& A)
+         .      : Q(A)
+         .      {
+         .      arma_extra_debug_sigprint();
+         .      }
+         .    
+         .    arma_inline uword get_n_rows() const { return is_row ? 1 : Q.n_rows; }
+         .    arma_inline uword get_n_cols() const { return is_col ? 1 : Q.n_cols; }
+         8    arma_inline uword get_n_elem() const { return Q.n_elem;              }
+         .    
+         2    arma_inline elem_type operator[] (const uword i)                    const { return Q[i];           }
+         .    arma_inline elem_type at         (const uword row, const uword col) const { return Q.at(row, col); }
+         .    arma_inline elem_type at_alt     (const uword i)                    const { return Q.at_alt(i);    }
+         .    
+         .    arma_inline         ea_type         get_ea() const { return Q.memptr(); }
+         .    arma_inline aligned_ea_type get_aligned_ea() const { return Q;          }
+         .    
+         .    template<typename eT2>
+         .    constexpr bool is_alias(const Mat<eT2>&) const { return false; }
+-- line 575 ----------------------------------------
+-- line 604 ----------------------------------------
+         .    arma_aligned const Mat<elem_type> Q;
+         .    
+         .    inline explicit Proxy(const Glue<T1, T2, glue_type>& A)
+         .      : Q(A)
+         .      {
+         .      arma_extra_debug_sigprint();
+         .      }
+         .  
+       800    arma_inline uword get_n_rows() const { return is_row ? 1 : Q.n_rows; }
+         .    arma_inline uword get_n_cols() const { return is_col ? 1 : Q.n_cols; }
+       808    arma_inline uword get_n_elem() const { return Q.n_elem;              }
+         .    
+         .    arma_inline elem_type operator[] (const uword i)                    const { return Q[i];           }
+         .    arma_inline elem_type at         (const uword row, const uword col) const { return Q.at(row, col); }
+         .    arma_inline elem_type at_alt     (const uword i)                    const { return Q.at_alt(i);    }
+         .    
+         .    arma_inline         ea_type         get_ea() const { return Q.memptr(); }
+         .    arma_inline aligned_ea_type get_aligned_ea() const { return Q;          }
+         .    
+-- line 622 ----------------------------------------
+-- line 696 ----------------------------------------
+         .    static constexpr bool has_subview = false;
+         .    
+         .    static constexpr bool is_row  = mtGlue<out_eT, T1, T2, glue_type>::is_row;
+         .    static constexpr bool is_col  = mtGlue<out_eT, T1, T2, glue_type>::is_col;
+         .    static constexpr bool is_xvec = mtGlue<out_eT, T1, T2, glue_type>::is_xvec;
+         .    
+         .    arma_aligned const Mat<out_eT> Q;
+         .    
+     9,600    inline explicit Proxy(const mtGlue<out_eT, T1, T2, glue_type>& A)
+         .      : Q(A)
+         .      {
+         .      arma_extra_debug_sigprint();
+     7,200      }
+         .    
+         .    arma_inline uword get_n_rows() const { return is_row ? 1 : Q.n_rows; }
+         .    arma_inline uword get_n_cols() const { return is_col ? 1 : Q.n_cols; }
+       800    arma_inline uword get_n_elem() const { return Q.n_elem;              }
+         .    
+         .    arma_inline elem_type operator[] (const uword i)                    const { return Q[i];          }
+         .    arma_inline elem_type at         (const uword row, const uword col) const { return Q.at(row,col); }
+         .    arma_inline elem_type at_alt     (const uword i)                    const { return Q.at_alt(i);   }
+         .    
+         .    arma_inline         ea_type         get_ea() const { return Q.memptr(); }
+         .    arma_inline aligned_ea_type get_aligned_ea() const { return Q;          }
+         .    
+-- line 720 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/Rmath.h
+--------------------------------------------------------------------------------
+Ir         
+
+-- line 22 ----------------------------------------
+         .  #ifndef Rcpp_Rmath_h
+         .  #define Rcpp_Rmath_h
+         .  
+         .  namespace R {
+         .  
+         .      // see R's Rmath.h as well as Writing R Extension
+         .  
+         .      /* Random Number Generators */
+   504,800      inline double norm_rand(void) 	{ return ::norm_rand(); }
+   788,697  => ???:0x000000000b6e6630 (3,200x)
+ 2,009,208      inline double unif_rand(void)	{ return ::unif_rand(); }
+     2,852  => ???:0x000000000b6e5630 (62x)
+         .      inline double exp_rand(void)	{ return ::exp_rand(); }
+         .  
+         .      /* Normal Distribution */
+24,005,600      inline double dnorm(double x, double mu, double sigma, int lg)              { return ::Rf_dnorm4(x, mu, sigma, lg); }
+    20,800  => ???:0x000000000b6e67d0 (200x)
+         .      inline double pnorm(double x, double mu, double sigma, int lt, int lg)      { return ::Rf_pnorm5(x, mu, sigma, lt, lg); }
+         .      inline double qnorm(double p, double mu, double sigma, int lt, int lg)      { return ::Rf_qnorm5(p, mu, sigma, lt, lg); }
+     4,300      inline double rnorm(double mu, double sigma)                                { return ::Rf_rnorm(mu, sigma); }
+    24,237  => ???:0x000000000b6e6240 (100x)
+         .      inline void	pnorm_both(double x, double *cum, double *ccum, int lt, int lg) { return ::Rf_pnorm_both(x, cum, ccum, lt, lg); }
+         .  
+         .      /* Uniform Distribution */
+         .      inline double dunif(double x, double a, double b, int lg)		{ return ::Rf_dunif(x, a, b, lg); }
+         .      inline double punif(double x, double a, double b, int lt, int lg)   { return ::Rf_punif(x, a, b, lt, lg); }
+         .      inline double qunif(double p, double a, double b, int lt, int lg)   { return ::Rf_qunif(p, a, b, lt, lg); }
+         .      inline double runif(double a, double b)                             { return ::Rf_runif(a, b); }
+         .  
+         .      /* Gamma Distribution */
+         .      inline double dgamma(double x, double shp, double scl, int lg)	   { return ::Rf_dgamma(x, shp, scl, lg); }
+ 5,000,000      inline double pgamma(double x, double alp, double scl, int lt, int lg) { return ::Rf_pgamma(x, alp, scl, lt, lg); }
+934,843,926  => ???:0x000000000b6e5d20 (1,000,000x)
+29,880,000      inline double qgamma(double p, double alp, double scl, int lt, int lg) { return ::Rf_qgamma(p, alp, scl, lt, lg); }
+22,399,550,087  => ???:0x000000000b6e5e30 (4,980,000x)
+ 2,500,000      inline double rgamma(double a, double scl)                             { return ::Rf_rgamma(a, scl); }
+168,958,849  => ???:0x000000000b6e5800 (500,000x)
+         .  
+         .      inline double log1pmx(double x)                  { return ::Rf_log1pmx(x); }
+         .      inline double log1pexp(double x)                 { return ::log1pexp(x); }  // <-- ../nmath/plogis.c
+         .      inline double lgamma1p(double a)                 { return ::Rf_lgamma1p(a); }
+         .      inline double logspace_add(double lx, double ly) { return ::Rf_logspace_add(lx, ly); }
+         .      inline double logspace_sub(double lx, double ly) { return ::Rf_logspace_sub(lx, ly); }
+         .  
+         .      /* Beta Distribution */
+-- line 59 ----------------------------------------
+-- line 103 ----------------------------------------
+         .  
+         .      /* Cauchy Distribution */
+         .      inline double dcauchy(double x, double lc, double sl, int lg)		{ return ::Rf_dcauchy(x, lc, sl, lg); }
+         .      inline double pcauchy(double x, double lc, double sl, int lt, int lg)	{ return ::Rf_pcauchy(x, lc, sl, lt, lg); }
+         .      inline double qcauchy(double p, double lc, double sl, int lt, int lg)	{ return ::Rf_qcauchy(p, lc, sl, lt, lg); }
+         .      inline double rcauchy(double lc, double sl)					{ return ::Rf_rcauchy(lc, sl); }
+         .  
+         .      /* Exponential Distribution */
+     4,800      inline double dexp(double x, double sl, int lg)		{ return ::Rf_dexp(x, sl, lg); }
+    15,800  => ???:0x000000000b6e5dc0 (200x)
+         .      inline double pexp(double x, double sl, int lt, int lg)	{ return ::Rf_pexp(x, sl, lt, lg); }
+         .      inline double qexp(double p, double sl, int lt, int lg)	{ return ::Rf_qexp(p, sl, lt, lg); }
+         .      inline double rexp(double sl)				{ return ::Rf_rexp(sl); }
+         .  
+         .      /* Geometric Distribution */
+         .      inline double dgeom(double x, double p, int lg)		{ return ::Rf_dgeom(x, p, lg); }
+         .      inline double pgeom(double x, double p, int lt, int lg)	{ return ::Rf_pgeom(x, p, lt, lg); }
+         .      inline double qgeom(double p, double pb, int lt, int lg)	{ return ::Rf_qgeom(p, pb, lt, lg); }
+-- line 119 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/vector/Matrix.h
+--------------------------------------------------------------------------------
+Ir        
+
+-- line 45 ----------------------------------------
+        .      typedef typename VECTOR::const_iterator const_iterator ;
+        .      typedef typename VECTOR::converter_type converter_type ;
+        .      typedef typename VECTOR::stored_type stored_type ;
+        .      typedef typename VECTOR::Proxy Proxy ;
+        .      typedef typename VECTOR::const_Proxy const_Proxy ;
+        .  
+        .      Matrix() : VECTOR(Dimension(0, 0)), nrows(0) {}
+        .  
+       14      Matrix(SEXP x) : VECTOR(x), nrows( VECTOR::dims()[0] ) {}
+        .  
+       28      Matrix( const Dimension& dims) : VECTOR( Rf_allocMatrix( RTYPE, dims[0], dims[1] ) ), nrows(dims[0]) {
+    4,384  => ???:0x000000000b6e5600 (4x)
+        .          if( dims.size() != 2 ) throw not_a_matrix();
+        .          VECTOR::init() ;
+        .      }
+      120      Matrix( const int& nrows_, const int& ncols) : VECTOR( Dimension( nrows_, ncols ) ),
+       16        nrows(nrows_)
+       88      {}
+        .  
+        .      template <typename Iterator>
+        .      Matrix( const int& nrows_, const int& ncols, Iterator start ) :
+        .          VECTOR( start, start + (static_cast<R_xlen_t>(nrows_)*ncols) ),
+        .          nrows(nrows_)
+        .      {
+        .          VECTOR::attr( "dim" ) = Dimension( nrows, ncols ) ;
+        .      }
+        .  
+        .      Matrix( const int& n) : VECTOR( Dimension( n, n ) ), nrows(n) {}
+        .  
+        .  
+       12      Matrix( const Matrix& other) : VECTOR( other.get__() ), nrows(other.nrows) {}
+        .  
+        .      template <bool NA, typename MAT>
+        .      Matrix( const MatrixBase<RTYPE,NA,MAT>& other ) : VECTOR( Rf_allocMatrix( RTYPE, other.nrow(), other.ncol() ) ), nrows(other.nrow()) {
+        .          import_matrix_expression<NA,MAT>( other, nrows, ncol() ) ;
+        .      }
+        .  
+        .      Matrix( const SubMatrix<RTYPE>& ) ;
+        .  
+        .      Matrix& operator=(const Matrix& other) {
+        .          SEXP x = other.get__() ;
+       16          if( ! ::Rf_isMatrix(x) ) throw not_a_matrix();
+      532  => ???:0x000000000b6e5820 (4x)
+        .          VECTOR::set__( x ) ;
+        8          nrows = other.nrows ;
+        .          return *this ;
+        .      }
+        .      Matrix& operator=( const SubMatrix<RTYPE>& ) ;
+        .  
+        .      explicit Matrix( const no_init_matrix& obj) : VECTOR(Rf_allocMatrix(RTYPE, obj.nrow(), obj.ncol())), nrows(obj.nrow()) {}
+        .  
+        .      inline int ncol() const {
+        .          return VECTOR::dims()[1];
+        .      }
+        .      inline int nrow() const {
+        4          return nrows ;
+        .      }
+        .      inline int cols() const {
+        .          return VECTOR::dims()[1];
+        .      }
+        .      inline int rows() const {
+        .          return nrows ;
+        .      }
+        .  
+-- line 106 ----------------------------------------
+-- line 150 ----------------------------------------
+        .  
+        .      inline Row operator()( int i, internal::NamedPlaceHolder ) {
+        .        return Row( *this, i ) ;
+        .      }
+        .      inline ConstRow operator()( int i, internal::NamedPlaceHolder ) const {
+        .        return ConstRow( *this, i ) ;
+        .      }
+        .      inline Column operator()( internal::NamedPlaceHolder, int i ) {
+        4        return Column( *this, i ) ;
+      268  => ???:0x000000000b6e5bb0 (1x)
+        .      }
+        .      inline ConstColumn operator()( internal::NamedPlaceHolder, int i ) const {
+        .        return ConstColumn( *this, i ) ;
+        .      }
+        .      inline Sub operator()( const Range& row_range, const Range& col_range) {
+        .        return Sub( const_cast<Matrix&>(*this), row_range, col_range ) ;
+        .      }
+        .      inline Sub operator()( internal::NamedPlaceHolder, const Range& col_range) {
+        .        return Sub( const_cast<Matrix&>(*this), Range(0,nrow()-1) , col_range ) ;
+        .      }
+        .      inline Sub operator()( const Range& row_range, internal::NamedPlaceHolder ) {
+        .        return Sub( const_cast<Matrix&>(*this), row_range, Range(0,ncol()-1) ) ;
+        .      }
+        .  
+        .  private:
+    1,600      inline R_xlen_t offset(const int i, const int j) const { return i + static_cast<R_xlen_t>(nrows) * j ; }
+        .  
+        .      template <typename U>
+        .      void fill_diag__dispatch( traits::false_type, const U& u) {
+        .          Shield<SEXP> elem( converter_type::get( u ) );
+        .  
+        .          R_xlen_t bounds = std::min(Matrix::nrow(), Matrix::ncol());
+        .          for (R_xlen_t i = 0; i < bounds; ++i) {
+        .              (*this)(i, i) = elem;
+-- line 182 ----------------------------------------
+-- line 398 ----------------------------------------
+        .  
+        .          s << std::endl;
+        .      }
+        .  
+        .      return s;
+        .  }
+        .  
+        .  template<int RTYPE, template <class> class StoragePolicy >
+       40  Matrix<RTYPE, StoragePolicy> tranpose_impl(const Matrix<RTYPE, StoragePolicy> & x) {
+        .      typedef Matrix<RTYPE, StoragePolicy> MATRIX;
+        .      typedef Vector<RTYPE, StoragePolicy> VECTOR;
+        .  
+       36      Vector<INTSXP, StoragePolicy> dims = ::Rf_getAttrib(x, R_DimSymbol);
+    1,524  => ???:0x000000000b6e57c0 (4x)
+      308  => ???:0x000000000b6e6680 (4x)
+        8      int nrow = dims[0], ncol = dims[1];
+        .      MATRIX r(Dimension(ncol, nrow)); 	// new Matrix with reversed dimension
+       24      R_xlen_t len = XLENGTH(x), len2 = XLENGTH(x)-1;
+      120  => ???:0x000000000b6e63d0 (8x)
+        .  
+        .      // similar approach as in R: fill by in column, "accessing row-wise"
+       12      VECTOR s = VECTOR(r.get__());
+    1,604  => ???:0x000000000b6e6980 (4x)
+4,002,020      for (R_xlen_t i = 0, j = 0; i < len; i++, j += nrow) {
+4,002,000          if (j > len2) j -= len2;
+2,001,000          s[i] = x[j];
+        .      }
+        .  
+        .      // there must be a simpler, more C++-ish way for this ...
+       20      SEXP dimNames = Rf_getAttrib(x, R_DimNamesSymbol);
+      284  => ???:0x000000000b6e6680 (4x)
+       16      if (!Rf_isNull(dimNames)) {
+       28  => ???:0x000000000b6e63e0 (4x)
+        .          // do we need dimnamesnames ?
+        .          Shield<SEXP> newDimNames(Rf_allocVector(VECSXP, 2));
+        .          SET_VECTOR_ELT(newDimNames, 0, VECTOR_ELT(dimNames, 1));
+        .          SET_VECTOR_ELT(newDimNames, 1, VECTOR_ELT(dimNames, 0));
+        .          Rf_setAttrib(r, R_DimNamesSymbol, newDimNames);
+        .      }
+        .      return r;
+       48  }
+        .  
+        .  template<template <class> class StoragePolicy>
+        .  Matrix<REALSXP, StoragePolicy> transpose(const Matrix<REALSXP, StoragePolicy> & x) {
+       13      return tranpose_impl<REALSXP, StoragePolicy>(x);
+18,021,077  => ???:0x000000000b6e5580 (4x)
+        .  }
+        .  
+        .  template<template <class> class StoragePolicy>
+        .  Matrix<INTSXP, StoragePolicy> transpose(const Matrix<INTSXP, StoragePolicy> & x) {
+        .      return tranpose_impl<INTSXP, StoragePolicy>(x);
+        .  }
+        .  
+        .  template<template <class> class StoragePolicy>
+-- line 444 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/eop_core_meat.hpp
+--------------------------------------------------------------------------------
+Ir         
+
+-- line 263 ----------------------------------------
+         .      if(use_mp && mp_gate<eT>::eval(n_elem))
+         .        {
+         .        typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .        
+         .        arma_applier_1_mp(=);
+         .        }
+         .      else
+         .        {
+       802        if(memory::is_aligned(out_mem))
+         .          {
+         .          memory::mark_as_aligned(out_mem);
+         .          
+       802          if(x.P.is_aligned())
+         .            {
+         .            typename Proxy<T1>::aligned_ea_type P = x.P.get_aligned_ea();
+         .            
+ 9,526,282            arma_applier_1a(=);
+         .            }
+         .          else
+         .            {
+         .            typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .            
+     1,505            arma_applier_1u(=);
+         .            }
+         .          }
+         .        else
+         .          {
+         .          typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .          
+         .          arma_applier_1u(=);
+         .          }
+-- line 293 ----------------------------------------
+-- line 341 ----------------------------------------
+         .      if(use_mp && mp_gate<eT>::eval(n_elem))
+         .        {
+         .        typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .        
+         .        arma_applier_1_mp(+=);
+         .        }
+         .      else
+         .        {
+        40        if(memory::is_aligned(out_mem))
+         .          {
+         .          memory::mark_as_aligned(out_mem);
+         .          
+        16          if(x.P.is_aligned())
+         .            {
+         .            typename Proxy<T1>::aligned_ea_type P = x.P.get_aligned_ea();
+         .            
+       364            arma_applier_1a(+=);
+         .            }
+         .          else
+         .            {
+         .            typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .            
+         .            arma_applier_1u(+=);
+         .            }
+         .          }
+         .        else
+         .          {
+         .          typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .          
+        48          arma_applier_1u(+=);
+         .          }
+         .        }
+         .      }
+         .    else
+         .      {
+         .      const Proxy<T1>& P = x.P;
+         .      
+         .      if(use_mp && mp_gate<eT>::eval(x.get_n_elem()))
+-- line 378 ----------------------------------------
+-- line 1012 ----------------------------------------
+         .    {
+         .    arma_stop_logic_error("eop_core::process(): unhandled eop_type");
+         .    return eT(0);
+         .    }
+         .  
+         .  
+         .  
+         .  template<> template<typename eT> arma_inline eT
+   757,500  eop_core<eop_scalar_plus      >::process(const eT val, const eT k) { return val + k;                  }
+         .  
+         .  template<> template<typename eT> arma_inline eT
+     2,400  eop_core<eop_scalar_minus_pre >::process(const eT val, const eT k) { return k - val;                  }
+         .  
+         .  template<> template<typename eT> arma_inline eT
+16,999,900  eop_core<eop_scalar_minus_post>::process(const eT val, const eT k) { return val - k;                  }
+         .  
+         .  template<> template<typename eT> arma_inline eT
+ 2,628,370  eop_core<eop_scalar_times     >::process(const eT val, const eT k) { return val * k;                  }
+         .  
+         .  template<> template<typename eT> arma_inline eT
+   750,080  eop_core<eop_scalar_div_pre   >::process(const eT val, const eT k) { return k / val;                  }
+         .  
+         .  template<> template<typename eT> arma_inline eT
+ 4,501,064  eop_core<eop_scalar_div_post  >::process(const eT val, const eT k) { return val / k;                  }
+         .  
+         .  template<> template<typename eT> arma_inline eT
+   252,510  eop_core<eop_square           >::process(const eT val, const eT  ) { return val*val;                  }
+         .  
+         .  template<> template<typename eT> arma_inline eT
+         .  eop_core<eop_neg              >::process(const eT val, const eT  ) { return eop_aux::neg(val);        }
+         .  
+         .  template<> template<typename eT> arma_inline eT
+         .  eop_core<eop_sqrt             >::process(const eT val, const eT  ) { return eop_aux::sqrt(val);       }
+         .  
+         .  template<> template<typename eT> arma_inline eT
+-- line 1046 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /usr/include/c++/10/bits/stl_numeric.h
+--------------------------------------------------------------------------------
+Ir         
+
+-- line 132 ----------------------------------------
+         .      _GLIBCXX20_CONSTEXPR
+         .      inline _Tp
+         .      accumulate(_InputIterator __first, _InputIterator __last, _Tp __init)
+         .      {
+         .        // concept requirements
+         .        __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+         .        __glibcxx_requires_valid_range(__first, __last);
+         .  
+ 2,010,000        for (; __first != __last; ++__first)
+ 2,999,000  	__init = _GLIBCXX_MOVE_IF_20(__init) + *__first;
+         .        return __init;
+         .      }
+         .  
+         .    /**
+         .     *  @brief  Accumulate values in a range with operation.
+         .     *
+         .     *  Accumulates the values in the range `[first,last)` using the function
+         .     *  object `__binary_op`.  The initial value is `__init`.  The values are
+-- line 149 ----------------------------------------
+-- line 161 ----------------------------------------
+         .      accumulate(_InputIterator __first, _InputIterator __last, _Tp __init,
+         .  	       _BinaryOperation __binary_op)
+         .      {
+         .        // concept requirements
+         .        __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+         .        __glibcxx_requires_valid_range(__first, __last);
+         .  
+         .        for (; __first != __last; ++__first)
+         8  	__init = __binary_op(_GLIBCXX_MOVE_IF_20(__init), *__first);
+         .        return __init;
+         .      }
+         .  
+         .    /**
+         .     *  @brief  Compute inner product of two ranges.
+         .     *
+         .     *  Starting with an initial value of @p __init, multiplies successive
+         .     *  elements from the two ranges and adds each product into the accumulated
+-- line 177 ----------------------------------------
+-- line 190 ----------------------------------------
+         .      inner_product(_InputIterator1 __first1, _InputIterator1 __last1,
+         .  		  _InputIterator2 __first2, _Tp __init)
+         .      {
+         .        // concept requirements
+         .        __glibcxx_function_requires(_InputIteratorConcept<_InputIterator1>)
+         .        __glibcxx_function_requires(_InputIteratorConcept<_InputIterator2>)
+         .        __glibcxx_requires_valid_range(__first1, __last1);
+         .  
+ 5,012,000        for (; __first1 != __last1; ++__first1, (void)++__first2)
+11,498,000  	__init = _GLIBCXX_MOVE_IF_20(__init) + (*__first1 * *__first2);
+         .        return __init;
+         .      }
+         .  
+         .    /**
+         .     *  @brief  Compute inner product of two ranges.
+         .     *
+         .     *  Starting with an initial value of @p __init, applies @p __binary_op2 to
+         .     *  successive elements from the two ranges and accumulates each result into
+-- line 207 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /usr/include/c++/10/bits/stl_algobase.h
+--------------------------------------------------------------------------------
+Ir        
+
+-- line 222 ----------------------------------------
+        .     *
+        .     *  This is the simple classic generic implementation.  It will work on
+        .     *  temporary expressions, since they are only evaluated once, unlike a
+        .     *  preprocessor macro.
+        .    */
+        .    template<typename _Tp>
+        .      _GLIBCXX14_CONSTEXPR
+        .      inline const _Tp&
+    1,600      min(const _Tp& __a, const _Tp& __b)
+        .      {
+        .        // concept requirements
+        .        __glibcxx_function_requires(_LessThanComparableConcept<_Tp>)
+        .        //return __b < __a ? __b : __a;
+        .        if (__b < __a)
+        .  	return __b;
+        .        return __a;
+        .      }
+-- line 238 ----------------------------------------
+-- line 416 ----------------------------------------
+        .  	{
+        .  #if __cplusplus >= 201103L
+        .  	  using __assignable = conditional<_IsMove,
+        .  					   is_move_assignable<_Tp>,
+        .  					   is_copy_assignable<_Tp>>;
+        .  	  // trivial types can have deleted assignment
+        .  	  static_assert( __assignable::type::value, "type is not assignable" );
+        .  #endif
+        2  	  const ptrdiff_t _Num = __last - __first;
+       12  	  if (_Num)
+        4  	    __builtin_memmove(__result, __first, sizeof(_Tp) * _Num);
+       14  => ???:0x000000000b6e65e0 (1x)
+       12  	  return __result + _Num;
+        .  	}
+        .      };
+        .  
+        .    // Helpers for streambuf iterators (either istream or ostream).
+        .    // NB: avoid including <iosfwd>, relatively large.
+        .    template<typename _CharT>
+        .      struct char_traits;
+        .  
+-- line 435 ----------------------------------------
+-- line 864 ----------------------------------------
+        .    template<typename _ForwardIterator, typename _Tp>
+        .      _GLIBCXX20_CONSTEXPR
+        .      inline typename
+        .      __gnu_cxx::__enable_if<__is_scalar<_Tp>::__value, void>::__type
+        .      __fill_a1(_ForwardIterator __first, _ForwardIterator __last,
+        .  	      const _Tp& __value)
+        .      {
+        .        const _Tp __tmp = __value;
+       45        for (; __first != __last; ++__first)
+       24  	*__first = __tmp;
+       65  => ???:0x000000000b6e5ac0 (1x)
+        .      }
+        .  
+        .    // Specialization: for char types we can use memset.
+        .    template<typename _Tp>
+        .      _GLIBCXX20_CONSTEXPR
+        .      inline typename
+        .      __gnu_cxx::__enable_if<__is_byte<_Tp>::__value, void>::__type
+        .      __fill_a1(_Tp* __first, _Tp* __last, const _Tp& __c)
+-- line 881 ----------------------------------------
+-- line 1307 ----------------------------------------
+        .      _GLIBCXX20_CONSTEXPR
+        .      _ForwardIterator
+        .      __lower_bound(_ForwardIterator __first, _ForwardIterator __last,
+        .  		  const _Tp& __val, _Compare __comp)
+        .      {
+        .        typedef typename iterator_traits<_ForwardIterator>::difference_type
+        .  	_DistanceType;
+        .  
+  500,000        _DistanceType __len = std::distance(__first, __last);
+        .  
+4,667,120        while (__len > 0)
+        .  	{
+5,855,300  	  _DistanceType __half = __len >> 1;
+        .  	  _ForwardIterator __middle = __first;
+        .  	  std::advance(__middle, __half);
+3,667,120  	  if (__comp(__middle, __val))
+        .  	    {
+        .  	      __first = __middle;
+  739,520  	      ++__first;
+1,479,040  	      __len = __len - __half - 1;
+        .  	    }
+        .  	  else
+        .  	    __len = __half;
+        .  	}
+        .        return __first;
+        .      }
+        .  
+        .    /**
+-- line 1334 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /usr/include/c++/10/cmath
+--------------------------------------------------------------------------------
+Ir        
+
+-- line 407 ----------------------------------------
+        .    pow(long double __x, int __n)
+        .    { return __builtin_powil(__x, __n); }
+        .  #endif
+        .  #endif
+        .  
+        .    template<typename _Tp, typename _Up>
+        .      inline _GLIBCXX_CONSTEXPR
+        .      typename __gnu_cxx::__promote_2<_Tp, _Up>::__type
+1,000,000      pow(_Tp __x, _Up __y)
+        .      {
+        .        typedef typename __gnu_cxx::__promote_2<_Tp, _Up>::__type __type;
+6,520,858        return pow(__type(__x), __type(__y));
+    1,024  => ???:0x000000000b6e66e0 (8x)
+        .      }
+        .  
+        .    using ::sin;
+        .  
+        .  #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+        .    inline _GLIBCXX_CONSTEXPR float
+        .    sin(float __x)
+        .    { return __builtin_sinf(__x); }
+-- line 426 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/eop_aux.hpp
+--------------------------------------------------------------------------------
+Ir         
+
+-- line 55 ----------------------------------------
+         .    template<typename eT> arma_inline static typename arma_integral_only<eT>::result exp   (const eT x) { return eT( std::exp  (double(x)) ); }
+         .    template<typename eT> arma_inline static typename arma_integral_only<eT>::result cos   (const eT x) { return eT( std::cos  (double(x)) ); }
+         .    template<typename eT> arma_inline static typename arma_integral_only<eT>::result sin   (const eT x) { return eT( std::sin  (double(x)) ); }
+         .    template<typename eT> arma_inline static typename arma_integral_only<eT>::result tan   (const eT x) { return eT( std::tan  (double(x)) ); }
+         .    template<typename eT> arma_inline static typename arma_integral_only<eT>::result cosh  (const eT x) { return eT( std::cosh (double(x)) ); }
+         .    template<typename eT> arma_inline static typename arma_integral_only<eT>::result sinh  (const eT x) { return eT( std::sinh (double(x)) ); }
+         .    template<typename eT> arma_inline static typename arma_integral_only<eT>::result tanh  (const eT x) { return eT( std::tanh (double(x)) ); }
+         .    
+   505,040    template<typename eT> arma_inline static typename arma_real_or_cx_only<eT>::result sqrt  (const eT x) { return std::sqrt (x); }
+         .    template<typename eT> arma_inline static typename arma_real_or_cx_only<eT>::result log10 (const eT x) { return std::log10(x); }
+ 1,881,306    template<typename eT> arma_inline static typename arma_real_or_cx_only<eT>::result log   (const eT x) { return std::log  (x); }
+16,750,000  => ???:0x000000000b6e5d90 (250,000x)
+42,375,627    template<typename eT> arma_inline static typename arma_real_or_cx_only<eT>::result exp   (const eT x) { return std::exp  (x); }
+27,000,000  => ???:0x000000000b6e5bf0 (500,000x)
+         .    template<typename eT> arma_inline static typename arma_real_or_cx_only<eT>::result cos   (const eT x) { return std::cos  (x); }
+         .    template<typename eT> arma_inline static typename arma_real_or_cx_only<eT>::result sin   (const eT x) { return std::sin  (x); }
+         .    template<typename eT> arma_inline static typename arma_real_or_cx_only<eT>::result tan   (const eT x) { return std::tan  (x); }
+         .    template<typename eT> arma_inline static typename arma_real_or_cx_only<eT>::result cosh  (const eT x) { return std::cosh (x); }
+         .    template<typename eT> arma_inline static typename arma_real_or_cx_only<eT>::result sinh  (const eT x) { return std::sinh (x); }
+         .    template<typename eT> arma_inline static typename arma_real_or_cx_only<eT>::result tanh  (const eT x) { return std::tanh (x); }
+         .    
+         .    template<typename eT> arma_inline static typename arma_unsigned_integral_only<eT>::result neg (const eT x) { return  x; }
+-- line 74 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/vector/Vector.h
+--------------------------------------------------------------------------------
+Ir        
+
+-- line 64 ----------------------------------------
+        .      Vector( const Vector& other){
+        .          Storage::copy__(other) ;
+        .      }
+        .  
+        .      Vector& operator=(const Vector& rhs) {
+        .          return Storage::copy__(rhs) ;
+        .      }
+        .  
+      104      Vector( SEXP x ) {
+        .          Rcpp::Shield<SEXP> safe(x);
+       84          Storage::set__( r_cast<RTYPE>(safe) ) ;
+      512  => ???:0x000000000b6e62e0 (8x)
+       88      }
+        .  
+        .      template <typename Proxy>
+        .      Vector( const GenericProxy<Proxy>& proxy ){
+        .          Rcpp::Shield<SEXP> safe(proxy.get());
+        .          Storage::set__( r_cast<RTYPE>(safe) ) ;
+        .      }
+        .  
+        .      explicit Vector( const no_init_vector& obj) {
+-- line 83 ----------------------------------------
+-- line 117 ----------------------------------------
+        .          Storage::set__( Rf_allocVector( RTYPE, siz) ) ;
+        .          std::generate( begin(), end(), gen );
+        .      }
+        .  
+        .      // Add template class T and then restict T to arithmetic.
+        .      template <typename T>
+        .      Vector(T size,
+        .          typename Rcpp::traits::enable_if<traits::is_arithmetic<T>::value, void>::type* = 0) {
+       12          Storage::set__( Rf_allocVector( RTYPE, size) ) ;
+   50,943  => ???:0x000000000b6e6420 (3x)
+        .          init() ;
+        .      }
+        .  
+        5      Vector( const int& size ) {
+       18          Storage::set__( Rf_allocVector( RTYPE, size) ) ;
+      196  => ???:0x000000000b6e6420 (1x)
+        .          init() ;
+        3      }
+        .  
+        .      Vector( const Dimension& dims) {
+       16          Storage::set__( Rf_allocVector( RTYPE, dims.prod() ) ) ;
+    2,213  => ???:0x000000000b6e6420 (8x)
+        .          init() ;
+        .          if( dims.size() > 1 ){
+       24              AttributeProxyPolicy<Vector>::attr( "dim" ) = dims;
+      640  => /usr/include/c++/10/bits/basic_string.h:std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(char const*, std::allocator<char> const&) [clone .constprop.0] (8x)
+        .          }
+        .      }
+        .  
+        .      // Enable construction from bool for LogicalVectors
+        .      // SFINAE only work for template. Add template class T and then restict T to
+        .      // bool.
+        .      template <typename T>
+        .      Vector(T value,
+-- line 146 ----------------------------------------
+-- line 262 ----------------------------------------
+        .          return internal::ListInitialization<iterator,init_type>( start + 1 ) ; ;
+        .      }
+        .      #endif
+        .  
+        .      /**
+        .       * the length of the vector, uses Rf_xlength
+        .       */
+        .      inline R_xlen_t length() const {
+        8          return ::Rf_xlength( Storage::get__() ) ;
+       54  => ???:0x000000000b6e6100 (3x)
+        .      }
+        .  
+        .      /**
+        .       * alias of length
+        .       */
+        .      inline R_xlen_t size() const {
+      288          return ::Rf_xlength( Storage::get__() ) ;
+    1,656  => ???:0x000000000b6e6100 (92x)
+        .      }
+        .  
+        .      /**
+        .       * offset based on the dimensions of this vector
+        .       */
+        .      R_xlen_t offset(const int& i, const int& j) const {
+2,000,000          if( !::Rf_isMatrix(Storage::get__()) ) throw not_a_matrix() ;
+66,500,000  => ???:0x000000000b6e5820 (500,000x)
+        .  
+        .          /* we need to extract the dimensions */
+        .          const int* dim = dims() ;
+1,000,000          const int nrow = dim[0] ;
+1,000,000          const int ncol = dim[1] ;
+5,000,000          if(i < 0|| i >= nrow || j < 0 || j >= ncol )  {
+        .              const char* fmt = "Location index is out of bounds: "
+        .                                "[row index=%i; row extent=%i; "
+        .                                "column index=%i; column extent=%i].";
+        .              throw index_out_of_bounds(fmt, i, nrow, j, ncol);
+        .          }
+1,000,000          return i + static_cast<R_xlen_t>(nrow)*j ;
+        .      }
+        .  
+        .      /**
+        .       * one dimensional offset doing bounds checking to ensure
+        .       * it is valid
+        .       */
+        .      R_xlen_t offset(const R_xlen_t& i) const {											// #nocov start
+       20          if(i < 0 || i >= ::Rf_xlength(Storage::get__()) ) {
+       90  => ???:0x000000000b6e6100 (5x)
+        .              const char* fmt = "Index out of bounds: [index=%i; extent=%i].";
+        .              throw index_out_of_bounds(fmt, i, ::Rf_xlength(Storage::get__()) ) ;
+        .          }
+        .          return i ;																		// #nocov end
+        .      }
+        .  
+        .      R_xlen_t offset(const std::string& name) const {
+      460          SEXP names = RCPP_GET_NAMES( Storage::get__() ) ;
+   16,834  => ???:0x000000000b6e6680 (92x)
+      368          if( Rf_isNull(names) ) {
+      644  => ???:0x000000000b6e63e0 (92x)
+        .              throw index_out_of_bounds("Object was created without names.");
+        .          }
+        .  
+        .          R_xlen_t n=size() ;
+    1,856          for( R_xlen_t i=0; i<n; ++i){
+    5,880              if( ! name.compare( CHAR(STRING_ELT(names, i)) ) ){
+   45,048  => ???:0x000000000b6e5680 (588x)
+    7,056  => ???:0x000000000b6e5b90 (588x)
+    5,292  => ???:0x000000000b6e62a0 (588x)
+        .                  return i ;
+        .              }
+        .          }
+        .  
+        .          const char* fmt = "Index out of bounds: [index='%s'].";
+        .          throw index_out_of_bounds(fmt, name);
+        .          return -1 ; /* -Wall */
+        .      }
+        .  
+        .      template <typename U>
+        .      void fill( const U& u){
+        .          fill__dispatch( typename traits::is_trivial<RTYPE>::type(), u ) ;
+        .      }
+        .  
+        .      inline iterator begin() { return cache.get() ; }
+        3      inline iterator end() { return cache.get() + size() ; }
+        .      inline const_iterator begin() const{ return cache.get_const() ; }
+        .      inline const_iterator end() const{ return cache.get_const() + size() ; }
+        .      inline const_iterator cbegin() const{ return cache.get_const() ; }
+        .      inline const_iterator cend() const{ return cache.get_const() + size() ; }
+        .  
+        .      inline Proxy operator[]( R_xlen_t i ){ return cache.ref(i) ; }
+        .      inline const_Proxy operator[]( R_xlen_t i ) const { return cache.ref(i) ; }
+        .  
+        .      inline Proxy operator()( const size_t& i) {
+        .          return cache.ref( offset(i) ) ;
+        .      }
+        .      inline const_Proxy operator()( const size_t& i) const {
+        5          return cache.ref( offset(i) ) ;
+        .      }
+        .  
+        .      inline Proxy at( const size_t& i) {
+        .         return cache.ref( offset(i) ) ;
+        .      }
+        .      inline const_Proxy at( const size_t& i) const {									// #nocov start
+        .         return cache.ref( offset(i) ) ;
+        .      }																				// #nocov end
+        .  
+        .      inline Proxy operator()( const size_t& i, const size_t& j) {
+1,500,000          return cache.ref( offset(i,j) ) ;
+        .      }
+        .      inline const_Proxy operator()( const size_t& i, const size_t& j) const {
+        .          return cache.ref( offset(i,j) ) ;
+        .      }
+        .  
+        .      inline NameProxy operator[]( const std::string& name ){
+        .          return NameProxy( *this, name ) ;
+        .      }
+-- line 367 ----------------------------------------
+-- line 526 ----------------------------------------
+        .          replace_element__dispatch__isArgument( typename traits::same_type<U,Argument>(), it, names, index, u ) ;
+        .      }
+        .  
+        .      template <typename U>
+        .      static void replace_element__dispatch__isArgument( traits::false_type, iterator it, SEXP names, R_xlen_t index, const U& u){
+        .          RCPP_DEBUG_2( "  Vector::replace_element__dispatch<%s>(true, index= %d) ", DEMANGLE(U), index ) ;
+        .  
+        .          *it = converter_type::get(u.object ) ;
+      360          SET_STRING_ELT( names, index, ::Rf_mkChar( u.name.c_str() ) ) ;
+    1,766  => ???:0x000000000b6e5d00 (7x)
+      364  => ???:0x000000000b6e5a20 (7x)
+        .      }
+        .  
+        .      template <typename U>
+        .      static void replace_element__dispatch__isArgument( traits::true_type, iterator it, SEXP names, R_xlen_t index, const U& u){
+        .          RCPP_DEBUG_2( "  Vector::replace_element__dispatch<%s>(true, index= %d) ", DEMANGLE(U), index ) ;
+        .  
+        .          *it = R_MissingArg ;
+        .          SET_STRING_ELT( names, index, ::Rf_mkChar( u.name.c_str() ) ) ;
+-- line 542 ----------------------------------------
+-- line 606 ----------------------------------------
+        .          std::stringstream ss;
+        .          ss << "no name '" << name << "' found";
+        .          stop(ss.str());
+        .          return -1;
+        .      }
+        .  
+        .  protected:
+        .      inline int* dims() const {
+2,000,111          if( !::Rf_isMatrix(Storage::get__()) ) throw not_a_matrix() ;
+    1,596  => ???:0x000000000b6e5820 (12x)
+3,500,156          return INTEGER( ::Rf_getAttrib( Storage::get__(), R_DimSymbol ) ) ;
+      924  => ???:0x000000000b6e6680 (12x)
+      144  => ???:0x000000000b6e63c0 (12x)
+        .      }
+        .      void init(){
+        .          RCPP_DEBUG_2( "VECTOR<%d>::init( SEXP = <%p> )", RTYPE, Storage::get__() )
+        .          internal::r_init_vector<RTYPE>(Storage::get__()) ;
+        .      }
+        .  
+        .  private:
+        .  
+-- line 623 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/op_cumsum_meat.hpp
+--------------------------------------------------------------------------------
+Ir         
+
+-- line 39 ----------------------------------------
+         .        {
+         .        const eT*   X_mem =   X.memptr();
+         .              eT* out_mem = out.memptr();
+         .        
+         .        eT acc = eT(0);
+         .        
+         .        for(uword row=0; row < n_rows; ++row)
+         .          {
+10,500,000          acc += X_mem[row];
+         .          
+         .          out_mem[row] = acc;
+         .          }
+         .        }
+         .      else
+         .        {
+         .        for(uword col=0; col < n_cols; ++col)
+         .          {
+-- line 55 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /usr/include/c++/10/bits/stl_algo.h
+--------------------------------------------------------------------------------
+Ir        
+
+-- line 3835 ----------------------------------------
+        .    template<typename _InputIterator, typename _Function>
+        .      _GLIBCXX20_CONSTEXPR
+        .      _Function
+        .      for_each(_InputIterator __first, _InputIterator __last, _Function __f)
+        .      {
+        .        // concept requirements
+        .        __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+        .        __glibcxx_requires_valid_range(__first, __last);
+  506,920        for (; __first != __last; ++__first)
+        .  	__f(*__first);
+        .        return __f; // N.B. [alg.foreach] says std::move(f) but it's redundant.
+        .      }
+        .  
+        .  #if __cplusplus >= 201703L
+        .    /**
+        .     *  @brief Apply a function to every element of a sequence.
+        .     *  @ingroup non_mutating_algorithms
+-- line 3851 ----------------------------------------
+-- line 4311 ----------------------------------------
+        .      {
+        .        // concept requirements
+        .        __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+        .        __glibcxx_function_requires(_OutputIteratorConcept<_OutputIterator,
+        .  	    // "the type returned by a _UnaryOperation"
+        .  	    __typeof__(__unary_op(*__first))>)
+        .        __glibcxx_requires_valid_range(__first, __last);
+        .  
+7,924,764        for (; __first != __last; ++__first, (void)++__result)
+2,000,002  	*__result = __unary_op(*__first);
+        .        return __result;
+        .      }
+        .  
+        .    /**
+        .     *  @brief Perform an operation on corresponding elements of two sequences.
+        .     *  @ingroup mutating_algorithms
+        .     *  @param  __first1     An input iterator.
+        .     *  @param  __last1      An input iterator.
+-- line 4328 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/fn_accu.hpp
+--------------------------------------------------------------------------------
+Ir         
+
+-- line 69 ----------------------------------------
+         .    else
+         .      {
+         .      #if defined(__FINITE_MATH_ONLY__) && (__FINITE_MATH_ONLY__ > 0)
+         .        {
+         .        if(P.is_aligned())
+         .          {
+         .          typename Proxy<T1>::aligned_ea_type Pea_aligned = P.get_aligned_ea();
+         .          
+15,001,300          for(uword i=0; i<n_elem; ++i)  { val += Pea_aligned.at_alt(i); }
+         .          }
+         .        else
+         .          {
+         .          for(uword i=0; i<n_elem; ++i)  { val += Pea[i]; }
+         .          }
+         .        }
+         .      #else
+         .        {
+-- line 85 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/Mat_meat.hpp
+--------------------------------------------------------------------------------
+Ir        
+
+-- line 15 ----------------------------------------
+        .  
+        .  
+        .  //! \addtogroup Mat
+        .  //! @{
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+      400  Mat<eT>::~Mat()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+   43,305    if(n_alloc > 0)
+        .      {
+        .      arma_extra_debug_print("Mat::destructor: releasing memory");
+    3,125      memory::release( access::rw(mem) );
+        .      }
+        .    
+        .    // try to expose buggy user code that accesses deleted objects
+        .    if(arma_config::debug)  { access::rw(mem) = nullptr; }
+        .    
+        .    arma_type_check(( is_supported_elem_type<eT>::value == false ));
+        .    }
+        .  
+-- line 38 ----------------------------------------
+-- line 42 ----------------------------------------
+        .  inline
+        .  Mat<eT>::Mat()
+        .    : n_rows(0)
+        .    , n_cols(0)
+        .    , n_elem(0)
+        .    , n_alloc(0)
+        .    , vec_state(0)
+        .    , mem_state(0)
+   12,082    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    }
+        .  
+        .  
+        .  
+        .  //! construct the matrix to have user specified dimensions
+        .  template<typename eT>
+        .  inline
+        .  Mat<eT>::Mat(const uword in_n_rows, const uword in_n_cols)
+        .    : n_rows(in_n_rows)
+        .    , n_cols(in_n_cols)
+        1    , n_elem(in_n_rows*in_n_cols)
+        .    , n_alloc()
+        .    , vec_state(0)
+        .    , mem_state(0)
+        4    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+        .    init_cold();
+        .    
+        .    #if (!defined(ARMA_DONT_ZERO_INIT))
+        .      {
+        .      arma_extra_debug_print("Mat::constructor: zeroing memory");
+-- line 75 ----------------------------------------
+-- line 107 ----------------------------------------
+        .  
+        .  //! internal use only
+        .  template<typename eT>
+        .  template<bool do_zeros>
+        .  inline
+        .  Mat<eT>::Mat(const uword in_n_rows, const uword in_n_cols, const arma_initmode_indicator<do_zeros>&)
+        .    : n_rows(in_n_rows)
+        .    , n_cols(in_n_cols)
+       14    , n_elem(in_n_rows*in_n_cols)
+        .    , n_alloc()
+        .    , vec_state(0)
+        .    , mem_state(0)
+       70    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+       42    init_cold();
+      336  => ???:0x000000000b6e6380 (14x)
+        .    
+        .    if(do_zeros)
+        .      {
+        .      arma_extra_debug_print("Mat::constructor: zeroing memory");
+        .      arrayops::fill_zeros(memptr(), n_elem);
+        .      }
+        .    }
+        .  
+-- line 131 ----------------------------------------
+-- line 205 ----------------------------------------
+        .  inline
+        .  Mat<eT>::Mat(const arma_vec_indicator&, const uhword in_vec_state)
+        .    : n_rows( (in_vec_state == 2) ? 1 : 0 )
+        .    , n_cols( (in_vec_state == 1) ? 1 : 0 )
+        .    , n_elem(0)
+        .    , n_alloc(0)
+        .    , vec_state(in_vec_state)
+        .    , mem_state(0)
+   19,322    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    }
+        .  
+        .  
+        .  
+        .  //! constructor used by Row and Col classes
+        .  template<typename eT>
+-- line 221 ----------------------------------------
+-- line 222 ----------------------------------------
+        .  inline
+        .  Mat<eT>::Mat(const arma_vec_indicator&, const uword in_n_rows, const uword in_n_cols, const uhword in_vec_state)
+        .    : n_rows(in_n_rows)
+        .    , n_cols(in_n_cols)
+        .    , n_elem(in_n_rows*in_n_cols)
+        .    , n_alloc()
+        .    , vec_state(in_vec_state)
+        .    , mem_state(0)
+   18,962    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+        .    init_cold();
+        .    }
+        .  
+        .  
+        .  
+-- line 238 ----------------------------------------
+-- line 240 ----------------------------------------
+        .  inline
+        .  Mat<eT>::Mat(const arma_fixed_indicator&, const uword in_n_rows, const uword in_n_cols, const uhword in_vec_state, const eT* in_mem)
+        .    : n_rows    (in_n_rows)
+        .    , n_cols    (in_n_cols)
+        .    , n_elem    (in_n_rows*in_n_cols)
+        .    , n_alloc   (0)
+        .    , vec_state (in_vec_state)
+        .    , mem_state (3)
+2,025,412    , mem       (in_mem)
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+        .  void
+      198  Mat<eT>::init_cold()
+        .    {
+        .    arma_extra_debug_sigprint( arma_str::format("n_rows = %d, n_cols = %d") % n_rows % n_cols );
+        .    
+        .    // ensure that n_elem can hold the result of (n_rows * n_cols)
+        .    
+        .    #if defined(ARMA_64BIT_WORD)
+        .      const char* error_message = "Mat::init(): requested size is too large";
+        .    #else
+-- line 266 ----------------------------------------
+-- line 272 ----------------------------------------
+        .        (
+        .        ( (n_rows > ARMA_MAX_UHWORD) || (n_cols > ARMA_MAX_UHWORD) )
+        .          ? ( (double(n_rows) * double(n_cols)) > double(ARMA_MAX_UWORD) )
+        .          : false
+        .        ),
+        .      error_message
+        .      );
+        .    
+    5,340    if(n_elem <= arma_config::mat_prealloc)
+        .      {
+        .      if(n_elem > 0)  { arma_extra_debug_print("Mat::init(): using local memory"); }
+        .      
+    5,032      access::rw(mem)     = (n_elem == 0) ? nullptr : mem_local;
+       14      access::rw(n_alloc) = 0;
+        .      }
+        .    else
+        .      {
+        .      arma_extra_debug_print("Mat::init(): acquiring memory");
+        .      
+    2,017      access::rw(mem)     = memory::acquire<eT>(n_elem);
+    5,250      access::rw(n_alloc) = n_elem;
+        .      }
+       84    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+        .  void
+   32,208  Mat<eT>::init_warm(uword in_n_rows, uword in_n_cols)
+        .    {
+        .    arma_extra_debug_sigprint( arma_str::format("in_n_rows = %d, in_n_cols = %d") % in_n_rows % in_n_cols );
+        .    
+   22,021    if( (n_rows == in_n_rows) && (n_cols == in_n_cols) )  { return; }
+        .    
+        .    bool  err_state = false;
+        .    char* err_msg   = nullptr;
+        .    
+    1,737    const uhword t_vec_state = vec_state;
+        .    const uhword t_mem_state = mem_state;
+        .    
+        .    arma_debug_set_error( err_state, err_msg, (t_mem_state == 3), "Mat::init(): size is fixed and hence cannot be changed" );
+        .    
+    2,400    if(t_vec_state > 0)
+        .      {
+   14,262      if( (in_n_rows == 0) && (in_n_cols == 0) )
+        .        {
+        .        if(t_vec_state == 1)  { in_n_cols = 1; }
+        .        if(t_vec_state == 2)  { in_n_rows = 1; }
+        .        }
+        .      else
+        .        {
+        .        if(t_vec_state == 1)  { arma_debug_set_error( err_state, err_msg, (in_n_cols != 1), "Mat::init(): requested size is not compatible with column vector layout" ); }
+        .        if(t_vec_state == 2)  { arma_debug_set_error( err_state, err_msg, (in_n_rows != 1), "Mat::init(): requested size is not compatible with row vector layout"    ); }
+-- line 325 ----------------------------------------
+-- line 343 ----------------------------------------
+        .          ? ( (double(in_n_rows) * double(in_n_cols)) > double(ARMA_MAX_UWORD) )
+        .          : false
+        .        ),
+        .      error_message
+        .      );
+        .    
+        .    arma_debug_check(err_state, err_msg);
+        .    
+    4,538    const uword old_n_elem = n_elem;
+    3,474    const uword new_n_elem = in_n_rows * in_n_cols;
+        .    
+   15,492    if(old_n_elem == new_n_elem)
+        .      {
+        .      arma_extra_debug_print("Mat::init(): reusing memory");
+        .      access::rw(n_rows) = in_n_rows;
+      400      access::rw(n_cols) = in_n_cols;
+        8      return;
+        .      }
+        .    
+        .    arma_debug_check( (t_mem_state == 2), "Mat::init(): mismatch between size of auxiliary memory and requested size" );
+        .    
+   19,100    if(new_n_elem <= arma_config::mat_prealloc)
+        .      {
+   15,703      if(n_alloc > 0)
+        .        {
+        .        arma_extra_debug_print("Mat::init(): releasing memory");
+      696        memory::release( access::rw(mem) );
+        .        }
+        .      
+        .      if(new_n_elem > 0)  { arma_extra_debug_print("Mat::init(): using local memory"); }
+        .      
+   37,440      access::rw(mem)     = (new_n_elem == 0) ? nullptr : mem_local;
+    8,068      access::rw(n_alloc) = 0;
+        .      }
+        .    else  // condition: new_n_elem > arma_config::mat_prealloc
+        .      {
+      311      if(new_n_elem > n_alloc)
+        .        {
+      208        if(n_alloc > 0)
+        .          {
+        .          arma_extra_debug_print("Mat::init(): releasing memory");
+        .          memory::release( access::rw(mem) );
+        .          
+        .          // in case memory::acquire() throws an exception
+        .          access::rw(mem)     = nullptr;
+        .          access::rw(n_rows)  = 0;
+        .          access::rw(n_cols)  = 0;
+        .          access::rw(n_elem)  = 0;
+        .          access::rw(n_alloc) = 0;
+        .          }
+        .        
+        .        arma_extra_debug_print("Mat::init(): acquiring memory");
+    1,004        access::rw(mem)     = memory::acquire<eT>(new_n_elem);
+    2,004        access::rw(n_alloc) = new_n_elem;
+        .        }
+        .      else // condition: new_n_elem <= n_alloc
+        .        {
+        .        arma_extra_debug_print("Mat::init(): reusing memory");
+        .        }
+        .      }
+        .    
+   16,657    access::rw(n_rows)    = in_n_rows;
+    7,909    access::rw(n_cols)    = in_n_cols;
+   10,246    access::rw(n_elem)    = new_n_elem;
+   18,892    access::rw(mem_state) = 0;
+   24,156    }
+        .  
+        .  
+        .  
+        .  //! create the matrix from a textual description
+        .  template<typename eT>
+        .  inline
+        .  arma_cold
+        .  Mat<eT>::Mat(const char* text)
+-- line 416 ----------------------------------------
+-- line 641 ----------------------------------------
+        .  inline
+        .  Mat<eT>::Mat(const std::initializer_list<eT>& list)
+        .    : n_rows(0)
+        .    , n_cols(0)
+        .    , n_elem(0)
+        .    , n_alloc(0)
+        .    , vec_state(0)
+        .    , mem_state(0)
+      500    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+        .    init(list);
+        .    }
+        .  
+        .  
+        .  
+-- line 657 ----------------------------------------
+-- line 673 ----------------------------------------
+        .  inline
+        .  Mat<eT>::Mat(const std::initializer_list< std::initializer_list<eT> >& list)
+        .    : n_rows(0)
+        .    , n_cols(0)
+        .    , n_elem(0)
+        .    , n_alloc(0)
+        .    , vec_state(0)
+        .    , mem_state(0)
+        4    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+        .    init(list);
+        .    }
+        .  
+        .  
+        .  
+-- line 689 ----------------------------------------
+-- line 746 ----------------------------------------
+        .  
+        .  template<typename eT>
+        .  inline
+        .  Mat<eT>&
+        .  Mat<eT>::operator=(Mat<eT>&& X)
+        .    {
+        .    arma_extra_debug_sigprint(arma_str::format("this = %x   X = %x") % this % &X);
+        .    
+        3    (*this).steal_mem(X);
+       66  => ???:0x000000000b6e67e0 (1x)
+        .    
+        5    if( (X.mem_state == 0) && (X.n_alloc <= arma_config::mat_prealloc) && (this != &X) )
+        .      {
+        .      access::rw(X.n_rows) = 0;
+        .      access::rw(X.n_cols) = 0;
+        .      access::rw(X.n_elem) = 0;
+        .      access::rw(X.mem)    = nullptr;
+        .      }
+        .    
+        .    return *this;
+-- line 764 ----------------------------------------
+-- line 842 ----------------------------------------
+        .    return *this;
+        .    }
+        .  
+        .  
+        .  
+        .  //! construct a matrix from a given matrix
+        .  template<typename eT>
+        .  inline
+      126  Mat<eT>::Mat(const Mat<eT>& in_mat)
+        .    : n_rows(in_mat.n_rows)
+        .    , n_cols(in_mat.n_cols)
+       25    , n_elem(in_mat.n_elem)
+        .    , n_alloc()
+        .    , vec_state(0)
+        .    , mem_state(0)
+      120    , mem()
+        .    {
+        .    arma_extra_debug_sigprint(arma_str::format("this = %x   in_mat = %x") % this % &in_mat);
+        .    
+        .    init_cold();
+        .    
+       38    arrayops::copy( memptr(), in_mat.mem, in_mat.n_elem );
+       42    }
+        .  
+        .  
+        .  
+        .  //! construct a matrix from a given matrix
+        .  template<typename eT>
+        .  inline
+        .  Mat<eT>&
+        .  Mat<eT>::operator=(const Mat<eT>& in_mat)
+        .    {
+        .    arma_extra_debug_sigprint(arma_str::format("this = %x   in_mat = %x") % this % &in_mat);
+        .    
+      284    if(this != &in_mat)
+        .      {
+      982      init_warm(in_mat.n_rows, in_mat.n_cols);
+    5,100  => ???:0x000000000b6e5960 (100x)
+        .      
+      914      arrayops::copy( memptr(), in_mat.mem, in_mat.n_elem );
+        .      }
+        .    
+        .    return *this;
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+-- line 888 ----------------------------------------
+-- line 922 ----------------------------------------
+        .      {
+        .      arma_debug_check( ((x_n_rows != t.n_rows) || (x_n_cols != t.n_cols)), "Mat::init(): size mismatch between fixed size matrix and initialiser list" );
+        .      }
+        .    else
+        .      {
+        .      t.set_size(x_n_rows, x_n_cols);
+        .      }
+        .    
+        1    uword row_num = 0;
+        .    
+        2    auto row_it     = list.begin();
+        .    auto row_it_end = list.end();
+        .    
+       12    for(; row_it != row_it_end; ++row_it)
+        .      {
+        .      uword col_num = 0;
+        .      
+        .      auto col_it     = (*row_it).begin();
+        .      auto col_it_end = (*row_it).end();
+        .      
+       84      for(; col_it != col_it_end; ++col_it)
+        .        {
+       32        t.at(row_num, col_num) = (*col_it);
+       22        ++col_num;
+        .        }
+        .      
+        8      for(uword c=col_num; c < x_n_cols; ++c)
+        .        {
+        .        t.at(row_num, c) = eT(0);
+        .        }
+        .      
+        4      ++row_num;
+        .      }
+        .    }
+        .  
+        .  
+        .  
+        .  //! for constructing a complex matrix out of two non-complex matrices
+        .  template<typename eT>
+        .  template<typename T1, typename T2>
+-- line 961 ----------------------------------------
+-- line 1147 ----------------------------------------
+        .  
+        .  
+        .  
+        .  //! try to steal the memory from a given matrix; 
+        .  //! if memory can't be stolen, copy the given matrix
+        .  template<typename eT>
+        .  inline
+        .  void
+    3,020  Mat<eT>::steal_mem(Mat<eT>& x)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+      604    if(this == &x)  { return; }
+        .    
+    1,094    const uword  x_n_rows    = x.n_rows;
+    1,698    const uword  x_n_cols    = x.n_cols;
+      898    const uword  x_n_elem    = x.n_elem;
+    2,094    const uword  x_n_alloc   = x.n_alloc;
+        .    const uhword x_vec_state = x.vec_state;
+    1,898    const uhword x_mem_state = x.mem_state;
+        .    
+    1,394    const uhword t_vec_state = vec_state;
+      802    const uhword t_mem_state = mem_state;
+        .    
+    4,696    const bool layout_ok = (t_vec_state == x_vec_state) || ((t_vec_state == 1) && (x_n_cols == 1)) || ((t_vec_state == 2) && (x_n_rows == 1));
+18,938,988,949  => /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/Mat_meat.hpp:stochvol::update_t_error(arma::Col<double> const&, arma::Col<double>&, arma::Col<double> const&, arma::Col<double> const&, double&, stochvol::PriorSpec const&, bool, stochvol::Adaptation&, stochvol::ExpertSpec_GeneralSV::Strategy const&) [clone .cold] (100x)
+        .    
+    5,992    if( layout_ok && (t_mem_state <= 1) && ((x_n_alloc > arma_config::mat_prealloc) || (x_mem_state == 1)) )
+        .      {
+    2,892      reset();
+   60,823  => ???:0x000000000b6e6870 (200x)
+        .      
+    3,964      access::rw(n_rows)    = x_n_rows;
+        .      access::rw(n_cols)    = x_n_cols;
+        .      access::rw(n_elem)    = x_n_elem;
+        .      access::rw(n_alloc)   = x_n_alloc;
+      896      access::rw(mem_state) = x_mem_state;
+    1,392      access::rw(mem)       = x.mem;
+        .      
+      900      access::rw(x.n_rows)    = 0;
+        .      access::rw(x.n_cols)    = 0;
+        .      access::rw(x.n_elem)    = 0;
+      592      access::rw(x.n_alloc)   = 0;
+      300      access::rw(x.mem_state) = 0;
+      300      access::rw(x.mem)       = nullptr;
+        .      }
+        .    else
+        .      {
+        .      (*this).operator=(x);
+        .      }
+    3,012    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+        .  void
+      800  Mat<eT>::steal_mem_col(Mat<eT>& x, const uword max_n_rows)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+        .    const uword  x_n_elem    = x.n_elem;
+    1,600    const uword  x_n_alloc   = x.n_alloc;
+        .    const uhword x_mem_state = x.mem_state;
+        .    
+        .    const uhword t_vec_state = vec_state;
+        .    const uhword t_mem_state = mem_state;
+        .    
+        .    const uword alt_n_rows = (std::min)(x.n_rows, max_n_rows);
+        .    
+    9,600    if((x_n_elem == 0) || (alt_n_rows == 0))
+        .      {
+        .      (*this).set_size(0,1);
+        .      
+        .      return;
+        .      }
+        .    
+    6,400    if( (this != &x) && (t_vec_state <= 1) && (t_mem_state <= 1) && (x_mem_state <= 1) )
+        .      {
+    3,200      if( (x_mem_state == 0) && ((x_n_alloc <= arma_config::mat_prealloc) || (alt_n_rows <= arma_config::mat_prealloc)) )
+        .        {
+        .        (*this).set_size(alt_n_rows, uword(1));
+        .        
+        .        arrayops::copy( (*this).memptr(), x.memptr(), alt_n_rows );
+        .        }
+        .      else
+        .        {
+        .        reset();
+-- line 1232 ----------------------------------------
+-- line 1263 ----------------------------------------
+        .  //! if copy_aux_mem is false, the auxiliary array is used directly (without allocating memory and copying).
+        .  //! the default is to copy the array.
+        .  
+        .  template<typename eT>
+        .  inline
+        .  Mat<eT>::Mat(eT* aux_mem, const uword aux_n_rows, const uword aux_n_cols, const bool copy_aux_mem, const bool strict)
+        .    : n_rows   ( aux_n_rows                            )
+        .    , n_cols   ( aux_n_cols                            )
+        1    , n_elem   ( aux_n_rows*aux_n_cols                 )
+        .    , n_alloc  ( 0                                     )
+        .    , vec_state( 0                                     )
+        .    , mem_state( copy_aux_mem ? 0 : ( strict ? 2 : 1 ) )
+       21    , mem      ( copy_aux_mem ? nullptr : aux_mem      )
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+        .    if(copy_aux_mem)
+        .      {
+        .      init_cold();
+        .      
+        .      arrayops::copy( memptr(), aux_mem, n_elem );
+-- line 1283 ----------------------------------------
+-- line 1288 ----------------------------------------
+        .  
+        .  //! construct a matrix from a given auxiliary read-only array of eTs.
+        .  //! the array is copied.
+        .  template<typename eT>
+        .  inline
+        .  Mat<eT>::Mat(const eT* aux_mem, const uword aux_n_rows, const uword aux_n_cols)
+        .    : n_rows(aux_n_rows)
+        .    , n_cols(aux_n_cols)
+        9    , n_elem(aux_n_rows*aux_n_cols)
+        .    , n_alloc()
+        .    , vec_state(0)
+        .    , mem_state(0)
+       60    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+        .    init_cold();
+        .    
+        .    arrayops::copy( memptr(), aux_mem, n_elem );
+        .    }
+        .  
+-- line 1308 ----------------------------------------
+-- line 2371 ----------------------------------------
+        .  template<typename eT>
+        .  template<typename T1>
+        .  inline
+        .  Mat<eT>&
+        .  Mat<eT>::operator=(const subview_elem1<eT,T1>& X)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+    4,000    subview_elem1<eT,T1>::extract(*this, X);
+  175,200  => ???:0x000000000b6e6140 (800x)
+        .    
+        .    return *this;
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  template<typename T1>
+-- line 2387 ----------------------------------------
+-- line 4114 ----------------------------------------
+        .    }
+        .  
+        .  
+        .  
+        .  //! creation of diagview (diagonal)
+        .  template<typename eT>
+        .  arma_inline
+        .  diagview<eT>
+        3  Mat<eT>::diag(const sword in_id)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+        .    const uword row_offset = (in_id < 0) ? uword(-in_id) : 0;
+        .    const uword col_offset = (in_id > 0) ? uword( in_id) : 0;
+        .    
+        .    arma_debug_check_bounds
+        .      (
+        .      ((row_offset > 0) && (row_offset >= n_rows)) || ((col_offset > 0) && (col_offset >= n_cols)),
+        .      "Mat::diag(): requested diagonal out of bounds"
+        .      );
+        .    
+        2    const uword len = (std::min)(n_rows - row_offset, n_cols - col_offset);
+        .    
+        .    return diagview<eT>(*this, row_offset, col_offset, len);
+        .    }
+        .  
+        .  
+        .  
+        .  //! creation of diagview (diagonal)
+        .  template<typename eT>
+-- line 4143 ----------------------------------------
+-- line 4715 ----------------------------------------
+        .  inline
+        .  Mat<eT>::Mat(const Gen<T1, gen_type>& X)
+        .    : n_rows(X.n_rows)
+        .    , n_cols(X.n_cols)
+        .    , n_elem(n_rows*n_cols)
+        .    , n_alloc()
+        .    , vec_state(0)
+        .    , mem_state(0)
+        3    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+        .    arma_type_check(( is_same_type< eT, typename T1::elem_type >::no ));
+        .    
+        .    init_cold();
+        .    
+        .    X.apply(*this);
+-- line 4731 ----------------------------------------
+-- line 4738 ----------------------------------------
+        .  inline
+        .  Mat<eT>&
+        .  Mat<eT>::operator=(const Gen<T1, gen_type>& X)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+        .    arma_type_check(( is_same_type< eT, typename T1::elem_type >::no ));
+        .    
+        5    init_warm(X.n_rows, X.n_cols);
+       51  => ???:0x000000000b6e5ea0 (1x)
+        .    
+        .    X.apply(*this);
+        .    
+        .    return *this;
+        .    }
+        .  
+        .  
+        .  
+-- line 4754 ----------------------------------------
+-- line 4836 ----------------------------------------
+        .    }
+        .  
+        .  
+        .  
+        .  //! create a matrix from Op, i.e. run the previously delayed unary operations
+        .  template<typename eT>
+        .  template<typename T1, typename op_type>
+        .  inline
+        2  Mat<eT>::Mat(const Op<T1, op_type>& X)
+        .    : n_rows(0)
+        .    , n_cols(0)
+        .    , n_elem(0)
+        .    , n_alloc(0)
+        .    , vec_state(0)
+        .    , mem_state(0)
+       45    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .  
+        .    arma_type_check(( is_same_type< eT, typename T1::elem_type >::no ));
+        .    
+        .    op_type::apply(*this, X);
+        .    }
+        .  
+-- line 4859 ----------------------------------------
+-- line 4865 ----------------------------------------
+        .  inline
+        .  Mat<eT>&
+        .  Mat<eT>::operator=(const Op<T1, op_type>& X)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .  
+        .    arma_type_check(( is_same_type< eT, typename T1::elem_type >::no ));
+        .    
+      112    op_type::apply(*this, X);
+    2,158  => /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/op_trimat_meat.hpp:void arma::op_trimat::apply<arma::Mat<double> >(arma::Mat<arma::Mat<double>::elem_type>&, arma::Op<arma::Mat<double>, arma::op_trimat> const&) [clone .isra.0] (28x)
+        .    
+        .    return *this;
+        .    }
+        .  
+        .  
+        .  
+        .  //! in-place matrix addition, with the right-hand-side operand having delayed operations
+        .  template<typename eT>
+-- line 4881 ----------------------------------------
+-- line 4991 ----------------------------------------
+        .  
+        .  
+        .  
+        .  //! create a matrix from eOp, i.e. run the previously delayed unary operations
+        .  template<typename eT>
+        .  template<typename T1, typename eop_type>
+        .  inline
+        .  Mat<eT>&
+    1,212  Mat<eT>::operator=(const eOp<T1, eop_type>& X)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+        .    arma_type_check(( is_same_type< eT, typename T1::elem_type >::no ));
+        .    
+        .    const bool bad_alias = (eOp<T1, eop_type>::proxy_type::has_subview  &&  X.P.is_alias(*this));
+        .    
+        .    if(bad_alias == false)
+        .      {
+      812      init_warm(X.get_n_rows(), X.get_n_cols());
+      672  => ???:0x000000000b6e5ea0 (24x)
+        .      
+        .      eop_type::apply(*this, X);
+        .      }
+        .    else
+        .      {
+        .      arma_extra_debug_print("bad_alias = true");
+        .      
+        .      Mat<eT> tmp(X);
+        .      
+        .      steal_mem(tmp);
+        .      }
+        .    
+        .    return *this;
+    1,111    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  template<typename T1, typename eop_type>
+        .  inline
+        .  Mat<eT>&
+       16  Mat<eT>::operator+=(const eOp<T1, eop_type>& X)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .  
+        .    arma_type_check(( is_same_type< eT, typename T1::elem_type >::no ));
+        .    
+        .    eop_type::apply_inplace_plus(*this, X);
+        .    
+        .    return *this;
+-- line 5039 ----------------------------------------
+-- line 5114 ----------------------------------------
+        .  inline
+        .  Mat<eT>::Mat(const mtOp<eT, T1, op_type>& X)
+        .    : n_rows(0)
+        .    , n_cols(0)
+        .    , n_elem(0)
+        .    , n_alloc(0)
+        .    , vec_state(0)
+        .    , mem_state(0)
+    4,000    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+        .    op_type::apply(*this, X);
+        .    }
+        .  
+        .  
+        .  
+-- line 5130 ----------------------------------------
+-- line 5476 ----------------------------------------
+        .  inline
+        .  Mat<eT>::Mat(const Glue<T1, T2, glue_type>& X)
+        .    : n_rows(0)
+        .    , n_cols(0)
+        .    , n_elem(0)
+        .    , n_alloc(0)
+        .    , vec_state(0)
+        .    , mem_state(0)
+    3,232    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+        .    arma_type_check(( is_same_type< eT, typename T1::elem_type >::no ));
+        .    arma_type_check(( is_same_type< eT, typename T2::elem_type >::no ));
+        .    
+        .    glue_type::apply(*this, X);
+        .    }
+-- line 5492 ----------------------------------------
+-- line 5662 ----------------------------------------
+        .  
+        .  
+        .  
+        .  //! create a matrix from eGlue, i.e. run the previously delayed binary operations
+        .  template<typename eT>
+        .  template<typename T1, typename T2, typename eglue_type>
+        .  inline
+        .  Mat<eT>&
+        5  Mat<eT>::operator=(const eGlue<T1, T2, eglue_type>& X)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+        .    arma_type_check(( is_same_type< eT, typename T1::elem_type >::no ));
+        .    arma_type_check(( is_same_type< eT, typename T2::elem_type >::no ));
+        .    
+        .    const bool bad_alias =
+        .      (
+        .      (eGlue<T1, T2, eglue_type>::proxy1_type::has_subview  &&  X.P1.is_alias(*this))
+        .      ||
+        .      (eGlue<T1, T2, eglue_type>::proxy2_type::has_subview  &&  X.P2.is_alias(*this))
+        .      );
+        .    
+        .    if(bad_alias == false)
+        .      {
+    4,504      init_warm(X.get_n_rows(), X.get_n_cols());
+   22,400  => ???:0x000000000b6e5ea0 (800x)
+        .      
+        .      eglue_type::apply(*this, X);
+        .      }
+        .    else
+        .      {
+        .      arma_extra_debug_print("bad_alias = true");
+        .      
+        .      Mat<eT> tmp(X);
+        .      
+        .      steal_mem(tmp);
+        .      }
+        .    
+        .    return *this;
+        4    }
+        .  
+        .  
+        .  
+        .  //! in-place matrix addition, with the right-hand-side operands having delayed operations
+        .  template<typename eT>
+        .  template<typename T1, typename T2, typename eglue_type>
+        .  inline
+        .  Mat<eT>&
+-- line 5708 ----------------------------------------
+-- line 5798 ----------------------------------------
+        .  inline
+        .  Mat<eT>::Mat(const mtGlue<eT, T1, T2, glue_type>& X)
+        .    : n_rows(0)
+        .    , n_cols(0)
+        .    , n_elem(0)
+        .    , n_alloc(0)
+        .    , vec_state(0)
+        .    , mem_state(0)
+    6,400    , mem()
+        .    {
+        .    arma_extra_debug_sigprint_this(this);
+        .    
+        .    glue_type::apply(*this, X);
+        .    }
+        .  
+        .  
+        .  
+-- line 5814 ----------------------------------------
+-- line 5910 ----------------------------------------
+        .  arma_warn_unused
+        .  const eT&
+        .  Mat<eT>::at_alt(const uword ii) const
+        .    {
+        .    const eT* mem_aligned = mem;
+        .    
+        .    memory::mark_as_aligned(mem_aligned);
+        .    
+        4    return mem_aligned[ii];
+        .    }
+        .  
+        .  
+        .  
+        .  //! linear element accessor (treats the matrix as a vector); bounds checking not done when ARMA_NO_DEBUG is defined
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  eT&
+        .  Mat<eT>::operator() (const uword ii)
+        .    {
+        .    arma_debug_check_bounds( (ii >= n_elem), "Mat::operator(): index out of bounds" );
+        .    
+      800    return access::rw(mem[ii]);
+        .    }
+        .  
+        .  
+        .  
+        .  //! linear element accessor (treats the matrix as a vector); bounds checking not done when ARMA_NO_DEBUG is defined
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  const eT&
+        .  Mat<eT>::operator() (const uword ii) const
+        .    {
+        .    arma_debug_check_bounds( (ii >= n_elem), "Mat::operator(): index out of bounds" );
+        .    
+4,016,400    return mem[ii];
+        .    }
+        .  
+        .  
+        .  //! linear element accessor (treats the matrix as a vector); no bounds check.  
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  eT&
+        .  Mat<eT>::operator[] (const uword ii)
+        .    {
+2,500,809    return access::rw(mem[ii]);
+        .    }
+        .  
+        .  
+        .  
+        .  //! linear element accessor (treats the matrix as a vector); no bounds check
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  const eT&
+  499,800  Mat<eT>::operator[] (const uword ii) const
+        .    {
+3,011,250    return mem[ii];
+        .    }
+        .  
+        .  
+        .  
+        .  //! linear element accessor (treats the matrix as a vector); no bounds check.  
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+-- line 5977 ----------------------------------------
+-- line 6023 ----------------------------------------
+        .  
+        .  
+        .  
+        .  //! element accessor; no bounds check
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  eT&
+        8  Mat<eT>::at(const uword in_row, const uword in_col)
+        .    {
+    4,866    return access::rw( mem[in_row + in_col*n_rows] );
+        .    }
+        .  
+        .  
+        .  
+        .  //! element accessor; no bounds check
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  const eT&
+        .  Mat<eT>::at(const uword in_row, const uword in_col) const
+        .    {
+       22    return mem[in_row + in_col*n_rows];
+        .    }
+        .  
+        .  
+        .  
+        .  //! prefix ++
+        .  template<typename eT>
+        .  arma_inline
+        .  const Mat<eT>&
+-- line 6053 ----------------------------------------
+-- line 6109 ----------------------------------------
+        .  
+        .  //! returns true if the object can be interpreted as a column or row vector
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  bool
+        .  Mat<eT>::is_vec() const
+        .    {
+        8    return ( (n_rows == 1) || (n_cols == 1) );
+        .    }
+        .  
+        .  
+        .  
+        .  //! returns true if the object can be interpreted as a row vector
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+-- line 6125 ----------------------------------------
+-- line 6490 ----------------------------------------
+        .  
+        .  //! returns a pointer to array of eTs for a specified column; no bounds check
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  eT*
+        .  Mat<eT>::colptr(const uword in_col)
+        .    {
+    2,280    return & access::rw(mem[in_col*n_rows]);
+        .    }
+        .  
+        .  
+        .  
+        .  //! returns a pointer to array of eTs for a specified column; no bounds check
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  const eT*
+        .  Mat<eT>::colptr(const uword in_col) const
+        .    {
+    2,027    return & mem[in_col*n_rows];
+        .    }
+        .  
+        .  
+        .  
+        .  //! returns a pointer to array of eTs used by the matrix
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  eT*
+        .  Mat<eT>::memptr()
+        .    {
+    3,225    return const_cast<eT*>(mem);
+        .    }
+        .  
+        .  
+        .  
+        .  //! returns a pointer to array of eTs used by the matrix
+        .  template<typename eT>
+        .  arma_inline
+        .  arma_warn_unused
+        .  const eT*
+        .  Mat<eT>::memptr() const
+        .    {
+   19,072    return mem;
+        .    }
+        .  
+        .  
+        .  
+        .  //! change the matrix to have user specified dimensions (data is not preserved)
+        .  template<typename eT>
+        .  inline
+        .  void
+        .  Mat<eT>::set_size(const uword in_elem)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+        3    switch(vec_state)
+        .      {
+        .      case 0:
+        .        // fallthrough
+        .      case 1:
+        4        init_warm(in_elem, 1);
+      538  => ???:0x000000000b6e5ea0 (1x)
+        1        break;
+        .      
+        .      case 2:
+        .        init_warm(1, in_elem);
+        .        break;
+        .        
+        .      default:
+        .        ;
+        .      }
+-- line 6561 ----------------------------------------
+-- line 6566 ----------------------------------------
+        .  //! change the matrix to have user specified dimensions (data is not preserved)
+        .  template<typename eT>
+        .  inline
+        .  void
+        .  Mat<eT>::set_size(const uword in_rows, const uword in_cols)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+    3,259    init_warm(in_rows, in_cols);
+       51  => ???:0x000000000b6e5ea0 (1x)
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+        .  void
+        .  Mat<eT>::set_size(const SizeMat& s)
+-- line 6582 ----------------------------------------
+-- line 6814 ----------------------------------------
+        .  inline
+        .  const Mat<eT>&
+        .  Mat<eT>::imbue(functor F)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+        .    eT* out_mem = memptr();
+        .    
+      800    const uword N = n_elem;
+        .    
+        .    uword ii, jj;
+        .    
+   12,800    for(ii=0, jj=1; jj < N; ii+=2, jj+=2)
+        .      {
+        .      const eT tmp_ii = eT( F() );
+        .      const eT tmp_jj = eT( F() );
+        .      
+    3,200      out_mem[ii] = tmp_ii;
+    1,600      out_mem[jj] = tmp_jj;
+        .      }
+        .    
+    1,600    if(ii < N)
+        .      {
+        .      out_mem[ii] = eT( F() );
+        .      }
+        .    
+        .    return *this;
+        .    }
+        .  
+        .  
+-- line 6843 ----------------------------------------
+-- line 6897 ----------------------------------------
+        .  //! fill the matrix with the specified value
+        .  template<typename eT>
+        .  inline
+        .  const Mat<eT>&
+        .  Mat<eT>::fill(const eT val)
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+        1    arrayops::inplace_set( memptr(), val, n_elem );
+        .    
+        .    return *this;
+        .    }
+        .  
+        .  
+        .  
+        .  //! fill the matrix with the specified value
+        .  template<typename eT>
+-- line 6913 ----------------------------------------
+-- line 6931 ----------------------------------------
+        .  
+        .  template<typename eT>
+        .  inline
+        .  const Mat<eT>&
+        .  Mat<eT>::zeros()
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+        3    arrayops::fill_zeros(memptr(), n_elem);
+        .    
+        .    return *this;
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+-- line 6947 ----------------------------------------
+-- line 7149 ----------------------------------------
+        .  Mat<eT>::eye()
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+        .    (*this).zeros();
+        .    
+        .    const uword N = (std::min)(n_rows, n_cols);
+        .    
+        2    for(uword ii=0; ii<N; ++ii)  { at(ii,ii) = eT(1); }
+        .    
+        .    return *this;
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+-- line 7165 ----------------------------------------
+-- line 7186 ----------------------------------------
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+        .  arma_cold
+        .  void
+      696  Mat<eT>::reset()
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+    3,480    const uword new_n_rows = (vec_state == 2) ? 1 : 0;
+    2,088    const uword new_n_cols = (vec_state == 1) ? 1 : 0;
+        .    
+      696    init_warm(new_n_rows, new_n_cols);
+  216,904  => ???:0x000000000b6e5ea0 (696x)
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+        .  arma_cold
+        .  void
+-- line 7209 ----------------------------------------
+-- line 8807 ----------------------------------------
+        .  
+        .  template<typename eT>
+        .  inline
+        .  typename Mat<eT>::iterator
+        .  Mat<eT>::end()
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+      103    return memptr() + n_elem;
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+        .  typename Mat<eT>::const_iterator
+        .  Mat<eT>::end() const
+-- line 8823 ----------------------------------------
+-- line 8831 ----------------------------------------
+        .  
+        .  template<typename eT>
+        .  inline
+        .  typename Mat<eT>::const_iterator
+        .  Mat<eT>::cend() const
+        .    {
+        .    arma_extra_debug_sigprint();
+        .    
+    2,790    return memptr() + n_elem;
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+        .  typename Mat<eT>::col_iterator
+        .  Mat<eT>::begin_col(const uword col_num)
+-- line 8847 ----------------------------------------
+-- line 9014 ----------------------------------------
+        .  
+        .  
+        .  //! returns the number of elements in this matrix
+        .  template<typename eT>
+        .  inline
+        .  uword
+        .  Mat<eT>::size() const
+        .    {
+      602    return n_elem;
+        .    }
+        .  
+        .  
+        .  
+        .  template<typename eT>
+        .  inline
+        .  eT&
+        .  Mat<eT>::front()
+-- line 9030 ----------------------------------------
+
+--------------------------------------------------------------------------------
+The following files chosen for auto-annotation could not be found:
+--------------------------------------------------------------------------------
+  /build/glibc-eX1tMB/glibc-2.31/elf/dl-lookup.c
+  /build/glibc-eX1tMB/glibc-2.31/malloc/malloc.c
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_exp.c
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_log.c
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_pow.c
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/math_config.h
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/s_expm1.c
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/s_log1p.c
+  /build/glibc-eX1tMB/glibc-2.31/math/./w_exp_template.c
+  /build/glibc-eX1tMB/glibc-2.31/math/./w_log1p_template.c
+  /build/glibc-eX1tMB/glibc-2.31/math/./w_log_template.c
+  /build/glibc-eX1tMB/glibc-2.31/math/./w_pow_template.c
+  /build/glibc-eX1tMB/glibc-2.31/mathvec/../sysdeps/x86_64/fpu/multiarch/svml_d_exp2_core_sse4.S
+  /build/glibc-eX1tMB/glibc-2.31/mathvec/../sysdeps/x86_64/fpu/multiarch/svml_d_log2_core_sse4.S
+  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S
+  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/strcmp-avx2.S
+  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/strlen-avx2.S
+  /build/glibc-eX1tMB/glibc-2.31/sunrpc/xdr.c
+  /build/glibc-eX1tMB/glibc-2.31/sunrpc/xdr_mem.c
+  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/densities.h
+  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/sampling_latent_states.cc
+  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/single_update.cc
+  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/utils.h
+  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/utils_latent_states.cc
+  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/utils_main.h
+  /tmp/RtmpVABdN8/R.INSTALL22d13bb66f3b/stochvol/src/utils_parameters.cc
+
+--------------------------------------------------------------------------------
+Ir          
+--------------------------------------------------------------------------------
+286,736,368  events annotated
+

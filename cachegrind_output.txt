@@ -1,0 +1,1499 @@
+--------------------------------------------------------------------------------
+I1 cache:         32768 B, 64 B, 8-way associative
+D1 cache:         32768 B, 64 B, 8-way associative
+LL cache:         3145728 B, 64 B, 12-way associative
+Command:          /usr/lib/R/bin/exec/R --no-echo --no-restore --no-init-file --no-save --no-restore --file=cache-opt-stochvol.R
+Data file:        cachegrind.out.8480
+Events recorded:  Ir I1mr ILmr Dr D1mr DLmr Dw D1mw DLmw
+Events shown:     Ir I1mr ILmr Dr D1mr DLmr Dw D1mw DLmw
+Event sort order: Ir I1mr ILmr Dr D1mr DLmr Dw D1mw DLmw
+Thresholds:       0.1 100 100 100 100 100 100 100 100
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+Ir             I1mr      ILmr    Dr            D1mr       DLmr      Dw            D1mw      DLmw      
+--------------------------------------------------------------------------------
+29,125,780,119 8,102,568 106,691 5,951,244,002 16,608,717 1,661,613 1,894,749,928 6,571,644 2,101,162  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir             I1mr      ILmr   Dr            D1mr      DLmr      Dw          D1mw      DLmw       file:function
+--------------------------------------------------------------------------------
+15,152,981,331 5,166,352 69,590 2,266,620,966 5,042,714 1,147,619 944,078,319 2,409,460 1,178,755  ???:???
+ 2,761,469,657       684     61   670,847,769    51,007       106           0         0         0  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_log.c:__ieee754_log_fma
+ 2,244,029,938     3,992     39   747,912,540     4,605        11 289,632,869       555         0  ???:Rf_qgamma
+ 1,586,283,875       742     15   527,848,428    56,904        69           0         0         0  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_exp.c:__ieee754_exp_fma
+   912,585,916       920      8   186,939,536       950         1 110,854,430       535         0  ???:Rf_dpois_raw
+   774,386,536        79      6   241,990,854     3,222         3  96,799,728       310         0  /build/glibc-eX1tMB/glibc-2.31/math/./w_exp_template.c:exp@@GLIBC_2.29
+   528,042,729     1,115     12    79,327,700     1,925         2           0         0         0  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/s_log1p.c:__log1p
+   522,008,862     2,659     48   137,892,668     9,033        15   5,341,818        40         0  ???:Rf_qnorm5
+   492,655,937     1,231     20   118,237,413    58,482        72           0         0         0  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_pow.c:__ieee754_pow_fma
+   414,648,534       969      8   115,707,951     1,397         2  53,723,286       769         0  ???:Rf_lgammafn_sign
+   301,114,145        11      5             0         0         0           0         0         0  /build/glibc-eX1tMB/glibc-2.31/math/./w_log_template.c:log@@GLIBC_2.29
+   294,369,564        48      1    49,061,594         0         0           0         0         0  ???:Rf_fmax2
+   188,037,600       810      7    32,006,400       200         1   8,001,600         0         0  ???:Rf_dnorm4
+   178,278,260       711     30    36,874,946    23,878        46  12,293,040         0         0  ???:unif_rand
+   162,996,730     1,102     13    73,994,503   158,645       323   6,502,309    31,896         0  /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/sampling_latent_states.cc:stochvol::general_sv::draw_s_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<double> const&, bool)
+   155,995,530     1,301     14    67,494,703   158,550         7   6,002,109       200         0  /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/utils_latent_states.cc:stochvol::general_sv::h_aux_log_posterior(arma::Col<double> const&, arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, double)
+   144,228,132         0      0           599         0         0           0         0         0  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/math_config.h:__ieee754_exp_fma
+   128,022,400     1,492      6    48,006,400 1,003,800         0  12,006,400         0         0  /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/utils_parameters.cc:stochvol::general_sv::noncentered::theta_log_likelihood(double, double, double, double, stochvol::general_sv::noncentered::SufficientStatistic const&, stochvol::PriorSpec const&)
+   114,507,393       300      3             0         0         0           0         0         0  ???:Rf_pgamma
+    93,604,640       216      4    24,632,800       372         0  14,779,680         0         0  /build/glibc-eX1tMB/glibc-2.31/math/./w_pow_template.c:pow@@GLIBC_2.29
+    70,087,085         0      0         1,507     1,291         4  70,076,536 1,094,319   265,447  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S:__memset_avx2_erms
+    68,022,400       263      2    32,007,200   501,912         0   8,006,400         0         0  /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/single_update.cc:stochvol::log_likelihood_t_noncentered(arma::Col<double> const&, arma::Col<double> const&, arma::Col<double> const&, arma::Col<double> const&, double)
+    63,174,717    32,182     27    22,070,979    20,767       188  10,308,510    11,515       336  ???:Rf_getAttrib
+    60,505,310       302      5    18,001,045       203         4  15,001,025       303         2  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/eop_core_meat.hpp:stochvol::general_sv::draw_s_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<double> const&, bool)
+    60,223,673         0      0             0         0         0           0         0         0  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/math_config.h:__ieee754_log_fma
+    59,100,000         0      0    19,700,000       185         0           0         0         0  /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/single_update.cc:stochvol::qinvgamma(double, double)
+    47,291,804       124      8     3,693,344        23         1   2,770,008        26         0  ???:Rf_gammafn
+    46,551,095    25,704    103    29,542,933   488,881    60,940  28,121,467   430,992   120,608  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__memcpy_avx_unaligned_erms
+    44,218,391   100,405  1,183     9,631,107    19,732     2,127   5,257,808    13,802     9,446  ???:inflate
+    41,686,875     4,026     37    15,007,275     1,482         8   6,669,900    35,301    18,770  /build/glibc-eX1tMB/glibc-2.31/sunrpc/xdr.c:xdr_int
+    39,000,000       700      7    13,000,000       200         0   9,000,000         0         0  /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/densities.h:stochvol::update_single_tau(double, double, double, double, double, bool)
+    37,993,200       510      5     9,997,200 1,125,299         0           0         0         0  /usr/include/c++/10/bits/stl_numeric.h:stochvol::general_sv::centered::compute_sufficient_statistic(arma::Col<double> const&, double, arma::Col<double> const&)
+    37,503,258     2,204     26    12,001,116   295,151         4   2,501,420   250,139         0  /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/sampling_latent_states.cc:stochvol::general_sv::draw_h_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<unsigned int> const&, double, stochvol::Parameterization)
+    36,482,805       605      6     4,053,645         0         0   4,053,645         0         0  ???:Rf_dgamma
+    35,298,906       700      7    11,261,286       100         0   7,761,286       200         0  /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/single_update.cc:stochvol::update_single_tau(double, double, double, double, double, bool)
+    32,986,390   197,122    253     7,639,427   209,823    57,926   4,293,723   185,324   131,918  ???:Rf_allocVector3
+    32,823,990       102      1     6,564,798         0         0           0         0         0  /build/glibc-eX1tMB/glibc-2.31/math/./w_log1p_template.c:log1p
+    31,592,162     1,444      6    10,191,020     5,611         6   6,114,612     1,800         0  ???:norm_rand
+    30,845,431    58,215    113     5,605,775   160,026    31,464   1,686,843     1,715        95  ???:Rf_mkCharLenCE
+    30,500,000       100      1     6,000,000         0         0   5,000,000         0         0  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/op_cumsum_meat.hpp:stochvol::general_sv::draw_s_auxiliary(arma::Col<double> const&, arma::Col<int> const&, double, double, double, double, arma::Col<double> const&, bool)
+    29,550,000       100      1     4,925,000       185         0   4,925,000         0         0  /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/Rmath.h:stochvol::qinvgamma(double, double)
+    29,162,368    20,796     50     7,511,133    22,666       259   1,338,378       324        47  ???:SETCAR
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/utils_latent_states.cc
+--------------------------------------------------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Source file '/home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/utils_latent_states.cc' is more recent than input file 'cachegrind.out.8480'.
+@ Annotations may not be correct.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Ir         I1mr ILmr Dr         D1mr    DLmr Dw        D1mw DLmw 
+
+-- line 127 ----------------------------------------
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  double h_log_posterior(
+         .    .    .          .       .    .         .    .    .      const arma::vec& h,  // centered
+         .    .    .          .       .    .         .    .    .      const arma::vec& y,
+         .    .    .          .       .    .         .    .    .      const double phi,
+         .    .    .          .       .    .         .    .    .      const double rho,
+         .    .    .          .       .    .         .    .    .      const double sigma,
+         .    .    .          .       .    .         .    .    .      const double mu,
+     3,800  100    1        200       0    0     2,400  100    0      const double h0) {
+     1,600  200    2        200     200    0       200    0    0    const double rho_const = std::sqrt(1 - rho * rho);
+         .    .    .          .       .    .         .    .    .    const int n = y.size();
+         .    .    .          .       .    .         .    .    .    const arma::vec exp_h_half = arma::exp(0.5 * h);  // TODO cached?
+     1,200  200    2        800     200    0         0    0    0    double result = logdnorm2(h[0], mu + phi * (h0 - mu), sigma);  // log p(h_1 | theta)
+ 3,001,400    0    0        600       0    0         0    0    0    for (int t = 0; t < n - 1; t++) {  // TODO parallel?
+ 8,998,200    0    0  2,999,400 124,876    0         0    0    0      result += logdnorm2(h[t + 1], mu + phi * (h[t] - mu), sigma);
+11,997,600  100    1  2,999,400 125,038    0         0    0    0      result += logdnorm2(y[t], exp_h_half[t] * rho * (h[t + 1] - mu - phi * (h[t] - mu)) / sigma, exp_h_half[t] * rho_const, .5 * h[t]);
+         .    .    .          .       .    .         .    .    .    }
+       400    0    0        200       0    0         0    0    0    result += logdnorm2(y[n - 1], 0, exp_h_half[n - 1], .5 * h[n - 1]);
+       400    0    0        200       0    0         0    0    0    return result;
+     2,200    0    0      1,800     400    0         0    0    0  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  double h_aux_log_posterior(
+         .    .    .          .       .    .         .    .    .      const arma::vec& h,  // centered
+         .    .    .          .       .    .         .    .    .      const arma::vec& y_star,
+         .    .    .          .       .    .         .    .    .      const arma::ivec& d,
+         .    .    .          .       .    .         .    .    .      const double phi,
+         .    .    .          .       .    .         .    .    .      const double rho,
+         .    .    .          .       .    .         .    .    .      const double sigma,
+         .    .    .          .       .    .         .    .    .      const double mu,
+     1,900  100    1        100       0    0     1,200  100    0      const double h0) {
+         .    .    .          .       .    .         .    .    .    const int n = y_star.size();
+         .    .    .          .       .    .         .    .    .    const arma::vec eps_star = y_star - h;
+       500  100    1          0       0    0       200  100    0    const arma::vec eta = (h.tail(n-1) - mu) - phi*(h.head(n-1) - mu);
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .    // TODO delete: log_prior pipa
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .    static const int mix_count = mix_a.n_elem;
+         .    .    .          .       .    .         .    .    .    const double sigma2_used = std::pow(sigma, 2);
+       310  101    2        101     101    1         3    0    0    static const arma::vec::fixed<10> mix_log_prob = arma::log(mix_prob);
+       510    1    1        201     200    1       103    0    0    static const arma::vec::fixed<10> likelihood_normalizer = 0.5 * arma::log(2 * arma::datum::pi * mix_var);
+       310    1    1        101     100    1         3    0    0    static const arma::vec::fixed<10> exp_m_half = arma::exp(mix_mean * .5);
+       200   99    0        200       0    0         0    0    0    const arma::vec help_eta_mean = rho * sigma * exp_m_half;  // re-used constant
+         .    .    .          .       .    .         .    .    .  
+       600  100    1        400     100    0         0    0    0    double result = logdnorm2(h[0], mu + phi * (h0 - mu), sigma);  // log p(h_1 | theta)
+         .    .    .          .       .    .         .    .    .  
+     1,100  100    1        400      99    0       100    0    0    const double log_eta_coefficient = -0.5 / (sigma2_used * (1 - rho * rho));
+       600  100    1        200       0    0       200    0    0    const double log_eta_constant = -0.5 * std::log(2 * arma::datum::pi * sigma2_used * (1 - rho * rho));
+ 1,501,300  200    2    500,000       0    0       300    0    0    for (int r = 0; r < n; r++) {
+         .    .    .          .       .    .         .    .    .      arma::vec::fixed<mix_count> post_dist;
+15,000,000  100    1          0       0    0         0    0    0      for (int c = 0; c < mix_count; c++) {
+         .    .    .          .       .    .         .    .    .        const double a = mix_a[c];
+         .    .    .          .       .    .         .    .    .        const double b = mix_b[c];
+         .    .    .          .       .    .         .    .    .        const double m = mix_mean[c];
+         .    .    .          .       .    .         .    .    .        const double v2 = mix_var[c];
+ 5,000,000    0    0  5,000,000     198    0         0    0    0        const double log_prior = mix_log_prob[c];
+         .    .    .          .       .    .         .    .    .  
+38,000,000    0    0 21,500,000  63,213    0         0    0    0        const double log_eps_star_lik = -0.5 * std::pow((eps_star[r] - m), 2) / v2 - likelihood_normalizer[c];
+19,999,000  100    1  4,999,000       0    0         0    0    0        const double log_eta_lik = r == n - 1 ?
+         .    .    .          .       .    .         .    .    .          0 :
+59,988,000  100    1 34,993,000  94,339    4         0    0    0          log_eta_coefficient * std::pow(eta[r] - d[r] * help_eta_mean[c] * (a + b * (eps_star[r] - m)), 2) + log_eta_constant;
+15,000,000    0    0          0       0    0 5,000,000    0    0        /*log_*/post_dist[c] = log_prior + log_eps_star_lik + log_eta_lik;
+         .    .    .          .       .    .         .    .    .      }
+ 1,500,000    0    0    500,000       0    0 1,000,000    0    0      result += std::log(arma::sum(arma::exp(/*log_*/post_dist)));
+         .    .    .          .       .    .         .    .    .    }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .    return result;
+     1,200   99    0      1,000     200    0         0    0    0  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  }  // END namespace general_sv
+         .    .    .          .       .    .         .    .    .  
+        23    3    3         10       0    0         7    0    0  }
+         .    .    .          .       .    .         .    .    .  
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/utils_parameters.cc
+--------------------------------------------------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Source file '/home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/utils_parameters.cc' is more recent than input file 'cachegrind.out.8480'.
+@ Annotations may not be correct.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Ir         I1mr ILmr Dr         D1mr    DLmr Dw        D1mw  DLmw 
+
+-- line 44 ----------------------------------------
+         .    .    .          .       .    .         .     .    .  namespace stochvol {
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  double newton_raphson(
+         .    .    .          .       .    .         .     .    .      const double startval,
+         .    .    .          .       .    .         .     .    .      const double sum_tau,
+         .    .    .          .       .    .         .     .    .      const int n,
+         .    .    .          .       .    .         .     .    .      const double lambda,
+         .    .    .          .       .    .         .     .    .      const double tol,
+     2,800  102    1          0       0    0     2,000   100    0      const int maxiter) {
+       400    0    0          0       0    0         0     0    0    double x = startval;
+         .    .    .          .       .    .         .     .    .    double error = R_PosInf;
+         .    .    .          .       .    .         .     .    .    double xnew;
+         .    .    .          .       .    .         .     .    .    bool converged = false;
+     7,902    0    0          0       0    0         0     0    0    for (int i = 0; not converged and i < maxiter; i++) {
+     4,468  200    1      2,234       0    0         0     0    0      xnew = x - dlogdnu(x, sum_tau, lambda, n) / ddlogdnu(x, n);
+     2,234    0    0          0       0    0         0     0    0      error = std::abs(xnew - x);
+         .    .    .          .       .    .         .     .    .      x = xnew;
+         .    .    .          .       .    .         .     .    .      converged = error < tol;
+         .    .    .          .       .    .         .     .    .    }
+         .    .    .          .       .    .         .     .    .    if (not converged) x = NA_REAL;
+         .    .    .          .       .    .         .     .    .    return x;
+     2,400    0    0      1,600       0    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  namespace fast_sv {
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  namespace centered {
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  std::array<double, 9> regression_aggregates(
+         .    .    .          .       .    .         .     .    .      const double h0,
+         .    .    .          .       .    .         .     .    .      const arma::vec& h,
+-- line 73 ----------------------------------------
+-- line 561 ----------------------------------------
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  }  // END namespace fast_sv
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  namespace general_sv {
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  namespace centered {
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  double square(
+     6,400    0    0          0       0    0         0     0    0      const double x) {
+         .    .    .          .       .    .         .     .    .    return std::pow(x, 2);
+     6,400    0    0      6,400       0    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  // Compute the log-likelihood for mu, phi, sigma,
+         .    .    .          .       .    .         .     .    .  // and rho in the exact SV model.
+         .    .    .          .       .    .         .     .    .  double theta_log_likelihood(
+         .    .    .          .       .    .         .     .    .      const double mu,
+         .    .    .          .       .    .         .     .    .      const double phi,
+         .    .    .          .       .    .         .     .    .      const double sigma,
+         .    .    .          .       .    .         .     .    .      const double rho,
+         .    .    .          .       .    .         .     .    .      const SufficientStatistic& sufficient_statistic,
+     8,000  200    1          0       0    0     4,800     0    0      const PriorSpec& prior_spec) {
+     3,200  102    1          0       0    0     2,400     0    0    const double sigma2 = square(sigma),
+     2,400    0    0        800       0    0     1,600     0    0                 phi2 = square(phi),
+     2,400    0    0        800       0    0     1,600     0    0                 rho2 = square(rho),
+     4,800  102    1      1,600       0    0     2,400     0    0                 phi_constant = square(1 - phi),
+     2,400    0    0      1,600       0    0       800     0    0                 rho_constant = 1 - rho2;
+       800    0    0        800     200    0         0     0    0    const unsigned int t = sufficient_statistic.length;
+    13,600  205    2      3,200       0    0     3,200     0    0    return -.5 * ((t + 1) * 2 * std::log(sigma) + (t - 1) * std::log(rho_constant) +
+    10,400  308    3      5,600       0    0     3,200     0    0        (prior_spec.latent0.variance == PriorSpec::Latent0::STATIONARY ? -std::log(1 - phi2) : 0) +
+     8,000    0    0      3,200       0    0     1,600     0    0        (prior_spec.latent0.variance == PriorSpec::Latent0::STATIONARY ?
+    11,200  103    1      5,600       0    0     4,000     0    0         square(mu / sigma) * ((t - 1) * (rho2 / rho_constant * phi_constant +
+     9,600  206    2      4,000       0    0       800     0    0            square(t / (t - 1.) - phi)) - 1. / (t - 1)) :
+       800    0    0          0       0    0         0     0    0         square(mu) * (1 / sigma2 / prior_spec.latent0.constant.value) + phi_constant * (t - rho2) / sigma2 / rho_constant) +
+     9,600  201    1        800       0    0     1,600     0    0        sufficient_statistic.h_zero * (sufficient_statistic.h_zero - 2 * mu * (1 - phi)) / sigma2 +
+    13,600  102    1      6,400     200    1       800     0    0        -2 * sufficient_statistic.h_one * mu * (phi_constant - rho2 * phi * (1 - phi) / rho_constant) / sigma2 +
+     8,000    0    0        800       0    0       800     0    0        square(sufficient_statistic.h_one) * (rho_constant + phi2) / sigma2 / rho_constant +
+    10,400  102    1      4,800       0    0         0     0    0        -2 * sufficient_statistic.sum_h * mu * phi_constant / rho_constant / sigma2 +
+     7,200  102    1      1,600       0    0       800     0    0        sufficient_statistic.sum_h_square * (1 + phi2) / sigma2 / rho_constant +
+     8,000  102    1      2,400       0    0     1,600     0    0        -2 * sufficient_statistic.h_last * mu * (1 - phi) / rho_constant / sigma2 +
+     6,400  102    1        800       0    0       800     0    0        square(sufficient_statistic.h_last) / sigma2 / rho_constant +
+     9,600  102    1      4,000       0    0         0     0    0        -2 * sufficient_statistic.h_zero * sufficient_statistic.h_one * phi / sigma2 +
+     5,600    0    0        800       0    0         0     0    0        -2 * sufficient_statistic.sum_h_autocov * phi / sigma2 / rho_constant +
+     8,000  102    1      4,000       0    0         0     0    0        2 * sufficient_statistic.normalized_data * rho * mu * (1 - phi) / sigma / rho_constant +
+     2,400    0    0        800       0    0         0     0    0        sufficient_statistic.normalized_data_square / rho_constant +
+     4,800    0    0        800       0    0         0     0    0        -2 * sufficient_statistic.normalized_leverage * rho / sigma / rho_constant +
+     5,600    0    0      1,600       0    0         0     0    0        2 * sufficient_statistic.normalized_cov * phi * rho / sigma / rho_constant);
+     4,000    0    0      3,200       0    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  SufficientStatistic compute_sufficient_statistic(
+         .    .    .          .       .    .         .     .    .      const arma::vec& data,
+         .    .    .          .       .    .         .     .    .      const double h0,
+     2,600  203    2        200       0    0     1,200     0    0      const arma::vec& h) {
+       200    0    0        200     200    0         0     0    0    const unsigned int n = data.n_elem;
+       200    0    0          0       0    0         0     0    0    const arma::vec normalized_data = data.head(n - 1) % arma::exp(-0.5 * h.head(n - 1));
+         .    .    .          .       .    .         .     .    .    return {
+         .    .    .          .       .    .         .     .    .        n,
+         .    .    .          .       .    .         .     .    .        h0,
+       200    0    0        200     200    0         0     0    0        h(0),
+       400    0    0          0       0    0         0     0    0        std::accumulate(h.cbegin() + 1, h.cend() - 1, 0.),  // C++17 version is reduce
+         .    .    .          .       .    .         .     .    .        std::inner_product(h.cbegin() + 1, h.cend() - 1, h.cbegin() + 1, 0.),  // C++17 version is transform_reduce
+         .    .    .          .       .    .         .     .    .        h(h.n_elem - 1),
+         .    .    .          .       .    .         .     .    .        std::inner_product(h.cbegin() + 1, h.cend(), h.cbegin(), 0.),
+         .    .    .          .       .    .         .     .    .        std::accumulate(normalized_data.cbegin(), normalized_data.cend(), 0.),
+         .    .    .          .       .    .         .     .    .        std::inner_product(normalized_data.cbegin(), normalized_data.cend(), normalized_data.cbegin(), 0.),
+         .    .    .          .       .    .         .     .    .        std::inner_product(normalized_data.cbegin(), normalized_data.cend(), h.cbegin(), 0.),
+     5,000    0    0        200       0    0     2,200 1,600    0        std::inner_product(normalized_data.cbegin(), normalized_data.cend(), h.cbegin() + 1, 0.)};
+     2,200    0    0      1,600     400    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  }  // END namespace centered
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  namespace noncentered {
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  double theta_log_likelihood(
+         .    .    .          .       .    .         .     .    .      const double mu,
+         .    .    .          .       .    .         .     .    .      const double phi,
+         .    .    .          .       .    .         .     .    .      const double sigma,
+         .    .    .          .       .    .         .     .    .      const double rho,
+         .    .    .          .       .    .         .     .    .      const SufficientStatistic& sufficient_statistic,
+     9,600  303    1          0       0    0     7,200     0    0      const PriorSpec& prior_spec) {
+       800    0    0        800     400    0         0     0    0    const arma::vec& c = sufficient_statistic.c,
+       800    0    0        800       0    0         0     0    0                   & data = sufficient_statistic.data;
+     5,600    0    0        800       0    0         0     0    0    const double rho_constant = std::sqrt(1 - std::pow(rho, 2));
+         .    .    .          .       .    .         .     .    .    double h,
+         .    .    .          .       .    .         .     .    .           exp_h_half;
+         .    .    .          .       .    .         .     .    .    double likelihood = 0;
+         .    .    .          .       .    .         .     .    .  
+     4,800  102    1      2,400     800    0         0     0    0    h = mu + sigma * std::sqrt(determine_Bh0inv(phi, prior_spec)) * c(0);
+     5,600    0    0      1,600       0    0         0     0    0    h = mu + phi * (h - mu) + sigma * c(1);
+     4,000  201    1        800       0    0     1,600     0    0    exp_h_half = std::exp(0.5 * h);
+     6,400    0    0      2,400     800    0         0     0    0    likelihood += h + std::pow(data(0) / exp_h_half, 2);
+ 8,001,600  201    1  4,000,000     200    0         0     0    0    for (unsigned int t = 1; t < data.n_elem; t++) {
+67,986,400  400    1 23,995,200 500,000    0 3,999,200     0    0      h = mu + phi * (h - mu) + sigma * (rho * data(t - 1) / exp_h_half + rho_constant * c(t + 1));
+19,996,000    0    0  3,999,200       0    0 7,998,400     0    0      exp_h_half = std::exp(0.5 * h);
+31,993,600  285    1 15,996,800 500,000    0         0     0    0      likelihood += h + std::pow(data(t) / exp_h_half, 2);
+         .    .    .          .       .    .         .     .    .    }
+     1,600    0    0        800     800    0         0     0    0    likelihood *= -0.5;
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .    return likelihood;
+     5,600    0    0      4,800     800    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  }  // END namespace noncentered
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  double theta_log_likelihood_c(
+         .    .    .          .       .    .         .     .    .      const arma::vec& data,
+         .    .    .          .       .    .         .     .    .      const double mu,
+         .    .    .          .       .    .         .     .    .      const double phi,
+         .    .    .          .       .    .         .     .    .      const double sigma,
+-- line 667 ----------------------------------------
+-- line 763 ----------------------------------------
+         .    .    .          .       .    .         .     .    .    return result;
+         .    .    .          .       .    .         .     .    .  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  double theta_log_prior(
+         .    .    .          .       .    .         .     .    .      const double mu,
+         .    .    .          .       .    .         .     .    .      const double phi,
+         .    .    .          .       .    .         .     .    .      const double sigma,
+         .    .    .          .       .    .         .     .    .      const double rho,
+     9,600  103    1          0       0    0     3,200     0    0      const PriorSpec& prior_spec) {
+         .    .    .          .       .    .         .     .    .    double mu_density;
+     8,000    0    0      1,600   1,000    0         0     0    0    switch (prior_spec.mu.distribution) {
+         .    .    .          .       .    .         .     .    .      case PriorSpec::Mu::CONSTANT:
+         .    .    .          .       .    .         .     .    .        mu_density = 0;
+         .    .    .          .       .    .         .     .    .        break;
+         .    .    .          .       .    .         .     .    .      case PriorSpec::Mu::NORMAL:
+         .    .    .          .       .    .         .     .    .        mu_density = logdnorm2(mu, prior_spec.mu.normal.mean, prior_spec.mu.normal.sd);
+         .    .    .          .       .    .         .     .    .        break;
+         .    .    .          .       .    .         .     .    .      default:
+         .    .    .          .       .    .         .     .    .        ::Rf_error("theta_log_prior: Mistake in the switch-case");
+         .    .    .          .       .    .         .     .    .    }
+         .    .    .          .       .    .         .     .    .    double phi_density;
+     4,800    0    0      1,600       0    0         0     0    0    switch (prior_spec.phi.distribution) {
+         .    .    .          .       .    .         .     .    .      case PriorSpec::Phi::CONSTANT:
+         .    .    .          .       .    .         .     .    .        phi_density = 0;
+         .    .    .          .       .    .         .     .    .        break;
+         .    .    .          .       .    .         .     .    .      case PriorSpec::Phi::BETA:
+     8,000    0    0      4,800       0    0     3,200     0    0        phi_density = logdbeta(.5 * (phi + 1.), prior_spec.phi.beta.alpha, prior_spec.phi.beta.beta);
+     1,600  108    1      1,600       0    0         0     0    0        break;
+         .    .    .          .       .    .         .     .    .      case PriorSpec::Phi::NORMAL:
+         .    .    .          .       .    .         .     .    .        phi_density = logdnorm2(phi, prior_spec.phi.normal.mean, prior_spec.phi.normal.sd);
+         .    .    .          .       .    .         .     .    .        break;
+         .    .    .          .       .    .         .     .    .      default:
+         .    .    .          .       .    .         .     .    .        ::Rf_error("theta_log_prior: Mistake in the switch-case");
+         .    .    .          .       .    .         .     .    .    }
+         .    .    .          .       .    .         .     .    .    double sigma_density;
+     4,800    0    0      1,600       0    0         0     0    0    switch (prior_spec.sigma2.distribution) {
+         .    .    .          .       .    .         .     .    .      case PriorSpec::Sigma2::CONSTANT:
+         .    .    .          .       .    .         .     .    .        sigma_density = 0;
+         .    .    .          .       .    .         .     .    .        break;
+         .    .    .          .       .    .         .     .    .      case PriorSpec::Sigma2::GAMMA:
+    12,800  207    1      3,200       0    0     6,400     0    0        sigma_density = std::log(sigma) + logdgamma(std::pow(sigma, 2), prior_spec.sigma2.gamma.shape, prior_spec.sigma2.gamma.rate);
+         .    .    .          .       .    .         .     .    .        break;
+         .    .    .          .       .    .         .     .    .      case PriorSpec::Sigma2::INVERSE_GAMMA:
+         .    .    .          .       .    .         .     .    .        sigma_density = std::log(sigma) + logdinvgamma(std::pow(sigma, 2), prior_spec.sigma2.inverse_gamma.shape, prior_spec.sigma2.inverse_gamma.scale);
+         .    .    .          .       .    .         .     .    .        break;
+         .    .    .          .       .    .         .     .    .      default:
+         .    .    .          .       .    .         .     .    .        ::Rf_error("theta_log_prior: Mistake in the switch-case");
+         .    .    .          .       .    .         .     .    .    }
+         .    .    .          .       .    .         .     .    .    double rho_density;
+     9,600    0    0      1,600     400    0     1,600     0    0    switch (prior_spec.rho.distribution) {
+         .    .    .          .       .    .         .     .    .      case PriorSpec::Rho::CONSTANT:
+         .    .    .          .       .    .         .     .    .        rho_density = 0;
+         .    .    .          .       .    .         .     .    .        break;
+         .    .    .          .       .    .         .     .    .      case PriorSpec::Rho::BETA:
+     9,600  202    1      4,800       0    0     1,600     0    0        rho_density = logdbeta(.5 * (rho + 1.), prior_spec.rho.beta.alpha, prior_spec.rho.beta.beta);
+     3,200    0    0      1,600       0    0         0     0    0        break;
+         .    .    .          .       .    .         .     .    .      default:
+         .    .    .          .       .    .         .     .    .        ::Rf_error("theta_log_prior: Mistake in the switch-case");
+         .    .    .          .       .    .         .     .    .    }
+     6,400  106    1      3,200       0    0         0     0    0    return mu_density + phi_density + sigma_density + rho_density;
+     6,400    0    0      4,800       0    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  arma::vec4 theta_transform(
+         .    .    .          .       .    .         .     .    .      const double m,
+         .    .    .          .       .    .         .     .    .      const double f,
+         .    .    .          .       .    .         .     .    .      const double s,
+         .    .    .          .       .    .         .     .    .      const double r,
+     8,000  104    1        800       0    0     3,200     0    0      const PriorSpec& prior_spec) {
+         .    .    .          .       .    .         .     .    .    return {
+         .    .    .          .       .    .         .     .    .      m,
+    11,200  806    2      3,200       0    0     1,600     0    0      prior_spec.phi.distribution == PriorSpec::Phi::BETA ? 1 - 2/(std::exp(2 * f) + 1) : f,
+     1,600    0    0          0       0    0       800     0    0      std::exp(s),
+    14,400  101    0      4,000       0    0     4,800     0    0      prior_spec.rho.distribution == PriorSpec::Rho::BETA ? 1 - 2/(std::exp(2 * r) + 1) : r};
+     6,400    0    0      4,000       0    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  arma::vec4 theta_transform_inv(
+         .    .    .          .       .    .         .     .    .      const double mu,
+         .    .    .          .       .    .         .     .    .      const double phi,
+         .    .    .          .       .    .         .     .    .      const double sigma,
+         .    .    .          .       .    .         .     .    .      const double rho,
+    16,000  208    2      1,600       0    0     6,400   600    0      const PriorSpec& prior_spec) {
+         .    .    .          .       .    .         .     .    .    return {
+         .    .    .          .       .    .         .     .    .      mu,
+    22,400  200    2      8,000   2,000    1     3,200     0    0      prior_spec.phi.distribution == PriorSpec::Phi::BETA ? 0.5 * std::log(2. / (1 - phi) - 1) : phi,
+     3,200    0    0          0       0    0     1,600     0    0      std::log(sigma),
+    27,200  203    2      9,600     800    0     9,600     0    0      prior_spec.rho.distribution == PriorSpec::Rho::BETA ? 0.5 * std::log(2. / (1 - rho) - 1) : rho};
+    12,800  100    1      8,000       0    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  double theta_transform_log_det_jac(
+         .    .    .          .       .    .         .     .    .      const double m,
+         .    .    .          .       .    .         .     .    .      const double f,
+         .    .    .          .       .    .         .     .    .      const double s,
+         .    .    .          .       .    .         .     .    .      const double r,
+         .    .    .          .       .    .         .     .    .      const PriorSpec& prior_spec) {
+         .    .    .          .       .    .         .     .    .    static const double log4 = std::log(4.);
+-- line 857 ----------------------------------------
+-- line 862 ----------------------------------------
+         .    .    .          .       .    .         .     .    .    return 2 * (log4 + phi_part1 + 0.5 * s + rho_part1 - std::log(phi_part2 * rho_part2));
+         .    .    .          .       .    .         .     .    .  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  double theta_transform_inv_log_det_jac(
+         .    .    .          .       .    .         .     .    .      const double mu,
+         .    .    .          .       .    .         .     .    .      const double phi,
+         .    .    .          .       .    .         .     .    .      const double sigma,
+         .    .    .          .       .    .         .     .    .      const double rho,
+     3,200  104    1          0       0    0         0     0    0      const PriorSpec& prior_spec) {
+     6,400    0    0      3,200       0    0         0     0    0    const double phi_part = prior_spec.phi.distribution == PriorSpec::Phi::BETA ? 1. - std::pow(phi, 2) : 1,
+     6,400    0    0      3,200       0    0         0     0    0                 rho_part = prior_spec.rho.distribution == PriorSpec::Rho::BETA ? 1. - std::pow(rho, 2) : 1;
+     9,600    0    0      1,600     599    0     1,600     0    0    return -std::log(phi_part * sigma * rho_part);
+     3,200    0    0      1,600       0    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+     9,600  208    2        800       0    0     5,600     0    0  arma::vec rnorm_arma (const size_t size) {
+         .    .    .          .       .    .         .     .    .    arma::vec array(size);
+         .    .    .          .       .    .         .     .    .    array.imbue([]() -> double { return R::norm_rand(); });
+         .    .    .          .       .    .         .     .    .    return array;
+     9,600    0    0      7,200       0    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  std::array<double, 6> theta_propose_rwmh(
+         .    .    .          .       .    .         .     .    .      const double mu,
+         .    .    .          .       .    .         .     .    .      const double phi,
+         .    .    .          .       .    .         .     .    .      const double sigma,
+         .    .    .          .       .    .         .     .    .      const double rho,
+         .    .    .          .       .    .         .     .    .      const PriorSpec& prior_spec,
+         .    .    .          .       .    .         .     .    .      const ProposalDiffusionKen& diffusion_ken,
+    12,800  204    2          0       0    0     8,000 1,000    0      const arma::uvec& update_indicator) {
+         .    .    .          .       .    .         .     .    .    const arma::uvec update_index = arma::find(update_indicator);
+     6,400  103    1      3,200       0    0     3,200     0    0    const arma::vec4 theta_old_full {mu, phi, sigma, rho};
+     8,000    0    0      3,200       0    0     1,600   600    0    const arma::vec4 theta_old_t_full = theta_transform_inv(mu, phi, sigma, rho, prior_spec);
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .    const arma::vec theta_old_t = theta_old_t_full.elem(update_index);
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .    const arma::vec &proposal_mean_old = theta_old_t;  // rename
+     4,000    0    0        800       0    0     1,600     0    0    const arma::vec theta_new_t_standardized = rnorm_arma(update_index.n_elem);
+         .    .    .          .       .    .         .     .    .    const arma::vec theta_new_t =
+       800    0    0          0       0    0         0     0    0      std::sqrt(diffusion_ken.get_scale()) * diffusion_ken.get_covariance_chol() * theta_new_t_standardized +
+         .    .    .          .       .    .         .     .    .      proposal_mean_old;
+         .    .    .          .       .    .         .     .    .    arma::vec4 theta_new_t_full {theta_old_t_full};
+         .    .    .          .       .    .         .     .    .    theta_new_t_full.elem(update_index) = theta_new_t;
+     7,200    0    0      3,200       0    0     1,600     0    0    const arma::vec4 theta_new_full = update_indicator % theta_transform(theta_new_t_full[0], theta_new_t_full[1], theta_new_t_full[2], theta_new_t_full[3], prior_spec) +
+         .    .    .          .       .    .         .     .    .      (1u - update_indicator) % theta_old_full;
+         .    .    .          .       .    .         .     .    .    
+     1,600    0    0        800       0    0       800     0    0    const double mu_new = theta_new_full[0],
+       800    0    0        800       0    0         0     0    0                 phi_new = theta_new_full[1],
+     1,600    0    0        800       0    0       800     0    0                 sigma_new = theta_new_full[2],
+     1,600  104    1        800       0    0       800     0    0                 rho_new = theta_new_full[3];
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .    // Proposal density for theta_new given theta_old
+     4,000    0    0          0       0    0     1,600     0    0    const double theta_density_new = theta_transform_inv_log_det_jac(mu_new, phi_new, sigma_new, rho_new, prior_spec);  // +
+         .    .    .          .       .    .         .     .    .      //(-0.5) * arma::sum(arma::square(theta_new_t_standardized));
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .    // Proposal density for theta_old given theta_new
+         .    .    .          .       .    .         .     .    .    //const arma::vec &proposal_mean_new = theta_new_t;
+         .    .    .          .       .    .         .     .    .    //const arma::vec theta_old_t_standardized =
+         .    .    .          .       .    .         .     .    .    //  1 / std::sqrt(diffusion_ken.get_scale()) * diffusion_ken.get_covariance_chol_inv() *
+         .    .    .          .       .    .         .     .    .    //  (theta_old_t - proposal_mean_new);
+     4,800  102    1      3,200       0    0       800     0    0    const double theta_density_old = theta_transform_inv_log_det_jac(mu, phi, sigma, rho, prior_spec);  // +
+         .    .    .          .       .    .         .     .    .      //(-0.5) * arma::sum(arma::square(theta_old_t_standardized));
+         .    .    .          .       .    .         .     .    .  
+     8,000  102    1      3,200       0    0     4,800   400    0    return {mu_new, phi_new, sigma_new, rho_new, theta_density_old, theta_density_new};
+     9,600  103    1      7,200       0    0         0     0    0  }
+         .    .    .          .       .    .         .     .    .  
+         .    .    .          .       .    .         .     .    .  }  // END namespace general_sv
+         .    .    .          .       .    .         .     .    .  
+        23    2    2         10       0    0         7     0    0  }
+         .    .    .          .       .    .         .     .    .  
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/single_update.cc
+--------------------------------------------------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Source file '/home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/single_update.cc' is more recent than input file 'cachegrind.out.8480'.
+@ Annotations may not be correct.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Ir         I1mr ILmr Dr         D1mr    DLmr Dw        D1mw DLmw 
+
+-- line 143 ----------------------------------------
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  // Single update of a single tau: the sufficiency data augmentation for the degrees of freedom.
+         .    .    .          .       .    .         .    .    .  double update_single_tau(
+         .    .    .          .       .    .         .    .    .      const double homosked_data_i,
+         .    .    .          .       .    .         .    .    .      const double tau_i,
+         .    .    .          .       .    .         .    .    .      const double mean_i,
+         .    .    .          .       .    .         .    .    .      const double sd_i,
+         .    .    .          .       .    .         .    .    .      const double nu,
+ 4,000,000  100    1          0       0    0 2,500,000  200    0      const bool do_tau_acceptance_rejection) {
+         .    .    .          .       .    .         .    .    .    // Watch out, R::rgamma(shape, scale), not Rf_rgamma(shape, rate)
+ 1,500,000    0    0  1,000,000       0    0         0    0    0    const double proposal_shape = (nu + 1) / 2.,
+ 3,500,000  100    1  1,000,000     100    0 1,500,000    0    0                 proposal_scale = (nu - 2 + std::pow(homosked_data_i, 2)) / 2.,
+ 1,000,000  100    1    500,000       0    0         0    0    0                 tau_proposal_i = 1./R::rgamma(proposal_shape, 1 / proposal_scale);  // non-parallelizable
+ 1,000,000    0    0          0       0    0         0    0    0    if (do_tau_acceptance_rejection) {
+ 5,500,000  100    1  1,500,000       0    0         0    0    0      const double sqrt_tau_prop = std::sqrt(tau_proposal_i),
+ 1,000,000    0    0          0       0    0   500,000    0    0                   sqrt_tau = std::sqrt(tau_i),
+         .    .    .          .       .    .         .    .    .                   log_ar =
+ 4,500,000    0    0  1,500,000       0    0 2,000,000    0    0                     (logdnorm(homosked_data_i, sqrt_tau_prop * mean_i, sqrt_tau_prop * sd_i) +
+ 3,000,000  100    1  2,000,000       0    0   500,000    0    0                      logdinvgamma(tau_proposal_i, .5 * nu, .5 * (nu - 2)) -
+         .    .    .          .       .    .         .    .    .                      logdinvgamma(tau_proposal_i, proposal_shape, proposal_scale)) -
+ 2,500,000    0    0  2,000,000       0    0         0    0    0                     (logdnorm(homosked_data_i, sqrt_tau * mean_i, sqrt_tau * sd_i) +
+   500,000    0    0          0       0    0         0    0    0                      logdinvgamma(tau_i, .5 * nu, .5 * (nu - 2)) -
+   500,000    0    0          0       0    0         0    0    0                      logdinvgamma(tau_i, proposal_shape, proposal_scale));
+ 3,022,572  100    1    253,762       0    0   761,286    0    0      if (log_ar >= 0 or R::unif_rand() < std::exp(log_ar)) {
+         .    .    .          .       .    .         .    .    .        return tau_proposal_i;
+         .    .    .          .       .    .         .    .    .      } else {
+ 1,776,334  100    1    507,524       0    0         0    0    0        return tau_i;
+         .    .    .          .       .    .         .    .    .      }
+         .    .    .          .       .    .         .    .    .    } else {
+         .    .    .          .       .    .         .    .    .      return tau_proposal_i;
+         .    .    .          .       .    .         .    .    .    }
+ 2,000,000    0    0  1,000,000       0    0         0    0    0  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  // Update the entire vector tau
+         .    .    .          .       .    .         .    .    .  double update_tau(
+         .    .    .          .       .    .         .    .    .      const arma::vec& homosked_data,
+         .    .    .          .       .    .         .    .    .      arma::vec& tau,
+         .    .    .          .       .    .         .    .    .      const arma::vec& mean,
+         .    .    .          .       .    .         .    .    .      const arma::vec& sd,
+         .    .    .          .       .    .         .    .    .      double& nu,
+         .    .    .          .       .    .         .    .    .      const PriorSpec& prior_spec,
+     1,100  200    2        100       0    0       700  100    0      const bool do_tau_acceptance_rejection) {
+       100    0    0        100     100    0         0    0    0    const int T = homosked_data.n_elem;
+         .    .    .          .       .    .         .    .    .  
+       200    0    0          0       0    0         0    0    0    double sum_tau = 0;
+ 2,000,300    0    0  1,000,000       0    0         0    0    0    for (int i = 0; i < T; i++) {
+ 7,000,100  100    1  4,500,000 250,426  626 2,000,000  100    0      tau[i] = update_single_tau(homosked_data[i], tau[i], mean[i], sd[i], nu, do_tau_acceptance_rejection);
+ 4,500,000  100    1  2,500,000       0    0   500,000    0    0      sum_tau += std::log(tau[i]) + 1. / tau[i];
+         .    .    .          .       .    .         .    .    .    }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .    return sum_tau;
+       900  100    1        700     100    0         0    0    0  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  // Compute the sufficient statistic for nu given tau (code duplication)
+         .    .    .          .       .    .         .    .    .  double compute_tau_sufficient_stats(
+       800  100    0          0       0    0       500    0    0      const arma::vec& tau) {
+         .    .    .          .       .    .         .    .    .    return arma::accu(arma::log(tau) + 1. / tau);
+       700    0    0        600     100    0         0    0    0  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  // Single update of the degrees of freedom.
+         .    .    .          .       .    .         .    .    .  // See documentation above the declaration
+         .    .    .          .       .    .         .    .    .  void update_t_error(
+         .    .    .          .       .    .         .    .    .      const arma::vec& homosked_data,
+         .    .    .          .       .    .         .    .    .      arma::vec& tau,
+         .    .    .          .       .    .         .    .    .      const arma::vec& mean,
+         .    .    .          .       .    .         .    .    .      const arma::vec& sd,
+-- line 208 ----------------------------------------
+-- line 220 ----------------------------------------
+         .    .    .          .       .    .         .    .    .  // See documentation above the declaration
+         .    .    .          .       .    .         .    .    .  void update_t_error(
+         .    .    .          .       .    .         .    .    .      const arma::vec& homosked_data,
+         .    .    .          .       .    .         .    .    .      const double sum_tau,
+         .    .    .          .       .    .         .    .    .      const arma::vec& mean,
+         .    .    .          .       .    .         .    .    .      const arma::vec& sd,
+         .    .    .          .       .    .         .    .    .      double& nu,
+         .    .    .          .       .    .         .    .    .      const PriorSpec& prior_spec,
+     1,800  103    1          0       0    0     1,400  100    0      const unsigned int n_repeat) {
+       800    0    0        200     100    0         0    0    0    const int T = homosked_data.n_elem;
+         .    .    .          .       .    .         .    .    .  
+       400    0    0        200     200    0         0    0    0    if (prior_spec.nu.distribution == PriorSpec::Nu::EXPONENTIAL) {
+     2,400    0    0          0       0    0       200    0    0      for (unsigned int r = 0; r < n_repeat; r++) {
+       800  102    1        400     200    0       400    0    0        const double lambda = prior_spec.nu.exponential.rate;
+     3,200  100    1      1,200     300    0       400    0    0        const double numean = newton_raphson(nu, sum_tau, T, lambda);
+     2,000    0    0        400       0    0         0    0    0        const double auxsd = std::sqrt(-1/ddlogdnu(numean, T));
+         .    .    .          .       .    .         .    .    .        const double nuprop = R::rnorm(numean, auxsd);
+         .    .    .          .       .    .         .    .    .        const double log_ar =
+     1,200    0    0          0       0    0         0    0    0          logdnu(nuprop, sum_tau, lambda, T) - logdnorm(nuprop, numean, auxsd) -
+     2,400  100    1      1,200       0    0         0    0    0          (logdnu(nu, sum_tau, lambda, T) - logdnorm(nu, numean, auxsd));
+         .    .    .          .       .    .         .    .    .  
+     2,220  100    1        406       0    0       203    0    0        if (log_ar >= 0 or R::unif_rand() < std::exp(log_ar)) {
+       790    0    0        395       0    0       395    0    0          nu = nuprop;
+         .    .    .          .       .    .         .    .    .        }
+         .    .    .          .       .    .         .    .    .      }
+         .    .    .          .       .    .         .    .    .    }
+     1,800  102    1      1,400       0    0         0    0    0  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  double pinvgamma(
+         .    .    .          .       .    .         .    .    .      const double tau,
+ 2,000,000  100    1          0       0    0         0    0    0      const double nu) {
+ 5,000,000  100    1  2,000,000     200    0         0    0    0    return R::pgamma(1 / tau, 0.5 * nu, 2 / (nu - 2), false, false);
+         .    .    .          .       .    .         .    .    .  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  double qinvgamma(
+         .    .    .          .       .    .         .    .    .      const double u,
+14,775,000    0    0          0       0    0         0    0    0      const double nu) {
+34,475,000    0    0 14,775,000     185    0         0    0    0    return 1 / R::qgamma(1 - u, 0.5 * nu, 2 / (nu - 2), true, false);
+ 9,850,000    0    0  4,925,000       0    0         0    0    0  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  double log_likelihood_t_noncentered(
+         .    .    .          .       .    .         .    .    .      const arma::vec& homosked_data,
+         .    .    .          .       .    .         .    .    .      const arma::vec& u,
+         .    .    .          .       .    .         .    .    .      const arma::vec& mean,
+         .    .    .          .       .    .         .    .    .      const arma::vec& sd,
+     7,200  102    1          0       0    0     5,600    0    0      const double nu) {
+     2,400    0    0          0       0    0       800    0    0    double loglik = 0;
+12,005,600    0    0  4,000,800     200    0         0    0    0    for (unsigned int i = 0; i < homosked_data.n_elem; i++) {
+36,000,000  161    1 12,000,000 500,512    0 4,000,000    0    0      const double sqrt_tau_i = std::sqrt(qinvgamma(u(i), nu));
+20,000,000    0    0 16,000,000     400    0 4,000,000    0    0      loglik += R::dnorm4(homosked_data(i), sqrt_tau_i * mean(i), sqrt_tau_i * sd(i), true);
+         .    .    .          .       .    .         .    .    .    }
+         .    .    .          .       .    .         .    .    .    return loglik;
+     7,200    0    0      6,400     800    0         0    0    0  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  // Single update of the degrees of freedom.
+         .    .    .          .       .    .         .    .    .  // See documentation above the declaration
+         .    .    .          .       .    .         .    .    .  void update_t_error(
+         .    .    .          .       .    .         .    .    .      const arma::vec& homosked_data,
+         .    .    .          .       .    .         .    .    .      arma::vec& tau,
+         .    .    .          .       .    .         .    .    .      const arma::vec& mean,
+         .    .    .          .       .    .         .    .    .      const arma::vec& sd,
+         .    .    .          .       .    .         .    .    .      double& nu,
+         .    .    .          .       .    .         .    .    .      const PriorSpec& prior_spec,
+         .    .    .          .       .    .         .    .    .      const bool do_tau_acceptance_rejection,
+         .    .    .          .       .    .         .    .    .      Adaptation& adaptation,
+     2,200  300    3        400     100    0     1,400  300    0      const ExpertSpec_GeneralSV::Strategy& repetition) {
+     1,600    0    0        900     285    0       100    0    0    for (unsigned int i = 0; i < repetition.r_asis; i++) {
+       600  100    0        200       0    0         0    0    0      const double sum_tau = (i == 0) ?
+     1,200  100    1        600       0    0       200  100    0        update_tau(homosked_data, tau, mean, sd, nu, prior_spec, do_tau_acceptance_rejection) :
+       300   98    1        100       0    0       100    0    0        compute_tau_sufficient_stats(tau);
+     1,800  201    1      1,200     600    0       200    0    0      update_t_error(homosked_data, sum_tau, mean, sd, nu, prior_spec, repetition.r_sa);
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .      const arma::vec u = ([](const arma::vec& tau, const double nu) -> arma::vec {
+       400    0    0        400       0    0         0    0    0          arma::vec result (tau.n_elem);
+ 3,000,000    0    0  2,000,000 125,271    0 1,000,000    0    0          std::transform(tau.cbegin(), tau.cend(), result.begin(), [nu](const double tau_i) -> double { return pinvgamma(tau_i, nu); });
+         .    .    .          .       .    .         .    .    .          return result;
+       400    0    0        200       0    0       200    0    0          })(tau, nu);
+         .    .    .          .       .    .         .    .    .  
+       400    0    0          0       0    0       200    0    0      bool accepted_at_least_once = false;
+     3,000  400    2      2,000     796    0       200    0    0      for (unsigned int r = 0; r < repetition.r_aa; r++) {
+         .    .    .          .       .    .         .    .    .        const ProposalDiffusionKen& adapted_proposal = adaptation.get_proposal();
+     1,200    0    0        400       0    0         0    0    0        const double random_walk_sd = std::sqrt(adapted_proposal.get_scale()) * arma::as_scalar(adapted_proposal.get_covariance_chol()),
+         .    .    .          .       .    .         .    .    .              lower_bound = 2,
+     1,600    0    0      1,200     200    0       400    0    0              log_nu = std::log(nu - lower_bound),
+         .    .    .          .       .    .         .    .    .              log_nu_prop = R::rnorm(log_nu, random_walk_sd),
+     2,000    0    0        400       0    0     1,200    0    0              nu_prop = std::exp(log_nu_prop) + lower_bound;
+         .    .    .          .       .    .         .    .    .  
+     4,000  305    2      1,200       0    0       800  400    0        const double acceptance_rate = log_likelihood_t_noncentered(homosked_data, u, mean, sd, nu_prop) +
+       800    0    0          0       0    0         0    0    0          R::dexp(nu_prop - lower_bound, 1 / prior_spec.nu.exponential.rate, true) -
+     2,000    0    0        400       0    0         0    0    0          R::dnorm4(nu_prop, nu, random_walk_sd, true) + log_nu_prop -
+     4,000  304    2      1,600       0    0       800    0    0          log_likelihood_t_noncentered(homosked_data, u, mean, sd, nu) -
+     1,600    0    0      1,600     800    0         0    0    0          R::dexp(nu - lower_bound, 1 / prior_spec.nu.exponential.rate, true) +
+       400    0    0        400       0    0         0    0    0          R::dnorm4(nu, nu_prop, random_walk_sd, true) - log_nu;
+     1,435  110    0        400     400    0       470    0    0        const bool accepted = acceptance_rate > 0 or std::exp(acceptance_rate) > R::unif_rand();
+       165   95    1          0       0    0       165    0    0        accepted_at_least_once = accepted or accepted_at_least_once;
+         .    .    .          .       .    .         .    .    .  
+     6,160  195    2      1,740       0    0     1,270    0    0        adaptation.register_sample(accepted, {accepted ? log_nu_prop : log_nu});  // current sample
+       800    0    0          0       0    0         0    0    0        if (accepted) {
+       936    0    0        624       0    0       312    0    0          nu = nu_prop;
+         .    .    .          .       .    .         .    .    .        }
+         .    .    .          .       .    .         .    .    .      }
+       400    0    0        200       0    0         0    0    0      if (accepted_at_least_once) {
+         .    .    .          .       .    .         .    .    .        tau = ([](const arma::vec& u, const double nu) -> arma::vec {
+       185    0    0        185       0    0         0    0    0            arma::vec result (u.n_elem);
+ 2,775,000  103    1  1,850,000 115,697    0   925,000    0    0            std::transform(u.cbegin(), u.cend(), result.begin(), [nu](const double u_i) -> double { return qinvgamma(u_i, nu); });
+         .    .    .          .       .    .         .    .    .            return result;
+       555    0    0        370       0    0       185    0    0            })(u, nu);
+         .    .    .          .       .    .         .    .    .      }
+         .    .    .          .       .    .         .    .    .    }
+     1,100    2    0        900     200    0         0    0    0  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  // Single update of the coefficients in a Bayesian linear regression.
+         .    .    .          .       .    .         .    .    .  // See documentation above the declaration
+         .    .    .          .       .    .         .    .    .  void update_regressors(
+         .    .    .          .       .    .         .    .    .      const arma::vec& dependent_variable,
+         .    .    .          .       .    .         .    .    .      const arma::mat& independent_variables,
+         .    .    .          .       .    .         .    .    .      arma::vec& beta,
+         .    .    .          .       .    .         .    .    .      const PriorSpec& prior_spec) {
+-- line 337 ----------------------------------------
+-- line 450 ----------------------------------------
+         .    .    .          .       .    .         .    .    .      double& mu,
+         .    .    .          .       .    .         .    .    .      double& phi,
+         .    .    .          .       .    .         .    .    .      double& sigma,
+         .    .    .          .       .    .         .    .    .      double& rho,
+         .    .    .          .       .    .         .    .    .      double& h0,
+         .    .    .          .       .    .         .    .    .      arma::vec& h,
+         .    .    .          .       .    .         .    .    .      AdaptationCollection& adaptation_collection,
+         .    .    .          .       .    .         .    .    .      const PriorSpec& prior_spec,  // prior_mu, prior_phi, prior_sigma2, prior_rho, gammaprior, dontupdatemu feed into this (plus priorlatent0, truncnormal nyi)
+     2,400  200    2        700       0    0     1,200  198    0      const ExpertSpec_GeneralSV& expert) {  // strategy, correct, use_mala feed into this
+         .    .    .          .       .    .         .    .    .  
+       200    0    0        100      99    0         0    0    0    if (expert.update.latent_vector) {  // Sample the latent states
+         .    .    .          .       .    .         .    .    .      //const  // not const to be able to std::move
+     1,600  200    2        700     100    0       200    0    0      LatentVector h_full = draw_latent(data, log_data2, sign_data, mu, phi, sigma, rho, h, prior_spec, expert);
+       300  100    1        200     200    0       100  100    0      h0 = h_full.h0;
+         .    .    .          .       .    .         .    .    .      h = std::move(h_full.h);
+         .    .    .          .       .    .         .    .    .    }
+         .    .    .          .       .    .         .    .    .  
+       200    0    0        100     100    0         0    0    0    if (expert.update.parameters) {  // Sample the parameters
+         .    .    .          .       .    .         .    .    .      const arma::uvec update_indicator {
+       300  100    1        100     100    0         0    0    0            prior_spec.mu.distribution != PriorSpec::Mu::CONSTANT,
+       300    0    0        100     100    1         0    0    0            prior_spec.phi.distribution != PriorSpec::Phi::CONSTANT,
+       300    0    0        100       0    0         0    0    0            prior_spec.sigma2.distribution != PriorSpec::Sigma2::CONSTANT,
+       700    0    0        100     100    1       400  100    0            prior_spec.rho.distribution != PriorSpec::Rho::CONSTANT};
+         .    .    .          .       .    .         .    .    .  
+     1,100    0    0          0       0    0       100    0    0      for (unsigned int i = 0; i < expert.strategy.size(); ) {
+     1,200    0    0        800     200    1       400    0    0        const Parameterization par = expert.strategy[i];
+         .    .    .          .       .    .         .    .    .        bool accepted;
+         .    .    .          .       .    .         .    .    .        Adaptation& adaptation = adaptation_collection[par];
+     1,600  400    1        400       0    0       400    0    0        const ProposalDiffusionKen& adapted_proposal = expert.adapt ? adaptation.get_proposal() : expert.proposal_diffusion_ken;
+     1,600    0    0        400       0    0         0    0    0        switch (par) {
+         .    .    .          .       .    .         .    .    .            case Parameterization::CENTERED: {
+     1,600  102    1        400       0    0       400    0    0              const auto sufficient_statistic = centered::compute_sufficient_statistic(data, h0, h);
+     2,400  104    1        600     200    0         0    0    0              while (i < expert.strategy.size() and expert.strategy[i] == par) {
+         .    .    .          .       .    .         .    .    .                const auto theta = centered::draw_theta(
+         .    .    .          .       .    .         .    .    .                    mu, phi, sigma, rho,
+         .    .    .          .       .    .         .    .    .                    sufficient_statistic,
+         .    .    .          .       .    .         .    .    .                    update_indicator,
+         .    .    .          .       .    .         .    .    .                    prior_spec, expert,
+     5,600  102    1      4,000     600    0       400    0    0                    adapted_proposal);
+     4,000  102    1      2,400       0    0     1,600    0    0                mu = theta.mu, phi = theta.phi, sigma = theta.sigma, rho = theta.rho;
+     5,142  178    2      1,366       0    0     1,366    0    0                accepted = theta.mu_accepted or theta.phi_accepted or theta.sigma_accepted or theta.rho_accepted;  // was anything accepted?
+       800    0    0        400       0    0         0    0    0                if (expert.adapt) {
+     1,600    0    0        800       0    0       400    0    0                  adaptation.register_sample(
+         .    .    .          .       .    .         .    .    .                      accepted,
+     3,600   21    0      2,400       0    0       400    0    0                      general_sv::theta_transform_inv(mu, phi, sigma, rho, prior_spec).elem(arma::find(update_indicator)));  // current sample
+         .    .    .          .       .    .         .    .    .                }
+     1,200    0    0        800       0    0         0    0    0                i++;
+         .    .    .          .       .    .         .    .    .              }
+         .    .    .          .       .    .         .    .    .              break;
+         .    .    .          .       .    .         .    .    .            }
+         .    .    .          .       .    .         .    .    .            case Parameterization::NONCENTERED: {
+     2,800  200    1      1,800       0    0     1,000    0    0              const arma::vec c = centered_to_noncentered(mu, phi, sigma, rho, data, h0, h, prior_spec);
+       800  100    1          0       0    0       600  200    0              const noncentered::SufficientStatistic sufficient_statistic {data, c};
+     2,200    0    0        500     500    0         0    0    0              while (i < expert.strategy.size() and expert.strategy[i] == par) {
+         .    .    .          .       .    .         .    .    .                const auto theta = noncentered::draw_theta(
+         .    .    .          .       .    .         .    .    .                    mu, phi, sigma, rho,
+         .    .    .          .       .    .         .    .    .                    sufficient_statistic,
+         .    .    .          .       .    .         .    .    .                    update_indicator,
+         .    .    .          .       .    .         .    .    .                    prior_spec, expert,
+     5,300  101    1      3,300       0    0       400    0    0                    adapted_proposal);
+     4,400  101    1      2,800     400    0     1,600  400    0                mu = theta.mu, phi = theta.phi, sigma = theta.sigma, rho = theta.rho;
+     5,362  102    1      1,426       0    0     1,426    0    0                accepted = theta.mu_accepted or theta.phi_accepted or theta.sigma_accepted or theta.rho_accepted;  // was anything accepted?
+       800  102    1        400     400    0         0    0    0                if (expert.adapt) {
+     1,600    0    0        800       0    0       400    0    0                  adaptation.register_sample(
+         .    .    .          .       .    .         .    .    .                      accepted,
+     3,600  204    2      2,400     400    0       400    0    0                      general_sv::theta_transform_inv(mu, phi, sigma, rho, prior_spec).elem(arma::find(update_indicator)));  // current sample
+         .    .    .          .       .    .         .    .    .                }
+       800    0    0        800       0    0         0    0    0                i++;
+         .    .    .          .       .    .         .    .    .              }
+     3,600  200    1      2,400     200    0       200    0    0              LatentVector h_full = noncentered_to_centered(mu, phi, sigma, rho, data, c, prior_spec);
+       600    0    0        400     400    0       200  200    0              h0 = h_full.h0;
+         .    .    .          .       .    .         .    .    .              h = std::move(h_full.h);
+         .    .    .          .       .    .         .    .    .              break;
+         .    .    .          .       .    .         .    .    .            }
+         .    .    .          .       .    .         .    .    .        }
+         .    .    .          .       .    .         .    .    .      }
+         .    .    .          .       .    .         .    .    .    }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .    return;
+     1,100    2    0        900     200    0         0    0    0  }
+         .    .    .          .       .    .         .    .    .  
+         .    .    .          .       .    .         .    .    .  }  // END namespace general_sv
+         .    .    .          .       .    .         .    .    .  
+        23    3    3         10       0    0         7    0    0  }
+         .    .    .          .       .    .         .    .    .  
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/sampling_latent_states.cc
+--------------------------------------------------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Source file '/home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/sampling_latent_states.cc' is more recent than input file 'cachegrind.out.8480'.
+@ Annotations may not be correct.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Ir         I1mr ILmr Dr         D1mr    DLmr Dw        D1mw   DLmw 
+
+-- line 194 ----------------------------------------
+         .    .    .          .       .    .         .      .    .      const arma::vec& y_star,
+         .    .    .          .       .    .         .      .    .      const arma::ivec& d,
+         .    .    .          .       .    .         .      .    .      const double mu,
+         .    .    .          .       .    .         .      .    .      const double phi,
+         .    .    .          .       .    .         .      .    .      const double sigma,
+         .    .    .          .       .    .         .      .    .      const double rho,
+         .    .    .          .       .    .         .      .    .      const arma::vec& h,
+         .    .    .          .       .    .         .      .    .      const PriorSpec& prior_spec,
+     2,200  300    3        200       0    0     1,300    297    0      const ExpertSpec_GeneralSV& expert) {
+         .    .    .          .       .    .         .      .    .    // Draw h0 | h1, mu, phi, sigma
+         .    .    .          .       .    .         .      .    .    const double phi2 = std::pow(phi, 2),
+         .    .    .          .       .    .         .      .    .                 sigma2 = std::pow(sigma, 2),
+       200    0    0          0       0    0         0      0    0                 B02 = sigma2 / determine_Bh0inv(phi, prior_spec),
+       100    0    0        100     100    1         0      0    0                 h1 = h[0],
+       300    0    0          0       0    0         0      0    0                 denominator = B02 * phi2 + sigma2,
+     1,200  200    2        300     100    1         0      0    0                 mean = (mu * sigma2 + phi * B02 * (h1 - mu * (1 - phi))) / denominator,
+       200    0    0          0       0    0         0      0    0                 var = sigma2 * B02 / denominator;
+       400    0    0          0       0    0         0      0    0    const double h0 = R::rnorm(mean, std::sqrt(var));
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // Draw h from AUX
+     1,200  100    1        600     100    0       100      0    0    const auto draw_s_out = draw_s_auxiliary(y_star, d, mu, phi, sigma, rho, h, expert.correct_latent_draws);
+     1,200  100    1        500     100    0       100      0    0    const arma::vec proposed = draw_h_auxiliary(y_star, d, mu, phi, sigma, rho, draw_s_out.s, h0, Parameterization::CENTERED);
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    return {h0,
+         .    .    .          .       .    .         .      .    .      expert.correct_latent_draws ?
+         .    .    .          .       .    .         .      .    .        correct_latent_auxiliaryMH(y, y_star, d, mu, phi, sigma, rho, h0, h, proposed, draw_s_out.s_integral) :
+     1,800  200    2        900     300    0       200    100    0        proposed};
+     1,200    0    0        900     200    0         0      0    0  }
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .  // See documentation above the declaration
+         .    .    .          .       .    .         .      .    .  arma::vec draw_h_auxiliary(
+         .    .    .          .       .    .         .      .    .      const arma::vec& y_star,
+         .    .    .          .       .    .         .      .    .      const arma::ivec& d,
+         .    .    .          .       .    .         .      .    .      const double mu,
+         .    .    .          .       .    .         .      .    .      const double phi,
+         .    .    .          .       .    .         .      .    .      const double sigma,
+         .    .    .          .       .    .         .      .    .      const double rho,
+         .    .    .          .       .    .         .      .    .      const arma::uvec& z,
+         .    .    .          .       .    .         .      .    .      const double h0,
+     1,800  200    2        100       0    0     1,200      0    0      const Parameterization centering) {
+         .    .    .          .       .    .         .      .    .    // arrays for
+         .    .    .          .       .    .         .      .    .    //   A_z_{+; -}, X_z.beta, W_z_{+; -}.beta
+         .    .    .          .       .    .         .      .    .    //   m_t, Lambda_t_inv, temp_t
+         .    .    .          .       .    .         .      .    .    //   alpha_t (the result)
+         .    .    .          .       .    .         .      .    .    // only double for
+         .    .    .          .       .    .         .      .    .    //   A_ij_{t-1; t}
+         .    .    .          .       .    .         .      .    .    //   W_{t-1; t}.beta, X_{t-1; t}.beta
+         .    .    .          .       .    .         .      .    .    //   Omega_{t-1,t; tt; t,t+1}
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // Compile time constants
+       316    2    2        105     101    1         5      1    0    static const arma::vec::fixed<10> exp_m_half = arma::exp(.5 * mix_mean);
+       520  101    2        105     100    1         7      0    0    static const arma::vec::fixed<10> b_exp_m2 = mix_b % exp_m_half;
+       522  101    2        106     100    1         8      0    0    static const arma::vec::fixed<10> b2_exp_m = arma::square(b_exp_m2);
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // Runtime constants
+       200    0    0        200     100    0         0      0    0    const int n = y_star.n_elem;
+         .    .    .          .       .    .         .      .    .    const double sigma2 = std::pow(sigma, 2),
+         .    .    .          .       .    .         .      .    .                 phi2 = std::pow(phi, 2),
+         .    .    .          .       .    .         .      .    .                 rho2 = std::pow(rho, 2),
+       500  200    2        200      99    0         0      0    0                 rho_const = 1 / (1 - rho2),
+       500  100    1        200       0    0       100      0    0                 help_mu_phi = mu * (1 - phi),
+       400    0    0        100       0    0       100      0    0                 a_1 = help_mu_phi + phi * h0,
+       500    0    0        100       0    0       100      0    0                 P_1_inv = 1 / sigma2;
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // A as the function of z
+       200    0    0          0       0    0         0      0    0    const double A_z_22 = rho_const / sigma2;
+         .    .    .          .       .    .         .      .    .    const arma::vec::fixed<10> A_z_11 = mix_varinv + rho2 * b2_exp_m * rho_const,
+       200    0    0        100     100    1         0      0    0                               A_z_12 = -rho * b_exp_m2 * rho_const / sigma;  // must be multiplied by d_t
+         .    .    .          .       .    .         .      .    .    //const arma::vec::fixed<10>& A_z_21 = A_z_12;
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // X.beta and W.beta as the function of z
+         .    .    .          .       .    .         .      .    .    const arma::vec::fixed<10>& X_z__beta = mix_mean,
+       100    0    0          0       0    0         0      0    0                                help_W_z = rho * sigma * mix_a % exp_m_half;
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // Partial calculations
+         .    .    .          .       .    .         .      .    .    double /*A_tm1_11,*/ A_t_11,
+         .    .    .          .       .    .         .      .    .           A_tm1_12, A_t_12,
+         .    .    .          .       .    .         .      .    .           //A_tm1_21, A_t_21,
+         .    .    .          .       .    .         .      .    .           A_tm1_22, A_t_22;
+         .    .    .          .       .    .         .      .    .    double W_tm1__beta, W_t__beta;
+         .    .    .          .       .    .         .      .    .    double X_tm1__beta, X_t__beta;
+         .    .    .          .       .    .         .      .    .    double Omega_tm1_t, Omega_tt, Omega_t_tp1;
+         .    .    .          .       .    .         .      .    .    double c_t;
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // Stored partial calculations
+         .    .    .          .       .    .         .      .    .    arma::vec Lambda_inv(n),
+         .    .    .          .       .    .         .      .    .      m(n),
+       100    0    0          0       0    0         0      0    0      help_Omega_Lambda(n - 1);
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // Result object
+         .    .    .          .       .    .         .      .    .    arma::vec alpha(n);
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // McCausland pre-calculations
+         .    .    .          .       .    .         .      .    .    // TODO Omega and c can be done in parallel
+         .    .    .          .       .    .         .      .    .    {
+         .    .    .          .       .    .         .      .    .      const int t = 0;
+         .    .    .          .       .    .         .      .    .      const unsigned int z_t = z[t];
+       100    0    0        100     100    0         0      0    0      const int d_t = d[t];
+         .    .    .          .       .    .         .      .    .  
+       300    0    0        200     200    0         0      0    0      A_t_11 = A_z_11[z_t];
+       400  100    1        200     200    0         0      0    0      A_t_12 = d_t * A_z_12[z_t];
+         .    .    .          .       .    .         .      .    .      //A_t_21 = A_t_12;
+         .    .    .          .       .    .         .      .    .      A_t_22 = A_z_22;
+         .    .    .          .       .    .         .      .    .  
+       200    0    0        100     100    0         0      0    0      X_t__beta = X_z__beta[z_t];
+       200    0    0        200     100    0         0      0    0      W_t__beta = help_mu_phi + d_t * help_W_z[z_t];
+         .    .    .          .       .    .         .      .    .  
+     1,200  100    1        300       0    0         0      0    0      Omega_tt = A_t_11 + 2 * phi * A_t_12 + phi2 * A_t_22 + P_1_inv;
+       500  100    1        100     100    0         0      0    0      Omega_t_tp1 = -A_t_12 - phi * A_t_22;
+     1,200  100    1        200     100    0         0      0    0      c_t = (A_t_11 + phi * A_t_12) * (y_star[t] - X_t__beta) + Omega_t_tp1 * W_t__beta + a_1 * P_1_inv;
+         .    .    .          .       .    .         .      .    .  
+       500    0    0        100     100    0       100    100    0      Lambda_inv[t] = 1 / std::sqrt(Omega_tt);
+       200    0    0          0       0    0       100    100    0      help_Omega_Lambda[t] = Omega_t_tp1 * Lambda_inv[t];
+       400  100    1        200     100    0       100    100    0      m[t] = c_t * std::pow(Lambda_inv[t], 2);
+         .    .    .          .       .    .         .      .    .    }
+         .    .    .          .       .    .         .      .    .  
+ 1,500,000  100    1          0       0    0         0      0    0    for (int t = 1; t < n - 1; t++) {
+         .    .    .          .       .    .         .      .    .      const unsigned int z_t = z[t];
+   499,800    0    0    499,800       0    0         0      0    0      const int d_t = d[t];
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .      // Running partial results
+         .    .    .          .       .    .         .      .    .      //A_tm1_11 = A_t_11;
+         .    .    .          .       .    .         .      .    .      A_tm1_12 = A_t_12;
+         .    .    .          .       .    .         .      .    .      //A_tm1_21 = A_t_21;
+         .    .    .          .       .    .         .      .    .      A_tm1_22 = A_t_22;
+         .    .    .          .       .    .         .      .    .      W_tm1__beta = W_t__beta;
+         .    .    .          .       .    .         .      .    .      X_tm1__beta = X_t__beta;
+         .    .    .          .       .    .         .      .    .      Omega_tm1_t = Omega_t_tp1;
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .      // New partial results
+ 1,999,200    0    0    999,600  31,300    0         0      0    0      A_t_11 = A_z_11[z_t];
+ 2,998,800  100    1    999,600  31,300    0         0      0    0      A_t_12 = d_t * A_z_12[z_t];
+         .    .    .          .       .    .         .      .    .      //A_t_21 = A_t_12;
+         .    .    .          .       .    .         .      .    .      A_t_22 = A_z_22;
+         .    .    .          .       .    .         .      .    .  
+   499,800    0    0    499,800     100    0         0      0    0      X_t__beta = X_z__beta[z_t];
+ 2,499,000    0    0    999,600     100    0         0      0    0      W_t__beta = help_mu_phi + d_t * help_W_z[z_t];
+         .    .    .          .       .    .         .      .    .  
+ 2,499,000    0    0          0       0    0         0      0    0      Omega_tt = A_t_11 + 2 * phi * A_t_12 + phi2 * A_t_22 + A_tm1_22;
+ 1,499,400    0    0    499,800       0    0         0      0    0      Omega_t_tp1 = -A_t_12 - phi * A_t_22;
+ 5,997,600  100    1    999,600  62,400    0         0      0    0      c_t = (A_t_11 + phi * A_t_12) * (y_star[t] - X_t__beta) + Omega_t_tp1 * W_t__beta -
+ 2,499,000  100    1    499,800       0    0         0      0    0        A_tm1_12 * (y_star[t - 1] - X_tm1__beta) + A_tm1_22 * W_tm1__beta;
+         .    .    .          .       .    .         .      .    .  
+ 3,998,400  100    1    999,600       0    0   499,800 62,421    0      Lambda_inv[t] = 1 / std::sqrt(Omega_tt - std::pow(help_Omega_Lambda[t - 1], 2));
+   999,600    0    0          0       0    0   499,800 62,442    0      help_Omega_Lambda[t] = Omega_t_tp1 * Lambda_inv[t];
+ 2,998,800  100    1    999,600       0    0   499,800 62,432    0      m[t] = (c_t - Omega_tm1_t * m[t - 1]) * std::pow(Lambda_inv[t], 2);
+         .    .    .          .       .    .         .      .    .    }
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    {
+         .    .    .          .       .    .         .      .    .      const int t = n - 1;
+         .    .    .          .       .    .         .      .    .      const int unsigned z_t = z[t];
+         .    .    .          .       .    .         .      .    .      const int d_t = d[t];
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .      // Running partial results
+-- line 347 ----------------------------------------
+-- line 357 ----------------------------------------
+         .    .    .          .       .    .         .      .    .      A_t_11 = A_z_11[z_t];
+         .    .    .          .       .    .         .      .    .      A_t_12 = d_t * A_z_12[z_t];
+         .    .    .          .       .    .         .      .    .      //A_t_21 = A_t_12;
+         .    .    .          .       .    .         .      .    .      A_t_22 = A_z_22;
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .      X_t__beta = X_z__beta[z_t];
+         .    .    .          .       .    .         .      .    .      W_t__beta = help_mu_phi + d_t * help_W_z[z_t];
+         .    .    .          .       .    .         .      .    .  
+       500  100    1        200     100    0         0      0    0      Omega_tt = mix_varinv[z_t] + A_tm1_22;
+     1,100    0    0        300       0    0         0      0    0      c_t = mix_varinv[z_t] * (y_star[t] - X_t__beta) - A_tm1_12 * (y_star[t - 1] - X_tm1__beta) + A_tm1_22 * W_tm1__beta;
+         .    .    .          .       .    .         .      .    .  
+       800  100    1        200       0    0       100      0    0      Lambda_inv[t] = 1 / std::sqrt(Omega_tt - std::pow(help_Omega_Lambda[t - 1], 2));
+       500    0    0        100       0    0       200      0    0      m[t] = (c_t - Omega_tm1_t * m[t - 1]) * std::pow(Lambda_inv[t], 2);
+         .    .    .          .       .    .         .      .    .    }
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // McCausland smoothing
+         .    .    .          .       .    .         .      .    .    {
+         .    .    .          .       .    .         .      .    .      const int t = n - 1;
+       500  100    1        400     200    0       100    100    0      alpha[t] = m[t] + R::norm_rand() * Lambda_inv[t];
+         .    .    .          .       .    .         .      .    .    }
+         .    .    .          .       .    .         .      .    .  
+ 1,500,300    0    0          0       0    0         0      0    0    for (int t = n - 2; t >= 0; t--) {
+ 5,498,900    0    0  3,999,200 167,751    0   999,800 62,443    0      alpha[t] = m[t] + (R::norm_rand() - help_Omega_Lambda[t] * alpha[t + 1]) * Lambda_inv[t];
+         .    .    .          .       .    .         .      .    .    }
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    return alpha;
+     1,200  100    1        900     200    0         0      0    0  }
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .  // See documentation above the declaration
+         .    .    .          .       .    .         .      .    .  arma::vec correct_latent_auxiliaryMH(
+         .    .    .          .       .    .         .      .    .      const arma::vec& y,
+         .    .    .          .       .    .         .      .    .      const arma::vec& y_star,
+         .    .    .          .       .    .         .      .    .      const arma::ivec& d,
+         .    .    .          .       .    .         .      .    .      const double mu,
+         .    .    .          .       .    .         .      .    .      const double phi,
+         .    .    .          .       .    .         .      .    .      const double sigma,
+         .    .    .          .       .    .         .      .    .      const double rho,
+         .    .    .          .       .    .         .      .    .      const double h0,
+         .    .    .          .       .    .         .      .    .      const arma::vec& h,
+         .    .    .          .       .    .         .      .    .      const arma::vec& proposed,
+     2,000  200    2        100       0    0       800    100    0      const double s_integral) {
+         .    .    .          .       .    .         .      .    .    //const CharacterVector centering,
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    // Calculate MH acceptance ratio
+     1,000  100    1          0       0    0       700    100    0    const double hlp1 = h_log_posterior(proposed, y, phi, rho, sigma, mu, h0);
+     1,300  100    1        500     100    0       400      0    0    const double hlp2 = h_log_posterior(h, y, phi, rho, sigma, mu, h0);
+     1,200  100    1        500     100    0       100      0    0    const double halp1 = h_aux_log_posterior(proposed, y_star, d, phi, rho, sigma, mu, h0);
+       800    0    0        500     200    0         0      0    0    const double halp2 = s_integral + logdnorm2(h[0], mu + phi * (h0 - mu), sigma);  //h_aux_log_posterior(h, y_star, d, phi, rho, sigma, mu, h0);
+       400    0    0        200       0    0         0      0    0    const double log_acceptance = hlp1-hlp2-(halp1-halp2);
+         .    .    .          .       .    .         .      .    .    arma::vec result;
+       614  138    2        100       0    0        69      0    0    if (log_acceptance > 0 || std::exp(log_acceptance) > R::unif_rand()) {
+         .    .    .          .       .    .         .      .    .      result = proposed;
+         .    .    .          .       .    .         .      .    .    } else {
+         .    .    .          .       .    .         .      .    .      result = h;
+         .    .    .          .       .    .         .      .    .    }
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    return result;
+     1,200   31    0        900     300    0         0      0    0  }
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .  // See documentation above the declaration
+         .    .    .          .       .    .         .      .    .  Draw_s_auxiliary_out draw_s_auxiliary(
+         .    .    .          .       .    .         .      .    .      const arma::vec& y_star,
+         .    .    .          .       .    .         .      .    .      const arma::ivec& d,
+         .    .    .          .       .    .         .      .    .      const double mu,
+         .    .    .          .       .    .         .      .    .      const double phi,
+         .    .    .          .       .    .         .      .    .      const double sigma,
+         .    .    .          .       .    .         .      .    .      const double rho,
+         .    .    .          .       .    .         .      .    .      const arma::vec& h,
+     1,900  300    3        100       0    0     1,100    297    0      const bool do_compute_s_integral) {
+         .    .    .          .       .    .         .      .    .    const int n = y_star.size();
+         .    .    .          .       .    .         .      .    .    const double sigma2_used = std::pow(sigma, 2);  //centering == Parameterization::CENTERED ? std::pow(sigma, 2) : 1.0;
+         .    .    .          .       .    .         .      .    .    static const int mix_count = mix_a.n_elem;
+         .    .    .          .       .    .         .      .    .    arma::uvec new_states(n);
+     1,200  100    1          0       0    0       600      0    0    double s_integral = 0;
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .    const arma::vec eps_star = y_star - h;
+       200    0    0          0       0    0       100    100    0    const arma::vec eta = (h.tail(n-1) - mu) - phi*(h.head(n-1) - mu);
+         .    .    .          .       .    .         .      .    .  
+       310    1    1        101     101    2         3      0    0    static const arma::vec::fixed<10> mix_log_prob = arma::log(mix_prob);
+       510  101    2        201     200    2       103     99    0    static const arma::vec::fixed<10> likelihood_normalizer = 0.5 * arma::log(2 * arma::datum::pi * mix_var);
+       310    0    0        101     100    1         3      0    0    static const arma::vec::fixed<10> exp_m_half = arma::exp(0.5 * mix_mean);
+         .    .    .          .       .    .         .      .    .  
+       700  100    1        200       0    0         0      0    0    const arma::vec::fixed<10> help_eta_mean = rho * std::sqrt(sigma2_used) * exp_m_half;
+     1,100  100    1        400      99    0       100      0    0    const double log_eta_coefficient = -0.5 / (sigma2_used * (1 - rho * rho));
+       600    0    0        200       0    0       200      0    0    const double log_eta_constant = -0.5 * std::log(2 * arma::datum::pi * sigma2_used * (1 - rho * rho));
+ 1,500,400    0    0    500,000       0    0         0      0    0    for (int t = 0; t < n; t++) {
+         .    .    .          .       .    .         .      .    .      arma::vec::fixed<mix_count> post_dist;
+15,000,000    0    0          0       0    0         0      0    0      for (int c = 0; c < mix_count; c++) {
+ 2,000,000    0    0  1,000,000       0    0         0      0    0        const double a = mix_a[c];
+         .    .    .          .       .    .         .      .    .        const double b = mix_b[c];
+         .    .    .          .       .    .         .      .    .        const double m = mix_mean[c];
+         .    .    .          .       .    .         .      .    .        const double v2 = mix_var[c];
+10,000,000    0    0  5,000,000     198    0         0      0    0        const double log_prior = mix_log_prob[c];
+         .    .    .          .       .    .         .      .    .  
+40,000,000  100    1 25,000,000  63,115    0         0      0    0        const double log_eps_star_lik = -0.5 * std::pow((eps_star[t] - m), 2) / v2 - likelihood_normalizer[c];
+19,999,000    0    0  4,999,000       0    0         0      0    0        const double log_eta_lik = t == n - 1 ?
+         .    .    .          .       .    .         .      .    .          0 :
+54,989,000  100    1 34,993,000  94,332  318         0      0    0          log_eta_coefficient * std::pow(eta[t] - d[t] * help_eta_mean[c] * (a + b * (eps_star[t] - m)), 2) + log_eta_constant;
+15,000,000    0    0          0       0    0 5,000,000      0    0        /*log_*/post_dist[c] = log_prior + log_eps_star_lik + log_eta_lik;
+         .    .    .          .       .    .         .      .    .      }
+ 2,500,000  100    1  1,000,000       0    0 1,000,000      0    0      s_integral += do_compute_s_integral ? std::log(arma::sum(arma::exp(/*log_*/post_dist))) : 0;
+         .    .    .          .       .    .         .      .    .      const double max_log_post_dist = arma::max(/*log_*/post_dist);
+         .    .    .          .       .    .         .      .    .      post_dist = arma::cumsum(arma::exp(/*log_*/post_dist - max_log_post_dist));
+   500,000  100    1    500,000       0    0         0      0    0      post_dist = post_dist / post_dist[mix_count-1];
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .      const auto binary_search_result = std::lower_bound(post_dist.cbegin(), post_dist.cend(), R::unif_rand());
+ 1,500,000    0    0  1,000,000     100    0   500,000 31,300    0      new_states[t] = std::distance(post_dist.cbegin(), binary_search_result);
+         .    .    .          .       .    .         .      .    .    }
+         .    .    .          .       .    .         .      .    .  
+       300    0    0        200     200    0       100    100    0    return {new_states, s_integral};
+     1,200    0    0      1,000     200    0         0      0    0  }
+         .    .    .          .       .    .         .      .    .  
+         .    .    .          .       .    .         .      .    .  }  // END namespace general_sv
+         .    .    .          .       .    .         .      .    .  
+        23    3    3         10       0    0         7      0    0  }
+         .    .    .          .       .    .         .      .    .  
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /usr/include/c++/10/bits/stl_numeric.h
+--------------------------------------------------------------------------------
+Ir         I1mr ILmr Dr        D1mr    DLmr Dw D1mw DLmw 
+
+-- line 132 ----------------------------------------
+         .    .    .         .       .    .  .    .    .      _GLIBCXX20_CONSTEXPR
+         .    .    .         .       .    .  .    .    .      inline _Tp
+         .    .    .         .       .    .  .    .    .      accumulate(_InputIterator __first, _InputIterator __last, _Tp __init)
+         .    .    .         .       .    .  .    .    .      {
+         .    .    .         .       .    .  .    .    .        // concept requirements
+         .    .    .         .       .    .  .    .    .        __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+         .    .    .         .       .    .  .    .    .        __glibcxx_requires_valid_range(__first, __last);
+         .    .    .         .       .    .  .    .    .  
+ 6,000,400  204    2         0       0    0  0    0    0        for (; __first != __last; ++__first)
+ 1,999,400    0    0 1,999,400 249,910    0  0    0    0  	__init = _GLIBCXX_MOVE_IF_20(__init) + *__first;
+         .    .    .         .       .    .  .    .    .        return __init;
+         .    .    .         .       .    .  .    .    .      }
+         .    .    .         .       .    .  .    .    .  
+         .    .    .         .       .    .  .    .    .    /**
+         .    .    .         .       .    .  .    .    .     *  @brief  Accumulate values in a range with operation.
+         .    .    .         .       .    .  .    .    .     *
+         .    .    .         .       .    .  .    .    .     *  Accumulates the values in the range `[first,last)` using the function
+         .    .    .         .       .    .  .    .    .     *  object `__binary_op`.  The initial value is `__init`.  The values are
+-- line 149 ----------------------------------------
+-- line 161 ----------------------------------------
+         .    .    .         .       .    .  .    .    .      accumulate(_InputIterator __first, _InputIterator __last, _Tp __init,
+         .    .    .         .       .    .  .    .    .  	       _BinaryOperation __binary_op)
+         .    .    .         .       .    .  .    .    .      {
+         .    .    .         .       .    .  .    .    .        // concept requirements
+         .    .    .         .       .    .  .    .    .        __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+         .    .    .         .       .    .  .    .    .        __glibcxx_requires_valid_range(__first, __last);
+         .    .    .         .       .    .  .    .    .  
+         .    .    .         .       .    .  .    .    .        for (; __first != __last; ++__first)
+        16    0    0         0       0    0  0    0    0  	__init = __binary_op(_GLIBCXX_MOVE_IF_20(__init), *__first);
+         .    .    .         .       .    .  .    .    .        return __init;
+         .    .    .         .       .    .  .    .    .      }
+         .    .    .         .       .    .  .    .    .  
+         .    .    .         .       .    .  .    .    .    /**
+         .    .    .         .       .    .  .    .    .     *  @brief  Compute inner product of two ranges.
+         .    .    .         .       .    .  .    .    .     *
+         .    .    .         .       .    .  .    .    .     *  Starting with an initial value of @p __init, multiplies successive
+         .    .    .         .       .    .  .    .    .     *  elements from the two ranges and adds each product into the accumulated
+-- line 177 ----------------------------------------
+-- line 190 ----------------------------------------
+         .    .    .         .       .    .  .    .    .      inner_product(_InputIterator1 __first1, _InputIterator1 __last1,
+         .    .    .         .       .    .  .    .    .  		  _InputIterator2 __first2, _Tp __init)
+         .    .    .         .       .    .  .    .    .      {
+         .    .    .         .       .    .  .    .    .        // concept requirements
+         .    .    .         .       .    .  .    .    .        __glibcxx_function_requires(_InputIteratorConcept<_InputIterator1>)
+         .    .    .         .       .    .  .    .    .        __glibcxx_function_requires(_InputIteratorConcept<_InputIterator2>)
+         .    .    .         .       .    .  .    .    .        __glibcxx_requires_valid_range(__first1, __last1);
+         .    .    .         .       .    .  .    .    .  
+14,997,400  102    1         0       0    0  0    0    0        for (; __first1 != __last1; ++__first1, (void)++__first2)
+14,996,000  204    2 7,997,800 875,389    0  0    0    0  	__init = _GLIBCXX_MOVE_IF_20(__init) + (*__first1 * *__first2);
+         .    .    .         .       .    .  .    .    .        return __init;
+         .    .    .         .       .    .  .    .    .      }
+         .    .    .         .       .    .  .    .    .  
+         .    .    .         .       .    .  .    .    .    /**
+         .    .    .         .       .    .  .    .    .     *  @brief  Compute inner product of two ranges.
+         .    .    .         .       .    .  .    .    .     *
+         .    .    .         .       .    .  .    .    .     *  Starting with an initial value of @p __init, applies @p __binary_op2 to
+         .    .    .         .       .    .  .    .    .     *  successive elements from the two ranges and accumulates each result into
+-- line 207 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include/Rcpp/Rmath.h
+--------------------------------------------------------------------------------
+Ir         I1mr ILmr Dr         D1mr      DLmr Dw        D1mw DLmw 
+
+-- line 22 ----------------------------------------
+         .    .    .          .         .    .         .    .    .  #ifndef Rcpp_Rmath_h
+         .    .    .          .         .    .         .    .    .  #define Rcpp_Rmath_h
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .  namespace R {
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .      // see R's Rmath.h as well as Writing R Extension
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .      /* Random Number Generators */
+   504,800    0    0          0         0    0   504,800    0    0      inline double norm_rand(void) 	{ return ::norm_rand(); }
+ 1,008,966  197    2          0         0    0   755,204    0    0      inline double unif_rand(void)	{ return ::unif_rand(); }
+         .    .    .          .         .    .         .    .    .      inline double exp_rand(void)	{ return ::exp_rand(); }
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .      /* Normal Distribution */
+24,004,800  102    1 12,002,400 1,501,160    0 4,000,800    0    0      inline double dnorm(double x, double mu, double sigma, int lg)              { return ::Rf_dnorm4(x, mu, sigma, lg); }
+         .    .    .          .         .    .         .    .    .      inline double pnorm(double x, double mu, double sigma, int lt, int lg)      { return ::Rf_pnorm5(x, mu, sigma, lt, lg); }
+         .    .    .          .         .    .         .    .    .      inline double qnorm(double p, double mu, double sigma, int lt, int lg)      { return ::Rf_qnorm5(p, mu, sigma, lt, lg); }
+     3,100  200    1        400         0    0     2,200    0    0      inline double rnorm(double mu, double sigma)                                { return ::Rf_rnorm(mu, sigma); }
+         .    .    .          .         .    .         .    .    .      inline void	pnorm_both(double x, double *cum, double *ccum, int lt, int lg) { return ::Rf_pnorm_both(x, cum, ccum, lt, lg); }
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .      /* Uniform Distribution */
+         .    .    .          .         .    .         .    .    .      inline double dunif(double x, double a, double b, int lg)		{ return ::Rf_dunif(x, a, b, lg); }
+         .    .    .          .         .    .         .    .    .      inline double punif(double x, double a, double b, int lt, int lg)   { return ::Rf_punif(x, a, b, lt, lg); }
+         .    .    .          .         .    .         .    .    .      inline double qunif(double p, double a, double b, int lt, int lg)   { return ::Rf_qunif(p, a, b, lt, lg); }
+         .    .    .          .         .    .         .    .    .      inline double runif(double a, double b)                             { return ::Rf_runif(a, b); }
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .      /* Gamma Distribution */
+         .    .    .          .         .    .         .    .    .      inline double dgamma(double x, double shp, double scl, int lg)	   { return ::Rf_dgamma(x, shp, scl, lg); }
+ 5,000,000    0    0  1,000,000       200    0         0    0    0      inline double pgamma(double x, double alp, double scl, int lt, int lg) { return ::Rf_pgamma(x, alp, scl, lt, lg); }
+29,550,000  100    1  4,925,000       185    0 4,925,000    0    0      inline double qgamma(double p, double alp, double scl, int lt, int lg) { return ::Rf_qgamma(p, alp, scl, lt, lg); }
+ 2,500,000    0    0    500,000       100    0 1,000,000    0    0      inline double rgamma(double a, double scl)                             { return ::Rf_rgamma(a, scl); }
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .      inline double log1pmx(double x)                  { return ::Rf_log1pmx(x); }
+         .    .    .          .         .    .         .    .    .      inline double log1pexp(double x)                 { return ::log1pexp(x); }  // <-- ../nmath/plogis.c
+         .    .    .          .         .    .         .    .    .      inline double lgamma1p(double a)                 { return ::Rf_lgamma1p(a); }
+         .    .    .          .         .    .         .    .    .      inline double logspace_add(double lx, double ly) { return ::Rf_logspace_add(lx, ly); }
+         .    .    .          .         .    .         .    .    .      inline double logspace_sub(double lx, double ly) { return ::Rf_logspace_sub(lx, ly); }
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .      /* Beta Distribution */
+-- line 59 ----------------------------------------
+-- line 103 ----------------------------------------
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .      /* Cauchy Distribution */
+         .    .    .          .         .    .         .    .    .      inline double dcauchy(double x, double lc, double sl, int lg)		{ return ::Rf_dcauchy(x, lc, sl, lg); }
+         .    .    .          .         .    .         .    .    .      inline double pcauchy(double x, double lc, double sl, int lt, int lg)	{ return ::Rf_pcauchy(x, lc, sl, lt, lg); }
+         .    .    .          .         .    .         .    .    .      inline double qcauchy(double p, double lc, double sl, int lt, int lg)	{ return ::Rf_qcauchy(p, lc, sl, lt, lg); }
+         .    .    .          .         .    .         .    .    .      inline double rcauchy(double lc, double sl)					{ return ::Rf_rcauchy(lc, sl); }
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .      /* Exponential Distribution */
+     5,200  196    1      3,200     1,600    0       800    0    0      inline double dexp(double x, double sl, int lg)		{ return ::Rf_dexp(x, sl, lg); }
+         .    .    .          .         .    .         .    .    .      inline double pexp(double x, double sl, int lt, int lg)	{ return ::Rf_pexp(x, sl, lt, lg); }
+         .    .    .          .         .    .         .    .    .      inline double qexp(double p, double sl, int lt, int lg)	{ return ::Rf_qexp(p, sl, lt, lg); }
+         .    .    .          .         .    .         .    .    .      inline double rexp(double sl)				{ return ::Rf_rexp(sl); }
+         .    .    .          .         .    .         .    .    .  
+         .    .    .          .         .    .         .    .    .      /* Geometric Distribution */
+         .    .    .          .         .    .         .    .    .      inline double dgeom(double x, double p, int lg)		{ return ::Rf_dgeom(x, p, lg); }
+         .    .    .          .         .    .         .    .    .      inline double pgeom(double x, double p, int lt, int lg)	{ return ::Rf_pgeom(x, p, lt, lg); }
+         .    .    .          .         .    .         .    .    .      inline double qgeom(double p, double pb, int lt, int lg)	{ return ::Rf_qgeom(p, pb, lt, lg); }
+-- line 119 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/densities.h
+--------------------------------------------------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@ WARNING @@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ Source file '/home/dhosszej/Development/tmp-stochvol/RtmpxcJq8D/R.INSTALL20b92ba8db9/stochvol/src/densities.h' is more recent than input file 'cachegrind.out.8480'.
+@ Annotations may not be correct.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Ir         I1mr ILmr Dr        D1mr    DLmr Dw        D1mw DLmw 
+
+-- line 42 ----------------------------------------
+         .    .    .         .       .    .         .    .    .  // non-normalized log-density for N(mu, sigma^2)
+         .    .    .         .       .    .         .    .    .  // with log_sd as input
+         .    .    .         .       .    .         .    .    .  inline
+         .    .    .         .       .    .         .    .    .  double logdnorm2(
+         .    .    .         .       .    .         .    .    .      const double x,
+         .    .    .         .       .    .         .    .    .      const double mu,
+         .    .    .         .       .    .         .    .    .      const double sigma,
+         .    .    .         .       .    .         .    .    .      const double log_sigma = 0) {
+12,006,800  300    3 4,006,200 125,800  626 1,000,000    0    0    const double z = (x - mu) / sigma;
+12,010,300  503    5 2,502,800     500    0     1,700    0    0    return -.5 * z * z - log_sigma;
+         .    .    .         .       .    .         .    .    .  }
+         .    .    .         .       .    .         .    .    .  
+         .    .    .         .       .    .         .    .    .  // non-normalized log-density for N(mu, sigma^2)
+         .    .    .         .       .    .         .    .    .  inline
+         .    .    .         .       .    .         .    .    .  double logdnorm(
+         .    .    .         .       .    .         .    .    .      double x,
+         .    .    .         .       .    .         .    .    .      double mu = 0,
+         .    .    .         .       .    .         .    .    .      double sigma = 1) {
+ 4,003,200  300    3         0       0    0 3,002,000    0    0    return logdnorm2(x, mu, sigma, std::log(sigma));
+         .    .    .         .       .    .         .    .    .  }
+         .    .    .         .       .    .         .    .    .  
+         .    .    .         .       .    .         .    .    .  // non-normalized log-density of the gamma distribution
+         .    .    .         .       .    .         .    .    .  inline
+         .    .    .         .       .    .         .    .    .  double logdgamma(
+         .    .    .         .       .    .         .    .    .      const double x,
+         .    .    .         .       .    .         .    .    .      const double alpha,
+         .    .    .         .       .    .         .    .    .      const double beta) {
+    17,600  104    1     8,000       0    0     4,800    0    0    return (alpha - 1.) * std::log(x) - beta * x;
+         .    .    .         .       .    .         .    .    .  }
+         .    .    .         .       .    .         .    .    .  
+         .    .    .         .       .    .         .    .    .  // non-normalized log-density of the inverse gamma distribution
+         .    .    .         .       .    .         .    .    .  inline
+         .    .    .         .       .    .         .    .    .  double logdinvgamma(
+         .    .    .         .       .    .         .    .    .      const double x,
+         .    .    .         .       .    .         .    .    .      const double alpha,
+         .    .    .         .       .    .         .    .    .      const double beta) {
+25,000,000  300    3 8,500,000     100    0 5,000,000    0    0    return (-alpha - 1.) * std::log(x) - beta / x;
+         .    .    .         .       .    .         .    .    .  }
+         .    .    .         .       .    .         .    .    .  
+         .    .    .         .       .    .         .    .    .  // non-normalized log-density for Beta(a, b)
+         .    .    .         .       .    .         .    .    .  inline
+         .    .    .         .       .    .         .    .    .  double logdbeta(
+         .    .    .         .       .    .         .    .    .      const double x,
+         .    .    .         .       .    .         .    .    .      const double a,
+         .    .    .         .       .    .         .    .    .      const double b) {
+    67,200  584    4    25,600       0    0    17,600  400    0    return (a - 1) * std::log(x) + (b - 1) * std::log(1 - x);
+         .    .    .         .       .    .         .    .    .  }
+         .    .    .         .       .    .         .    .    .  
+         .    .    .         .       .    .         .    .    .  // acceptance ratio for prior matching when sampling sigma
+         .    .    .         .       .    .         .    .    .  // Proposal is InvGamma(-0.5, 0)
+         .    .    .         .       .    .         .    .    .  // Target is Gamma(.5, 1/(2*Bsigma))
+         .    .    .         .       .    .         .    .    .  inline
+         .    .    .         .       .    .         .    .    .  double logacceptrateGamma(
+         .    .    .         .       .    .         .    .    .      const double xnew,
+-- line 95 ----------------------------------------
+-- line 125 ----------------------------------------
+         .    .    .         .       .    .         .    .    .  inline
+         .    .    .         .       .    .         .    .    .  double logdnu(
+         .    .    .         .       .    .         .    .    .      const double nu,
+         .    .    .         .       .    .         .    .    .      const double sum_tau,
+         .    .    .         .       .    .         .    .    .      const double lambda,
+         .    .    .         .       .    .         .    .    .      const int n) {
+         .    .    .         .       .    .         .    .    .    using nl = std::numeric_limits<double>;
+         .    .    .         .       .    .         .    .    .    static constexpr double negative_infinity = nl::has_infinity ? -nl::infinity() : nl::lowest();
+     5,403  202    2     1,600     100    0       603    0    0    return nu > 2 ?
+    20,000  407    4     8,800       0    0     4,800    0    0      .5 * nu * (-sum_tau + n * std::log(.5*(nu-2))) - n*std::lgamma(.5*nu) - (nu-2)*lambda:
+         .    .    .         .       .    .         .    .    .      negative_infinity;
+         .    .    .         .       .    .         .    .    .  }
+         .    .    .         .       .    .         .    .    .  
+         .    .    .         .       .    .         .    .    .  // first derivative of logdnu
+         .    .    .         .       .    .         .    .    .  inline
+         .    .    .         .       .    .         .    .    .  double dlogdnu(
+         .    .    .         .       .    .         .    .    .      const double nu,
+         .    .    .         .       .    .         .    .    .      const double sum_tau,
+         .    .    .         .       .    .         .    .    .      const double lambda,
+         .    .    .         .       .    .         .    .    .      const int n) {
+    35,910  702    4    11,170     100    0    10,453  100    0    return .5 * (n*(nu/(nu-2) + std::log(.5*(nu-2)) - ::Rf_digamma(.5*nu)) - sum_tau) - lambda;
+         .    .    .         .       .    .         .    .    .  }
+         .    .    .         .       .    .         .    .    .  
+         .    .    .         .       .    .         .    .    .  // second derivative of logdnu
+         .    .    .         .       .    .         .    .    .  inline
+         .    .    .         .       .    .         .    .    .  double ddlogdnu(
+         .    .    .         .       .    .         .    .    .      const double nu,
+         .    .    .         .       .    .         .    .    .      const int n) {
+    25,789  400    3     9,502       0    0     4,551    0    0    return .25 * n * (2*(nu-4) * std::pow(nu-2, -2) - ::Rf_trigamma(.5*nu));
+         .    .    .         .       .    .         .    .    .  }
+         .    .    .         .       .    .         .    .    .  
+         .    .    .         .       .    .         .    .    .  }
+         .    .    .         .       .    .         .    .    .  
+         .    .    .         .       .    .         .    .    .  #endif
+         .    .    .         .       .    .         .    .    .  
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/op_cumsum_meat.hpp
+--------------------------------------------------------------------------------
+Ir         I1mr ILmr Dr        D1mr DLmr Dw        D1mw DLmw 
+
+-- line 21 ----------------------------------------
+         .    .    .         .    .    .         .    .    .  
+         .    .    .         .    .    .         .    .    .  template<typename eT>
+         .    .    .         .    .    .         .    .    .  inline
+         .    .    .         .    .    .         .    .    .  void
+         .    .    .         .    .    .         .    .    .  op_cumsum::apply_noalias(Mat<eT>& out, const Mat<eT>& X, const uword dim)
+         .    .    .         .    .    .         .    .    .    {
+         .    .    .         .    .    .         .    .    .    arma_extra_debug_sigprint();
+         .    .    .         .    .    .         .    .    .    
+   500,000    0    0   500,000    0    0         0    0    0    uword n_rows = X.n_rows;
+   500,000    0    0   500,000    0    0         0    0    0    uword n_cols = X.n_cols;
+         .    .    .         .    .    .         .    .    .    
+         .    .    .         .    .    .         .    .    .    out.set_size(n_rows,n_cols);
+         .    .    .         .    .    .         .    .    .    
+ 1,000,000  100    1         0    0    0         0    0    0    if(out.n_elem == 0)  { return; }
+         .    .    .         .    .    .         .    .    .    
+         .    .    .         .    .    .         .    .    .    if(dim == 0)
+         .    .    .         .    .    .         .    .    .      {
+ 1,000,000    0    0         0    0    0         0    0    0      if(n_cols == 1)
+         .    .    .         .    .    .         .    .    .        {
+         .    .    .         .    .    .         .    .    .        const eT*   X_mem =   X.memptr();
+         .    .    .         .    .    .         .    .    .              eT* out_mem = out.memptr();
+         .    .    .         .    .    .         .    .    .        
+ 1,000,000    0    0         0    0    0         0    0    0        eT acc = eT(0);
+         .    .    .         .    .    .         .    .    .        
+16,500,000    0    0         0    0    0         0    0    0        for(uword row=0; row < n_rows; ++row)
+         .    .    .         .    .    .         .    .    .          {
+ 5,000,000    0    0 5,000,000    0    0         0    0    0          acc += X_mem[row];
+         .    .    .         .    .    .         .    .    .          
+ 5,000,000    0    0         0    0    0 5,000,000    0    0          out_mem[row] = acc;
+         .    .    .         .    .    .         .    .    .          }
+         .    .    .         .    .    .         .    .    .        }
+         .    .    .         .    .    .         .    .    .      else
+         .    .    .         .    .    .         .    .    .        {
+         .    .    .         .    .    .         .    .    .        for(uword col=0; col < n_cols; ++col)
+         .    .    .         .    .    .         .    .    .          {
+         .    .    .         .    .    .         .    .    .          const eT*   X_colmem =   X.colptr(col);
+         .    .    .         .    .    .         .    .    .                eT* out_colmem = out.colptr(col);
+-- line 57 ----------------------------------------
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: /home/dhosszej/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include/armadillo_bits/eop_core_meat.hpp
+--------------------------------------------------------------------------------
+Ir         I1mr ILmr Dr        D1mr    DLmr Dw         D1mw    DLmw 
+
+-- line 237 ----------------------------------------
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<typename eop_type>
+         .    .    .         .       .    .          .       .    .  template<typename outT, typename T1>
+         .    .    .         .       .    .          .       .    .  arma_hot
+         .    .    .         .       .    .          .       .    .  inline
+         .    .    .         .       .    .          .       .    .  void
+     1,618  202    4         0       0    0      1,212       0    0  eop_core<eop_type>::apply(outT& out, const eOp<T1, eop_type>& x)
+         .    .    .         .       .    .          .       .    .    {
+         .    .    .         .       .    .          .       .    .    arma_extra_debug_sigprint();
+         .    .    .         .       .    .          .       .    .    
+         .    .    .         .       .    .          .       .    .    typedef typename T1::elem_type eT;
+         .    .    .         .       .    .          .       .    .    
+         .    .    .         .       .    .          .       .    .    // NOTE: we're assuming that the matrix has already been set to the correct size and there is no aliasing;
+         .    .    .         .       .    .          .       .    .    // size setting and alias checking is done by either the Mat contructor or operator=()
+         .    .    .         .       .    .          .       .    .    
+-- line 253 ----------------------------------------
+-- line 263 ----------------------------------------
+         .    .    .         .       .    .          .       .    .      if(use_mp && mp_gate<eT>::eval(n_elem))
+         .    .    .         .       .    .          .       .    .        {
+         .    .    .         .       .    .          .       .    .        typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .    .    .         .       .    .          .       .    .        
+         .    .    .         .       .    .          .       .    .        arma_applier_1_mp(=);
+         .    .    .         .       .    .          .       .    .        }
+         .    .    .         .       .    .          .       .    .      else
+         .    .    .         .       .    .          .       .    .        {
+     1,071  105    6         0       0    0          0       0    0        if(memory::is_aligned(out_mem))
+         .    .    .         .       .    .          .       .    .          {
+         .    .    .         .       .    .          .       .    .          memory::mark_as_aligned(out_mem);
+         .    .    .         .       .    .          .       .    .          
+     1,203  200    2         0       0    0          0       0    0          if(x.P.is_aligned())
+         .    .    .         .       .    .          .       .    .            {
+         .    .    .         .       .    .          .       .    .            typename Proxy<T1>::aligned_ea_type P = x.P.get_aligned_ea();
+         .    .    .         .       .    .          .       .    .            
+39,529,188  722   29 9,502,846       5    5 12,008,535 243,978  654            arma_applier_1a(=);
+         .    .    .         .       .    .          .       .    .            }
+         .    .    .         .       .    .          .       .    .          else
+         .    .    .         .       .    .          .       .    .            {
+         .    .    .         .       .    .          .       .    .            typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .    .    .         .       .    .          .       .    .            
+       600    0    0       200       0    0          0       0    0            arma_applier_1u(=);
+         .    .    .         .       .    .          .       .    .            }
+         .    .    .         .       .    .          .       .    .          }
+         .    .    .         .       .    .          .       .    .        else
+         .    .    .         .       .    .          .       .    .          {
+         .    .    .         .       .    .          .       .    .          typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .    .    .         .       .    .          .       .    .          
+     1,204    0    0         0       0    0          0       0    0          arma_applier_1u(=);
+         .    .    .         .       .    .          .       .    .          }
+         .    .    .         .       .    .          .       .    .        }
+         .    .    .         .       .    .          .       .    .      }
+         .    .    .         .       .    .          .       .    .    else
+         .    .    .         .       .    .          .       .    .      {
+         .    .    .         .       .    .          .       .    .      const uword n_rows = x.get_n_rows();
+         .    .    .         .       .    .          .       .    .      const uword n_cols = x.get_n_cols();
+         .    .    .         .       .    .          .       .    .      
+-- line 300 ----------------------------------------
+-- line 304 ----------------------------------------
+         .    .    .         .       .    .          .       .    .        {
+         .    .    .         .       .    .          .       .    .        arma_applier_2_mp(=);
+         .    .    .         .       .    .          .       .    .        }
+         .    .    .         .       .    .          .       .    .      else
+         .    .    .         .       .    .          .       .    .        {
+         .    .    .         .       .    .          .       .    .        arma_applier_2(=);
+         .    .    .         .       .    .          .       .    .        }
+         .    .    .         .       .    .          .       .    .      }
+     1,618    0    0     1,415     201    0          0       0    0    }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<typename eop_type>
+         .    .    .         .       .    .          .       .    .  template<typename T1>
+         .    .    .         .       .    .          .       .    .  arma_hot
+         .    .    .         .       .    .          .       .    .  inline
+         .    .    .         .       .    .          .       .    .  void
+-- line 320 ----------------------------------------
+-- line 341 ----------------------------------------
+         .    .    .         .       .    .          .       .    .      if(use_mp && mp_gate<eT>::eval(n_elem))
+         .    .    .         .       .    .          .       .    .        {
+         .    .    .         .       .    .          .       .    .        typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .    .    .         .       .    .          .       .    .        
+         .    .    .         .       .    .          .       .    .        arma_applier_1_mp(+=);
+         .    .    .         .       .    .          .       .    .        }
+         .    .    .         .       .    .          .       .    .      else
+         .    .    .         .       .    .          .       .    .        {
+        48    0    0        16       0    0          0       0    0        if(memory::is_aligned(out_mem))
+         .    .    .         .       .    .          .       .    .          {
+         .    .    .         .       .    .          .       .    .          memory::mark_as_aligned(out_mem);
+         .    .    .         .       .    .          .       .    .          
+        16    0    0         0       0    0          0       0    0          if(x.P.is_aligned())
+         .    .    .         .       .    .          .       .    .            {
+         .    .    .         .       .    .          .       .    .            typename Proxy<T1>::aligned_ea_type P = x.P.get_aligned_ea();
+         .    .    .         .       .    .          .       .    .            
+       388   24    5        16       0    0         84       0    0            arma_applier_1a(+=);
+         .    .    .         .       .    .          .       .    .            }
+         .    .    .         .       .    .          .       .    .          else
+         .    .    .         .       .    .          .       .    .            {
+         .    .    .         .       .    .          .       .    .            typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .    .    .         .       .    .          .       .    .            
+        52   12    3         4       0    0          4       0    0            arma_applier_1u(+=);
+         .    .    .         .       .    .          .       .    .            }
+         .    .    .         .       .    .          .       .    .          }
+         .    .    .         .       .    .          .       .    .        else
+         .    .    .         .       .    .          .       .    .          {
+         .    .    .         .       .    .          .       .    .          typename Proxy<T1>::ea_type P = x.P.get_ea();
+         .    .    .         .       .    .          .       .    .          
+         .    .    .         .       .    .          .       .    .          arma_applier_1u(+=);
+         .    .    .         .       .    .          .       .    .          }
+-- line 371 ----------------------------------------
+-- line 1012 ----------------------------------------
+         .    .    .         .       .    .          .       .    .    {
+         .    .    .         .       .    .          .       .    .    arma_stop_logic_error("eop_core::process(): unhandled eop_type");
+         .    .    .         .       .    .          .       .    .    return eT(0);
+         .    .    .         .       .    .          .       .    .    }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<> template<typename eT> arma_inline eT
+ 1,262,500  101    2   252,500       0    0    252,500     100    0  eop_core<eop_scalar_plus      >::process(const eT val, const eT k) { return val + k;                  }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<> template<typename eT> arma_inline eT
+         .    .    .         .       .    .          .       .    .  eop_core<eop_scalar_minus_pre >::process(const eT val, const eT k) { return k - val;                  }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<> template<typename eT> arma_inline eT
+21,499,200  400    4 7,000,000 125,057    0  5,000,000       0    0  eop_core<eop_scalar_minus_post>::process(const eT val, const eT k) { return val - k;                  }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<> template<typename eT> arma_inline eT
+ 7,012,037  706   11 3,504,999 306,259    8  1,250,020       0    0  eop_core<eop_scalar_times     >::process(const eT val, const eT k) { return val * k;                  }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<> template<typename eT> arma_inline eT
+ 1,000,160  203    5 1,000,080       0    0          0       0    0  eop_core<eop_scalar_div_pre   >::process(const eT val, const eT k) { return k / val;                  }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<> template<typename eT> arma_inline eT
+10,001,156    0    0 5,000,072       0    0          0       0    0  eop_core<eop_scalar_div_post  >::process(const eT val, const eT k) { return val / k;                  }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<> template<typename eT> arma_inline eT
+   757,510    1    1   252,500       0    0          0       0    0  eop_core<eop_square           >::process(const eT val, const eT  ) { return val*val;                  }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<> template<typename eT> arma_inline eT
+         .    .    .         .       .    .          .       .    .  eop_core<eop_neg              >::process(const eT val, const eT  ) { return eop_aux::neg(val);        }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<> template<typename eT> arma_inline eT
+         .    .    .         .       .    .          .       .    .  eop_core<eop_sqrt             >::process(const eT val, const eT  ) { return eop_aux::sqrt(val);       }
+         .    .    .         .       .    .          .       .    .  
+         .    .    .         .       .    .          .       .    .  template<> template<typename eT> arma_inline eT
+-- line 1046 ----------------------------------------
+
+--------------------------------------------------------------------------------
+The following files chosen for auto-annotation could not be found:
+--------------------------------------------------------------------------------
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_exp.c
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_log.c
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/e_pow.c
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/math_config.h
+  /build/glibc-eX1tMB/glibc-2.31/math/../sysdeps/ieee754/dbl-64/s_log1p.c
+  /build/glibc-eX1tMB/glibc-2.31/math/./w_exp_template.c
+  /build/glibc-eX1tMB/glibc-2.31/math/./w_log1p_template.c
+  /build/glibc-eX1tMB/glibc-2.31/math/./w_log_template.c
+  /build/glibc-eX1tMB/glibc-2.31/math/./w_pow_template.c
+  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+  /build/glibc-eX1tMB/glibc-2.31/string/../sysdeps/x86_64/multiarch/memset-vec-unaligned-erms.S
+  /build/glibc-eX1tMB/glibc-2.31/sunrpc/xdr.c
+
+--------------------------------------------------------------------------------
+Ir          I1mr   ILmr Dr          D1mr      DLmr  Dw         D1mw    DLmw 
+--------------------------------------------------------------------------------
+963,259,237 29,690  316 360,587,714 6,063,696 1,606 91,103,179 534,308  654  events annotated
+
