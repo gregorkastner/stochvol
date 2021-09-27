@@ -266,7 +266,7 @@ double log_likelihood_t_noncentered(
   double loglik = 0;
   for (unsigned int i = 0; i < homosked_data.n_elem; i++) {
     const double sqrt_tau_i = std::sqrt(qinvgamma(u(i), nu));
-    loglik += R::dnorm4(homosked_data(i), sqrt_tau_i * mean(i), sqrt_tau_i * sd(i), true);
+    loglik += logdnorm(homosked_data(i), sqrt_tau_i * mean(i), sqrt_tau_i * sd(i));
   }
   return loglik;
 }
@@ -305,11 +305,11 @@ void update_t_error(
             nu_prop = std::exp(log_nu_prop) + lower_bound;
 
       const double acceptance_rate = log_likelihood_t_noncentered(homosked_data, u, mean, sd, nu_prop) +
-        R::dexp(nu_prop - lower_bound, 1 / prior_spec.nu.exponential.rate, true) -
-        R::dnorm4(nu_prop, nu, random_walk_sd, true) + log_nu_prop -
+        logdexp(nu_prop - lower_bound, prior_spec.nu.exponential.rate) -
+        logdnorm2(nu_prop, nu, random_walk_sd) + log_nu_prop -
         log_likelihood_t_noncentered(homosked_data, u, mean, sd, nu) -
-        R::dexp(nu - lower_bound, 1 / prior_spec.nu.exponential.rate, true) +
-        R::dnorm4(nu, nu_prop, random_walk_sd, true) - log_nu;
+        logdexp(nu - lower_bound, prior_spec.nu.exponential.rate) +
+        logdnorm2(nu, nu_prop, random_walk_sd) - log_nu;
       const bool accepted = acceptance_rate > 0 or std::exp(acceptance_rate) > R::unif_rand();
       accepted_at_least_once = accepted or accepted_at_least_once;
 

@@ -60,6 +60,14 @@ double logdnorm(
   return logdnorm2(x, mu, sigma, std::log(sigma));
 }
 
+// non-normalized log-density of the exponential distribution
+inline
+double logdexp(
+    const double x,
+    const double lambda) {
+  return -x * lambda;
+}
+
 // non-normalized log-density of the gamma distribution
 inline
 double logdgamma(
