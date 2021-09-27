@@ -632,6 +632,7 @@ get_default_fast_sv <- function () {
 #' @rdname expert_defaults
 #' @param priorspec a \code{priorspec} object created by
 #' \code{\link{specify_priors}}
+#' @param multi_asis specifies the number of repetitions of ASIS
 #' @export
 get_default_general_sv <- function (priorspec, multi_asis = 5L) {
   if (!inherits(priorspec, "sv_priorspec")) {
@@ -639,7 +640,8 @@ get_default_general_sv <- function (priorspec, multi_asis = 5L) {
   }
   nu_adaptation <- get_default_adaptation(NULL, 1L, 1L)
   nu_adaptation$target_acceptance <- 0.44  # univariate adapted MH
-  list(multi_asis = multi_asis,  # positive integer
+  list(multi_asis = multi_asis,  # positive integer (ignored if 'theta_asis_setup' is not 'NULL')
+       theta_asis_setup = NULL,  # 'NULL' or 3 positive integers for repeating SA, AA, and ASIS
        nu_asis_setup = c(1L, 1L, 1L),  # 3 positive integers for repeating SA, AA, and ASIS
        starting_parameterization = "centered",  # "centered" or "noncentered"
        update = list(latent_vector = TRUE, parameters = TRUE),

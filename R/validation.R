@@ -300,6 +300,11 @@ validate_expert <- function (expert) {
   assert_single(expert$general_sv$multi_asis,
                 "General SV expert argument 'multi_asis'")
 
+  if (!is.null(expert$general_sv$theta_asis_setup)) {
+    assert_length(expert$general_sv$theta_asis_setup, 3,
+                  "General SV expert argument 'theta_asis_setup'")
+  }
+
   assert_length(expert$general_sv$nu_asis_setup, 3,
                 "General SV expert argument 'nu_asis_setup'")
 

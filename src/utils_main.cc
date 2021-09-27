@@ -30,6 +30,7 @@
 
 #include <RcppArmadillo.h>
 #include <expert.hpp>
+#include "type_definitions.hpp"
 #include "utils_main.h"
 #include "utils_latent_states.h"
 #include "densities.h"
@@ -398,6 +399,7 @@ ExpertSpec_GeneralSV list_to_general_sv(
   const std::string starting_parameterization_str = as<std::string>(list["starting_parameterization"]);
   const SEXP proposal_diffusion_ken_sexp = list["proposal_diffusion_ken"];
   const Rcpp::List update_list = list["update"];
+  Rcpp::Nullable<Rcpp::NumericVector> theta_strategy_r_null = list["theta_asis_setup"];
   const IntegerVector nu_strategy_r = list["nu_asis_setup"];
 
   // starting parameterization
@@ -416,17 +418,29 @@ ExpertSpec_GeneralSV list_to_general_sv(
 
   // parameterization strategy
   std::vector<Parameterization> strategy;
-  int strategy_size;
-  if (interweave) {
-    strategy_size = multi_asis * 2;
-  } else {
-    strategy_size = multi_asis;
-  }
-  strategy.reserve(strategy_size);
-  for (int i = 0; i < multi_asis; i++) {
-    strategy.push_back(starting_parameterization);
+  if (theta_strategy_r_null.isNull()) {
+    int strategy_size;
     if (interweave) {
-      strategy.push_back(other_parameterization);
+      strategy_size = multi_asis * 2;
+    } else {
+      strategy_size = multi_asis;
+    }
+    strategy.reserve(strategy_size);
+    for (int i = 0; i < multi_asis; i++) {
+      strategy.push_back(starting_parameterization);
+      if (interweave) {
+        strategy.push_back(other_parameterization);
+      }
+    }
+  } else {
+    const auto theta_strategy_r = theta_strategy_r_null.as();
+    for (int i_asis = 0, i_asis_max = theta_strategy_r(2); i_asis < i_asis_max; i_asis++) {
+      for (int i_first = 0, i_first_max = theta_strategy_r(starting_parameterization == Parameterization::NONCENTERED); i_first < i_first_max; i_first++) {
+        strategy.push_back(starting_parameterization);
+      }
+      for (int i_second = 0, i_second_max = theta_strategy_r(starting_parameterization == Parameterization::CENTERED); i_second < i_second_max; i_second++) {
+        strategy.push_back(other_parameterization);
+      }
     }
   }
 
