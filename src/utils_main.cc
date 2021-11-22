@@ -39,6 +39,8 @@ using namespace Rcpp;
 
 namespace stochvol {
 
+extern unsigned int count_acceptance_h;
+
 namespace fast_sv {
 
 double compute_correction_weight(
@@ -177,6 +179,7 @@ List cleanup(
       _["adaptation"] = adaptation_collection.serialize(),
       _["adaptation_nu"] = nu_adaptation.serialize(),
       _["latent"] = latent,
+      _["count_acceptance_h"] = count_acceptance_h,
       _["latent0"] = latent0,
       _["tau"] = tau,
       _["beta"] = betas);

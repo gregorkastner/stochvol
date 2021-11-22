@@ -248,6 +248,8 @@ arma::ivec arma_sign(
   return d;
 }
 
+unsigned int count_acceptance_h;  // UGLY! should not use global variable
+
 // Wrapper function around general SV.
 // See documentation above the declaration
 List svsample_general_cpp(
@@ -339,6 +341,9 @@ List svsample_general_cpp(
       show = chain_print_init(chain, burnin, draws);
     }
   }
+
+  // initialize acceptance counter for h
+  count_acceptance_h = 0;
 
   for (int i = -burnin+1; i < draws+1; i++) {
     if (i % 20 == 0) {

@@ -45,6 +45,8 @@ using namespace Rcpp;
 
 namespace stochvol {
 
+extern unsigned int count_acceptance_h;
+
 namespace fast_sv {
 
 // Determine ASIS from 'expert'
@@ -461,6 +463,7 @@ void update(
     //const  // not const to be able to std::move
     LatentVector h_full = draw_latent(data, log_data2, sign_data, mu, phi, sigma, rho, h, prior_spec, expert);
     h0 = h_full.h0;
+    count_acceptance_h += h_full.h[0] != h[0];  // count acceptance separately as ASIS distorts this info
     h = std::move(h_full.h);
   }
 
