@@ -51,8 +51,8 @@ remotes::install_github(
 
 The best introduction is the combination of our vignettes:
 
-* [Dealing with Stochastic Volatility in Time Series Using the R Package stochvol](https://www.jstatsoft.org/index.php/jss/article/view/v069i05)
-* [Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol](https://arxiv.org/abs/1906.12123)
+* [Dealing with Stochastic Volatility in Time Series Using the R Package stochvol](https://doi.org/10.18637/jss.v069.i05)
+* [Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol](https://doi.org/10.18637/jss.v100.i12)
 
 For individual functions, please refer to the help pages after installing the package.
 For instance, for `svsample`, execute

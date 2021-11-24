@@ -24,25 +24,21 @@ note <- sprintf("R package version %s", meta$Version)
 #        "https://doi.org/10.18637/jss.v069.i05")
 #)
 
-bibentry(bibtype = "article",
-#  header       = "When using the sampler that allows for asymmetry (leverage) and/or heavy tails please also cite:",
-  header       = "To cite stochvol in publications use:",
+bibentry(bibtype = "Article",
   title        = "Modeling Univariate and Multivariate Stochastic Volatility in {R} with {stochvol} and {factorstochvol}",
-  author       = personList(
-                   person(given = "Darjus",
+  author       = c(person(given = "Darjus",
                           family = "Hosszejni",
                           email = "darjus.hosszejni@wu.ac.at"),
                    person(given = "Gregor",
                           family = "Kastner",
                           email = "gregor.kastner@aau.at")),
   journal      = "Journal of Statistical Software",
-  year         = "forthcoming",
-  url          = "https://arxiv.org/abs/1906.12123",
-  textVersion  =
-  paste("Hosszejni, Darjus and Kastner, Gregor (forthcoming).",
-        "Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol.",
-        "Journal of Statistical Software.",
-        "https://arxiv.org/abs/1906.12123")
+  year         = "2021",
+  volume       = "100",
+  number       = "12",
+  pages        = "1--34",
+  doi          = "10.18637/jss.v100.i12",
+  header       = "To cite stochvol/factorstochvol in publications use:"
 )
 
 bibentry(bibtype = "article",

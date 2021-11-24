@@ -1,3 +1,7 @@
+# stochvol 3.2.0
+
+- Include reference to the JSS paper
+
 # stochvol 3.1.0
 
 - NEW FUNCTION 'svlm', which has a formula interface;
