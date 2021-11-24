@@ -27,3 +27,5 @@ compile_flags.txt
 ^docs$
 ^pkgdown$
 ^\.github$
+
+cachegrind.*

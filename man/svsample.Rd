@@ -247,7 +247,7 @@ named lists that initialize the parallel chains.}
 containing the starting values for the latent log-volatility draws. The
 default value is \code{rep(-10, length(y))}.
 In case of parallel execution with \code{cl} provided, \code{startlatent} can be a list of
-named lists that initialize the parallel chains.}
+numeric vectors that initialize the parallel chains.}
 
 \item{parallel}{\emph{optional} one of \code{"no"} (default), \code{"multicore"}, or \code{"snow"},
 indicating what type of parallellism is to be applied. Option
@@ -270,11 +270,11 @@ applications, the default values probably work best. Interested users are
 referred to the literature provided in the References section. If
 \code{expert} is provided, it may contain the following named elements:
 \itemize{
-\item{interweave}{Logical value. If \code{TRUE} (the default),
+\item{interweave}{ Logical value. If \code{TRUE} (the default),
 then ancillarity-sufficiency interweaving strategy (ASIS) is applied
 to improve on the sampling efficiency for the parameters.
 Otherwise one parameterization is used.}
-\item{correct_model_misspecification}{Logical value. If \code{FALSE}
+\item{correct_model_misspecification}{ Logical value. If \code{FALSE}
 (the default), then auxiliary mixture sampling is used to sample the latent
 states. If \code{TRUE}, extra computations are made to correct for model
 misspecification either ex-post by reweighting or on-line using a

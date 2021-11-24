@@ -26,7 +26,7 @@ specify_priors(
 \item{rho}{one of \code{sv_beta} or \code{sv_constant}. If \code{sv_beta}, then the specified beta distribution is the prior for \code{(rho+1)/2}}
 
 \item{latent0_variance}{either the character string \code{"stationary"} or an \code{sv_constant} object.
-If \code{"stationary"}, then h0 ~ N(\code{mu}, \code{sigma^2/(1-phi^2)}). If an \code{sv_constant} object with value \code{v}, then h0 ~ N(\code{mu}, \code{v}).
+If \code{"stationary"}, then h0 ~ N(\code{mu}, \code{sigma^2/(1-phi^2)}). If an \code{sv_constant} object with value \code{v}, then h0 ~ N(\code{mu}, \code{sigma^2/v}).
 Here, N(b, B) stands for mean b and variance B}
 
 \item{beta}{an \code{sv_multinormal} object}
