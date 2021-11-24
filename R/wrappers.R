@@ -1,7 +1,7 @@
 #  #####################################################################################
 #  R package stochvol by
-#     Gregor Kastner Copyright (C) 2013-2021
-#     Darjus Hosszejni Copyright (C) 2019-2021
+#     Gregor Kastner Copyright (C) 2013-2018
+#     Gregor Kastner and Darjus Hosszejni Copyright (C) 2019-
 #
 #  This file is part of the R package stochvol: Efficient Bayesian
 #  Inference for Stochastic Volatility Models.
@@ -121,7 +121,7 @@
 #' containing the starting values for the latent log-volatility draws. The
 #' default value is \code{rep(-10, length(y))}.
 #' In case of parallel execution with \code{cl} provided, \code{startlatent} can be a list of
-#' named lists that initialize the parallel chains.
+#' numeric vectors that initialize the parallel chains.
 #' @param parallel \emph{optional} one of \code{"no"} (default), \code{"multicore"}, or \code{"snow"},
 #' indicating what type of parallellism is to be applied. Option
 #' \code{"multicore"} is not available on Windows.
@@ -138,11 +138,11 @@
 #' referred to the literature provided in the References section. If
 #' \code{expert} is provided, it may contain the following named elements:
 #' \itemize{
-#' \item{interweave}{Logical value. If \code{TRUE} (the default),
+#' \item{interweave}{ Logical value. If \code{TRUE} (the default),
 #' then ancillarity-sufficiency interweaving strategy (ASIS) is applied
 #' to improve on the sampling efficiency for the parameters.
 #' Otherwise one parameterization is used.}
-#' \item{correct_model_misspecification}{Logical value. If \code{FALSE}
+#' \item{correct_model_misspecification}{ Logical value. If \code{FALSE}
 #' (the default), then auxiliary mixture sampling is used to sample the latent
 #' states. If \code{TRUE}, extra computations are made to correct for model
 #' misspecification either ex-post by reweighting or on-line using a
@@ -379,7 +379,9 @@ svsample <- function(y, draws = 10000, burnin = 1000, designmatrix = NA,
   } else {
     init_beta(y, designmatrix)
   }
-  startmudefault <- if (meanmodel == "none") {
+  startmudefault <- if (inherits(priorspec$mu, "sv_constant")) {
+    mean(priorspec$mu)
+  } else if (meanmodel == "none") {
     init_mu(y, priorspec)
   } else {
     init_mu(y, priorspec, X = designmatrix, beta_hat = startbetadefault)

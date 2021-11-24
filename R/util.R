@@ -1,7 +1,7 @@
 #  #####################################################################################
 #  R package stochvol by
-#     Gregor Kastner Copyright (C) 2013-2020
-#     Darjus Hosszejni Copyright (C) 2019-2020
+#     Gregor Kastner Copyright (C) 2013-2018
+#     Gregor Kastner and Darjus Hosszejni Copyright (C) 2019-
 #  
 #  This file is part of the R package stochvol: Efficient Bayesian
 #  Inference for Stochastic Volatility Models.
@@ -42,7 +42,7 @@ logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
 #' @param nu one of \code{sv_infinity}, \code{sv_exponential}, or \code{sv_constant}. If \code{sv_exponential}, then the specified exponential distribution is the prior for \code{nu-2}
 #' @param rho one of \code{sv_beta} or \code{sv_constant}. If \code{sv_beta}, then the specified beta distribution is the prior for \code{(rho+1)/2}
 #' @param latent0_variance either the character string \code{"stationary"} or an \code{sv_constant} object.
-#' If \code{"stationary"}, then h0 ~ N(\code{mu}, \code{sigma^2/(1-phi^2)}). If an \code{sv_constant} object with value \code{v}, then h0 ~ N(\code{mu}, \code{v}).
+#' If \code{"stationary"}, then h0 ~ N(\code{mu}, \code{sigma^2/(1-phi^2)}). If an \code{sv_constant} object with value \code{v}, then h0 ~ N(\code{mu}, \code{sigma^2/v}).
 #' Here, N(b, B) stands for mean b and variance B
 #' @param beta an \code{sv_multinormal} object
 #' @family priors
