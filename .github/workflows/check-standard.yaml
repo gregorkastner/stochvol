@@ -34,7 +34,7 @@ jobs:
       - uses: r-lib/actions/setup-tinytex@v1
       - run: |
           tlmgr update --self
-          tlmgr install ae
+          tlmgr install tablefootnote thumbpdf graphicx xcolor ae fancyvrb fontenc upquote lmodern natbib hyperref
           tlmgr update --all
 
       - uses: r-lib/actions/setup-pandoc@v1
