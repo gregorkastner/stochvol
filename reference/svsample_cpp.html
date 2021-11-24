@@ -83,7 +83,7 @@ any validation and transformations, expert use only!" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.2.0</span>
       </span>
     </div>
 
@@ -192,8 +192,8 @@ period, this number of draws are discarded from the beginning</p></td>
     <tr>
       <th>designmatrix</th>
       <td><p>numeric matrix of covariates. Dimensions:
-<code><a href='https://rdrr.io/r/base/length.html'>length(y)</a></code> times the number of covariates. If there are
-no covariates then this should be <code><a href='https://rdrr.io/r/base/matrix.html'>matrix(NA)</a></code></p></td>
+<code>length(y)</code> times the number of covariates. If there are
+no covariates then this should be <code>matrix(NA)</code></p></td>
     </tr>
     <tr>
       <th>priorspec</th>
@@ -235,7 +235,7 @@ elements</p><ul>
     </tr>
     <tr>
       <th>startlatent</th>
-      <td><p>vector of length <code><a href='https://rdrr.io/r/base/length.html'>length(y)</a></code>,
+      <td><p>vector of length <code>length(y)</code>,
 containing the starting values for the latent log-volatility draws.</p></td>
     </tr>
     <tr>
@@ -276,7 +276,7 @@ Otherwise one parameterization is used.</p></td>
     <tr>
       <th>myoffset</th>
       <td><p>Single non-negative number that is used in
-<code><a href='https://rdrr.io/r/base/Log.html'>log(y^2 + myoffset)</a></code> to prevent <code>-Inf</code> values in the auxiliary
+<code>log(y^2 + myoffset)</code> to prevent <code>-Inf</code> values in the auxiliary
 mixture sampling scheme.</p></td>
     </tr>
     <tr>
@@ -325,49 +325,50 @@ the parameters <code>mu</code>, <code>phi</code>, <code>sigma</code>, and <code>
 more general prior distributions are allowed in this case.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Draw one sample using fast SV and general SV</span>
-<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>40</span><span class='op'>)</span><span class='op'>$</span><span class='va'>y</span>
-<span class='va'>params</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.9</span>, sigma <span class='op'>=</span> <span class='fl'>0.1</span>,
-               nu <span class='op'>=</span> <span class='cn'>Inf</span>, rho <span class='op'>=</span> <span class='fl'>0</span>, beta <span class='op'>=</span> <span class='cn'>NA</span>,
-               latent0 <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span><span class='op'>)</span>
-<span class='va'>res_fast</span> <span class='op'>&lt;-</span> <span class='fu'>svsample_fast_cpp</span><span class='op'>(</span><span class='va'>y</span>,
-  startpara <span class='op'>=</span> <span class='va'>params</span>, startlatent <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>40</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>res_gen</span> <span class='op'>&lt;-</span> <span class='fu'>svsample_general_cpp</span><span class='op'>(</span><span class='va'>y</span>,
-  startpara <span class='op'>=</span> <span class='va'>params</span>, startlatent <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>40</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'># Embed SV in another sampling scheme</span>
-<span class='co'>## vanilla SV</span>
-<span class='va'>len</span> <span class='op'>&lt;-</span> <span class='fl'>40L</span>
-<span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fl'>1000L</span>
-<span class='va'>burnin</span> <span class='op'>&lt;-</span> <span class='fl'>200L</span>
-<span class='va'>param_store</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='va'>draws</span>, <span class='fl'>3</span>,
-                      dimnames <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='cn'>NULL</span>,
-                                      <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mu"</span>, <span class='st'>"phi"</span>, <span class='st'>"sigma"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>startpara</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='fl'>0</span>, phi <span class='op'>=</span> <span class='fl'>0.9</span>, sigma <span class='op'>=</span> <span class='fl'>0.1</span>,
-                  nu <span class='op'>=</span> <span class='cn'>Inf</span>, rho <span class='op'>=</span> <span class='fl'>0</span>, beta <span class='op'>=</span> <span class='cn'>NA</span>,
-                  latent0 <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span>
-<span class='va'>startlatent</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='va'>len</span><span class='op'>)</span>
-<span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='va'>burnin</span><span class='op'>+</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='co'># draw the data in the bigger sampling scheme</span>
-  <span class='co'># now we simulate y from vanilla SV</span>
-  <span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='va'>len</span>, mu <span class='op'>=</span> <span class='fl'>0</span>, phi <span class='op'>=</span> <span class='fl'>0.9</span>, sigma <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span><span class='op'>$</span><span class='va'>y</span>
-  <span class='co'># call SV sampler</span>
-  <span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample_fast_cpp</span><span class='op'>(</span><span class='va'>y</span>, startpara <span class='op'>=</span> <span class='va'>startpara</span>,
-                           startlatent <span class='op'>=</span> <span class='va'>startlatent</span><span class='op'>)</span>
-  <span class='co'># administrate values</span>
-  <span class='va'>startpara</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mu"</span>,<span class='st'>"phi"</span>,<span class='st'>"sigma"</span><span class='op'>)</span><span class='op'>]</span> <span class='op'>&lt;-</span>
-    <span class='fu'><a href='https://rdrr.io/r/base/list.html'>as.list</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>$</span><span class='va'>para</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mu"</span>, <span class='st'>"phi"</span>, <span class='st'>"sigma"</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
-  <span class='va'>startlatent</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/drop.html'>drop</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>$</span><span class='va'>latent</span><span class='op'>)</span>
-  <span class='co'># store draws after the burnin</span>
-  <span class='kw'>if</span> <span class='op'>(</span><span class='va'>i</span> <span class='op'>&gt;</span> <span class='va'>burnin</span><span class='op'>)</span> <span class='op'>{</span>
-    <span class='va'>param_store</span><span class='op'>[</span><span class='va'>i</span><span class='op'>-</span><span class='va'>burnin</span>, <span class='op'>]</span> <span class='op'>&lt;-</span>
-      <span class='va'>res</span><span class='op'>$</span><span class='va'>para</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mu"</span>, <span class='st'>"phi"</span>, <span class='st'>"sigma"</span><span class='op'>)</span><span class='op'>]</span>
-  <span class='op'>}</span>
-<span class='op'>}</span>
-<span class='co'>### quick look at the traceplots</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/ts.plot.html'>ts.plot</a></span><span class='op'>(</span><span class='va'>param_store</span>, col <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span>
-</div><div class='img'><img src='svsample_cpp-1.png' alt='' width='700' height='433' /></div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Draw one sample using fast SV and general SV</span></span>
+<span class='r-in'><span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>40</span><span class='op'>)</span><span class='op'>$</span><span class='va'>y</span></span>
+<span class='r-in'><span class='va'>params</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.9</span>, sigma <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
+<span class='r-in'>               nu <span class='op'>=</span> <span class='cn'>Inf</span>, rho <span class='op'>=</span> <span class='fl'>0</span>, beta <span class='op'>=</span> <span class='cn'>NA</span>,</span>
+<span class='r-in'>               latent0 <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>res_fast</span> <span class='op'>&lt;-</span> <span class='fu'>svsample_fast_cpp</span><span class='op'>(</span><span class='va'>y</span>,</span>
+<span class='r-in'>  startpara <span class='op'>=</span> <span class='va'>params</span>, startlatent <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>40</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>res_gen</span> <span class='op'>&lt;-</span> <span class='fu'>svsample_general_cpp</span><span class='op'>(</span><span class='va'>y</span>,</span>
+<span class='r-in'>  startpara <span class='op'>=</span> <span class='va'>params</span>, startlatent <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>40</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Embed SV in another sampling scheme</span></span>
+<span class='r-in'><span class='co'>## vanilla SV</span></span>
+<span class='r-in'><span class='va'>len</span> <span class='op'>&lt;-</span> <span class='fl'>40L</span></span>
+<span class='r-in'><span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fl'>1000L</span></span>
+<span class='r-in'><span class='va'>burnin</span> <span class='op'>&lt;-</span> <span class='fl'>200L</span></span>
+<span class='r-in'><span class='va'>param_store</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='va'>draws</span>, <span class='fl'>3</span>,</span>
+<span class='r-in'>                      dimnames <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='cn'>NULL</span>,</span>
+<span class='r-in'>                                      <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mu"</span>, <span class='st'>"phi"</span>, <span class='st'>"sigma"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>startpara</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='fl'>0</span>, phi <span class='op'>=</span> <span class='fl'>0.9</span>, sigma <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
+<span class='r-in'>                  nu <span class='op'>=</span> <span class='cn'>Inf</span>, rho <span class='op'>=</span> <span class='fl'>0</span>, beta <span class='op'>=</span> <span class='cn'>NA</span>,</span>
+<span class='r-in'>                  latent0 <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>startlatent</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='va'>len</span><span class='op'>)</span></span>
+<span class='r-in'><span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='va'>burnin</span><span class='op'>+</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='co'># draw the data in the bigger sampling scheme</span></span>
+<span class='r-in'>  <span class='co'># now we simulate y from vanilla SV</span></span>
+<span class='r-in'>  <span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='va'>len</span>, mu <span class='op'>=</span> <span class='fl'>0</span>, phi <span class='op'>=</span> <span class='fl'>0.9</span>, sigma <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span><span class='op'>$</span><span class='va'>y</span></span>
+<span class='r-in'>  <span class='co'># call SV sampler</span></span>
+<span class='r-in'>  <span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample_fast_cpp</span><span class='op'>(</span><span class='va'>y</span>, startpara <span class='op'>=</span> <span class='va'>startpara</span>,</span>
+<span class='r-in'>                           startlatent <span class='op'>=</span> <span class='va'>startlatent</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='co'># administrate values</span></span>
+<span class='r-in'>  <span class='va'>startpara</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mu"</span>,<span class='st'>"phi"</span>,<span class='st'>"sigma"</span><span class='op'>)</span><span class='op'>]</span> <span class='op'>&lt;-</span></span>
+<span class='r-in'>    <span class='fu'><a href='https://rdrr.io/r/base/list.html'>as.list</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>$</span><span class='va'>para</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mu"</span>, <span class='st'>"phi"</span>, <span class='st'>"sigma"</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='va'>startlatent</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/drop.html'>drop</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>$</span><span class='va'>latent</span><span class='op'>)</span></span>
+<span class='r-in'>  <span class='co'># store draws after the burnin</span></span>
+<span class='r-in'>  <span class='kw'>if</span> <span class='op'>(</span><span class='va'>i</span> <span class='op'>&gt;</span> <span class='va'>burnin</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>    <span class='va'>param_store</span><span class='op'>[</span><span class='va'>i</span><span class='op'>-</span><span class='va'>burnin</span>, <span class='op'>]</span> <span class='op'>&lt;-</span></span>
+<span class='r-in'>      <span class='va'>res</span><span class='op'>$</span><span class='va'>para</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mu"</span>, <span class='st'>"phi"</span>, <span class='st'>"sigma"</span><span class='op'>)</span><span class='op'>]</span></span>
+<span class='r-in'>  <span class='op'>}</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'><span class='co'>### quick look at the traceplots</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/stats/ts.plot.html'>ts.plot</a></span><span class='op'>(</span><span class='va'>param_store</span>, col <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='svsample_cpp-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

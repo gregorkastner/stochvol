@@ -87,7 +87,7 @@ MCMC draws." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.2.0</span>
       </span>
     </div>
 
@@ -175,7 +175,7 @@ MCMC draws.</p>
       <td><p>an optional data frame, list or environment (or object
 coercible by <code>as.data.frame</code> to a data frame) containing the
 variables in the model.  If not found in <code>data</code>, the
-variables are taken from <code><a href='https://rdrr.io/r/base/environment.html'>environment(formula)</a></code>, typically
+variables are taken from <code>environment(formula)</code>, typically
 the environment from which <code>svlm</code> is called.</p></td>
     </tr>
     <tr>
@@ -238,9 +238,9 @@ named lists that initialize the parallel chains.</p></td>
     </tr>
     <tr>
       <th>startlatent</th>
-      <td><p><em>optional</em> vector of length <code><a href='https://rdrr.io/r/base/length.html'>length(y)</a></code>,
+      <td><p><em>optional</em> vector of length <code>length(y)</code>,
 containing the starting values for the latent log-volatility draws. The
-default value is <code><a href='https://rdrr.io/r/base/rep.html'>rep(-10, length(y))</a></code>.
+default value is <code>rep(-10, length(y))</code>.
 In case of parallel execution with <code>cl</code> provided, <code>startlatent</code> can be a list of
 named lists that initialize the parallel chains.</p></td>
     </tr>
@@ -361,23 +361,25 @@ doi: <a href='https://doi.org/10.1007/978-3-030-30611-3_8'>10.1007/978-3-030-306
     <div class='dont-index'><p><code><a href='svsample.html'>svsample</a></code>, <code><a href='svsim.html'>svsim</a></code>, <code><a href='specify_priors.html'>specify_priors</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Simulate data</span>
-<span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>50L</span>
-<span class='va'>dat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>n</span>, <span class='fl'>3</span>, <span class='fl'>4</span><span class='op'>)</span>,
-                  z <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>n</span>, <span class='op'>-</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>0.5</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>designmatrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>dat</span><span class='op'>$</span><span class='va'>x</span>, <span class='va'>dat</span><span class='op'>$</span><span class='va'>x</span><span class='op'>^</span><span class='fl'>2</span>, <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span><span class='op'>(</span><span class='va'>dat</span><span class='op'>$</span><span class='va'>x</span><span class='op'>)</span>,
-                         <span class='va'>dat</span><span class='op'>$</span><span class='va'>z</span><span class='op'>)</span>, ncol <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span>
-<span class='va'>betas</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>0</span><span class='op'>)</span>, ncol <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
-<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='va'>designmatrix</span> <span class='op'>%*%</span> <span class='va'>betas</span> <span class='op'>+</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='va'>n</span><span class='op'>)</span><span class='op'>$</span><span class='va'>y</span>
-<span class='va'>dat</span><span class='op'>$</span><span class='va'>y</span> <span class='op'>&lt;-</span> <span class='va'>y</span>
-<span class='co'># Formula interface</span>
-<span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svlm</span><span class='op'>(</span><span class='va'>y</span> <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>+</span> <span class='va'>x</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/AsIs.html'>I</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>+</span> <span class='va'>z</span>, data <span class='op'>=</span> <span class='va'>dat</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'><span class='co'># Prediction</span>
-<span class='va'>predn</span> <span class='op'>&lt;-</span> <span class='fl'>10L</span>
-<span class='va'>preddat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>predn</span>, <span class='fl'>3</span>, <span class='fl'>4</span><span class='op'>)</span>,
-                      z <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>predn</span>, <span class='op'>-</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>0.5</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>pred</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>res</span>, newdata <span class='op'>=</span> <span class='va'>preddat</span>, steps <span class='op'>=</span> <span class='va'>predn</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Simulate data</span></span>
+<span class='r-in'><span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>50L</span></span>
+<span class='r-in'><span class='va'>dat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>n</span>, <span class='fl'>3</span>, <span class='fl'>4</span><span class='op'>)</span>,</span>
+<span class='r-in'>                  z <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>n</span>, <span class='op'>-</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>0.5</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>designmatrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>dat</span><span class='op'>$</span><span class='va'>x</span>, <span class='va'>dat</span><span class='op'>$</span><span class='va'>x</span><span class='op'>^</span><span class='fl'>2</span>, <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span><span class='op'>(</span><span class='va'>dat</span><span class='op'>$</span><span class='va'>x</span><span class='op'>)</span>,</span>
+<span class='r-in'>                         <span class='va'>dat</span><span class='op'>$</span><span class='va'>z</span><span class='op'>)</span>, ncol <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>betas</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>0</span><span class='op'>)</span>, ncol <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>y</span> <span class='op'>&lt;-</span> <span class='va'>designmatrix</span> <span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span> <span class='va'>betas</span> <span class='op'>+</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='va'>n</span><span class='op'>)</span><span class='op'>$</span><span class='va'>y</span></span>
+<span class='r-in'><span class='va'>dat</span><span class='op'>$</span><span class='va'>y</span> <span class='op'>&lt;-</span> <span class='va'>y</span></span>
+<span class='r-in'><span class='co'># Formula interface</span></span>
+<span class='r-in'><span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svlm</span><span class='op'>(</span><span class='va'>y</span> <span class='op'>~</span> <span class='fl'>0</span> <span class='op'>+</span> <span class='va'>x</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/AsIs.html'>I</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>+</span> <span class='va'>z</span>, data <span class='op'>=</span> <span class='va'>dat</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'><span class='co'># Prediction</span></span>
+<span class='r-in'><span class='va'>predn</span> <span class='op'>&lt;-</span> <span class='fl'>10L</span></span>
+<span class='r-in'><span class='va'>preddat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>predn</span>, <span class='fl'>3</span>, <span class='fl'>4</span><span class='op'>)</span>,</span>
+<span class='r-in'>                      z <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>predn</span>, <span class='op'>-</span><span class='fl'>1</span>, <span class='op'>-</span><span class='fl'>0.5</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>pred</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>res</span>, newdata <span class='op'>=</span> <span class='va'>preddat</span>, steps <span class='op'>=</span> <span class='va'>predn</span><span class='op'>)</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

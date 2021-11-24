@@ -81,7 +81,7 @@ svdraws and svpredict object." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.2.0</span>
       </span>
     </div>
 
@@ -209,280 +209,294 @@ then all chains are merged into one mcmc object.
     <div class='dont-index'><p><a href='specify_priors.html'>specify_priors</a>, <a href='svsample.html'>svsample</a>, <a href='predict.svdraws.html'>predict.svdraws</a></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Simulate data</span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>150</span><span class='op'>)</span>
-
-<span class='co'># Draw from vanilla SV</span>
-<span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsample.html'>svsample</a></span><span class='op'>(</span><span class='va'>sim</span>, draws <span class='op'>=</span> <span class='fl'>2000</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Extracted data vector from 'svsim'-object.</span></div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'>
-<span class='co'>## Summarize all estimated parameter draws as a merged mcmc object</span>
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'>para</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>sampled_parameters</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Iterations = 1001:3000
-#&gt; Thinning interval = 1 
-#&gt; Number of chains = 1 
-#&gt; Sample size per chain = 2000 
-#&gt; 
-#&gt; 1. Empirical mean and standard deviation for each variable,
-#&gt;    plus standard error of the mean:
-#&gt; 
-#&gt;           Mean      SD Naive SE Time-series SE
-#&gt; mu    -10.1735 1.26156 0.028209        0.09454
-#&gt; phi     0.9715 0.02594 0.000580        0.00270
-#&gt; sigma   0.2545 0.09254 0.002069        0.01182
-#&gt; 
-#&gt; 2. Quantiles for each variable:
-#&gt; 
-#&gt;           2.5%      25%      50%     75%   97.5%
-#&gt; mu    -12.5423 -10.7326 -10.2301 -9.7110 -7.7686
-#&gt; phi     0.9008   0.9630   0.9787  0.9893  0.9977
-#&gt; sigma   0.1255   0.1884   0.2376  0.3015  0.5012
-#&gt; </div><div class='input'><span class='co'>## Extract the draws as an mcmc.list object</span>
-<span class='va'>params</span> <span class='op'>&lt;-</span> <span class='fu'>para</span><span class='op'>(</span><span class='va'>draws</span>, chain <span class='op'>=</span> <span class='st'>"all"</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>sampled_parameters</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>]</span>
-
-<span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span>max.print <span class='op'>=</span> <span class='fl'>100</span><span class='op'>)</span>
-<span class='co'>## Further short examples</span>
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'>latent0</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Iterations = 1001:3000
-#&gt; Thinning interval = 1 
-#&gt; Number of chains = 1 
-#&gt; Sample size per chain = 2000 
-#&gt; 
-#&gt; 1. Empirical mean and standard deviation for each variable,
-#&gt;    plus standard error of the mean:
-#&gt; 
-#&gt;           Mean             SD       Naive SE Time-series SE 
-#&gt;      -11.70583        0.68071        0.01522        0.02964 
-#&gt; 
-#&gt; 2. Quantiles for each variable:
-#&gt; 
-#&gt;   2.5%    25%    50%    75%  97.5% 
-#&gt; -13.07 -12.16 -11.72 -11.26 -10.26 
-#&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'>latent</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Iterations = 1001:3000
-#&gt; Thinning interval = 1 
-#&gt; Number of chains = 1 
-#&gt; Sample size per chain = 2000 
-#&gt; 
-#&gt; 1. Empirical mean and standard deviation for each variable,
-#&gt;    plus standard error of the mean:
-#&gt; 
-#&gt;          Mean     SD Naive SE Time-series SE
-#&gt; h_1   -11.755 0.6424 0.014363        0.02819
-#&gt; h_2   -11.757 0.5778 0.012920        0.02966
-#&gt; h_3   -11.801 0.5672 0.012683        0.02922
-#&gt; h_4   -11.821 0.5429 0.012140        0.02856
-#&gt; h_5   -11.835 0.5275 0.011795        0.02610
-#&gt; h_6   -11.841 0.5261 0.011764        0.02538
-#&gt; h_7   -11.815 0.5145 0.011505        0.02508
-#&gt; h_8   -11.759 0.4901 0.010959        0.02492
-#&gt; h_9   -11.698 0.4764 0.010652        0.02291
-#&gt; h_10  -11.628 0.4585 0.010251        0.02374
-#&gt; h_11  -11.638 0.4696 0.010501        0.02282
-#&gt; h_12  -11.640 0.4912 0.010983        0.02519
-#&gt; h_13  -11.624 0.4729 0.010575        0.02221
-#&gt; h_14  -11.582 0.4420 0.009883        0.02370
-#&gt; h_15  -11.621 0.4465 0.009984        0.02430
-#&gt; h_16  -11.645 0.4584 0.010250        0.02381
-#&gt; h_17  -11.687 0.4861 0.010870        0.02301
-#&gt; h_18  -11.697 0.5052 0.011297        0.02486
-#&gt; h_19  -11.670 0.5113 0.011434        0.02523
-#&gt; h_20  -11.639 0.4905 0.010967        0.02538
-#&gt; h_21  -11.562 0.4599 0.010284        0.02257
-#&gt; h_22  -11.493 0.4451 0.009952        0.02149
-#&gt; h_23  -11.439 0.4487 0.010032        0.02030
-#&gt; h_24  -11.382 0.4448 0.009946        0.02027
-#&gt; h_25  -11.315 0.4313 0.009644        0.01847
-#&gt;  [ reached getOption("max.print") -- omitted 125 rows ]
-#&gt; 
-#&gt; 2. Quantiles for each variable:
-#&gt; 
-#&gt;          2.5%     25%     50%     75%   97.5%
-#&gt; h_1   -12.963 -12.174 -11.772 -11.330 -10.452
-#&gt; h_2   -12.839 -12.157 -11.777 -11.375 -10.556
-#&gt; h_3   -12.912 -12.178 -11.828 -11.424 -10.681
-#&gt; h_4   -12.854 -12.185 -11.837 -11.445 -10.693
-#&gt; h_5   -12.846 -12.199 -11.851 -11.476 -10.774
-#&gt; h_6   -12.881 -12.191 -11.855 -11.486 -10.795
-#&gt; h_7   -12.839 -12.155 -11.821 -11.490 -10.737
-#&gt; h_8   -12.675 -12.096 -11.785 -11.433 -10.705
-#&gt; h_9   -12.563 -12.014 -11.728 -11.396 -10.713
-#&gt; h_10  -12.463 -11.952 -11.641 -11.330 -10.694
-#&gt; h_11  -12.511 -11.951 -11.657 -11.349 -10.653
-#&gt; h_12  -12.558 -11.972 -11.655 -11.332 -10.607
-#&gt; h_13  -12.504 -11.949 -11.639 -11.326 -10.630
-#&gt; h_14  -12.389 -11.891 -11.600 -11.302 -10.660
-#&gt; h_15  -12.436 -11.925 -11.638 -11.331 -10.676
-#&gt; h_16  -12.514 -11.947 -11.653 -11.370 -10.685
-#&gt; h_17  -12.669 -12.003 -11.673 -11.371 -10.735
-#&gt; h_18  -12.746 -12.008 -11.680 -11.365 -10.711
-#&gt; h_19  -12.723 -11.989 -11.656 -11.327 -10.683
-#&gt; h_20  -12.630 -11.958 -11.631 -11.314 -10.703
-#&gt;  [ reached getOption("max.print") -- omitted 130 rows ]
-#&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'>vola</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Iterations = 1001:3000
-#&gt; Thinning interval = 1 
-#&gt; Number of chains = 1 
-#&gt; Sample size per chain = 2000 
-#&gt; 
-#&gt; 1. Empirical mean and standard deviation for each variable,
-#&gt;    plus standard error of the mean:
-#&gt; 
-#&gt;           Mean        SD  Naive SE Time-series SE
-#&gt; h_1   0.002952 0.0010012 2.239e-05      4.643e-05
-#&gt; h_2   0.002920 0.0008920 1.995e-05      4.462e-05
-#&gt; h_3   0.002852 0.0008461 1.892e-05      4.229e-05
-#&gt; h_4   0.002814 0.0007977 1.784e-05      3.955e-05
-#&gt; h_5   0.002788 0.0007572 1.693e-05      3.779e-05
-#&gt; h_6   0.002779 0.0007496 1.676e-05      3.523e-05
-#&gt; h_7   0.002811 0.0007464 1.669e-05      3.664e-05
-#&gt; h_8   0.002883 0.0007434 1.662e-05      3.749e-05
-#&gt; h_9   0.002968 0.0007461 1.668e-05      3.491e-05
-#&gt; h_10  0.003067 0.0007443 1.664e-05      3.786e-05
-#&gt; h_11  0.003056 0.0007635 1.707e-05      3.699e-05
-#&gt; h_12  0.003061 0.0008027 1.795e-05      3.895e-05
-#&gt; h_13  0.003078 0.0007759 1.735e-05      3.603e-05
-#&gt; h_14  0.003133 0.0007380 1.650e-05      3.874e-05
-#&gt; h_15  0.003074 0.0007203 1.611e-05      3.908e-05
-#&gt; h_16  0.003040 0.0007243 1.619e-05      3.530e-05
-#&gt; h_17  0.002986 0.0007422 1.660e-05      3.464e-05
-#&gt; h_18  0.002976 0.0007520 1.681e-05      3.688e-05
-#&gt; h_19  0.003020 0.0007781 1.740e-05      3.700e-05
-#&gt; h_20  0.003060 0.0007570 1.693e-05      3.856e-05
-#&gt; h_21  0.003169 0.0007506 1.679e-05      3.611e-05
-#&gt; h_22  0.003274 0.0007390 1.653e-05      3.678e-05
-#&gt; h_23  0.003364 0.0007604 1.700e-05      3.313e-05
-#&gt; h_24  0.003460 0.0007736 1.730e-05      3.413e-05
-#&gt; h_25  0.003573 0.0007790 1.742e-05      3.379e-05
-#&gt;  [ reached getOption("max.print") -- omitted 125 rows ]
-#&gt; 
-#&gt; 2. Quantiles for each variable:
-#&gt; 
-#&gt;           2.5%      25%      50%      75%    97.5%
-#&gt; h_1   0.001532 0.002272 0.002778 0.003465 0.005374
-#&gt; h_2   0.001630 0.002291 0.002772 0.003388 0.005103
-#&gt; h_3   0.001571 0.002267 0.002701 0.003307 0.004794
-#&gt; h_4   0.001617 0.002260 0.002689 0.003272 0.004765
-#&gt; h_5   0.001623 0.002244 0.002671 0.003221 0.004575
-#&gt; h_6   0.001595 0.002253 0.002666 0.003205 0.004528
-#&gt; h_7   0.001630 0.002293 0.002711 0.003200 0.004662
-#&gt; h_8   0.001769 0.002362 0.002760 0.003291 0.004736
-#&gt; h_9   0.001871 0.002461 0.002840 0.003353 0.004716
-#&gt; h_10  0.001967 0.002539 0.002966 0.003464 0.004762
-#&gt; h_11  0.001920 0.002540 0.002942 0.003432 0.004861
-#&gt; h_12  0.001875 0.002514 0.002946 0.003462 0.004975
-#&gt; h_13  0.001926 0.002543 0.002970 0.003473 0.004918
-#&gt; h_14  0.002041 0.002617 0.003027 0.003513 0.004844
-#&gt; h_15  0.001994 0.002574 0.002971 0.003463 0.004805
-#&gt; h_16  0.001917 0.002545 0.002949 0.003397 0.004785
-#&gt; h_17  0.001774 0.002475 0.002919 0.003394 0.004666
-#&gt; h_18  0.001707 0.002468 0.002908 0.003405 0.004721
-#&gt; h_19  0.001726 0.002493 0.002943 0.003471 0.004789
-#&gt; h_20  0.001809 0.002531 0.002981 0.003494 0.004742
-#&gt;  [ reached getOption("max.print") -- omitted 130 rows ]
-#&gt; </div><div class='input'><span class='fu'>sampled_parameters</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "mu"    "phi"   "sigma"</div><div class='input'><span class='fu'>priors</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Prior distributions:
-#&gt; mu        ~ Normal(mean = 0, sd = 100)
-#&gt; (phi+1)/2 ~ Beta(a = 5, b = 1.5)
-#&gt; sigma^2   ~ Gamma(shape = 0.5, rate = 0.5)
-#&gt; nu        ~ Infinity
-#&gt; rho       ~ Constant(value = 0)</div><div class='input'>
-<span class='co'># Draw 3 independent chains from heavy-tailed and asymmetric SV with AR(2) structure</span>
-<span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsample.html'>svsample</a></span><span class='op'>(</span><span class='va'>sim</span>, draws <span class='op'>=</span> <span class='fl'>20000</span>, burnin <span class='op'>=</span> <span class='fl'>3000</span>,
-                  designmatrix <span class='op'>=</span> <span class='st'>"ar2"</span>,
-                  priornu <span class='op'>=</span> <span class='fl'>0.1</span>, priorrho <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>4</span><span class='op'>)</span>,
-                  n_chains <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Extracted data vector from 'svsim'-object.</span></div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'>
-<span class='co'>## Extract beta draws from the second chain</span>
-<span class='fu'>svbeta</span><span class='op'>(</span><span class='va'>draws</span>, chain <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Markov Chain Monte Carlo (MCMC) output:
-#&gt; Start = 3001 
-#&gt; End = 23000 
-#&gt; Thinning interval = 1 
-#&gt;                 beta_0        beta_1        beta_2
-#&gt;     [1,]  3.986818e-04 -1.279945e-01 -1.060005e-02
-#&gt;     [2,]  4.021225e-04  3.224826e-03 -1.304160e-01
-#&gt;     [3,] -3.048023e-04 -5.503922e-02 -2.028515e-01
-#&gt;     [4,] -2.123814e-04 -3.506898e-02 -2.345676e-01
-#&gt;     [5,]  6.483192e-04 -5.897829e-02  9.688411e-02
-#&gt;     [6,] -5.939125e-04 -1.064934e-01 -3.154844e-02
-#&gt;     [7,]  5.021639e-04 -5.266088e-02 -4.038158e-02
-#&gt;     [8,]  3.526360e-04 -1.606566e-02  3.171984e-02
-#&gt;     [9,]  2.438603e-04  9.554753e-02  2.011009e-01
-#&gt;    [10,]  7.261782e-04 -1.660869e-01  7.192140e-02
-#&gt;    [11,]  2.581049e-04 -2.220964e-01  7.903991e-02
-#&gt;    [12,]  4.864048e-04  2.304745e-02  6.703356e-02
-#&gt;    [13,]  2.480466e-04 -9.654704e-02  2.211470e-02
-#&gt;    [14,]  1.733929e-04 -4.644452e-02 -6.213758e-02
-#&gt;    [15,]  1.989157e-05  7.627210e-03  1.590988e-01
-#&gt;    [16,]  2.345689e-04 -1.172092e-01  4.232334e-02
-#&gt;    [17,] -8.260260e-05 -1.487632e-01  5.475870e-02
-#&gt;    [18,] -3.381443e-04 -5.290690e-02  9.450398e-02
-#&gt;    [19,]  3.436562e-04 -2.737155e-01 -1.358099e-02
-#&gt;    [20,]  3.031726e-04 -2.330704e-01  3.788827e-02
-#&gt;    [21,]  3.210128e-04 -2.335721e-01  9.647677e-02
-#&gt;    [22,]  2.246805e-04 -1.054380e-01  7.663069e-02
-#&gt;    [23,]  4.791317e-04  1.767482e-03  1.810277e-01
-#&gt;    [24,]  6.166720e-04 -3.363721e-02  5.619184e-02
-#&gt;    [25,]  5.596030e-04 -6.197418e-02  9.116389e-02
-#&gt;    [26,]  8.641973e-04  8.075325e-02  1.688509e-01
-#&gt;    [27,]  3.247708e-05 -2.048383e-01 -6.898316e-02
-#&gt;    [28,] -4.505314e-04 -1.122294e-01  1.000561e-01
-#&gt;    [29,]  4.363931e-04 -1.300800e-01  5.506837e-02
-#&gt;    [30,]  4.994498e-04 -8.523493e-02  1.243411e-01
-#&gt;    [31,]  9.130127e-04 -1.612442e-01 -9.644053e-02
-#&gt;    [32,]  7.601552e-05 -1.341059e-01  4.058142e-02
-#&gt;    [33,]  6.243448e-04 -3.835138e-02 -2.113452e-02
-#&gt;  [ reached getOption("max.print") -- omitted 19967 rows ]</div><div class='input'><span class='co'>## ... tau draws from all chains merged/concatenated together</span>
-<span class='fu'>svtau</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Markov Chain Monte Carlo (MCMC) output:
-#&gt; Start = 3001 
-#&gt; End = 23000 
-#&gt; Thinning interval = 1 
-#&gt;               tau_1      tau_2     tau_3     tau_4     tau_5     tau_6
-#&gt;              tau_7      tau_8     tau_9    tau_10    tau_11     tau_12
-#&gt;              tau_13     tau_14    tau_15    tau_16     tau_17     tau_18
-#&gt;             tau_19     tau_20    tau_21    tau_22    tau_23    tau_24    tau_25
-#&gt;             tau_26    tau_27    tau_28     tau_29    tau_30    tau_31    tau_32
-#&gt;              tau_33    tau_34     tau_35    tau_36    tau_37     tau_38
-#&gt;             tau_39    tau_40     tau_41    tau_42    tau_43    tau_44    tau_45
-#&gt;             tau_46    tau_47    tau_48    tau_49    tau_50    tau_51     tau_52
-#&gt;             tau_53     tau_54    tau_55     tau_56     tau_57     tau_58
-#&gt;              tau_59     tau_60     tau_61    tau_62    tau_63     tau_64
-#&gt;             tau_65     tau_66    tau_67    tau_68    tau_69    tau_70
-#&gt;              tau_71    tau_72    tau_73    tau_74    tau_75    tau_76    tau_77
-#&gt;              tau_78     tau_79     tau_80     tau_81     tau_82    tau_83
-#&gt;             tau_84     tau_85     tau_86     tau_87    tau_88    tau_89
-#&gt;              tau_90    tau_91     tau_92     tau_93    tau_94    tau_95
-#&gt;             tau_96    tau_97    tau_98    tau_99   tau_100    tau_101   tau_102
-#&gt;            tau_103   tau_104    tau_105   tau_106   tau_107    tau_108
-#&gt;             tau_109   tau_110   tau_111   tau_112    tau_113    tau_114
-#&gt;            tau_115   tau_116   tau_117   tau_118    tau_119   tau_120   tau_121
-#&gt;            tau_122    tau_123    tau_124    tau_125    tau_126   tau_127
-#&gt;             tau_128   tau_129   tau_130    tau_131    tau_132   tau_133
-#&gt;            tau_134    tau_135    tau_136    tau_137   tau_138   tau_139
-#&gt;             tau_140   tau_141   tau_142    tau_143    tau_144   tau_145
-#&gt;            tau_146    tau_147   tau_148
-#&gt;  [ reached getOption("max.print") -- omitted 20000 rows ]</div><div class='input'><span class='co'>## Create a new svdraws object from the first and third chain</span>
-<span class='va'>second_chain_excluded</span> <span class='op'>&lt;-</span> <span class='va'>draws</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>]</span>
-
-<span class='co'># Draw from the predictive distribution</span>
-<span class='va'>pred</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>draws</span>, steps <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
-
-<span class='co'>## Extract the predicted observations as an mcmc.list object</span>
-<span class='va'>predicted_y</span> <span class='op'>&lt;-</span> <span class='fu'>predy</span><span class='op'>(</span><span class='va'>pred</span>, chain <span class='op'>=</span> <span class='st'>"all"</span><span class='op'>)</span>
-<span class='co'>## ... the predicted standard deviations from the second chain</span>
-<span class='va'>predicted_sd</span> <span class='op'>&lt;-</span> <span class='fu'>predvola</span><span class='op'>(</span><span class='va'>pred</span>, chain <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
-<span class='co'>## Create a new svpredict object from the first and third chain</span>
-<span class='va'>second_chain_excluded</span> <span class='op'>&lt;-</span> <span class='va'>pred</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>]</span>
-<span class='co'># }</span>
-
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># Simulate data</span></span>
+<span class='r-in'><span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>150</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Draw from vanilla SV</span></span>
+<span class='r-in'><span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsample.html'>svsample</a></span><span class='op'>(</span><span class='va'>sim</span>, draws <span class='op'>=</span> <span class='fl'>2000</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Extracted data vector from 'svsim'-object.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Summarize all estimated parameter draws as a merged mcmc object</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'>para</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>sampled_parameters</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Iterations = 1001:3000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Thinning interval = 1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Number of chains = 1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Sample size per chain = 2000 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1. Empirical mean and standard deviation for each variable,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    plus standard error of the mean:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           Mean      SD Naive SE Time-series SE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> mu    -10.1735 1.26156 0.028209        0.09454</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> phi     0.9715 0.02594 0.000580        0.00270</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma   0.2545 0.09254 0.002069        0.01182</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2. Quantiles for each variable:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           2.5%      25%      50%     75%   97.5%</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> mu    -12.5423 -10.7326 -10.2301 -9.7110 -7.7686</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> phi     0.9008   0.9630   0.9787  0.9893  0.9977</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma   0.1255   0.1884   0.2376  0.3015  0.5012</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='co'>## Extract the draws as an mcmc.list object</span></span>
+<span class='r-in'><span class='va'>params</span> <span class='op'>&lt;-</span> <span class='fu'>para</span><span class='op'>(</span><span class='va'>draws</span>, chain <span class='op'>=</span> <span class='st'>"all"</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>sampled_parameters</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>]</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># \donttest{</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span>max.print <span class='op'>=</span> <span class='fl'>100</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'>## Further short examples</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'>latent0</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Iterations = 1001:3000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Thinning interval = 1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Number of chains = 1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Sample size per chain = 2000 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1. Empirical mean and standard deviation for each variable,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    plus standard error of the mean:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           Mean             SD       Naive SE Time-series SE </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      -11.70583        0.68071        0.01522        0.02964 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2. Quantiles for each variable:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   2.5%    25%    50%    75%  97.5% </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -13.07 -12.16 -11.72 -11.26 -10.26 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'>latent</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Iterations = 1001:3000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Thinning interval = 1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Number of chains = 1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Sample size per chain = 2000 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1. Empirical mean and standard deviation for each variable,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    plus standard error of the mean:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          Mean     SD Naive SE Time-series SE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_1   -11.755 0.6424 0.014363        0.02819</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_2   -11.757 0.5778 0.012920        0.02966</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_3   -11.801 0.5672 0.012683        0.02922</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_4   -11.821 0.5429 0.012140        0.02856</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_5   -11.835 0.5275 0.011795        0.02610</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_6   -11.841 0.5261 0.011764        0.02538</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_7   -11.815 0.5145 0.011505        0.02508</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_8   -11.759 0.4901 0.010959        0.02492</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_9   -11.698 0.4764 0.010652        0.02291</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_10  -11.628 0.4585 0.010251        0.02374</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_11  -11.638 0.4696 0.010501        0.02282</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_12  -11.640 0.4912 0.010983        0.02519</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_13  -11.624 0.4729 0.010575        0.02221</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_14  -11.582 0.4420 0.009883        0.02370</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_15  -11.621 0.4465 0.009984        0.02430</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_16  -11.645 0.4584 0.010250        0.02381</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_17  -11.687 0.4861 0.010870        0.02301</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_18  -11.697 0.5052 0.011297        0.02486</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_19  -11.670 0.5113 0.011434        0.02523</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_20  -11.639 0.4905 0.010967        0.02538</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_21  -11.562 0.4599 0.010284        0.02257</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_22  -11.493 0.4451 0.009952        0.02149</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_23  -11.439 0.4487 0.010032        0.02030</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_24  -11.382 0.4448 0.009946        0.02027</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_25  -11.315 0.4313 0.009644        0.01847</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [ reached getOption("max.print") -- omitted 125 rows ]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2. Quantiles for each variable:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>          2.5%     25%     50%     75%   97.5%</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_1   -12.963 -12.174 -11.772 -11.330 -10.452</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_2   -12.839 -12.157 -11.777 -11.375 -10.556</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_3   -12.912 -12.178 -11.828 -11.424 -10.681</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_4   -12.854 -12.185 -11.837 -11.445 -10.693</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_5   -12.846 -12.199 -11.851 -11.476 -10.774</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_6   -12.881 -12.191 -11.855 -11.486 -10.795</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_7   -12.839 -12.155 -11.821 -11.490 -10.737</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_8   -12.675 -12.096 -11.785 -11.433 -10.705</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_9   -12.563 -12.014 -11.728 -11.396 -10.713</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_10  -12.463 -11.952 -11.641 -11.330 -10.694</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_11  -12.511 -11.951 -11.657 -11.349 -10.653</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_12  -12.558 -11.972 -11.655 -11.332 -10.607</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_13  -12.504 -11.949 -11.639 -11.326 -10.630</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_14  -12.389 -11.891 -11.600 -11.302 -10.660</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_15  -12.436 -11.925 -11.638 -11.331 -10.676</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_16  -12.514 -11.947 -11.653 -11.370 -10.685</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_17  -12.669 -12.003 -11.673 -11.371 -10.735</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_18  -12.746 -12.008 -11.680 -11.365 -10.711</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_19  -12.723 -11.989 -11.656 -11.327 -10.683</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_20  -12.630 -11.958 -11.631 -11.314 -10.703</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [ reached getOption("max.print") -- omitted 130 rows ]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='fu'>vola</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Iterations = 1001:3000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Thinning interval = 1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Number of chains = 1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Sample size per chain = 2000 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1. Empirical mean and standard deviation for each variable,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    plus standard error of the mean:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           Mean        SD  Naive SE Time-series SE</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_1   0.002952 0.0010012 2.239e-05      4.643e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_2   0.002920 0.0008920 1.995e-05      4.462e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_3   0.002852 0.0008461 1.892e-05      4.229e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_4   0.002814 0.0007977 1.784e-05      3.955e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_5   0.002788 0.0007572 1.693e-05      3.779e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_6   0.002779 0.0007496 1.676e-05      3.523e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_7   0.002811 0.0007464 1.669e-05      3.664e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_8   0.002883 0.0007434 1.662e-05      3.749e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_9   0.002968 0.0007461 1.668e-05      3.491e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_10  0.003067 0.0007443 1.664e-05      3.786e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_11  0.003056 0.0007635 1.707e-05      3.699e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_12  0.003061 0.0008027 1.795e-05      3.895e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_13  0.003078 0.0007759 1.735e-05      3.603e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_14  0.003133 0.0007380 1.650e-05      3.874e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_15  0.003074 0.0007203 1.611e-05      3.908e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_16  0.003040 0.0007243 1.619e-05      3.530e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_17  0.002986 0.0007422 1.660e-05      3.464e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_18  0.002976 0.0007520 1.681e-05      3.688e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_19  0.003020 0.0007781 1.740e-05      3.700e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_20  0.003060 0.0007570 1.693e-05      3.856e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_21  0.003169 0.0007506 1.679e-05      3.611e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_22  0.003274 0.0007390 1.653e-05      3.678e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_23  0.003364 0.0007604 1.700e-05      3.313e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_24  0.003460 0.0007736 1.730e-05      3.413e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_25  0.003573 0.0007790 1.742e-05      3.379e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [ reached getOption("max.print") -- omitted 125 rows ]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2. Quantiles for each variable:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>           2.5%      25%      50%      75%    97.5%</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_1   0.001532 0.002272 0.002778 0.003465 0.005374</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_2   0.001630 0.002291 0.002772 0.003388 0.005103</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_3   0.001571 0.002267 0.002701 0.003307 0.004794</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_4   0.001617 0.002260 0.002689 0.003272 0.004765</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_5   0.001623 0.002244 0.002671 0.003221 0.004575</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_6   0.001595 0.002253 0.002666 0.003205 0.004528</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_7   0.001630 0.002293 0.002711 0.003200 0.004662</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_8   0.001769 0.002362 0.002760 0.003291 0.004736</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_9   0.001871 0.002461 0.002840 0.003353 0.004716</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_10  0.001967 0.002539 0.002966 0.003464 0.004762</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_11  0.001920 0.002540 0.002942 0.003432 0.004861</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_12  0.001875 0.002514 0.002946 0.003462 0.004975</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_13  0.001926 0.002543 0.002970 0.003473 0.004918</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_14  0.002041 0.002617 0.003027 0.003513 0.004844</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_15  0.001994 0.002574 0.002971 0.003463 0.004805</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_16  0.001917 0.002545 0.002949 0.003397 0.004785</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_17  0.001774 0.002475 0.002919 0.003394 0.004666</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_18  0.001707 0.002468 0.002908 0.003405 0.004721</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_19  0.001726 0.002493 0.002943 0.003471 0.004789</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> h_20  0.001809 0.002531 0.002981 0.003494 0.004742</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [ reached getOption("max.print") -- omitted 130 rows ]</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='fu'>sampled_parameters</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] "mu"    "phi"   "sigma"</span>
+<span class='r-in'><span class='fu'>priors</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Prior distributions:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> mu        ~ Normal(mean = 0, sd = 100)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> (phi+1)/2 ~ Beta(a = 5, b = 1.5)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma^2   ~ Gamma(shape = 0.5, rate = 0.5)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> nu        ~ Infinity</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> rho       ~ Constant(value = 0)</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Draw 3 independent chains from heavy-tailed and asymmetric SV with AR(2) structure</span></span>
+<span class='r-in'><span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsample.html'>svsample</a></span><span class='op'>(</span><span class='va'>sim</span>, draws <span class='op'>=</span> <span class='fl'>20000</span>, burnin <span class='op'>=</span> <span class='fl'>3000</span>,</span>
+<span class='r-in'>                  designmatrix <span class='op'>=</span> <span class='st'>"ar2"</span>,</span>
+<span class='r-in'>                  priornu <span class='op'>=</span> <span class='fl'>0.1</span>, priorrho <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>4</span><span class='op'>)</span>,</span>
+<span class='r-in'>                  n_chains <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Extracted data vector from 'svsim'-object.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Extract beta draws from the second chain</span></span>
+<span class='r-in'><span class='fu'>svbeta</span><span class='op'>(</span><span class='va'>draws</span>, chain <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Markov Chain Monte Carlo (MCMC) output:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Start = 3001 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> End = 23000 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Thinning interval = 1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                 beta_0        beta_1        beta_2</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     [1,]  3.986818e-04 -1.279945e-01 -1.060005e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     [2,]  4.021225e-04  3.224826e-03 -1.304160e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     [3,] -3.048023e-04 -5.503922e-02 -2.028515e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     [4,] -2.123814e-04 -3.506898e-02 -2.345676e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     [5,]  6.483192e-04 -5.897829e-02  9.688411e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     [6,] -5.939125e-04 -1.064934e-01 -3.154844e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     [7,]  5.021639e-04 -5.266088e-02 -4.038158e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     [8,]  3.526360e-04 -1.606566e-02  3.171984e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     [9,]  2.438603e-04  9.554753e-02  2.011009e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [10,]  7.261782e-04 -1.660869e-01  7.192140e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [11,]  2.581049e-04 -2.220964e-01  7.903991e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [12,]  4.864048e-04  2.304745e-02  6.703356e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [13,]  2.480466e-04 -9.654704e-02  2.211470e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [14,]  1.733929e-04 -4.644452e-02 -6.213758e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [15,]  1.989157e-05  7.627210e-03  1.590988e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [16,]  2.345689e-04 -1.172092e-01  4.232334e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [17,] -8.260260e-05 -1.487632e-01  5.475870e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [18,] -3.381443e-04 -5.290690e-02  9.450398e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [19,]  3.436562e-04 -2.737155e-01 -1.358099e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [20,]  3.031726e-04 -2.330704e-01  3.788827e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [21,]  3.210128e-04 -2.335721e-01  9.647677e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [22,]  2.246805e-04 -1.054380e-01  7.663069e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [23,]  4.791317e-04  1.767482e-03  1.810277e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [24,]  6.166720e-04 -3.363721e-02  5.619184e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [25,]  5.596030e-04 -6.197418e-02  9.116389e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [26,]  8.641973e-04  8.075325e-02  1.688509e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [27,]  3.247708e-05 -2.048383e-01 -6.898316e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [28,] -4.505314e-04 -1.122294e-01  1.000561e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [29,]  4.363931e-04 -1.300800e-01  5.506837e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [30,]  4.994498e-04 -8.523493e-02  1.243411e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [31,]  9.130127e-04 -1.612442e-01 -9.644053e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [32,]  7.601552e-05 -1.341059e-01  4.058142e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    [33,]  6.243448e-04 -3.835138e-02 -2.113452e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [ reached getOption("max.print") -- omitted 19967 rows ]</span>
+<span class='r-in'><span class='co'>## ... tau draws from all chains merged/concatenated together</span></span>
+<span class='r-in'><span class='fu'>svtau</span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Markov Chain Monte Carlo (MCMC) output:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Start = 3001 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> End = 23000 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Thinning interval = 1 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>               tau_1      tau_2     tau_3     tau_4     tau_5     tau_6</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>              tau_7      tau_8     tau_9    tau_10    tau_11     tau_12</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>              tau_13     tau_14    tau_15    tau_16     tau_17     tau_18</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_19     tau_20    tau_21    tau_22    tau_23    tau_24    tau_25</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_26    tau_27    tau_28     tau_29    tau_30    tau_31    tau_32</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>              tau_33    tau_34     tau_35    tau_36    tau_37     tau_38</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_39    tau_40     tau_41    tau_42    tau_43    tau_44    tau_45</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_46    tau_47    tau_48    tau_49    tau_50    tau_51     tau_52</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_53     tau_54    tau_55     tau_56     tau_57     tau_58</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>              tau_59     tau_60     tau_61    tau_62    tau_63     tau_64</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_65     tau_66    tau_67    tau_68    tau_69    tau_70</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>              tau_71    tau_72    tau_73    tau_74    tau_75    tau_76    tau_77</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>              tau_78     tau_79     tau_80     tau_81     tau_82    tau_83</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_84     tau_85     tau_86     tau_87    tau_88    tau_89</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>              tau_90    tau_91     tau_92     tau_93    tau_94    tau_95</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_96    tau_97    tau_98    tau_99   tau_100    tau_101   tau_102</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            tau_103   tau_104    tau_105   tau_106   tau_107    tau_108</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_109   tau_110   tau_111   tau_112    tau_113    tau_114</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            tau_115   tau_116   tau_117   tau_118    tau_119   tau_120   tau_121</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            tau_122    tau_123    tau_124    tau_125    tau_126   tau_127</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_128   tau_129   tau_130    tau_131    tau_132   tau_133</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            tau_134    tau_135    tau_136    tau_137   tau_138   tau_139</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             tau_140   tau_141   tau_142    tau_143    tau_144   tau_145</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            tau_146    tau_147   tau_148</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [ reached getOption("max.print") -- omitted 20000 rows ]</span>
+<span class='r-in'><span class='co'>## Create a new svdraws object from the first and third chain</span></span>
+<span class='r-in'><span class='va'>second_chain_excluded</span> <span class='op'>&lt;-</span> <span class='va'>draws</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>]</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Draw from the predictive distribution</span></span>
+<span class='r-in'><span class='va'>pred</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>draws</span>, steps <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Extract the predicted observations as an mcmc.list object</span></span>
+<span class='r-in'><span class='va'>predicted_y</span> <span class='op'>&lt;-</span> <span class='fu'>predy</span><span class='op'>(</span><span class='va'>pred</span>, chain <span class='op'>=</span> <span class='st'>"all"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'>## ... the predicted standard deviations from the second chain</span></span>
+<span class='r-in'><span class='va'>predicted_sd</span> <span class='op'>&lt;-</span> <span class='fu'>predvola</span><span class='op'>(</span><span class='va'>pred</span>, chain <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'>## Create a new svpredict object from the first and third chain</span></span>
+<span class='r-in'><span class='va'>second_chain_excluded</span> <span class='op'>&lt;-</span> <span class='va'>pred</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>3</span><span class='op'>)</span><span class='op'>]</span></span>
+<span class='r-in'><span class='co'># }</span></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

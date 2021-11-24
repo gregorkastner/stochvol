@@ -84,7 +84,7 @@ the package has been extended to allow for the leverage effect." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.2.0</span>
       </span>
     </div>
 
@@ -179,35 +179,38 @@ doi: <a href='https://doi.org/10.1198/jcgs.2011.203main'>10.1198/jcgs.2011.203ma
     <p>Gregor Kastner <a href='mailto:gregor.kastner@wu.ac.at'>gregor.kastner@wu.ac.at</a>, Darjus Hosszejni <a href='mailto:darjus.hosszejni@wu.ac.at'>darjus.hosszejni@wu.ac.at</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## Simulate a highly persistent SV process </span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>500</span>, mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.99</span>, sigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
- 
-<span class='co'>## Obtain 4000 draws from the sampler (that's too few!)</span>
-<span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsample.html'>svsample</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>$</span><span class='va'>y</span>, draws <span class='op'>=</span> <span class='fl'>4000</span>, burnin <span class='op'>=</span> <span class='fl'>100</span>, priormu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>)</span>,
-                 priorphi <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>1.2</span><span class='op'>)</span>, priorsigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'> 
-<span class='co'>## Predict 20 days ahead</span>
-<span class='va'>fore</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>draws</span>, <span class='fl'>20</span><span class='op'>)</span>
- 
-<span class='co'>## plot the results</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span>, forecast <span class='op'>=</span> <span class='va'>fore</span><span class='op'>)</span>
-</div><div class='img'><img src='stochvol-package-1.png' alt='' width='700' height='433' /></div><div class='input'> 
-<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'>## Simulate an SV process with leverage</span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>500</span>, mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.95</span>, sigma <span class='op'>=</span> <span class='fl'>0.2</span>, rho<span class='op'>=</span><span class='op'>-</span><span class='fl'>0.5</span><span class='op'>)</span>
- 
-<span class='co'>## Obtain 8000 draws from the sampler (that's too little!)</span>
-<span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsample.html'>svsample</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>$</span><span class='va'>y</span>, draws <span class='op'>=</span> <span class='fl'>4000</span>, burnin <span class='op'>=</span> <span class='fl'>3000</span>, priormu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>)</span>,
-                  priorphi <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>1.2</span><span class='op'>)</span>, priorsigma <span class='op'>=</span> <span class='fl'>0.2</span>,
-                  priorrho <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
- 
-<span class='co'>## Predict 20 days ahead</span>
-<span class='va'>fore</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>draws</span>, <span class='fl'>20</span><span class='op'>)</span>
- 
-<span class='co'>## plot the results</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span>, forecast <span class='op'>=</span> <span class='va'>fore</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'>## Simulate a highly persistent SV process </span></span>
+<span class='r-in'><span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>500</span>, mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.99</span>, sigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-in'> </span>
+<span class='r-in'><span class='co'>## Obtain 4000 draws from the sampler (that's too few!)</span></span>
+<span class='r-in'><span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsample.html'>svsample</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>$</span><span class='va'>y</span>, draws <span class='op'>=</span> <span class='fl'>4000</span>, burnin <span class='op'>=</span> <span class='fl'>100</span>, priormu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>)</span>,</span>
+<span class='r-in'>                 priorphi <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>1.2</span><span class='op'>)</span>, priorsigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'> </span>
+<span class='r-in'><span class='co'>## Predict 20 days ahead</span></span>
+<span class='r-in'><span class='va'>fore</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>draws</span>, <span class='fl'>20</span><span class='op'>)</span></span>
+<span class='r-in'> </span>
+<span class='r-in'><span class='co'>## plot the results</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span>, forecast <span class='op'>=</span> <span class='va'>fore</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='stochvol-package-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'> </span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='co'>## Simulate an SV process with leverage</span></span>
+<span class='r-in'><span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>500</span>, mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.95</span>, sigma <span class='op'>=</span> <span class='fl'>0.2</span>, rho<span class='op'>=</span><span class='op'>-</span><span class='fl'>0.5</span><span class='op'>)</span></span>
+<span class='r-in'> </span>
+<span class='r-in'><span class='co'>## Obtain 8000 draws from the sampler (that's too little!)</span></span>
+<span class='r-in'><span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsample.html'>svsample</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>$</span><span class='va'>y</span>, draws <span class='op'>=</span> <span class='fl'>4000</span>, burnin <span class='op'>=</span> <span class='fl'>3000</span>, priormu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>)</span>,</span>
+<span class='r-in'>                  priorphi <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>1.2</span><span class='op'>)</span>, priorsigma <span class='op'>=</span> <span class='fl'>0.2</span>,</span>
+<span class='r-in'>                  priorrho <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'> </span>
+<span class='r-in'><span class='co'>## Predict 20 days ahead</span></span>
+<span class='r-in'><span class='va'>fore</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>draws</span>, <span class='fl'>20</span><span class='op'>)</span></span>
+<span class='r-in'> </span>
+<span class='r-in'><span class='co'>## plot the results</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span>, forecast <span class='op'>=</span> <span class='va'>fore</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

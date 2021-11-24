@@ -81,7 +81,7 @@ process." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.2.0</span>
       </span>
     </div>
 
@@ -175,8 +175,8 @@ SV model with symmetric ``log-returns''.</p></td>
 usually interpreted as ``log-returns''.</p></dd>
 <dt>vol</dt><dd><p>a vector of length
 <code>len</code> containing the simulated instantaneous volatilities
-<code><a href='https://rdrr.io/r/base/Log.html'>exp(h_t/2)</a></code>.</p></dd>
-<dt>vol0</dt><dd><p>The initial volatility <code><a href='https://rdrr.io/r/base/Log.html'>exp(h_0/2)</a></code>,
+<code>exp(h_t/2)</code>.</p></dd>
+<dt>vol0</dt><dd><p>The initial volatility <code>exp(h_0/2)</code>,
 drawn from the stationary distribution of the latent AR(1) process.</p></dd>
 <dt>para</dt><dd><p>a named list with five elements <code>mu</code>, <code>phi</code>,
 <code>sigma</code>, <code>nu</code>, and <code>rho</code>, containing
@@ -188,7 +188,7 @@ the corresponding arguments.</p></dd>
 distribution of the AR(1) process defined by <code>phi</code>, <code>sigma</code>, and <code>mu</code>.
 Then the function jointly simulates the log-volatility series
 <code>h_1,...,h_n</code> with the given AR(1) structure, and the ``log-return'' series
-<code>y_1,...,y_n</code> with mean 0 and standard deviation <code><a href='https://rdrr.io/r/base/Log.html'>exp(h/2)</a></code>.
+<code>y_1,...,y_n</code> with mean 0 and standard deviation <code>exp(h/2)</code>.
 Additionally, for each index <code>i</code>, <code>y_i</code> can be set to have a conditionally heavy-tailed
 residual (through <code>nu</code>) and/or to be correlated with <code>(h_{i+1}-h_i)</code>
 (through <code>rho</code>, the so-called leverage effect, resulting in asymmetric ``log-returns'').</p>
@@ -211,184 +211,193 @@ formatted manner. The <code>summary</code> method provides some summary statisti
     <p>Gregor Kastner <a href='mailto:gregor.kastner@wu.ac.at'>gregor.kastner@wu.ac.at</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## Simulate a highly persistent SV process of length 500</span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'>svsim</span><span class='op'>(</span><span class='fl'>500</span>, phi <span class='op'>=</span> <span class='fl'>0.99</span>, sigma <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span>
-
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Simulated time series consisting of 500 observations.
-#&gt; 
-#&gt; Parameters: level of latent variable                  mu = -10
-#&gt;             persistence of latent variable           phi = 0.99
-#&gt;             standard deviation of latent variable  sigma = 0.1
-#&gt;             degrees of freedom parameter              nu =Inf
-#&gt;             leverage effect parameter                rho =0
-#&gt; 
-#&gt; Simulated initial volatility:  
-#&gt; 
-#&gt; Simulated volatilities:
-#&gt; numeric(0)
-#&gt; 
-#&gt; Simulated data (usually interpreted as 'log-returns'):
-#&gt;   [1]  5.195244e-03  4.806265e-03  2.963477e-03 -1.024568e-02  1.123435e-02
-#&gt;   [6] -1.136132e-02 -5.546233e-03 -2.024673e-03 -3.821135e-05 -2.313511e-03
-#&gt;  [11]  1.210554e-02 -1.443924e-02  1.908982e-03 -6.480746e-03  7.272855e-03
-#&gt;  [16]  9.785242e-03  3.509227e-04 -8.024132e-03 -2.871445e-03  3.012724e-03
-#&gt;  [21]  2.616034e-03  9.918969e-03 -3.715687e-03 -1.073524e-02 -4.974737e-04
-#&gt;  [26]  4.586073e-03 -2.638326e-03  2.046746e-03  2.266845e-03 -1.266414e-02
-#&gt;  [31]  1.316739e-02  7.940110e-03 -8.462547e-03 -9.492250e-03  3.513439e-03
-#&gt;  [36]  3.855288e-03 -1.389418e-02 -8.881588e-03 -3.838708e-03 -2.929570e-03
-#&gt;  [41]  8.567859e-03 -1.366032e-02 -1.044480e-02  7.952702e-03 -1.138211e-02
-#&gt;  [46]  7.478297e-03  1.950882e-03 -7.463435e-03 -2.871278e-05  1.030340e-03
-#&gt;  [51] -4.068989e-03  6.346628e-03  4.020133e-03  3.606108e-04  5.940168e-03
-#&gt;  [56]  6.222336e-03  1.779415e-03  1.805434e-03 -2.238065e-03 -7.093146e-03
-#&gt;  [61]  6.836254e-03 -8.397908e-03  3.925666e-03  8.014868e-03 -2.911245e-03
-#&gt;  [66]  5.999764e-03  8.811173e-03 -5.199422e-03  7.637173e-03 -7.324203e-03
-#&gt;  [71] -4.661884e-03  1.468486e-02  8.611666e-03 -6.668538e-03 -8.551932e-03
-#&gt;  [76]  2.743689e-03 -3.925066e-03 -1.614636e-03 -5.273986e-04  1.604852e-04
-#&gt;  [81]  1.126588e-02  2.752733e-03 -3.567624e-03 -6.382113e-03 -4.876315e-03
-#&gt;  [86]  1.553747e-03 -3.827654e-03  1.107125e-02 -1.382288e-03 -1.007196e-03
-#&gt;  [91] -2.144796e-03 -5.170348e-03  6.850907e-03 -3.385508e-03  4.427611e-03
-#&gt;  [96]  3.798255e-03  2.348354e-03 -3.229479e-03  5.685341e-03 -6.312272e-03
-#&gt;  [ reached getOption("max.print") -- omitted 400 entries ]</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Simulated time series consisting of 500 observations.
-#&gt; 
-#&gt; Parameters: level of latent variable                  mu = -10
-#&gt;             persistence of latent variable           phi = 0.99
-#&gt;             standard deviation of latent variable  sigma = 0.1
-#&gt;             degrees of freedom parameter              nu = Inf
-#&gt;             leverage effect parameter                rho = 0
-#&gt; 
-#&gt; Simulated initial volatility (in %): 0.7938888 
-#&gt; 
-#&gt; Summary of simulated volatilities (in %):
-#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#&gt;  0.4790  0.6292  0.7054  0.7738  0.8779  1.5344 
-#&gt; 
-#&gt; Summary of simulated data (in %):
-#&gt;      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-#&gt; -2.380497 -0.487782  0.007821  0.007541  0.557998  2.995363 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span>
-</div><div class='img'><img src='svsim-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>## Simulate an SV process with leverage</span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'>svsim</span><span class='op'>(</span><span class='fl'>200</span>, phi <span class='op'>=</span> <span class='fl'>0.94</span>, sigma <span class='op'>=</span> <span class='fl'>0.15</span>, rho <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.6</span><span class='op'>)</span>
-
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Simulated time series consisting of 200 observations.
-#&gt; 
-#&gt; Parameters: level of latent variable                  mu = -10
-#&gt;             persistence of latent variable           phi = 0.94
-#&gt;             standard deviation of latent variable  sigma = 0.15
-#&gt;             degrees of freedom parameter              nu =Inf
-#&gt;             leverage effect parameter                rho =-0.6
-#&gt; 
-#&gt; Simulated initial volatility:  
-#&gt; 
-#&gt; Simulated volatilities:
-#&gt; numeric(0)
-#&gt; 
-#&gt; Simulated data (usually interpreted as 'log-returns'):
-#&gt;   [1]  2.010936e-04  2.894352e-03 -8.500693e-04 -1.999438e-03 -1.469697e-03
-#&gt;   [6] -3.242162e-03 -1.353621e-02 -5.935825e-03 -3.135490e-03  8.251626e-03
-#&gt;  [11] -3.158499e-03 -1.437565e-02 -7.990952e-04 -1.114894e-02 -6.974105e-06
-#&gt;  [16] -3.072273e-04 -6.070082e-03 -9.161698e-03  5.689657e-03 -5.527314e-03
-#&gt;  [21]  2.999643e-03  1.165538e-02  5.848023e-03 -9.197729e-03  8.830923e-03
-#&gt;  [26] -3.868295e-03 -3.212065e-03 -4.044609e-03  7.424365e-04 -3.210587e-03
-#&gt;  [31] -1.309110e-03 -3.855928e-03  4.703119e-03 -3.157453e-03  1.272027e-03
-#&gt;  [36] -4.415118e-03 -5.347690e-03 -8.321464e-03 -6.786973e-03  4.357231e-03
-#&gt;  [41]  4.546686e-04 -5.695727e-03  1.448340e-02  3.377276e-04 -4.125208e-03
-#&gt;  [46] -1.655516e-02 -5.966346e-03 -5.680613e-03 -8.138615e-03 -3.038496e-03
-#&gt;  [51] -2.846037e-03 -3.687456e-03 -1.027777e-02  6.648949e-03 -1.539352e-03
-#&gt;  [56] -1.503189e-02  8.319767e-03 -1.108573e-02 -7.776482e-03  1.961982e-03
-#&gt;  [61] -1.577716e-02  8.354209e-03  2.674844e-03  6.445851e-03  6.716138e-03
-#&gt;  [66] -1.545489e-02 -1.658878e-02  4.296333e-04  9.217642e-03  1.310887e-03
-#&gt;  [71] -4.270172e-03  7.127722e-04  8.188741e-04 -2.829252e-03 -9.209239e-03
-#&gt;  [76]  7.699914e-03 -8.948398e-03  1.940385e-04  6.377558e-03 -8.228647e-03
-#&gt;  [81] -1.064018e-02 -9.731439e-04 -1.020847e-03  1.910144e-02 -3.747458e-05
-#&gt;  [86] -2.162189e-02 -6.696689e-05  1.421819e-02 -4.261193e-03 -1.940600e-04
-#&gt;  [91]  5.288611e-03  5.582687e-03  3.365491e-03  1.531222e-02  4.751219e-03
-#&gt;  [96]  6.827009e-03  3.153786e-03 -1.989695e-03 -8.823664e-04 -5.689000e-04
-#&gt;  [ reached getOption("max.print") -- omitted 100 entries ]</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Simulated time series consisting of 200 observations.
-#&gt; 
-#&gt; Parameters: level of latent variable                  mu = -10
-#&gt;             persistence of latent variable           phi = 0.94
-#&gt;             standard deviation of latent variable  sigma = 0.15
-#&gt;             degrees of freedom parameter              nu = Inf
-#&gt;             leverage effect parameter                rho = -0.6
-#&gt; 
-#&gt; Simulated initial volatility (in %): 0.6007418 
-#&gt; 
-#&gt; Summary of simulated volatilities (in %):
-#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#&gt;  0.4633  0.6048  0.7015  0.6980  0.7801  0.9311 
-#&gt; 
-#&gt; Summary of simulated data (in %):
-#&gt;     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-#&gt; -2.16219 -0.53926 -0.02060 -0.07162  0.42626  1.91014 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span>
-</div><div class='img'><img src='svsim-2.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>## Simulate an SV process with conditionally heavy-tails</span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'>svsim</span><span class='op'>(</span><span class='fl'>250</span>, phi <span class='op'>=</span> <span class='fl'>0.91</span>, sigma <span class='op'>=</span> <span class='fl'>0.05</span>, nu <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span>
-
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Simulated time series consisting of 250 observations.
-#&gt; 
-#&gt; Parameters: level of latent variable                  mu = -10
-#&gt;             persistence of latent variable           phi = 0.91
-#&gt;             standard deviation of latent variable  sigma = 0.05
-#&gt;             degrees of freedom parameter              nu =5
-#&gt;             leverage effect parameter                rho =0
-#&gt; 
-#&gt; Simulated initial volatility:  
-#&gt; 
-#&gt; Simulated volatilities:
-#&gt; numeric(0)
-#&gt; 
-#&gt; Simulated data (usually interpreted as 'log-returns'):
-#&gt;   [1]  6.521731e-03 -1.012425e-03  2.899440e-03  3.832921e-03  2.079081e-03
-#&gt;   [6] -2.512084e-03 -3.582946e-03  2.214284e-03  4.222384e-04 -1.462709e-03
-#&gt;  [11] -1.846450e-03  7.784848e-03 -7.238390e-03  5.686529e-03  3.638120e-03
-#&gt;  [16]  1.437102e-03 -7.016878e-03 -5.930959e-03  2.328526e-03 -3.426894e-03
-#&gt;  [21]  3.619910e-03 -2.013737e-03  5.629771e-03 -4.483067e-04  3.876698e-03
-#&gt;  [26] -6.875592e-03 -6.835843e-03  3.965375e-03  8.201697e-03  2.944602e-03
-#&gt;  [31]  7.327319e-03 -1.109136e-03 -1.267054e-03  2.002790e-02 -3.749452e-04
-#&gt;  [36] -5.324192e-03  4.077199e-03  1.977954e-03  1.059049e-02  1.923409e-03
-#&gt;  [41] -3.477187e-03 -4.956979e-03 -5.334566e-04 -1.047840e-03  1.412630e-02
-#&gt;  [46] -4.466675e-03  1.734282e-02  5.433659e-03  1.148314e-02  1.091956e-02
-#&gt;  [51] -7.623242e-03 -3.843569e-03 -1.902295e-03  4.244600e-03  9.788900e-03
-#&gt;  [56]  2.101509e-02  1.889570e-03  4.029304e-03  8.918126e-03  8.098271e-03
-#&gt;  [61] -3.512670e-03  9.293154e-03 -7.786699e-05  2.545637e-03  6.401402e-03
-#&gt;  [66]  1.102513e-02 -1.000273e-03  1.669191e-03 -1.859102e-03 -2.062933e-03
-#&gt;  [71] -1.651909e-03 -8.249907e-03 -3.208750e-03 -5.982092e-03 -4.385013e-03
-#&gt;  [76]  5.377582e-03 -1.102171e-03 -2.813790e-03 -7.778109e-03  1.793161e-04
-#&gt;  [81] -6.384618e-03  6.612571e-03  1.845515e-03  4.582441e-03 -4.262984e-03
-#&gt;  [86]  2.737315e-03  1.147499e-02  4.775479e-03 -7.786790e-03  1.900297e-04
-#&gt;  [91]  3.480064e-05 -1.406243e-02 -2.464160e-03  6.054755e-03  2.087566e-03
-#&gt;  [96] -8.752743e-03  1.639023e-02 -3.454674e-03  3.761670e-03 -1.167512e-03
-#&gt;  [ reached getOption("max.print") -- omitted 150 entries ]</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Simulated time series consisting of 250 observations.
-#&gt; 
-#&gt; Parameters: level of latent variable                  mu = -10
-#&gt;             persistence of latent variable           phi = 0.91
-#&gt;             standard deviation of latent variable  sigma = 0.05
-#&gt;             degrees of freedom parameter              nu = 5
-#&gt;             leverage effect parameter                rho = 0
-#&gt; 
-#&gt; Simulated initial volatility (in %): 0.6561552 
-#&gt; 
-#&gt; Summary of simulated volatilities (in %):
-#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#&gt;  0.2375  0.4722  0.5689  0.6246  0.7071  2.1350 
-#&gt; 
-#&gt; Summary of simulated data (in %):
-#&gt;     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-#&gt; -1.65595 -0.35654 -0.00678  0.07525  0.39432  3.05763 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span>
-</div><div class='img'><img src='svsim-3.png' alt='' width='700' height='433' /></div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'>## Simulate a highly persistent SV process of length 500</span></span>
+<span class='r-in'><span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'>svsim</span><span class='op'>(</span><span class='fl'>500</span>, phi <span class='op'>=</span> <span class='fl'>0.99</span>, sigma <span class='op'>=</span> <span class='fl'>0.1</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated time series consisting of 500 observations.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parameters: level of latent variable                  mu = -10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             persistence of latent variable           phi = 0.99</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             standard deviation of latent variable  sigma = 0.1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             degrees of freedom parameter              nu =Inf</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             leverage effect parameter                rho =0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated initial volatility:  </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated volatilities:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> numeric(0)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated data (usually interpreted as 'log-returns'):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   [1]  5.195244e-03  4.806265e-03  2.963477e-03 -1.024568e-02  1.123435e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   [6] -1.136132e-02 -5.546233e-03 -2.024673e-03 -3.821135e-05 -2.313511e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [11]  1.210554e-02 -1.443924e-02  1.908982e-03 -6.480746e-03  7.272855e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [16]  9.785242e-03  3.509227e-04 -8.024132e-03 -2.871445e-03  3.012724e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [21]  2.616034e-03  9.918969e-03 -3.715687e-03 -1.073524e-02 -4.974737e-04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [26]  4.586073e-03 -2.638326e-03  2.046746e-03  2.266845e-03 -1.266414e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [31]  1.316739e-02  7.940110e-03 -8.462547e-03 -9.492250e-03  3.513439e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [36]  3.855288e-03 -1.389418e-02 -8.881588e-03 -3.838708e-03 -2.929570e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [41]  8.567859e-03 -1.366032e-02 -1.044480e-02  7.952702e-03 -1.138211e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [46]  7.478297e-03  1.950882e-03 -7.463435e-03 -2.871278e-05  1.030340e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [51] -4.068989e-03  6.346628e-03  4.020133e-03  3.606108e-04  5.940168e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [56]  6.222336e-03  1.779415e-03  1.805434e-03 -2.238065e-03 -7.093146e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [61]  6.836254e-03 -8.397908e-03  3.925666e-03  8.014868e-03 -2.911245e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [66]  5.999764e-03  8.811173e-03 -5.199422e-03  7.637173e-03 -7.324203e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [71] -4.661884e-03  1.468486e-02  8.611666e-03 -6.668538e-03 -8.551932e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [76]  2.743689e-03 -3.925066e-03 -1.614636e-03 -5.273986e-04  1.604852e-04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [81]  1.126588e-02  2.752733e-03 -3.567624e-03 -6.382113e-03 -4.876315e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [86]  1.553747e-03 -3.827654e-03  1.107125e-02 -1.382288e-03 -1.007196e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [91] -2.144796e-03 -5.170348e-03  6.850907e-03 -3.385508e-03  4.427611e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [96]  3.798255e-03  2.348354e-03 -3.229479e-03  5.685341e-03 -6.312272e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [ reached getOption("max.print") -- omitted 400 entries ]</span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated time series consisting of 500 observations.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parameters: level of latent variable                  mu = -10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             persistence of latent variable           phi = 0.99</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             standard deviation of latent variable  sigma = 0.1</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             degrees of freedom parameter              nu = Inf</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             leverage effect parameter                rho = 0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated initial volatility (in %): 0.7938888 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Summary of simulated volatilities (in %):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  0.4790  0.6292  0.7054  0.7738  0.8779  1.5344 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Summary of simulated data (in %):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -2.380497 -0.487782  0.007821  0.007541  0.557998  2.995363 </span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='svsim-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Simulate an SV process with leverage</span></span>
+<span class='r-in'><span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'>svsim</span><span class='op'>(</span><span class='fl'>200</span>, phi <span class='op'>=</span> <span class='fl'>0.94</span>, sigma <span class='op'>=</span> <span class='fl'>0.15</span>, rho <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.6</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated time series consisting of 200 observations.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parameters: level of latent variable                  mu = -10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             persistence of latent variable           phi = 0.94</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             standard deviation of latent variable  sigma = 0.15</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             degrees of freedom parameter              nu =Inf</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             leverage effect parameter                rho =-0.6</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated initial volatility:  </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated volatilities:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> numeric(0)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated data (usually interpreted as 'log-returns'):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   [1]  2.010936e-04  2.894352e-03 -8.500693e-04 -1.999438e-03 -1.469697e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   [6] -3.242162e-03 -1.353621e-02 -5.935825e-03 -3.135490e-03  8.251626e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [11] -3.158499e-03 -1.437565e-02 -7.990952e-04 -1.114894e-02 -6.974105e-06</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [16] -3.072273e-04 -6.070082e-03 -9.161698e-03  5.689657e-03 -5.527314e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [21]  2.999643e-03  1.165538e-02  5.848023e-03 -9.197729e-03  8.830923e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [26] -3.868295e-03 -3.212065e-03 -4.044609e-03  7.424365e-04 -3.210587e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [31] -1.309110e-03 -3.855928e-03  4.703119e-03 -3.157453e-03  1.272027e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [36] -4.415118e-03 -5.347690e-03 -8.321464e-03 -6.786973e-03  4.357231e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [41]  4.546686e-04 -5.695727e-03  1.448340e-02  3.377276e-04 -4.125208e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [46] -1.655516e-02 -5.966346e-03 -5.680613e-03 -8.138615e-03 -3.038496e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [51] -2.846037e-03 -3.687456e-03 -1.027777e-02  6.648949e-03 -1.539352e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [56] -1.503189e-02  8.319767e-03 -1.108573e-02 -7.776482e-03  1.961982e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [61] -1.577716e-02  8.354209e-03  2.674844e-03  6.445851e-03  6.716138e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [66] -1.545489e-02 -1.658878e-02  4.296333e-04  9.217642e-03  1.310887e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [71] -4.270172e-03  7.127722e-04  8.188741e-04 -2.829252e-03 -9.209239e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [76]  7.699914e-03 -8.948398e-03  1.940385e-04  6.377558e-03 -8.228647e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [81] -1.064018e-02 -9.731439e-04 -1.020847e-03  1.910144e-02 -3.747458e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [86] -2.162189e-02 -6.696689e-05  1.421819e-02 -4.261193e-03 -1.940600e-04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [91]  5.288611e-03  5.582687e-03  3.365491e-03  1.531222e-02  4.751219e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [96]  6.827009e-03  3.153786e-03 -1.989695e-03 -8.823664e-04 -5.689000e-04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [ reached getOption("max.print") -- omitted 100 entries ]</span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated time series consisting of 200 observations.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parameters: level of latent variable                  mu = -10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             persistence of latent variable           phi = 0.94</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             standard deviation of latent variable  sigma = 0.15</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             degrees of freedom parameter              nu = Inf</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             leverage effect parameter                rho = -0.6</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated initial volatility (in %): 0.6007418 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Summary of simulated volatilities (in %):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  0.4633  0.6048  0.7015  0.6980  0.7801  0.9311 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Summary of simulated data (in %):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -2.16219 -0.53926 -0.02060 -0.07162  0.42626  1.91014 </span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='svsim-2.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Simulate an SV process with conditionally heavy-tails</span></span>
+<span class='r-in'><span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'>svsim</span><span class='op'>(</span><span class='fl'>250</span>, phi <span class='op'>=</span> <span class='fl'>0.91</span>, sigma <span class='op'>=</span> <span class='fl'>0.05</span>, nu <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated time series consisting of 250 observations.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parameters: level of latent variable                  mu = -10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             persistence of latent variable           phi = 0.91</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             standard deviation of latent variable  sigma = 0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             degrees of freedom parameter              nu =5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             leverage effect parameter                rho =0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated initial volatility:  </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated volatilities:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> numeric(0)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated data (usually interpreted as 'log-returns'):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   [1]  6.521731e-03 -1.012425e-03  2.899440e-03  3.832921e-03  2.079081e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   [6] -2.512084e-03 -3.582946e-03  2.214284e-03  4.222384e-04 -1.462709e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [11] -1.846450e-03  7.784848e-03 -7.238390e-03  5.686529e-03  3.638120e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [16]  1.437102e-03 -7.016878e-03 -5.930959e-03  2.328526e-03 -3.426894e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [21]  3.619910e-03 -2.013737e-03  5.629771e-03 -4.483067e-04  3.876698e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [26] -6.875592e-03 -6.835843e-03  3.965375e-03  8.201697e-03  2.944602e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [31]  7.327319e-03 -1.109136e-03 -1.267054e-03  2.002790e-02 -3.749452e-04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [36] -5.324192e-03  4.077199e-03  1.977954e-03  1.059049e-02  1.923409e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [41] -3.477187e-03 -4.956979e-03 -5.334566e-04 -1.047840e-03  1.412630e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [46] -4.466675e-03  1.734282e-02  5.433659e-03  1.148314e-02  1.091956e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [51] -7.623242e-03 -3.843569e-03 -1.902295e-03  4.244600e-03  9.788900e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [56]  2.101509e-02  1.889570e-03  4.029304e-03  8.918126e-03  8.098271e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [61] -3.512670e-03  9.293154e-03 -7.786699e-05  2.545637e-03  6.401402e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [66]  1.102513e-02 -1.000273e-03  1.669191e-03 -1.859102e-03 -2.062933e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [71] -1.651909e-03 -8.249907e-03 -3.208750e-03 -5.982092e-03 -4.385013e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [76]  5.377582e-03 -1.102171e-03 -2.813790e-03 -7.778109e-03  1.793161e-04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [81] -6.384618e-03  6.612571e-03  1.845515e-03  4.582441e-03 -4.262984e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [86]  2.737315e-03  1.147499e-02  4.775479e-03 -7.786790e-03  1.900297e-04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [91]  3.480064e-05 -1.406243e-02 -2.464160e-03  6.054755e-03  2.087566e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [96] -8.752743e-03  1.639023e-02 -3.454674e-03  3.761670e-03 -1.167512e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  [ reached getOption("max.print") -- omitted 150 entries ]</span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated time series consisting of 250 observations.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Parameters: level of latent variable                  mu = -10</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             persistence of latent variable           phi = 0.91</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             standard deviation of latent variable  sigma = 0.05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             degrees of freedom parameter              nu = 5</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             leverage effect parameter                rho = 0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simulated initial volatility (in %): 0.6561552 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Summary of simulated volatilities (in %):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  0.2375  0.4722  0.5689  0.6246  0.7071  2.1350 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Summary of simulated data (in %):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> -1.65595 -0.35654 -0.00678  0.07525  0.39432  3.05763 </span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='svsim-3.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

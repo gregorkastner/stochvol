@@ -87,7 +87,7 @@ see svlm." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.2.0</span>
       </span>
     </div>
 
@@ -301,7 +301,7 @@ default value is 1000.</p></td>
     <tr>
       <th>designmatrix</th>
       <td><p>regression design matrix for modeling the mean. Must
-have <code><a href='https://rdrr.io/r/base/length.html'>length(y)</a></code> rows. Alternatively, <code>designmatrix</code> may be a
+have <code>length(y)</code> rows. Alternatively, <code>designmatrix</code> may be a
 string of the form <code>"arX"</code>, where <code>X</code> is a nonnegative integer. To
 fit a constant mean model, use <code>designmatrix = "ar0"</code> (which is
 equivalent to <code>designmatrix = matrix(1, nrow = length(y))</code>). To fit an
@@ -313,7 +313,7 @@ behavior of <span class="pkg">stochvol</span>).</p></td>
       <th>priormu</th>
       <td><p>numeric vector of length 2, indicating mean and standard
 deviation for the Gaussian prior distribution of the parameter <code>mu</code>,
-the level of the log-volatility. The default value is <code><a href='https://rdrr.io/r/base/c.html'>c(0, 100)</a></code>,
+the level of the log-volatility. The default value is <code>c(0, 100)</code>,
 which constitutes a practically uninformative prior for common exchange rate
 datasets, stock returns and the like.</p></td>
     </tr>
@@ -322,7 +322,7 @@ datasets, stock returns and the like.</p></td>
       <td><p>numeric vector of length 2, indicating the shape parameters
 for the Beta prior distribution of the transformed parameter
 <code>(phi + 1) / 2</code>, where <code>phi</code> denotes the persistence of the
-log-volatility. The default value is <code><a href='https://rdrr.io/r/base/c.html'>c(5, 1.5)</a></code>, which constitutes a
+log-volatility. The default value is <code>c(5, 1.5)</code>, which constitutes a
 prior that puts some belief in a persistent log-volatility but also
 encompasses the region where <code>phi</code> is around 0.</p></td>
     </tr>
@@ -354,7 +354,7 @@ vector of length 2 that specify the beta prior distribution for
       <th>priorbeta</th>
       <td><p>numeric vector of length 2, indicating the mean and
 standard deviation of the Gaussian prior for the regression parameters. The
-default value is <code><a href='https://rdrr.io/r/base/c.html'>c(0, 10000)</a></code>, which constitutes a very vague prior
+default value is <code>c(0, 10000)</code>, which constitutes a very vague prior
 for many common datasets. Not used if <code>designmatrix</code> is <code>NA</code>.</p></td>
     </tr>
     <tr>
@@ -415,11 +415,11 @@ named lists that initialize the parallel chains.</p></td>
     </tr>
     <tr>
       <th>startlatent</th>
-      <td><p><em>optional</em> vector of length <code><a href='https://rdrr.io/r/base/length.html'>length(y)</a></code>,
+      <td><p><em>optional</em> vector of length <code>length(y)</code>,
 containing the starting values for the latent log-volatility draws. The
-default value is <code><a href='https://rdrr.io/r/base/rep.html'>rep(-10, length(y))</a></code>.
+default value is <code>rep(-10, length(y))</code>.
 In case of parallel execution with <code>cl</code> provided, <code>startlatent</code> can be a list of
-named lists that initialize the parallel chains.</p></td>
+numeric vectors that initialize the parallel chains.</p></td>
     </tr>
     <tr>
       <th>parallel</th>
@@ -453,11 +453,11 @@ or <code>"iteration"</code>, controls the output. Ignored if <code>quiet</code> 
 applications, the default values probably work best. Interested users are
 referred to the literature provided in the References section. If
 <code>expert</code> is provided, it may contain the following named elements:</p><ul>
-<li><p>interweaveLogical value. If <code>TRUE</code> (the default),
+<li><p>interweave Logical value. If <code>TRUE</code> (the default),
 then ancillarity-sufficiency interweaving strategy (ASIS) is applied
 to improve on the sampling efficiency for the parameters.
 Otherwise one parameterization is used.</p></li>
-<li><p>correct_model_misspecificationLogical value. If <code>FALSE</code>
+<li><p>correct_model_misspecification Logical value. If <code>FALSE</code>
 (the default), then auxiliary mixture sampling is used to sample the latent
 states. If <code>TRUE</code>, extra computations are made to correct for model
 misspecification either ex-post by reweighting or on-line using a
@@ -542,226 +542,254 @@ doi: <a href='https://doi.org/10.1007/978-3-030-30611-3_8'>10.1007/978-3-030-306
     <div class='dont-index'><p><code><a href='svlm.html'>svlm</a></code>, <code><a href='svsim.html'>svsim</a></code>, <code><a href='specify_priors.html'>specify_priors</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>###############</span>
-<span class='co'># Full examples</span>
-<span class='co'>###############</span>
-
-<span class='co'># Example 1</span>
-<span class='co'>## Simulate a short and highly persistent SV process </span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>100</span>, mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.99</span>, sigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
-
-<span class='co'>## Obtain 5000 draws from the sampler (that's not a lot)</span>
-<span class='va'>draws</span> <span class='op'>&lt;-</span>
-  <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>sim</span>, draws <span class='op'>=</span> <span class='fl'>5000</span>, burnin <span class='op'>=</span> <span class='fl'>100</span>,
-           priormu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>)</span>, priorphi <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>1.5</span><span class='op'>)</span>, priorsigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Extracted data vector from 'svsim'-object.</span></div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'>
-<span class='co'>## Check out the results</span>
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Summary of 'svdraws' object
-#&gt; 
-#&gt; Prior distributions:
-#&gt; mu        ~ Normal(mean = -10, sd = 1)
-#&gt; (phi+1)/2 ~ Beta(a = 20, b = 1.5)
-#&gt; sigma^2   ~ Gamma(shape = 0.5, rate = 2.5)
-#&gt; nu        ~ Infinity
-#&gt; rho       ~ Constant(value = 0)
-#&gt; 
-#&gt; Stored 5000 MCMC draws after a burn-in of 100.
-#&gt; No thinning.
-#&gt; 
-#&gt; Posterior draws of SV parameters (thinning = 1):
-#&gt;             mean     sd       5%    50%   95% ESS
-#&gt; mu        -8.211 0.2993 -8.69418 -8.171 -7.86 620
-#&gt; phi        0.842 0.1170  0.61635  0.868  0.98 298
-#&gt; sigma      0.146 0.1112  0.01288  0.125  0.35 322
-#&gt; exp(mu/2)  0.017 0.0022  0.01294  0.017  0.02 620
-#&gt; sigma^2    0.034 0.0520  0.00017  0.016  0.12 322
-#&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Simulation object extracted from input</span></div><div class='img'><img src='svsample-1.png' alt='' width='700' height='433' /></div><div class='input'>
-
-<span class='co'># \donttest{</span>
-<span class='co'># Example 2</span>
-<span class='co'>## Simulate an asymmetric and conditionally heavy-tailed SV process</span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>150</span>, mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.96</span>, sigma <span class='op'>=</span> <span class='fl'>0.3</span>, nu <span class='op'>=</span> <span class='fl'>10</span>, rho <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.3</span><span class='op'>)</span>
-
-<span class='co'>## Obtain 10000 draws from the sampler</span>
-<span class='co'>## Use more advanced prior settings</span>
-<span class='co'>## Run two parallel MCMC chains</span>
-<span class='va'>advanced_draws</span> <span class='op'>&lt;-</span>
-  <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>sim</span>, draws <span class='op'>=</span> <span class='fl'>10000</span>, burnin <span class='op'>=</span> <span class='fl'>5000</span>,
-           priorspec <span class='op'>=</span> <span class='fu'><a href='specify_priors.html'>specify_priors</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='fu'><a href='sv_constant.html'>sv_normal</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>)</span>,
-                                      sigma2 <span class='op'>=</span> <span class='fu'><a href='sv_constant.html'>sv_gamma</a></span><span class='op'>(</span><span class='fl'>0.5</span>, <span class='fl'>2</span><span class='op'>)</span>,
-                                      rho <span class='op'>=</span> <span class='fu'><a href='sv_constant.html'>sv_beta</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>4</span><span class='op'>)</span>,
-                                      nu <span class='op'>=</span> <span class='fu'><a href='sv_constant.html'>sv_constant</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>,
-           parallel <span class='op'>=</span> <span class='st'>"snow"</span>, n_chains <span class='op'>=</span> <span class='fl'>2</span>, n_cpus <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Extracted data vector from 'svsim'-object.</span></div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'>
-<span class='co'>## Check out the results</span>
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>advanced_draws</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Summary of 'svdraws' object
-#&gt; 
-#&gt; Prior distributions:
-#&gt; mu        ~ Normal(mean = -10, sd = 1)
-#&gt; (phi+1)/2 ~ Beta(a = 5, b = 1.5)
-#&gt; sigma^2   ~ Gamma(shape = 0.5, rate = 2)
-#&gt; nu        ~ Constant(value = 5)
-#&gt; rho       ~ Beta(a = 4, b = 4)
-#&gt; 
-#&gt; Stored 10000 MCMC draws after a burn-in of 5000.
-#&gt; No thinning.
-#&gt; 
-#&gt; Posterior draws of SV parameters (thinning = 1):
-#&gt;             mean      sd      5%    50%    95%  ESS
-#&gt; mu        -8.870 0.16735 -9.1495 -8.866 -8.611 2704
-#&gt; phi        0.571 0.25720  0.0721  0.621  0.893   99
-#&gt; sigma      0.275 0.15898  0.0403  0.262  0.553  228
-#&gt; rho        0.091 0.27088 -0.3531  0.090  0.552  106
-#&gt; exp(mu/2)  0.012 0.00099  0.0103  0.012  0.013 2704
-#&gt; sigma^2    0.101 0.10923  0.0016  0.068  0.306  228
-#&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>advanced_draws</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Simulation object extracted from input</span></div><div class='img'><img src='svsample-2.png' alt='' width='700' height='433' /></div><div class='input'>
-
-<span class='co'># Example 3</span>
-<span class='co'>## AR(1) structure for the mean</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>)</span>
-<span class='va'>len</span> <span class='op'>&lt;-</span> <span class='fl'>3000</span>
-<span class='va'>ahead</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>
-<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>$</span><span class='va'>USD</span>, <span class='va'>len</span><span class='op'>)</span>
-
-<span class='co'>## Fit AR(1)-SVL model to EUR-USD exchange rates</span>
-<span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>, designmatrix <span class='op'>=</span> <span class='st'>"ar1"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'>
-<span class='co'>## Use predict.svdraws to obtain predictive distributions</span>
-<span class='va'>preddraws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>res</span>, steps <span class='op'>=</span> <span class='va'>ahead</span><span class='op'>)</span>
-
-<span class='co'>## Calculate predictive quantiles</span>
-<span class='va'>predquants</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>predy</a></span><span class='op'>(</span><span class='va'>preddraws</span><span class='op'>)</span>, <span class='fl'>2</span>, <span class='va'>quantile</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.1</span>, <span class='fl'>.5</span>, <span class='fl'>.9</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'>## Visualize</span>
-<span class='va'>expost</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>$</span><span class='va'>USD</span>, <span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='va'>ahead</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/ts.plot.html'>ts.plot</a></span><span class='op'>(</span><span class='va'>y</span>, xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>-</span><span class='fl'>4</span><span class='op'>*</span><span class='va'>ahead</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>,
-         ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>predquants</span>, <span class='va'>expost</span>, <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>y</span>, <span class='fl'>4</span><span class='op'>*</span><span class='va'>ahead</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='input'><span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>:</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='va'>predquants</span><span class='op'>[</span><span class='va'>i</span>,<span class='op'>]</span>,
-        col <span class='op'>=</span> <span class='fl'>3</span>, lty <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>:</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='va'>expost</span>,
-      col <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
-</div><div class='img'><img src='svsample-3.png' alt='' width='700' height='433' /></div><div class='input'>
-
-<span class='co'># Example 4</span>
-<span class='co'>## Predicting USD based on JPY and GBP in the mean</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>)</span>
-<span class='va'>len</span> <span class='op'>&lt;-</span> <span class='fl'>3000</span>
-<span class='va'>ahead</span> <span class='op'>&lt;-</span> <span class='fl'>30</span>
-<span class='co'>## Calculate log-returns</span>
-<span class='va'>logreturns</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"USD"</span>, <span class='st'>"JPY"</span>, <span class='st'>"GBP"</span><span class='op'>)</span><span class='op'>]</span>, <span class='fl'>2</span>,
-                    <span class='kw'>function</span> <span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>logretUSD</span> <span class='op'>&lt;-</span> <span class='va'>logreturns</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span>, <span class='st'>"USD"</span><span class='op'>]</span>
-<span class='va'>regressors</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>logreturns</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='va'>len</span>, <span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>  <span class='co'># lagged by 1 day</span>
-
-<span class='co'>## Fit SV model to EUR-USD exchange rates</span>
-<span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>logretUSD</span>, designmatrix <span class='op'>=</span> <span class='va'>regressors</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'>
-<span class='co'>## Use predict.svdraws to obtain predictive distributions</span>
-<span class='va'>predregressors</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>logreturns</span><span class='op'>[</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>preddraws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>res</span>, steps <span class='op'>=</span> <span class='va'>ahead</span>,
-                     newdata <span class='op'>=</span> <span class='va'>predregressors</span><span class='op'>)</span>
-<span class='va'>predprice</span> <span class='op'>&lt;-</span> <span class='va'>exrates</span><span class='op'>[</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>2</span>, <span class='st'>"USD"</span><span class='op'>]</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>predy</a></span><span class='op'>(</span><span class='va'>preddraws</span><span class='op'>)</span>, <span class='fl'>1</span>, <span class='va'>cumsum</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'>## Calculate predictive quantiles</span>
-<span class='va'>predquants</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='va'>predprice</span>, <span class='fl'>2</span>, <span class='va'>quantile</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.1</span>, <span class='fl'>.5</span>, <span class='fl'>.9</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='co'>## Visualize</span>
-<span class='va'>priceUSD</span> <span class='op'>&lt;-</span> <span class='va'>exrates</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>2</span><span class='op'>)</span>, <span class='st'>"USD"</span><span class='op'>]</span>
-<span class='va'>expost</span> <span class='op'>&lt;-</span> <span class='va'>exrates</span><span class='op'>[</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>+</span><span class='fl'>2</span><span class='op'>)</span>, <span class='st'>"USD"</span><span class='op'>]</span>
-<span class='fu'><a href='https://rdrr.io/r/stats/ts.plot.html'>ts.plot</a></span><span class='op'>(</span><span class='va'>priceUSD</span>, xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>len</span><span class='op'>-</span><span class='fl'>4</span><span class='op'>*</span><span class='va'>ahead</span>, <span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span>,
-         ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>expost</span>, <span class='va'>predquants</span>, <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>priceUSD</span>, <span class='fl'>4</span><span class='op'>*</span><span class='va'>ahead</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='input'><span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>len</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>priceUSD</span>, <span class='fl'>1</span><span class='op'>)</span>, <span class='va'>predquants</span><span class='op'>[</span><span class='va'>i</span>,<span class='op'>]</span><span class='op'>)</span>,
-        col <span class='op'>=</span> <span class='fl'>3</span>, lty <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>len</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>priceUSD</span>, <span class='fl'>1</span><span class='op'>)</span>, <span class='va'>expost</span><span class='op'>)</span>,
-      col <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
-</div><div class='img'><img src='svsample-4.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
-
-<span class='co'>########################</span>
-<span class='co'># Further short examples</span>
-<span class='co'>########################</span>
-
-<span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>50</span>, nu <span class='op'>=</span> <span class='fl'>10</span>, rho <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.1</span><span class='op'>)</span><span class='op'>$</span><span class='va'>y</span>
-
-<span class='co'># Supply initial values</span>
-<span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>,
-                startpara <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, sigma <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'>
-<span class='co'># \donttest{</span>
-<span class='co'># Supply initial values for parallel chains</span>
-<span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>,
-                startpara <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, sigma <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>,
-                                 <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>11</span>, sigma <span class='op'>=</span> <span class='fl'>.1</span>, phi <span class='op'>=</span> <span class='fl'>0.9</span><span class='op'>)</span>,
-                                 <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>9</span>, sigma <span class='op'>=</span> <span class='fl'>.3</span>, phi <span class='op'>=</span> <span class='fl'>0.7</span><span class='op'>)</span><span class='op'>)</span>,
-                parallel <span class='op'>=</span> <span class='st'>"snow"</span>, n_chains <span class='op'>=</span> <span class='fl'>3</span>, n_cpus <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'>
-<span class='co'># Parallel chains with with a pre-defined cluster object</span>
-<span class='va'>cl</span> <span class='op'>&lt;-</span> <span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>makeCluster</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='st'>"PSOCK"</span>, outfile <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>  <span class='co'># print to console</span>
-<span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>,
-                parallel <span class='op'>=</span> <span class='st'>"snow"</span>, n_chains <span class='op'>=</span> <span class='fl'>3</span>, cl <span class='op'>=</span> <span class='va'>cl</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'><span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>stopCluster</a></span><span class='op'>(</span><span class='va'>cl</span><span class='op'>)</span>
-<span class='co'># }</span>
-
-<span class='co'># Turn on correction for model misspecification</span>
-<span class='co'>## Since the approximate model is fast and it is working very</span>
-<span class='co'>##   well in practice, this is turned off by default</span>
-<span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>,
-                expert <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>correct_model_misspecification <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='output co'>#&gt; <span class='message'>No computation of effective sample size after re-sampling</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt; Summary of 'svdraws' object
-#&gt; 
-#&gt; Prior distributions:
-#&gt; mu        ~ Normal(mean = 0, sd = 100)
-#&gt; (phi+1)/2 ~ Beta(a = 5, b = 1.5)
-#&gt; sigma^2   ~ Gamma(shape = 0.5, rate = 0.5)
-#&gt; nu        ~ Infinity
-#&gt; rho       ~ Constant(value = 0)
-#&gt; 
-#&gt; Stored 10000 MCMC draws after a burn-in of 1000.
-#&gt; No thinning.
-#&gt; 
-#&gt; Posterior draws of SV parameters (thinning = 1):
-#&gt;              mean     sd       5%     50%   95%
-#&gt; mu        -9.7334 0.6994 -10.2968 -9.7166 -9.16
-#&gt; phi        0.5891 0.2816   0.0279  0.6398  0.94
-#&gt; sigma      0.4356 0.2511   0.0658  0.4092  0.89
-#&gt; exp(mu/2)  0.0079 0.0027   0.0058  0.0078  0.01
-#&gt; sigma^2    0.2528 0.2714   0.0043  0.1675  0.78
-#&gt; 
-#&gt; Posterior draws from the auxiliary SV model were re-sampled after the MCMC
-#&gt; procedure ended to correct for model mis-specification.
-#&gt;   Re-sampling of parameters and latents was of little practical importance:
-#&gt;     - max reachable entropy for this sample size: 9.21034,
-#&gt;     - entropy of the re-sampling weight distribution: 9.210266
-#&gt; </div><div class='input'>
-<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'># Parallel multicore chains (not available on Windows)</span>
-<span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>, draws <span class='op'>=</span> <span class='fl'>30000</span>, burnin <span class='op'>=</span> <span class='fl'>10000</span>,
-                parallel <span class='op'>=</span> <span class='st'>"multicore"</span>, n_chains <span class='op'>=</span> <span class='fl'>3</span>, n_cpus <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
-
-<span class='co'># Plot using a color palette</span>
-<span class='fu'><a href='https://rdrr.io/r/grDevices/palette.html'>palette</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>rainbow</a></span><span class='op'>(</span><span class='fu'>coda</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/coda/man/nchain.html'>nchain</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>para</a></span><span class='op'>(</span><span class='va'>res</span>, <span class='st'>"all"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>)</span>
-
-<span class='co'># Use functionality from package 'coda'</span>
-<span class='co'>## E.g. Geweke's convergence diagnostics</span>
-<span class='fu'>coda</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/coda/man/geweke.diag.html'>geweke.diag</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>para</a></span><span class='op'>(</span><span class='va'>res</span>, <span class='st'>"all"</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mu"</span>, <span class='st'>"phi"</span>, <span class='st'>"sigma"</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
-
-<span class='co'># Use functionality from package 'bayesplot'</span>
-<span class='fu'>bayesplot</span><span class='fu'>::</span><span class='fu'>mcmc_pairs</span><span class='op'>(</span><span class='va'>res</span>, pars <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"sigma"</span>, <span class='st'>"mu"</span>, <span class='st'>"phi"</span>, <span class='st'>"h_0"</span>, <span class='st'>"h_15"</span><span class='op'>)</span><span class='op'>)</span>
-<span class='op'>}</span>
-
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'>###############</span></span>
+<span class='r-in'><span class='co'># Full examples</span></span>
+<span class='r-in'><span class='co'>###############</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Example 1</span></span>
+<span class='r-in'><span class='co'>## Simulate a short and highly persistent SV process </span></span>
+<span class='r-in'><span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>100</span>, mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.99</span>, sigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Obtain 5000 draws from the sampler (that's not a lot)</span></span>
+<span class='r-in'><span class='va'>draws</span> <span class='op'>&lt;-</span></span>
+<span class='r-in'>  <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>sim</span>, draws <span class='op'>=</span> <span class='fl'>5000</span>, burnin <span class='op'>=</span> <span class='fl'>100</span>,</span>
+<span class='r-in'>           priormu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>)</span>, priorphi <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>1.5</span><span class='op'>)</span>, priorsigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Extracted data vector from 'svsim'-object.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Check out the results</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Summary of 'svdraws' object</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Prior distributions:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> mu        ~ Normal(mean = -10, sd = 1)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> (phi+1)/2 ~ Beta(a = 20, b = 1.5)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma^2   ~ Gamma(shape = 0.5, rate = 2.5)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> nu        ~ Infinity</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> rho       ~ Constant(value = 0)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Stored 5000 MCMC draws after a burn-in of 100.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> No thinning.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Posterior draws of SV parameters (thinning = 1):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             mean     sd       5%    50%   95% ESS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> mu        -8.211 0.2993 -8.69418 -8.171 -7.86 620</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> phi        0.842 0.1170  0.61635  0.868  0.98 298</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma      0.146 0.1112  0.01288  0.125  0.35 322</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> exp(mu/2)  0.017 0.0022  0.01294  0.017  0.02 620</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma^2    0.034 0.0520  0.00017  0.016  0.12 322</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Simulation object extracted from input</span>
+<span class='r-plt img'><img src='svsample-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># \donttest{</span></span>
+<span class='r-in'><span class='co'># Example 2</span></span>
+<span class='r-in'><span class='co'>## Simulate an asymmetric and conditionally heavy-tailed SV process</span></span>
+<span class='r-in'><span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>150</span>, mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.96</span>, sigma <span class='op'>=</span> <span class='fl'>0.3</span>, nu <span class='op'>=</span> <span class='fl'>10</span>, rho <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.3</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Obtain 10000 draws from the sampler</span></span>
+<span class='r-in'><span class='co'>## Use more advanced prior settings</span></span>
+<span class='r-in'><span class='co'>## Run two parallel MCMC chains</span></span>
+<span class='r-in'><span class='va'>advanced_draws</span> <span class='op'>&lt;-</span></span>
+<span class='r-in'>  <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>sim</span>, draws <span class='op'>=</span> <span class='fl'>10000</span>, burnin <span class='op'>=</span> <span class='fl'>5000</span>,</span>
+<span class='r-in'>           priorspec <span class='op'>=</span> <span class='fu'><a href='specify_priors.html'>specify_priors</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='fu'><a href='sv_constant.html'>sv_normal</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>)</span>,</span>
+<span class='r-in'>                                      sigma2 <span class='op'>=</span> <span class='fu'><a href='sv_constant.html'>sv_gamma</a></span><span class='op'>(</span><span class='fl'>0.5</span>, <span class='fl'>2</span><span class='op'>)</span>,</span>
+<span class='r-in'>                                      rho <span class='op'>=</span> <span class='fu'><a href='sv_constant.html'>sv_beta</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>4</span><span class='op'>)</span>,</span>
+<span class='r-in'>                                      nu <span class='op'>=</span> <span class='fu'><a href='sv_constant.html'>sv_constant</a></span><span class='op'>(</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>           parallel <span class='op'>=</span> <span class='st'>"snow"</span>, n_chains <span class='op'>=</span> <span class='fl'>2</span>, n_cpus <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Extracted data vector from 'svsim'-object.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Check out the results</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>advanced_draws</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Summary of 'svdraws' object</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Prior distributions:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> mu        ~ Normal(mean = -10, sd = 1)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> (phi+1)/2 ~ Beta(a = 5, b = 1.5)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma^2   ~ Gamma(shape = 0.5, rate = 2)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> nu        ~ Constant(value = 5)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> rho       ~ Beta(a = 4, b = 4)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Stored 10000 MCMC draws after a burn-in of 5000.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> No thinning.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Posterior draws of SV parameters (thinning = 1):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             mean      sd      5%    50%    95%  ESS</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> mu        -8.870 0.16735 -9.1495 -8.866 -8.611 2704</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> phi        0.571 0.25720  0.0721  0.621  0.893   99</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma      0.275 0.15898  0.0403  0.262  0.553  228</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> rho        0.091 0.27088 -0.3531  0.090  0.552  106</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> exp(mu/2)  0.012 0.00099  0.0103  0.012  0.013 2704</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma^2    0.101 0.10923  0.0016  0.068  0.306  228</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>advanced_draws</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Simulation object extracted from input</span>
+<span class='r-plt img'><img src='svsample-2.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Example 3</span></span>
+<span class='r-in'><span class='co'>## AR(1) structure for the mean</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>len</span> <span class='op'>&lt;-</span> <span class='fl'>3000</span></span>
+<span class='r-in'><span class='va'>ahead</span> <span class='op'>&lt;-</span> <span class='fl'>100</span></span>
+<span class='r-in'><span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>$</span><span class='va'>USD</span>, <span class='va'>len</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Fit AR(1)-SVL model to EUR-USD exchange rates</span></span>
+<span class='r-in'><span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>, designmatrix <span class='op'>=</span> <span class='st'>"ar1"</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Use predict.svdraws to obtain predictive distributions</span></span>
+<span class='r-in'><span class='va'>preddraws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>res</span>, steps <span class='op'>=</span> <span class='va'>ahead</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Calculate predictive quantiles</span></span>
+<span class='r-in'><span class='va'>predquants</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>predy</a></span><span class='op'>(</span><span class='va'>preddraws</span><span class='op'>)</span>, <span class='fl'>2</span>, <span class='va'>quantile</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.1</span>, <span class='fl'>.5</span>, <span class='fl'>.9</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Visualize</span></span>
+<span class='r-in'><span class='va'>expost</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>$</span><span class='va'>USD</span>, <span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='va'>ahead</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/stats/ts.plot.html'>ts.plot</a></span><span class='op'>(</span><span class='va'>y</span>, xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>-</span><span class='fl'>4</span><span class='op'>*</span><span class='va'>ahead</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>,</span>
+<span class='r-in'>         ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>predquants</span>, <span class='va'>expost</span>, <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>y</span>, <span class='fl'>4</span><span class='op'>*</span><span class='va'>ahead</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>:</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='va'>predquants</span><span class='op'>[</span><span class='va'>i</span>,<span class='op'>]</span>,</span>
+<span class='r-in'>        col <span class='op'>=</span> <span class='fl'>3</span>, lty <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>:</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='va'>expost</span>,</span>
+<span class='r-in'>      col <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='svsample-3.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Example 4</span></span>
+<span class='r-in'><span class='co'>## Predicting USD based on JPY and GBP in the mean</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>len</span> <span class='op'>&lt;-</span> <span class='fl'>3000</span></span>
+<span class='r-in'><span class='va'>ahead</span> <span class='op'>&lt;-</span> <span class='fl'>30</span></span>
+<span class='r-in'><span class='co'>## Calculate log-returns</span></span>
+<span class='r-in'><span class='va'>logreturns</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='va'>exrates</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"USD"</span>, <span class='st'>"JPY"</span>, <span class='st'>"GBP"</span><span class='op'>)</span><span class='op'>]</span>, <span class='fl'>2</span>,</span>
+<span class='r-in'>                    <span class='kw'>function</span> <span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/diff.html'>diff</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>logretUSD</span> <span class='op'>&lt;-</span> <span class='va'>logreturns</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span>, <span class='st'>"USD"</span><span class='op'>]</span></span>
+<span class='r-in'><span class='va'>regressors</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>logreturns</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='va'>len</span>, <span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>  <span class='co'># lagged by 1 day</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Fit SV model to EUR-USD exchange rates</span></span>
+<span class='r-in'><span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>logretUSD</span>, designmatrix <span class='op'>=</span> <span class='va'>regressors</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Use predict.svdraws to obtain predictive distributions</span></span>
+<span class='r-in'><span class='va'>predregressors</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>logreturns</span><span class='op'>[</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='op'>]</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>preddraws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>res</span>, steps <span class='op'>=</span> <span class='va'>ahead</span>,</span>
+<span class='r-in'>                     newdata <span class='op'>=</span> <span class='va'>predregressors</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>predprice</span> <span class='op'>&lt;-</span> <span class='va'>exrates</span><span class='op'>[</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>2</span>, <span class='st'>"USD"</span><span class='op'>]</span> <span class='op'>*</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>predy</a></span><span class='op'>(</span><span class='va'>preddraws</span><span class='op'>)</span>, <span class='fl'>1</span>, <span class='va'>cumsum</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Calculate predictive quantiles</span></span>
+<span class='r-in'><span class='va'>predquants</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span><span class='op'>(</span><span class='va'>predprice</span>, <span class='fl'>2</span>, <span class='va'>quantile</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>.1</span>, <span class='fl'>.5</span>, <span class='fl'>.9</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Visualize</span></span>
+<span class='r-in'><span class='va'>priceUSD</span> <span class='op'>&lt;-</span> <span class='va'>exrates</span><span class='op'>[</span><span class='fl'>3</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>2</span><span class='op'>)</span>, <span class='st'>"USD"</span><span class='op'>]</span></span>
+<span class='r-in'><span class='va'>expost</span> <span class='op'>&lt;-</span> <span class='va'>exrates</span><span class='op'>[</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>+</span><span class='fl'>2</span><span class='op'>)</span>, <span class='st'>"USD"</span><span class='op'>]</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/stats/ts.plot.html'>ts.plot</a></span><span class='op'>(</span><span class='va'>priceUSD</span>, xlim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>len</span><span class='op'>-</span><span class='fl'>4</span><span class='op'>*</span><span class='va'>ahead</span>, <span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>+</span><span class='fl'>1</span><span class='op'>)</span>,</span>
+<span class='r-in'>         ylim <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/range.html'>range</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>expost</span>, <span class='va'>predquants</span>, <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>priceUSD</span>, <span class='fl'>4</span><span class='op'>*</span><span class='va'>ahead</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='kw'>for</span> <span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'>  <span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>len</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>priceUSD</span>, <span class='fl'>1</span><span class='op'>)</span>, <span class='va'>predquants</span><span class='op'>[</span><span class='va'>i</span>,<span class='op'>]</span><span class='op'>)</span>,</span>
+<span class='r-in'>        col <span class='op'>=</span> <span class='fl'>3</span>, lty <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>len</span><span class='op'>:</span><span class='op'>(</span><span class='va'>len</span><span class='op'>+</span><span class='va'>ahead</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>tail</a></span><span class='op'>(</span><span class='va'>priceUSD</span>, <span class='fl'>1</span><span class='op'>)</span>, <span class='va'>expost</span><span class='op'>)</span>,</span>
+<span class='r-in'>      col <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='svsample-4.png' alt='' width='700' height='433' /></span>
+<span class='r-in'><span class='co'># }</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>########################</span></span>
+<span class='r-in'><span class='co'># Further short examples</span></span>
+<span class='r-in'><span class='co'>########################</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>50</span>, nu <span class='op'>=</span> <span class='fl'>10</span>, rho <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.1</span><span class='op'>)</span><span class='op'>$</span><span class='va'>y</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Supply initial values</span></span>
+<span class='r-in'><span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>,</span>
+<span class='r-in'>                startpara <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, sigma <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># \donttest{</span></span>
+<span class='r-in'><span class='co'># Supply initial values for parallel chains</span></span>
+<span class='r-in'><span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>,</span>
+<span class='r-in'>                startpara <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, sigma <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>,</span>
+<span class='r-in'>                                 <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>11</span>, sigma <span class='op'>=</span> <span class='fl'>.1</span>, phi <span class='op'>=</span> <span class='fl'>0.9</span><span class='op'>)</span>,</span>
+<span class='r-in'>                                 <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>9</span>, sigma <span class='op'>=</span> <span class='fl'>.3</span>, phi <span class='op'>=</span> <span class='fl'>0.7</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>                parallel <span class='op'>=</span> <span class='st'>"snow"</span>, n_chains <span class='op'>=</span> <span class='fl'>3</span>, n_cpus <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Parallel chains with with a pre-defined cluster object</span></span>
+<span class='r-in'><span class='va'>cl</span> <span class='op'>&lt;-</span> <span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>makeCluster</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='st'>"PSOCK"</span>, outfile <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>  <span class='co'># print to console</span></span>
+<span class='r-in'><span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>,</span>
+<span class='r-in'>                parallel <span class='op'>=</span> <span class='st'>"snow"</span>, n_chains <span class='op'>=</span> <span class='fl'>3</span>, cl <span class='op'>=</span> <span class='va'>cl</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'><span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>stopCluster</a></span><span class='op'>(</span><span class='va'>cl</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># }</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Turn on correction for model misspecification</span></span>
+<span class='r-in'><span class='co'>## Since the approximate model is fast and it is working very</span></span>
+<span class='r-in'><span class='co'>##   well in practice, this is turned off by default</span></span>
+<span class='r-in'><span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>,</span>
+<span class='r-in'>                expert <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>correct_model_misspecification <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> No computation of effective sample size after re-sampling</span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Summary of 'svdraws' object</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Prior distributions:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> mu        ~ Normal(mean = 0, sd = 100)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> (phi+1)/2 ~ Beta(a = 5, b = 1.5)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma^2   ~ Gamma(shape = 0.5, rate = 0.5)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> nu        ~ Infinity</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> rho       ~ Constant(value = 0)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Stored 10000 MCMC draws after a burn-in of 1000.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> No thinning.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Posterior draws of SV parameters (thinning = 1):</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>              mean     sd       5%     50%   95%</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> mu        -9.7334 0.6994 -10.2968 -9.7166 -9.16</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> phi        0.5891 0.2816   0.0279  0.6398  0.94</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma      0.4356 0.2511   0.0658  0.4092  0.89</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> exp(mu/2)  0.0079 0.0027   0.0058  0.0078  0.01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> sigma^2    0.2528 0.2714   0.0043  0.1675  0.78</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Posterior draws from the auxiliary SV model were re-sampled after the MCMC</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> procedure ended to correct for model mis-specification.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   Re-sampling of parameters and latents was of little practical importance:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     - max reachable entropy for this sample size: 9.21034,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     - entropy of the re-sampling weight distribution: 9.210266</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='co'># Parallel multicore chains (not available on Windows)</span></span>
+<span class='r-in'><span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'>svsample</span><span class='op'>(</span><span class='va'>y</span>, draws <span class='op'>=</span> <span class='fl'>30000</span>, burnin <span class='op'>=</span> <span class='fl'>10000</span>,</span>
+<span class='r-in'>                parallel <span class='op'>=</span> <span class='st'>"multicore"</span>, n_chains <span class='op'>=</span> <span class='fl'>3</span>, n_cpus <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Plot using a color palette</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/grDevices/palette.html'>palette</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/grDevices/palettes.html'>rainbow</a></span><span class='op'>(</span><span class='fu'>coda</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/coda/man/nchain.html'>nchain</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>para</a></span><span class='op'>(</span><span class='va'>res</span>, <span class='st'>"all"</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Use functionality from package 'coda'</span></span>
+<span class='r-in'><span class='co'>## E.g. Geweke's convergence diagnostics</span></span>
+<span class='r-in'><span class='fu'>coda</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/coda/man/geweke.diag.html'>geweke.diag</a></span><span class='op'>(</span><span class='fu'><a href='extractors.html'>para</a></span><span class='op'>(</span><span class='va'>res</span>, <span class='st'>"all"</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"mu"</span>, <span class='st'>"phi"</span>, <span class='st'>"sigma"</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Use functionality from package 'bayesplot'</span></span>
+<span class='r-in'><span class='fu'>bayesplot</span><span class='fu'>::</span><span class='fu'>mcmc_pairs</span><span class='op'>(</span><span class='va'>res</span>, pars <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"sigma"</span>, <span class='st'>"mu"</span>, <span class='st'>"phi"</span>, <span class='st'>"h_0"</span>, <span class='st'>"h_15"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

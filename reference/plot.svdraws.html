@@ -82,7 +82,7 @@ future volatilities." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.2.0</span>
       </span>
     </div>
 
@@ -165,14 +165,14 @@ provided, <code><a href='predict.svdraws.html'>predict.svdraws</a></code> is inv
     </tr>
     <tr>
       <th>dates</th>
-      <td><p>vector of length <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(x$latent)</a></code>, providing optional
+      <td><p>vector of length <code>ncol(x$latent)</code>, providing optional
 dates for labelling the x-axis. The default value is <code>NULL</code>; in this
 case, the axis will be labelled with numbers.</p></td>
     </tr>
     <tr>
       <th>show0</th>
       <td><p>logical value, indicating whether the initial volatility
-<code><a href='https://rdrr.io/r/base/Log.html'>exp(h_0/2)</a></code> should be displayed. The default value is <code>FALSE</code>.
+<code>exp(h_0/2)</code> should be displayed. The default value is <code>FALSE</code>.
 Only available for inputs <code>x</code> of class <code>svdraws</code>.</p></td>
     </tr>
     <tr>
@@ -202,14 +202,14 @@ text. See <code><a href='https://rdrr.io/r/graphics/par.html'>par</a></code> for
     <tr>
       <th>mar</th>
       <td><p>numerical vector of length 4, indicating the plot margins. See
-<code><a href='https://rdrr.io/r/graphics/par.html'>par</a></code> for details. The default value is <code><a href='https://rdrr.io/r/base/c.html'>c(1.9,
-1.9, 1.9, 0.5)</a></code>, which is slightly smaller than the R-defaults.</p></td>
+<code><a href='https://rdrr.io/r/graphics/par.html'>par</a></code> for details. The default value is <code>c(1.9,
+1.9, 1.9, 0.5)</code>, which is slightly smaller than the R-defaults.</p></td>
     </tr>
     <tr>
       <th>mgp</th>
       <td><p>numerical vector of length 3, indicating the axis and label
 positions. See <code><a href='https://rdrr.io/r/graphics/par.html'>par</a></code> for details. The default value is
-<code><a href='https://rdrr.io/r/base/c.html'>c(2, 0.6, 0)</a></code>, which is slightly smaller than the R-defaults.</p></td>
+<code>c(2, 0.6, 0)</code>, which is slightly smaller than the R-defaults.</p></td>
     </tr>
     <tr>
       <th>simobj</th>
@@ -258,25 +258,29 @@ of doing so is given in the Examples section.</p>
     <p>Gregor Kastner <a href='mailto:gregor.kastner@wu.ac.at'>gregor.kastner@wu.ac.at</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'>## Simulate a short and highly persistent SV process</span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>100</span>, mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.99</span>, sigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
-
-<span class='co'>## Obtain 5000 draws from the sampler (that's not a lot)</span>
-<span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsample.html'>svsample</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>$</span><span class='va'>y</span>, draws <span class='op'>=</span> <span class='fl'>5000</span>, burnin <span class='op'>=</span> <span class='fl'>1000</span>,
-  priormu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>)</span>, priorphi <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>1.5</span><span class='op'>)</span>, priorsigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='output co'>#&gt; <span class='message'>Summarizing posterior draws...</span></div><div class='input'>
-<span class='co'>## Plot the latent volatilities and some forecasts</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span>, forecast <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span>
-</div><div class='img'><img src='plot.svdraws-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'>## Re-plot with different quantiles</span>
-<span class='va'>newquants</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.01</span>, <span class='fl'>0.05</span>, <span class='fl'>0.25</span>, <span class='fl'>0.5</span>, <span class='fl'>0.75</span>, <span class='fl'>0.95</span>, <span class='fl'>0.99</span><span class='op'>)</span>
-<span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='updatesummary.html'>updatesummary</a></span><span class='op'>(</span><span class='va'>draws</span>, quantiles <span class='op'>=</span> <span class='va'>newquants</span><span class='op'>)</span>
-
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span>, forecast <span class='op'>=</span> <span class='fl'>20</span>, showobs <span class='op'>=</span> <span class='cn'>FALSE</span>,
-     forecastlty <span class='op'>=</span> <span class='fl'>3</span>, showprior <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-</div><div class='img'><img src='plot.svdraws-2.png' alt='' width='700' height='433' /></div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'></span>
+<span class='r-in'><span class='co'>## Simulate a short and highly persistent SV process</span></span>
+<span class='r-in'><span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsim.html'>svsim</a></span><span class='op'>(</span><span class='fl'>100</span>, mu <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, phi <span class='op'>=</span> <span class='fl'>0.99</span>, sigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Obtain 5000 draws from the sampler (that's not a lot)</span></span>
+<span class='r-in'><span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='svsample.html'>svsample</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>$</span><span class='va'>y</span>, draws <span class='op'>=</span> <span class='fl'>5000</span>, burnin <span class='op'>=</span> <span class='fl'>1000</span>,</span>
+<span class='r-in'>  priormu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>10</span>, <span class='fl'>1</span><span class='op'>)</span>, priorphi <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>1.5</span><span class='op'>)</span>, priorsigma <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Done!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Summarizing posterior draws...</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Plot the latent volatilities and some forecasts</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span>, forecast <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='plot.svdraws-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Re-plot with different quantiles</span></span>
+<span class='r-in'><span class='va'>newquants</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.01</span>, <span class='fl'>0.05</span>, <span class='fl'>0.25</span>, <span class='fl'>0.5</span>, <span class='fl'>0.75</span>, <span class='fl'>0.95</span>, <span class='fl'>0.99</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>draws</span> <span class='op'>&lt;-</span> <span class='fu'><a href='updatesummary.html'>updatesummary</a></span><span class='op'>(</span><span class='va'>draws</span>, quantiles <span class='op'>=</span> <span class='va'>newquants</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>draws</span>, forecast <span class='op'>=</span> <span class='fl'>20</span>, showobs <span class='op'>=</span> <span class='cn'>FALSE</span>,</span>
+<span class='r-in'>     forecastlty <span class='op'>=</span> <span class='fl'>3</span>, showprior <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='plot.svdraws-2.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
