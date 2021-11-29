@@ -6,7 +6,7 @@ year <- sub("-.*", "", meta$Packaged)
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(bibtype = "article",
-  header       = "To cite stochvol in publications use:"
+  header       = "To cite stochvol in publications use:",
   title        = "Modeling Univariate and Multivariate Stochastic Volatility in {R} with {stochvol} and {factorstochvol}",
   author       = c(person(given = "Darjus",
                           family = "Hosszejni",
