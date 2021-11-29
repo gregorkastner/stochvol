@@ -1,30 +1,12 @@
-## citHeader("To cite package stochvol in publications use:")
+## citHeader("The stochvol software itself is documented in two JSS articles; the sampling methodology is detailed in two papers.")
 
 ## R >= 2.8.0 passes package metadata to citation().
 if(!exists("meta") || is.null(meta)) meta <- packageDescription("stochvol")
 year <- sub("-.*", "", meta$Packaged)
 note <- sprintf("R package version %s", meta$Version)
 
-#bibentry(bibtype = "article",
-#  header       = "To cite stochvol in publications use:",
-#  title        = "Dealing with Stochastic Volatility in Time Series Using the {R} Package {stochvol}",
-#  author       = person(given = "Gregor",
-#                        family = "Kastner",
-#                        email = "gregor.kastner@wu.ac.at"),
-#  journal      = "Journal of Statistical Software",
-#  year         = "2016",
-#  volume       = "69",
-#  number       = "5",
-#  pages        = "1--30",
-#  doi          = "10.18637/jss.v069.i05",
-#  textVersion  =
-#  paste("Kastner, Gregor (2016).",
-#        "Dealing with Stochastic Volatility in Time Series Using the R Package stochvol.",
-#        "Journal of Statistical Software, 69(5), 1-30.",
-#        "https://doi.org/10.18637/jss.v069.i05")
-#)
-
-bibentry(bibtype = "Article",
+bibentry(bibtype = "article",
+  header       = "To cite stochvol in publications use:"
   title        = "Modeling Univariate and Multivariate Stochastic Volatility in {R} with {stochvol} and {factorstochvol}",
   author       = c(person(given = "Darjus",
                           family = "Hosszejni",
@@ -38,7 +20,20 @@ bibentry(bibtype = "Article",
   number       = "12",
   pages        = "1--34",
   doi          = "10.18637/jss.v100.i12",
-  header       = "To cite stochvol/factorstochvol in publications use:"
+)
+
+bibentry(bibtype = "article",
+  header       = "The original version of stochvol is documented here:",
+  title        = "Dealing with Stochastic Volatility in Time Series Using the {R} Package {stochvol}",
+  author       = person(given = "Gregor",
+                        family = "Kastner",
+                        email = "gregor.kastner@aau.at"),
+  journal      = "Journal of Statistical Software",
+  year         = "2016",
+  volume       = "69",
+  number       = "5",
+  pages        = "1--30",
+  doi          = "10.18637/jss.v069.i05"
 )
 
 bibentry(bibtype = "article",
@@ -50,8 +45,7 @@ bibentry(bibtype = "article",
   year = "2014",
   volume = "76", 
   pages = "408--423",
-  doi = "10.1016/j.csda.2013.01.002",
-  textVersion = "Kastner, Gregor and Frühwirth-Schnatter, Sylvia (2014). Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC estimation of stochastic volatility models. Computational Statistics & Data Analysis 76, 408-423. https://doi.org/10.1016/j.csda.2013.01.002"
+  doi = "10.1016/j.csda.2013.01.002"
 )
 
 bibentry(bibtype = "inproceedings",
@@ -74,7 +68,6 @@ bibentry(bibtype = "inproceedings",
                       as.person("Sara Wade")),
   doi = "10.1007/978-3-030-30611-3_8",
   publisher = "Springer",
-  address = "Cham",
-  textVersion = "Hosszejni, Darjus and Kastner, Gregor (2019). Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model with Leverage. In: Argiento R., Durante D., Wade S. (eds). Bayesian Statistics and New Generations. BAYSM 2018. Springer Proceedings in Mathematics & Statistics, vol 296. Springer, Cham. https://doi.org/10.1007/978-3-030-30611-3_8"
+  address = "Cham"
 )
 
