@@ -1,3 +1,7 @@
+# stochvol 3.2.1
+- Minor adaptions to NEWS.md to comply with NEWS extractor
+  tools:::.build_news_db_from_package_NEWS_md
+
 # stochvol 3.2.0
 
 - Include reference to the JSS paper
