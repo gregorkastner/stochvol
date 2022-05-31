@@ -431,9 +431,3 @@
 # stochvol 0.5-0
 
 - First CRAN release version.
-
-# Initial TODO
-
-- Code updatesummary in C (apply w/ quantiles is slow).
-- Make AWOL sampler available for fixed parameters. Thanks to Hedibert
-  Lopes for pointing this out.
