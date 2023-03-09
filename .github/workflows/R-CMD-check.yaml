@@ -49,6 +49,11 @@ jobs:
           TINYTEX_INSTALLER: TinyTeX
       - run: tlmgr --version
 
+      - name: Install additional LaTeX packages
+        run: |
+          tlmgr install tablefootnote thumbpdf ae ifmtarg xifthen 
+          tlmgr list --only-installed
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
