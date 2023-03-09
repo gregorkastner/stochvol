@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,18 +40,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.2.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -59,7 +55,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/gregorkastner/stochvol/">
+  <a href="https://github.com/gregorkastner/stochvol/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -76,15 +72,14 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="stochvol-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#stochvol-" class="anchor"></a>stochvol <img src="reference/figures/logo.svg" align="right" padding-left="3px">
+<div class="section level1">
+<div class="page-header"><h1 id="stochvol-">stochvol <img src="reference/figures/logo.svg" align="right" padding-left="3px"><a class="anchor" aria-label="anchor" href="#stochvol-"></a>
 </h1></div>
-
-<p>This is the development repository of the <a href="https://www.r-project.org/"><code>R</code></a> package <a href="https://cran.r-project.org/package=stochvol"><code>stochvol</code></a>. You find the same information as a <a href="https://pkgdown.r-lib.org/"><code>pkgdown</code></a> website <a href="https://gregorkastner.github.io/stochvol/"><strong>here</strong></a>.</p>
-<div id="features" class="section level2">
-<h2 class="hasAnchor">
-<a href="#features" class="anchor"></a>Features</h2>
+<p><a href="https://github.com/gregorkastner/stochvol/actions" class="external-link"><img src="https://github.com/gregorkastner/stochvol/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://github.com/gregorkastner/stochvol/actions/workflows/test-coverage.yaml" class="external-link"><img src="https://github.com/gregorkastner/stochvol/actions/workflows/test-coverage.yaml/badge.svg" alt="test-coverage"></a> <a href="https://cran.r-project.org/package=stochvol" class="external-link"><img src="http://www.r-pkg.org/badges/version/stochvol" alt="CRAN version"></a></p>
+<p>This is the development repository of the <a href="https://www.r-project.org/" class="external-link"><code>R</code></a> package <a href="https://cran.r-project.org/package=stochvol" class="external-link"><code>stochvol</code></a>. You find the same information as a <a href="https://pkgdown.r-lib.org/" class="external-link"><code>pkgdown</code></a> website <a href="https://gregorkastner.github.io/stochvol/" class="external-link"><strong>here</strong></a>.</p>
+<div class="section level2">
+<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
+</h2>
 <p>The package provides methods to estimate the stochastic volatility model, potentially with conditionally heavy tails and/or with leverage. Using functions <code>svsample</code>, <code>svtsample</code>, <code>svlsample</code>, and <code>svtlsample</code>, one can conduct Bayesian inference on all parameters, including the time-varying volatilities (the states in the state space). The same functionality is reachable using the formula interface of <code>svlm</code>.</p>
 <p>Additional features:</p>
 <ul>
@@ -93,102 +88,99 @@
 </li>
 <li>Built-in support for linear regression and autoregressive processes with stochastic volatility errors; look for function argument <code>designmatrix</code>
 </li>
-<li>Easy interfacing with <a href="https://cran.r-project.org/web/packages/bayesplot/"><code>bayesplot</code></a> functions through the <code><a href="https://rdrr.io/r/base/array.html">as.array()</a></code> specialization</li>
+<li>Easy interfacing with <a href="https://cran.r-project.org/web/packages/bayesplot/" class="external-link"><code>bayesplot</code></a> functions through the <code><a href="https://rdrr.io/r/base/array.html" class="external-link">as.array()</a></code> specialization</li>
 <li>Rolling or expanding window estimation can be used for backtesting; see <code><a href="reference/svsample_roll.html">help("svsample_roll", package="stochvol")</a></code>
 </li>
 <li>Run independent Markov chains using <code>R</code>’s cross-platform parallelization; look for function arguments <code>n_chains</code>, <code>parallel</code>, <code>n_cpus</code>, and <code>cl</code> (for “cluster”)</li>
-<li>For plug&amp;play Bayesian modeling, when stochastic volatility is part of a larger model, fast-access functions can speed up execution in <code>R</code>; see <code><a href="reference/svsample_fast_cpp.html">help("svsample_fast_cpp", package="stochvol")</a></code>
+<li>For plug&amp;play Bayesian modeling, when stochastic volatility is part of a larger model, fast-access functions can speed up execution in <code>R</code>; see <code><a href="reference/svsample_cpp.html">help("svsample_fast_cpp", package="stochvol")</a></code>
 </li>
 <li>For advanced users, there is a <code>C++</code> interface; see e.g. <code><a href="reference/update_fast_sv.html">help("update_fast_sv", package="stochvol")</a></code>
 </li>
 <li>For teaching purposes, you can fix any parameter to a known value using <code>sv_constant</code> as the prior specification</li>
 </ul>
 </div>
-<div id="install-cran-version" class="section level2">
-<h2 class="hasAnchor">
-<a href="#install-cran-version" class="anchor"></a>Install CRAN Version</h2>
+<div class="section level2">
+<h2 id="install-cran-version">Install CRAN Version<a class="anchor" aria-label="anchor" href="#install-cran-version"></a>
+</h2>
 <p>Type into your <code>R</code> session:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"stochvol"</span><span class="op">)</span></code></pre></div>
-<p>For more information, please visit the <a href="https://cran.r-project.org/package=stochvol">CRAN page</a> of the package.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"stochvol"</span><span class="op">)</span></span></code></pre></div>
+<p>For more information, please visit the <a href="https://cran.r-project.org/package=stochvol" class="external-link">CRAN page</a> of the package.</p>
 </div>
-<div id="install-latest-development-version" class="section level2">
-<h2 class="hasAnchor">
-<a href="#install-latest-development-version" class="anchor"></a>Install Latest Development Version</h2>
+<div class="section level2">
+<h2 id="install-latest-development-version">Install Latest Development Version<a class="anchor" aria-label="anchor" href="#install-latest-development-version"></a>
+</h2>
 <p>Type into your <code>R</code> session:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org">"remotes"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
-<span class="op">}</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span>
-  repo <span class="op">=</span> <span class="st">"https://github.com/gregorkastner/stochvol"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">"remotes"</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
+<span>  repo <span class="op">=</span> <span class="st">"https://github.com/gregorkastner/stochvol"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="documentation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#documentation" class="anchor"></a>Documentation</h2>
+<div class="section level2">
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
+</h2>
 <p>The best introduction is the combination of our vignettes:</p>
 <ul>
-<li><a href="https://doi.org/10.18637/jss.v069.i05">Dealing with Stochastic Volatility in Time Series Using the R Package stochvol</a></li>
-<li><a href="https://doi.org/10.18637/jss.v100.i12">Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol</a></li>
+<li><a href="https://doi.org/10.18637/jss.v069.i05" class="external-link">Dealing with Stochastic Volatility in Time Series Using the R Package stochvol</a></li>
+<li><a href="https://doi.org/10.18637/jss.v100.i12" class="external-link">Modeling Univariate and Multivariate Stochastic Volatility in R with stochvol and factorstochvol</a></li>
 </ul>
 <p>For individual functions, please refer to the help pages after installing the package. For instance, for <code>svsample</code>, execute</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/help.html">help</a></span><span class="op">(</span><span class="st">"svsample"</span>, package <span class="op">=</span> <span class="st">"stochvol"</span><span class="op">)</span></code></pre></div>
-<p>For more information, please visit stochvol’s <a href="https://cran.r-project.org/package=stochvol">CRAN page</a>.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span><span class="st">"svsample"</span>, package <span class="op">=</span> <span class="st">"stochvol"</span><span class="op">)</span></span></code></pre></div>
+<p>For more information, please visit stochvol’s <a href="https://cran.r-project.org/package=stochvol" class="external-link">CRAN page</a>.</p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=stochvol">https://​cloud.r-project.org/​package=stochvol</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/gregorkastner/stochvol/">https://​github.com/​gregorkastner/​stochvol/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/gregorkastner/stochvol/issues">https://​github.com/​gregorkastner/​stochvol/​issues</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=stochvol" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/gregorkastner/stochvol/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/gregorkastner/stochvol/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>GPL (&gt;= 2) </li>
 </ul>
 </div>
+
+
 <div class="citation">
-<h2>Citation</h2>
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html">Citing stochvol</a></li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>Darjus Hosszejni <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3803-691X" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Gregor Kastner <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-8237-8271" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html#citation">Citing stochvol</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/gregorkastner/stochvol/actions"><img src="https://github.com/gregorkastner/stochvol/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://github.com/gregorkastner/stochvol/actions/workflows/test-coverage.yaml"><img src="https://github.com/gregorkastner/stochvol/actions/workflows/test-coverage.yaml/badge.svg" alt="test-coverage"></a></li>
-<li><a href="https://cran.r-project.org/package=stochvol"><img src="http://www.r-pkg.org/badges/version/stochvol" alt="CRAN version"></a></li>
+<li>Darjus Hosszejni <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3803-691X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Gregor Kastner <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-8237-8271" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
-</div>
+
+
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Darjus Hosszejni, Gregor Kastner.</p>
+  <p></p>
+<p>Developed by Darjus Hosszejni, Gregor Kastner.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -196,6 +188,8 @@
 
   
 
+
+  
 
   </body>
 </html>
