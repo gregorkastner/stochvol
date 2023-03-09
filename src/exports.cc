@@ -193,6 +193,11 @@ RcppExport SEXP _stochvol_Export_registerCCallable() {
     R_RegisterCCallable("stochvol", "list_to_priorspec", (DL_FUNC)stochvol::list_to_priorspec);
     R_RegisterCCallable("stochvol", "list_to_general_sv", (DL_FUNC)stochvol::list_to_general_sv);
     R_RegisterCCallable("stochvol", "list_to_fast_sv", (DL_FUNC)stochvol::list_to_fast_sv);
+    R_RegisterCCallable("stochvol", "cholesky_tridiagonal", (DL_FUNC)stochvol::fast_sv::cholesky_tridiagonal);
+    R_RegisterCCallable("stochvol", "forward_algorithm", (DL_FUNC)stochvol::fast_sv::forward_algorithm);
+    R_RegisterCCallable("stochvol", "backward_algorithm", (DL_FUNC)stochvol::fast_sv::backward_algorithm);
+    R_RegisterCCallable("stochvol", "inverse_transform_sampling", (DL_FUNC)stochvol::fast_sv::inverse_transform_sampling);
+    R_RegisterCCallable("stochvol", "find_mixture_indicator_cdf", (DL_FUNC)stochvol::fast_sv::find_mixture_indicator_cdf);
     R_RegisterCCallable("stochvol", "update_sv", (DL_FUNC)stochvol::update_sv);
     return R_NilValue;
 }

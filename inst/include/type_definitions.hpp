@@ -232,6 +232,16 @@ namespace stochvol {
     arma::mat covariance_chol_inv;
   };
 
+  namespace fast_sv {
+
+    // Encapsulation of chol_diag and chol_offdiag
+    struct CholeskyTridiagonal {
+      arma::vec chol_diag,
+        chol_offdiag;
+    };
+
+  }
+
 }
 
 #endif  // _TYPE_DEFINITIONS_H_

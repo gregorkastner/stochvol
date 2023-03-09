@@ -129,6 +129,70 @@ namespace stochvol {
         }
     }
 
+    namespace fast_sv {
+
+      inline
+      CholeskyTridiagonal cholesky_tridiagonal(const arma::vec& omega_diag, const double omega_offdiag) {
+        typedef CholeskyTridiagonal(*CppFunction)(const arma::vec&, const double);
+        static CppFunction cpp_function = NULL;
+        if (cpp_function == NULL) {
+          cpp_function = (CppFunction)R_GetCCallable("stochvol", "cholesky_tridiagonal");
+        }
+        {
+          return cpp_function(omega_diag, omega_offdiag);
+        }
+      }
+
+      inline
+      arma::vec forward_algorithm(const arma::vec& chol_diag, const arma::vec& chol_offdiag, const arma::vec& covector) {
+        typedef arma::vec(*CppFunction)(const arma::vec&, const arma::vec&, const arma::vec&);
+        static CppFunction cpp_function = NULL;
+        if (cpp_function == NULL) {
+          cpp_function = (CppFunction)R_GetCCallable("stochvol", "forward_algorithm");
+        }
+        {
+          return cpp_function(chol_diag, chol_offdiag, covector);
+        }
+      }
+
+      inline
+      arma::vec backward_algorithm(const arma::vec& chol_diag, const arma::vec& chol_offdiag, const arma::vec& htmp) {
+        typedef arma::vec(*CppFunction)(const arma::vec&, const arma::vec&, const arma::vec&);
+        static CppFunction cpp_function = NULL;
+        if (cpp_function == NULL) {
+          cpp_function = (CppFunction)R_GetCCallable("stochvol", "backward_algorithm");
+        }
+        {
+          return cpp_function(chol_diag, chol_offdiag, htmp);
+        }
+      }
+
+      inline
+      arma::uvec inverse_transform_sampling(const arma::vec& mixprob, const int T) {
+        typedef arma::uvec(*CppFunction)(const arma::vec&, const int);
+        static CppFunction cpp_function = NULL;
+        if (cpp_function == NULL) {
+          cpp_function = (CppFunction)R_GetCCallable("stochvol", "inverse_transform_sampling");
+        }
+        {
+          return cpp_function(mixprob, T);
+        }
+      }
+
+      inline
+      arma::vec find_mixture_indicator_cdf(const arma::vec& datanorm) {
+        typedef arma::vec(*CppFunction)(const arma::vec&);
+        static CppFunction cpp_function = NULL;
+        if (cpp_function == NULL) {
+          cpp_function = (CppFunction)R_GetCCallable("stochvol", "find_mixture_indicator_cdf");
+        }
+        {
+          return cpp_function(datanorm);
+        }
+      }
+
+    }
+
 }
 
 #endif // stochvol_H_

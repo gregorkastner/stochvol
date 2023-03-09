@@ -2,6 +2,9 @@
 
 - Minor adaptions to NEWS.md to comply with NEWS extractor
   'tools:::.build_news_db_from_package_NEWS_md'
+- Export further C++ functions 'cholesky_tridiagonal',
+  'forward_algorithm', 'backward_algorithm',
+  'inverse_transform_sampling', 'find_mixture_indicator_cdf'
 
 # stochvol 3.2.0
 

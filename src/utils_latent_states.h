@@ -35,6 +35,7 @@
 #define _UTILS_LATENT_STATES_H_
 
 #include <RcppArmadillo.h>
+#include <type_definitions.hpp>
 
 namespace stochvol {
 
@@ -73,12 +74,6 @@ Rcpp::List get_omori_constants () {
 }
 
 namespace fast_sv {
-
-// Encapsulation of chol_diag and chol_offdiag
-struct CholeskyTridiagonal {
-  arma::vec chol_diag,
-            chol_offdiag;
-};
 
 // Cholesky factor for a tridiagonal matrix with constant off-diagonal
 CholeskyTridiagonal cholesky_tridiagonal(
