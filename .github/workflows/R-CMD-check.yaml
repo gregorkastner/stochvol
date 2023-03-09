@@ -45,6 +45,8 @@ jobs:
           needs: check
 
       - uses: r-lib/actions/setup-tinytex@v2
+        env:
+          TINYTEX_INSTALLER: TinyTeX
       - run: tlmgr --version
 
       - uses: r-lib/actions/check-r-package@v2
