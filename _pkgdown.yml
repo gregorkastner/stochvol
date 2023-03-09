@@ -22,7 +22,7 @@ reference:
   - plot.svdraws
   - plot.svpredict
   - paradensplot
-  - paratraceplot
+  - starts_with("paratrace")
   - volplot
   - updatesummary
   - extractors
