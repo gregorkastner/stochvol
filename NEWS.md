@@ -5,6 +5,7 @@
 - Export further C++ functions 'cholesky_tridiagonal',
   'forward_algorithm', 'backward_algorithm',
   'inverse_transform_sampling', 'find_mixture_indicator_cdf'
+- Bugfix in 'print.svsim'
 
 # stochvol 3.2.0
 

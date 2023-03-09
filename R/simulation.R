@@ -22,10 +22,10 @@
 #  #####################################################################################
 
 #' Simulating a Stochastic Volatility Process
-#' 
+#'
 #' \code{svsim} is used to produce realizations of a stochastic volatility (SV)
 #' process.
-#' 
+#'
 #' This function draws an initial log-volatility \code{h_0} from the stationary
 #' distribution of the AR(1) process defined by \code{phi}, \code{sigma}, and \code{mu}.
 #' Then the function jointly simulates the log-volatility series
@@ -34,7 +34,7 @@
 #' Additionally, for each index \code{i}, \code{y_i} can be set to have a conditionally heavy-tailed
 #' residual (through \code{nu}) and/or to be correlated with \code{(h_{i+1}-h_i)}
 #' (through \code{rho}, the so-called leverage effect, resulting in asymmetric ``log-returns'').
-#' 
+#'
 #' @param len length of the simulated time series.
 #' @param mu level of the latent log-volatility AR(1) process. The defaults
 #' value is \code{-10}.
@@ -63,7 +63,7 @@
 #' \code{y <- exp(-h/2)*rt(h, df=nu)}. That means that in the case of \code{nu < Inf}
 #' the (conditional) volatility is \code{sqrt(nu/(nu-2))*exp(h/2)}, and that corrected value
 #' is shown in the \code{print}, \code{summary} and \code{plot} methods.
-#' 
+#'
 #' To display the output use \code{print}, \code{summary} and \code{plot}. The
 #' \code{print} method simply prints the content of the object in a moderately
 #' formatted manner. The \code{summary} method provides some summary statistics
@@ -80,33 +80,33 @@ svsim <- function(len, mu = -10, phi = 0.98, sigma = 0.2, nu = Inf, rho = 0) {
   assert_numeric(len, name_len)
   assert_single(len, name_len)
   assert_ge(len, 2, name_len)
-  
+
   name_mu <- "input parameter mu"
   assert_numeric(mu, name_mu)
   assert_single(mu, name_mu)
-  
+
   name_phi <- "input parameter phi"
   assert_numeric(phi, name_phi)
   assert_single(phi, name_phi)
   assert_gt(phi, -1, name_phi)
   assert_lt(phi, 1, name_phi)
-  
+
   name_sigma <- "input parameter sigma"
   assert_numeric(sigma, name_sigma)
   assert_single(sigma, name_sigma)
   assert_positive(sigma, name_sigma)
-  
+
   name_nu <- "input parameter nu"
   assert_numeric(nu, name_nu)
   assert_single(nu, name_nu)
   assert_gt(nu, 2, name_nu)
-  
+
   name_rho <- "input parameter rho"
   assert_numeric(rho, name_rho)
   assert_single(rho, name_rho)
   assert_gt(rho, -1, name_rho)
   assert_lt(rho, 1, name_rho)
-  
+
   len <- as.integer(len)
 
   h <- rep_len(as.numeric(NA), length.out=len)
@@ -151,7 +151,7 @@ print.svsim <- function(x, ...) {
       "            leverage effect parameter                rho =", x$para$rho, "\n", sep="")
   cat("\nSimulated initial volatility:", x$vol0*x$correction, "\n")
   cat("\nSimulated volatilities:\n")
-  print(x$vol*x$correction, ...)
+  print(x$vol, ...)
   cat("\nSimulated data (usually interpreted as 'log-returns'):\n")
   print(x$y, ...)
 }
