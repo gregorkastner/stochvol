@@ -15,7 +15,7 @@ Suggests:
     mvtnorm,
     knitr
 LinkingTo: Rcpp, RcppArmadillo (>= 0.9.900)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 BuildResaveData: best
 VignetteBuilder: knitr
 BugReports: https://github.com/gregorkastner/stochvol/issues
