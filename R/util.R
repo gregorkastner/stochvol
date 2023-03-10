@@ -226,9 +226,8 @@ rep.sv_normal <- function (x, times = length.out, length.out = times, ...) {
   }
   rep_len(x, length.out = length.out)
 }
-#' @method rep.int sv_normal
-#' @export
-rep.int.sv_normal <- function (x, times) {
+#' @rawNamespace S3method(rep.int,sv_normal,rep_int_sv_normal)
+rep_int_sv_normal <- function (x, times) {
   rep_len(x, length.out = times)
 }
 #' @method rep_len sv_normal
