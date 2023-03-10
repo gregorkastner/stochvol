@@ -182,12 +182,12 @@ See the examples below for more details.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> No thinning.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Posterior draws of SV parameters (thinning = 1):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              mean     sd       5%      50%      95% ESS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -11.066 0.3901 -11.5954 -11.0706 -10.5415 361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> phi         0.662 0.2092   0.2701   0.6864   0.9554 152</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma       0.368 0.2614   0.0388   0.3212   0.8712 105</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)   0.004 0.0012   0.0030   0.0039   0.0051 361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2     0.204 0.2868   0.0015   0.1032   0.7590 105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              mean    sd       5%     50%     95% ESS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -9.7933 0.503 -10.2832 -9.8059 -9.3103 607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> phi        0.6952 0.199   0.3261  0.7341  0.9504 193</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma      0.2782 0.248   0.0200  0.2055  0.7930  96</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)  0.0084 0.025   0.0058  0.0074  0.0095 607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2    0.1388 0.243   0.0004  0.0422  0.6288  96</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="updatesummary-1.png" alt="" width="700" height="433"></span>
@@ -212,18 +212,18 @@ See the examples below for more details.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> No thinning.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Posterior draws of SV parameters (thinning = 1):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              mean     sd       1%       5%      25%      50%      75%      95%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -11.066 0.3901 -1.2e+01 -11.5954 -11.2702 -11.0706 -10.8699 -10.5415</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> phi         0.662 0.2092  6.4e-02   0.2701   0.5428   0.6864   0.8236   0.9554</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma       0.368 0.2614  8.5e-03   0.0388   0.1699   0.3212   0.5013   0.8712</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)   0.004 0.0012  2.7e-03   0.0030   0.0036   0.0039   0.0044   0.0051</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2     0.204 0.2868  7.2e-05   0.0015   0.0289   0.1032   0.2513   0.7590</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                99% ESS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -10.1199 361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> phi         0.9837 152</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma       1.2149 105</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)   0.0063 361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2     1.4759 105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              mean    sd       1%       5%      25%     50%     75%     95%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -9.7933 0.503 -1.1e+01 -10.2832  -9.9740 -9.8059 -9.6227 -9.3103</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> phi        0.6952 0.199  1.6e-01   0.3261   0.5625  0.7341  0.8521  0.9504</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma      0.2782 0.248  3.5e-03   0.0200   0.0933  0.2055  0.3881  0.7930</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)  0.0084 0.025  4.7e-03   0.0058   0.0068  0.0074  0.0081  0.0095</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2    0.1388 0.243  1.2e-05   0.0004   0.0087  0.0422  0.1506  0.6288</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              99% ESS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -8.973 607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> phi        0.985 193</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma      1.060  96</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)  0.011 607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2    1.124  96</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="updatesummary-2.png" alt="" width="700" height="433"></span>
