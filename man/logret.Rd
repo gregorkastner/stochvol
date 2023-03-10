@@ -30,7 +30,7 @@ series, with optional de-meaning and/or standardization.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{default}: Log returns of vectors
-}}
+\item \code{logret(default)}: Log returns of vectors
 
+}}
 \concept{utilities}
