@@ -1,3 +1,8 @@
+# stochvol 3.2.2
+
+- Bugfix in the validation of the inverted gamma prior
+  for sigma^2.
+
 # stochvol 3.2.1
 
 - Minor adaptions to NEWS.md to comply with NEWS extractor
