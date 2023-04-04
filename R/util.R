@@ -321,10 +321,10 @@ range.sv_gamma <- function (x, na.rm = FALSE, ...) {
 #' @export
 sv_inverse_gamma <- function (shape, scale) {
   assert_single(shape, "shape of sv_inverse_gamma")
-  assert_positive(shape, "shape of sv_inverse_gamma")
+  assert_gt(shape, 2, "shape of sv_inverse_gamma")
 
   assert_single(scale, "scale of sv_invgamma")
-  assert_gt(scale, 2, "scale of sv_invgamma")
+  assert_positive(scale, "scale of sv_invgamma")
 
   structure(list(shape = shape, scale = scale),
             class = c("sv_inverse_gamma", "sv_distribution"))
