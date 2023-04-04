@@ -33,7 +33,7 @@ jobs:
             clean = FALSE,
             line_exclusions = list("inst/include/adaptation.hpp", "inst/include/type_definitions.hpp", "R/stochvol-cpp-doc.R", "src/test-runner.cc", "R/zzz.R", "R/exports.R", "src/exports.cc"),
             function_exclusions = c("print\\.", "plot", "progress"),
-            type = c("tests", "examples")
+            type = c("tests", "examples"),
             install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
           )
         shell: Rscript {0}
