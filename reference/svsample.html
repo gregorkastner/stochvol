@@ -24,7 +24,7 @@ see svlm."><meta property="og:image" content="/logo.svg"><!-- mathjax --><script
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.2.2</span>
       </span>
     </div>
 
@@ -525,12 +525,12 @@ Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model wit
 <span class="r-out co"><span class="r-pr">#&gt;</span> No thinning.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Posterior draws of SV parameters (thinning = 1):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               mean      sd       5%      50%      95%  ESS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -10.6552 0.32933 -11.1049 -10.6893 -10.0602 1058</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> phi         0.8675 0.10782   0.6479   0.8957   0.9847  303</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma       0.2211 0.12551   0.0471   0.2047   0.4592  251</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)   0.0049 0.00095   0.0039   0.0048   0.0065 1058</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2     0.0647 0.07189   0.0022   0.0419   0.2108  251</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              mean      sd       5%     50%    95% ESS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -9.7541 0.23651 -1.0e+01 -9.7446 -9.412 878</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> phi        0.8453 0.11520  6.2e-01  0.8715  0.976 343</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma      0.1410 0.10520  1.3e-02  0.1191  0.340 416</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)  0.0077 0.00091  6.4e-03  0.0077  0.009 878</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2    0.0310 0.04765  1.7e-04  0.0142  0.116 416</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">draws</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Simulation object extracted from input</span>
@@ -572,13 +572,13 @@ Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model wit
 <span class="r-out co"><span class="r-pr">#&gt;</span> No thinning.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Posterior draws of SV parameters (thinning = 1):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               mean      sd       5%      50%      95%  ESS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -10.8150 0.29474 -11.2365 -10.8360 -10.3350 1553</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> phi         0.7920 0.18307   0.5027   0.8423   0.9550  113</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma       0.3946 0.15197   0.1637   0.3816   0.6770  141</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rho        -0.2007 0.22238  -0.5453  -0.2121   0.2006  196</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)   0.0045 0.00075   0.0036   0.0044   0.0057 1553</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2     0.1788 0.13641   0.0268   0.1456   0.4583  141</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              mean     sd       5%     50%     95%  ESS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -9.7927 0.3578 -10.3562 -9.7943 -9.2379 1973</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> phi        0.8726 0.0783   0.7149  0.8886  0.9654  236</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma      0.4310 0.1382   0.2320  0.4133  0.6855  192</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rho        0.3203 0.1970  -0.0209  0.3309  0.6278  250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)  0.0076 0.0014   0.0056  0.0075  0.0099 1973</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2    0.2049 0.1328   0.0538  0.1708  0.4699  192</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">advanced_draws</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Simulation object extracted from input</span>
@@ -709,18 +709,18 @@ Approaches Toward the Bayesian Estimation of the Stochastic Volatility Model wit
 <span class="r-out co"><span class="r-pr">#&gt;</span> No thinning.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Posterior draws of SV parameters (thinning = 1):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              mean    sd       5%     50%    95%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -9.4379 0.479 -10.0487 -9.4413 -8.848</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> phi        0.5328 0.300  -0.0504  0.5907  0.918</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma      0.5051 0.255   0.1151  0.4879  0.960</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)  0.0096 0.021   0.0066  0.0089  0.012</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2    0.3201 0.302   0.0132  0.2380  0.921</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               mean     sd       5%      50%      95%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu        -10.5617 0.2752 -1.1e+01 -10.5679 -10.1297</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> phi         0.4425 0.3327 -1.8e-01   0.4901   0.8990</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma       0.2833 0.2236  2.0e-02   0.2335   0.7214</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> exp(mu/2)   0.0051 0.0008  4.2e-03   0.0051   0.0063</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma^2     0.1302 0.1945  4.1e-04   0.0545   0.5204</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Posterior draws from the auxiliary SV model were re-sampled after the MCMC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> procedure ended to correct for model mis-specification.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Re-sampling of parameters and latents was of little practical importance:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     - max reachable entropy for this sample size: 9.21034,</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     - entropy of the re-sampling weight distribution: 9.209829</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     - entropy of the re-sampling weight distribution: 9.210164</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
