@@ -18,7 +18,7 @@ process."><meta property="og:image" content="/logo.svg"><!-- mathjax --><script 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.2.3</span>
       </span>
     </div>
 
@@ -95,15 +95,15 @@ SV model with symmetric ``log-returns''.</p></dd>
     <h2>Value</h2>
     
 
-<p>The output is a list object of class <code>svsim</code> containing</p>
-<dl><dt>y</dt>
-<dd><p>a vector of length <code>len</code> containing the simulated data,
+<p>The output is a list object of class <code>svsim</code> containing</p><dl><dt>y</dt>
+<dd><p>vector of length <code>len</code> containing the simulated data,
 usually interpreted as ``log-returns''.</p></dd>
 
 <dt>vol</dt>
-<dd><p>a vector of length
-<code>len</code> containing the simulated instantaneous volatilities
-<code>exp(h_t/2)</code>.</p></dd>
+<dd><p>vector of length
+<code>len</code> containing the simulated instantaneous volatilities.
+These are \(e^{h_t/2}\) if <code>nu == Inf</code>, and they are
+\(e^{h_t/2} \sqrt{\tau_t}\) for finite <code>nu</code>.</p></dd>
 
 <dt>vol0</dt>
 <dd><p>The initial volatility <code>exp(h_0/2)</code>,
@@ -113,6 +113,18 @@ drawn from the stationary distribution of the latent AR(1) process.</p></dd>
 <dd><p>a named list with five elements <code>mu</code>, <code>phi</code>,
 <code>sigma</code>, <code>nu</code>, and <code>rho</code>, containing
 the corresponding arguments.</p></dd>
+
+<dt>latent</dt>
+<dd><p>vector of the latent state space \(h_t\) for \(t &gt; 0\).</p></dd>
+
+<dt>latent0</dt>
+<dd><p>initial element of the latent state space \(h_0\).</p></dd>
+
+<dt>tau</dt>
+<dd><p>vector of length <code>len</code> containing the simulated auxiliary
+variables for the Student-t residuals when <code>nu</code> is finite. More precisely,
+\(\tau_t\sim\text{Gamma}^{-1}(\text{shape}=\nu/2, \text{rate}=\nu/2-1)\).</p></dd>
+
 
 </dl></div>
     <div id="details">
@@ -165,46 +177,46 @@ formatted manner. The <code>summary</code> method provides some summary statisti
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simulated initial volatility:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simulated volatilities:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 0.004274269 0.004011028 0.003995533 0.004049160 0.003874792 0.003821844</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [7] 0.004185071 0.004209900 0.004196836 0.004298697 0.004290068 0.004259374</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [13] 0.004036300 0.004114185 0.003888497 0.003799065 0.003885435 0.004006799</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 0.004136941 0.004366653 0.004662000 0.004438930 0.004292726 0.004382550</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [25] 0.004634011 0.004655803 0.004638456 0.004471387 0.004455323 0.004273844</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] 0.004332667 0.004309492 0.004501906 0.004396907 0.004887727 0.004853087</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 0.004657524 0.004601946 0.004524956 0.004914319 0.005032911 0.005064445</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [43] 0.005249701 0.004967372 0.004510171 0.004469865 0.004492011 0.004424251</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [49] 0.004769248 0.004899818 0.004982304 0.004675618 0.004953302 0.005023649</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 0.005303951 0.005256029 0.005504986 0.005199023 0.005986760 0.006254244</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] 0.006171254 0.006114220 0.006092635 0.006060169 0.006576778 0.006913154</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [67] 0.007071471 0.006397143 0.006281235 0.006799447 0.006576401 0.006718470</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 0.006776570 0.006779253 0.006599879 0.006730259 0.006458840 0.006674902</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [79] 0.006926564 0.007257230 0.007353313 0.006941174 0.007086609 0.007702660</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [85] 0.007238139 0.007446838 0.007468847 0.006990800 0.007247727 0.007484034</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 0.008130665 0.008222234 0.008566002 0.009642218 0.009763120 0.010092886</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [97] 0.009700904 0.009264691 0.008994109 0.008857285</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 0.006753497 0.006234780 0.006608707 0.006608097 0.006321197 0.007011892</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [7] 0.006902345 0.007051090 0.007322047 0.007209465 0.006789066 0.007253134</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [13] 0.007661752 0.007732937 0.008080723 0.008248753 0.007780947 0.007491256</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 0.007259439 0.006971292 0.006791784 0.006371256 0.006899010 0.007044983</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [25] 0.006996681 0.007238020 0.007271191 0.007267564 0.007751591 0.007713974</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] 0.008217390 0.008255190 0.007951871 0.007543243 0.008200077 0.008114292</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 0.009109778 0.008822638 0.008628263 0.009436982 0.010178780 0.010404887</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [43] 0.010458610 0.010665431 0.010462309 0.009296722 0.008939853 0.008708403</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [49] 0.008436887 0.008275555 0.008053146 0.007384136 0.007794772 0.008176427</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 0.008063350 0.007880881 0.008313429 0.008814584 0.008541135 0.008563341</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] 0.008569052 0.008966004 0.009305821 0.009287391 0.009768356 0.009921548</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [67] 0.010096428 0.011036816 0.010948380 0.011274485 0.011146349 0.011077136</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 0.010393165 0.010089868 0.010442280 0.009776334 0.009788625 0.009368271</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [79] 0.009125777 0.008230516 0.008148345 0.008598834 0.008139540 0.008431310</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [85] 0.008777515 0.008528384 0.007771694 0.007917986 0.007494498 0.007492937</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 0.007667166 0.007195825 0.006956238 0.006798009 0.007257067 0.007846338</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [97] 0.007433957 0.008023816 0.008061673 0.007925475</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 400 entries ]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simulated data (usually interpreted as 'log-returns'):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] -5.418148e-03  1.353571e-03  1.999440e-03 -2.576160e-03  5.769484e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [6] -2.493493e-03  2.808308e-03  5.466453e-03 -6.059257e-03 -4.580938e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [11]  3.424033e-03 -5.184434e-03 -2.100264e-03 -1.049824e-03 -9.036062e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [16] -3.391313e-03 -1.003525e-03 -1.230981e-03  4.409020e-04  3.105759e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [21]  5.303680e-03  6.641307e-04 -4.760998e-03 -2.953417e-03 -7.060649e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [26]  3.744407e-04 -5.111729e-03 -2.548886e-03 -2.819501e-03  1.894300e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [31]  6.058532e-04  7.870119e-03 -2.212616e-03 -1.943453e-04 -5.646906e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [36]  3.960844e-03 -3.084850e-03  6.914739e-03  2.964318e-05 -1.937904e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [41] -4.953570e-03  1.252464e-02 -7.868584e-03 -5.607566e-03 -1.383953e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [46] -2.155211e-03 -4.210540e-03  8.964447e-03  3.883793e-03  4.647915e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [51] -1.381168e-03  2.006136e-03  2.260428e-03  1.060285e-03  1.313300e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [56]  1.721612e-03  1.071193e-03  4.335929e-03 -6.935315e-04 -5.411642e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [61]  6.562034e-04 -1.192616e-02  3.233108e-03  1.323229e-02 -2.124245e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [66] -4.772732e-03  6.459390e-03 -5.186097e-03 -5.461995e-03 -3.343173e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [71]  2.438289e-03  8.275153e-04 -7.506208e-03 -2.927520e-03 -5.606362e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [76] -5.646894e-03  3.418877e-03 -4.234073e-03  9.240189e-04 -6.747837e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [81]  4.476440e-03  3.339437e-03 -1.163222e-02  4.370090e-03 -6.658529e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [86] -3.776074e-03 -8.950202e-04  6.658727e-03 -2.754743e-03  1.723895e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] -8.508788e-03 -9.832044e-03 -3.397765e-03 -3.325511e-03  1.031139e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [96]  1.353924e-02 -1.005679e-02 -1.189338e-02 -3.373325e-03  2.715744e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  5.994605e-03 -9.558721e-03 -3.373374e-03 -2.060473e-04  1.470261e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6] -6.263398e-03 -7.449042e-03  1.429482e-02  7.500162e-04  9.502947e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [11] -9.008569e-03 -9.954916e-04  5.139892e-03 -1.177710e-02  2.312235e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [16] -1.067749e-02 -2.235712e-03  4.802688e-03  5.963467e-03 -8.433822e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [21] -5.680819e-04  8.372839e-03  1.711794e-03 -4.059548e-03  6.520602e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [26]  1.974340e-03  1.513994e-03 -9.135333e-03 -5.857772e-03 -5.668029e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] -7.686872e-03 -1.129201e-02  1.522416e-03 -2.102777e-03 -5.319101e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [36]  6.903816e-03  2.123236e-04  1.169771e-03 -2.405857e-03  3.539236e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [41]  1.149790e-02  5.048348e-03  9.962221e-03  1.999919e-02 -1.840652e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [46] -9.092640e-03 -7.897706e-03 -5.985480e-03 -3.672938e-03 -2.592085e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [51] -1.767421e-02 -2.564850e-03  3.898917e-03  8.913451e-04  6.869475e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [56]  1.780139e-03  1.484190e-02  2.451589e-02 -3.055197e-03 -4.808652e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] -2.519473e-03 -1.649611e-02 -4.804503e-03  1.281522e-02  5.260859e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [66]  9.548636e-03 -1.763407e-02  4.084052e-03  8.758274e-03 -2.427072e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [71] -1.609662e-02 -3.962950e-02  5.742972e-03  1.183603e-02 -2.388465e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [76]  1.279080e-02 -8.332274e-03 -4.232766e-04 -2.706980e-03 -2.975157e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [81]  9.638528e-03  2.434335e-03  5.575681e-03  1.455829e-03  9.904013e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [86] -1.273969e-02  4.413400e-03  5.104581e-03 -1.114649e-02 -1.166565e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] -8.286166e-03 -9.017093e-03 -1.454190e-02 -1.811069e-03  1.183140e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [96]  2.804124e-03 -9.972952e-03  2.748079e-03  6.509885e-03  1.807297e-03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 400 entries ]</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -216,15 +228,15 @@ formatted manner. The <code>summary</code> method provides some summary statisti
 <span class="r-out co"><span class="r-pr">#&gt;</span>             degrees of freedom parameter              nu = Inf</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             leverage effect parameter                rho = 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simulated initial volatility (in %): 0.4332367 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simulated initial volatility (in %): 0.6489156 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Summary of simulated volatilities (in %):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  0.3799  0.5253  0.6285  0.6382  0.7329  1.0531 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0.3553  0.5648  0.6375  0.6527  0.7254  1.1274 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Summary of simulated data (in %):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -2.16493 -0.42138 -0.02754 -0.02908  0.36780  2.11679 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -3.96295 -0.38360 -0.01881 -0.01971  0.38776  2.45159 </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="svsim-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -244,46 +256,46 @@ formatted manner. The <code>summary</code> method provides some summary statisti
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simulated initial volatility:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simulated volatilities:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 0.005199516 0.005711700 0.006110023 0.006697405 0.006888410 0.007171397</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [7] 0.006764599 0.006020595 0.006406898 0.005781053 0.005507825 0.005202240</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [13] 0.005728837 0.005567734 0.005359314 0.005581998 0.005449388 0.006107390</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 0.006404560 0.005870074 0.005443527 0.005298673 0.005602016 0.005307551</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [25] 0.005824688 0.006122319 0.006115617 0.006366249 0.006178743 0.005927004</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] 0.005786912 0.005687422 0.005469744 0.005932641 0.005609451 0.005213139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 0.004368860 0.005138728 0.005219441 0.005123560 0.005372022 0.005522053</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [43] 0.006198860 0.006203534 0.005978743 0.005548483 0.005940039 0.006101731</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [49] 0.005962095 0.006735546 0.006823927 0.006916993 0.006503148 0.006211137</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 0.006021801 0.005925899 0.006372799 0.006896912 0.007194334 0.007275742</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] 0.007950951 0.008490563 0.009288613 0.009769444 0.010566681 0.010853251</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [67] 0.011150770 0.008713208 0.008612424 0.009140022 0.008926822 0.008956242</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 0.009054712 0.007792529 0.007792050 0.007731396 0.007432783 0.006289675</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [79] 0.005933729 0.006365656 0.006103083 0.005777126 0.005448907 0.005434809</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [85] 0.005134611 0.005071891 0.004226222 0.004560104 0.003939851 0.003877904</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 0.003917213 0.004199323 0.004084963 0.004288734 0.003786606 0.003614723</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [97] 0.003611810 0.003800525 0.004112900 0.004599662</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 0.006576766 0.006300101 0.007205021 0.006093353 0.005578567 0.004832890</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [7] 0.004555077 0.004563768 0.004860931 0.005248859 0.005255400 0.005661985</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [13] 0.005410941 0.005784786 0.005718330 0.005825698 0.006046094 0.006536125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 0.006285379 0.006001613 0.006366006 0.006017130 0.005498625 0.006022032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [25] 0.005678404 0.006133316 0.006243302 0.006436219 0.006158023 0.006407357</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] 0.006545175 0.007202310 0.008785873 0.008554570 0.007993743 0.007929082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 0.008393232 0.009005823 0.009462497 0.010064620 0.009999399 0.011336596</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [43] 0.010966922 0.010549291 0.009894365 0.009883438 0.010420852 0.011694718</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [49] 0.012148196 0.012000770 0.011401774 0.011544733 0.012354401 0.012516620</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 0.011944093 0.011296353 0.010318256 0.011152391 0.011297327 0.010243590</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] 0.009626575 0.010074435 0.009555628 0.009492151 0.008337971 0.008287652</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [67] 0.008795621 0.008717846 0.008854365 0.009462335 0.008972715 0.009041269</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 0.009038231 0.009011140 0.008867416 0.007875983 0.007143249 0.006842941</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [79] 0.006661378 0.006461407 0.006365548 0.006179471 0.006379914 0.006387928</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [85] 0.006985818 0.007232674 0.007795805 0.007733072 0.007545539 0.007843924</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 0.007608699 0.007150082 0.006704869 0.006548164 0.006386122 0.007063711</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [97] 0.007160769 0.007457904 0.006136624 0.005802220</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 100 entries ]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simulated data (usually interpreted as 'log-returns'):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  1.642417e-03  1.612259e-03 -3.042927e-03 -3.454051e-03 -9.908203e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [6]  5.251924e-04  1.471877e-02 -5.951650e-03  6.691418e-03 -2.459068e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [11]  8.281690e-03 -1.191736e-03 -1.657390e-03  5.767933e-04 -8.867464e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [16]  2.049837e-03 -5.521655e-03  7.838581e-04  5.552673e-03  8.429150e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [21] -1.898295e-03  4.493399e-03  5.537351e-03 -1.672117e-03 -5.836062e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [26]  8.438748e-03 -1.735750e-03  8.767901e-03  2.961472e-03 -2.372860e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] -8.209502e-04  2.604038e-05  1.393929e-03 -1.661449e-03  2.267292e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [36]  8.486975e-03 -7.473222e-03 -1.706288e-03 -7.377024e-03  4.775403e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [41] -6.515196e-04 -5.805218e-03  1.242708e-03  7.466149e-03  1.126551e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [46]  1.432551e-03  6.724460e-04  3.739647e-03 -8.719385e-03 -3.371426e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [51]  4.957453e-03 -1.936445e-03  9.478914e-03  5.039804e-03 -6.932706e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [56] -3.546006e-03 -1.028466e-02 -4.060735e-03  3.784627e-03 -8.735174e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] -4.136852e-04 -1.104239e-02 -7.859164e-03  3.857687e-03 -1.241512e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [66] -1.312466e-02  1.754719e-02 -1.255345e-03  4.408971e-03 -2.521205e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [71] -6.495600e-04 -5.483051e-04  1.411803e-02 -3.085155e-03 -6.446065e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [76]  1.216188e-02  1.035409e-02  6.995816e-04 -3.414669e-03  3.861176e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [81]  9.618453e-03 -6.776109e-03 -5.368469e-03  4.694098e-03 -4.282931e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [86]  8.204201e-03 -4.614290e-04  7.606925e-03  4.617510e-03 -3.191995e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91]  5.802707e-03 -2.138146e-03  6.309799e-04  3.379681e-03  5.527497e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [96]  4.862238e-03 -2.825082e-03  2.332989e-03 -3.087042e-03  5.558117e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  0.0005139203 -0.0040406319  0.0119647291 -0.0021775683  0.0160750224</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6]  0.0025494021  0.0008683457  0.0006292247 -0.0015908525  0.0007796318</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [11]  0.0033171949  0.0006699167 -0.0007310985 -0.0063516322 -0.0049051102</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [16] -0.0027455944  0.0057605268  0.0079203926  0.0119016595 -0.0023930602</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [21] -0.0033563297  0.0131108756 -0.0054880596  0.0110012118 -0.0110723216</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [26] -0.0038431666  0.0016139323 -0.0007973106 -0.0017913700  0.0127988622</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] -0.0027810948 -0.0189030058  0.0071303464  0.0013972566  0.0017649436</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [36]  0.0023531739 -0.0038751147  0.0033174290 -0.0118790400 -0.0029531175</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [41] -0.0119960475 -0.0079335456  0.0062632834  0.0080029773 -0.0055406591</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [46] -0.0061590916 -0.0033785773 -0.0060309940  0.0062514950  0.0094756627</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [51] -0.0019076065 -0.0184393199  0.0062370520  0.0006581281  0.0026981202</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [56] -0.0106130112  0.0031666345 -0.0152959201  0.0115521887 -0.0036411774</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] -0.0002523139  0.0009548679 -0.0046907738  0.0107043265 -0.0063840210</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [66] -0.0171529922 -0.0016448956 -0.0026418889  0.0051268737 -0.0033078380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [71]  0.0067961371  0.0033961312 -0.0073141832  0.0009699229  0.0081427114</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [76] -0.0029024077  0.0022624484 -0.0043380396  0.0034590882  0.0003824242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [81]  0.0001047924 -0.0012150368  0.0007580101 -0.0040252890 -0.0034728216</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [86] -0.0043583302  0.0021852810 -0.0062514241  0.0004045827 -0.0017791700</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91]  0.0036250819 -0.0060993623  0.0038300423 -0.0023803410 -0.0084973681</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [96] -0.0042900172 -0.0123259332  0.0088306900  0.0075670989 -0.0001664199</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 100 entries ]</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -295,15 +307,15 @@ formatted manner. The <code>summary</code> method provides some summary statisti
 <span class="r-out co"><span class="r-pr">#&gt;</span>             degrees of freedom parameter              nu = Inf</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             leverage effect parameter                rho = -0.6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simulated initial volatility (in %): 0.5640835 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simulated initial volatility (in %): 0.7494596 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Summary of simulated volatilities (in %):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  0.3612  0.5662  0.6299  0.6460  0.7188  1.1151 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0.4555  0.6360  0.7544  0.7684  0.8756  1.2517 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Summary of simulated data (in %):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -1.783569 -0.430897 -0.030976 -0.003038  0.478944  1.754719 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -1.89030 -0.50590 -0.06711 -0.06589  0.36586  2.48568 </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="svsim-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -323,46 +335,46 @@ formatted manner. The <code>summary</code> method provides some summary statisti
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simulated initial volatility:  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simulated volatilities:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 0.004093740 0.006681062 0.003894773 0.003749335 0.006224009 0.005313048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [7] 0.004003542 0.006603624 0.003607867 0.006415385 0.014066997 0.005331609</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [13] 0.006658075 0.006308020 0.005788845 0.006915426 0.005587868 0.004414627</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 0.006820435 0.003585243 0.006462770 0.006796415 0.008519145 0.005442689</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [25] 0.007228805 0.009250388 0.005842516 0.004782617 0.005759031 0.006712324</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] 0.006739140 0.006640469 0.003767333 0.004576112 0.005830932 0.009682863</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 0.006522956 0.005464119 0.004712686 0.006567401 0.005195501 0.005756293</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [43] 0.005644815 0.010796552 0.006021684 0.003119382 0.004413417 0.008205328</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [49] 0.005145892 0.004806730 0.004740787 0.005765653 0.005015059 0.006196098</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 0.005710863 0.004302135 0.003535251 0.003265463 0.003900154 0.003149628</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] 0.010002645 0.005703560 0.004478056 0.003804170 0.006313980 0.004451218</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [67] 0.004790024 0.004383726 0.011361187 0.005355794 0.010107714 0.005145025</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 0.004378336 0.004104658 0.004171995 0.004630431 0.005068258 0.005776320</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [79] 0.003623613 0.010520970 0.010353008 0.013980112 0.005997842 0.009655351</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [85] 0.025978612 0.006222186 0.005064060 0.006753093 0.006462602 0.007498967</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 0.003514133 0.003768680 0.005721796 0.004618071 0.007877310 0.004310771</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [97] 0.004267495 0.004270824 0.009319064 0.005485213</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 0.004857069 0.006172707 0.011536887 0.011189485 0.010415965 0.006877101</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [7] 0.004927700 0.004435289 0.004976754 0.009127736 0.006999667 0.004589565</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [13] 0.004096699 0.004978789 0.004864263 0.003964218 0.003752577 0.003643340</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [19] 0.003372838 0.003701851 0.007414590 0.005707468 0.006234401 0.004713976</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [25] 0.007668430 0.004555770 0.016438776 0.005963490 0.005296071 0.007871684</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] 0.006554208 0.005415822 0.004740516 0.007663406 0.003299371 0.004182389</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [37] 0.006090694 0.003531286 0.007375142 0.005774273 0.003928631 0.004480333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [43] 0.003165617 0.005386370 0.005299230 0.007694447 0.003777989 0.010434826</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [49] 0.003183661 0.004772202 0.012697321 0.003929114 0.009705277 0.005592941</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [55] 0.006332175 0.005156121 0.003852085 0.003033737 0.004640366 0.004533833</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] 0.012365380 0.005534701 0.009945508 0.004927106 0.004009705 0.006940221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [67] 0.003088459 0.005377685 0.002463650 0.009519139 0.006321881 0.003514138</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [73] 0.005036636 0.011348568 0.004841364 0.002929516 0.004295329 0.007972870</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [79] 0.003461357 0.008332598 0.007341287 0.005884122 0.010138388 0.005872060</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [85] 0.006373953 0.007944725 0.006120175 0.005766901 0.004678024 0.008022844</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] 0.012423220 0.004658935 0.003889261 0.005819496 0.007707516 0.004869622</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [97] 0.004643704 0.003886424 0.006006016 0.004062477</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 150 entries ]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simulated data (usually interpreted as 'log-returns'):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] -1.648738e-03  6.734385e-03 -8.614871e-03  6.819999e-03  4.136832e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [6]  3.129735e-03  3.059939e-03  7.693715e-03 -3.814023e-04  1.277373e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [11]  9.202033e-03 -4.839020e-03  9.106598e-03  7.820258e-03  4.224495e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [16] -8.856189e-04  9.542749e-04 -4.011612e-03 -8.216135e-03 -2.335966e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [21] -1.464731e-02  1.978880e-03 -6.611883e-03 -9.504558e-04  5.247585e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [26] -5.451364e-06 -1.472994e-02  3.449516e-03 -8.307772e-03 -2.909044e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] -1.066863e-03  8.508140e-03  2.859708e-03 -3.858679e-04 -5.244992e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [36] -1.734770e-02 -3.648585e-03 -6.012633e-03 -2.622630e-03 -8.161255e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [41] -2.381737e-03  4.191942e-03 -6.380046e-04  1.666595e-02  3.591346e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [46]  1.090190e-03 -1.119568e-02 -3.161346e-03  4.591882e-04  3.796041e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [51]  4.792611e-03  1.825412e-03  4.123682e-03 -2.885841e-03  2.729134e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [56]  6.535494e-03  9.729506e-03  8.834211e-03  1.525745e-04 -2.336760e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] -2.346370e-02  1.747772e-03  2.472243e-03  8.348075e-03  2.139194e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [66] -4.958352e-03 -2.806945e-03 -1.069852e-03  1.106558e-02 -2.865496e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [71]  9.439251e-03 -1.690858e-04  6.720542e-03  3.314389e-03  8.060175e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [76]  1.080574e-03 -2.674483e-03 -1.288729e-03  1.257320e-03  3.871508e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [81] -4.037596e-03  9.214927e-03  1.640911e-03 -2.719269e-03 -5.438955e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [86] -2.811249e-03  3.125554e-03  9.276002e-03 -2.632555e-03  2.540745e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] -5.169594e-03  4.799182e-03 -6.224740e-03  6.286106e-04 -1.041994e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [96]  5.754748e-03  5.912824e-03 -2.178363e-03  5.704420e-03 -4.502086e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  1.032303e-03  1.072017e-02  1.492910e-02  2.926447e-03 -3.165163e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [6]  2.664943e-03 -1.729240e-03 -1.021786e-02 -2.587914e-03 -9.511681e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [11] -1.660400e-03 -2.978497e-03  7.847406e-04 -4.054420e-04  2.797479e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [16]  2.423524e-03  6.700681e-04 -1.751860e-03  6.097894e-04  2.791446e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [21]  5.070708e-03  4.031685e-03 -1.736457e-03  8.546264e-03 -1.101608e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [26] -6.236495e-04  1.214053e-02 -1.191848e-03  1.989520e-03  4.457491e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31]  5.324172e-03 -1.483271e-03 -1.711673e-03  5.791347e-03 -4.296457e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [36] -6.708344e-03  5.410122e-03 -5.855875e-05 -5.846224e-03  1.269375e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [41] -5.185186e-04 -4.338030e-04  3.114851e-03 -1.415599e-03 -1.378963e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [46] -1.694637e-04 -7.851137e-03  1.620205e-02  2.275957e-03  6.804627e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [51] -1.002363e-02 -1.179928e-03 -2.778736e-02 -2.714607e-03  2.079716e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [56] -5.625475e-03 -3.662283e-03  3.146992e-03 -1.056983e-03  2.763630e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61]  6.765264e-03  3.295518e-03  1.578365e-02  3.305112e-03 -2.616761e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [66] -5.497687e-03 -1.249658e-03 -7.508879e-03  4.833294e-03  1.060309e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [71]  4.166272e-03  4.102504e-03 -1.003839e-02 -1.074062e-02 -3.621260e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [76]  1.322077e-03 -3.426279e-03 -1.569047e-02 -7.456182e-03 -6.712423e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [81] -7.646602e-03 -8.338499e-03 -5.496247e-03 -5.669694e-03  6.680267e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [86] -3.024796e-03  3.152271e-03 -6.355497e-03  2.698129e-03  8.694424e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91]  1.390849e-02  2.473125e-03 -1.064471e-03  2.143386e-03  2.796732e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [96] -8.456968e-03  1.776419e-04 -1.828170e-03 -1.732103e-03 -7.993910e-04</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 150 entries ]</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -374,15 +386,15 @@ formatted manner. The <code>summary</code> method provides some summary statisti
 <span class="r-out co"><span class="r-pr">#&gt;</span>             degrees of freedom parameter              nu = 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             leverage effect parameter                rho = 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simulated initial volatility (in %): 0.6770344 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simulated initial volatility (in %): 0.6212739 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Summary of simulated volatilities (in %):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  0.2961  0.4499  0.5707  0.6465  0.7129  2.5979 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  0.2464  0.4539  0.5585  0.6191  0.7138  2.2339 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Summary of simulated data (in %):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -2.346370 -0.353516  0.002410  0.004554  0.375438  2.075417 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -2.77874 -0.40523 -0.05085 -0.04210  0.29798  1.81736 </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="svsim-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>

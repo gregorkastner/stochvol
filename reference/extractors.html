@@ -18,7 +18,7 @@ svdraws and svpredict object."><meta property="og:image" content="/logo.svg"><!-
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stochvol</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.2.3</span>
       </span>
     </div>
 
@@ -183,16 +183,16 @@ then all chains are merged into one <code>mcmc</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    plus standard error of the mean:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           Mean     SD Naive SE Time-series SE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu    -11.4515 0.3665 0.008195        0.01533</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> phi     0.7693 0.1860 0.004158        0.02887</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma   0.5150 0.1933 0.004323        0.02630</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu    -10.5297 0.3069 0.006863        0.01254</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> phi     0.7964 0.1632 0.003650        0.02506</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma   0.4484 0.1603 0.003586        0.02032</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2. Quantiles for each variable:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           2.5%      25%      50%      75%    97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mu    -12.1443 -11.6281 -11.4563 -11.2706 -10.7537</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> phi     0.2269   0.6974   0.8179   0.9034   0.9762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sigma   0.2134   0.3667   0.4908   0.6364   0.9441</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           2.5%      25%      50%      75%   97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mu    -11.2178 -10.6906 -10.5095 -10.3431 -9.9953</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> phi     0.3029   0.7648   0.8419   0.8946  0.9633</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sigma   0.2174   0.3375   0.4205   0.5194  0.8619</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="co">## Extract the draws as an mcmc.list object</span></span></span>
 <span class="r-in"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu">para</span><span class="op">(</span><span class="va">draws</span>, chain <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span><span class="op">[</span>, <span class="fu">sampled_parameters</span><span class="op">(</span><span class="va">draws</span><span class="op">)</span><span class="op">]</span></span></span>
@@ -211,12 +211,12 @@ then all chains are merged into one <code>mcmc</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    plus standard error of the mean:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           Mean             SD       Naive SE Time-series SE </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      -11.84567        0.79934        0.01787        0.03354 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      -10.77562        0.74702        0.01670        0.02676 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2. Quantiles for each variable:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2.5%    25%    50%    75%  97.5% </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -13.38 -12.39 -11.88 -11.30 -10.25 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2.5%     25%     50%     75%   97.5% </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -12.318 -11.245 -10.764 -10.271  -9.306 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu">latent</span><span class="op">(</span><span class="va">draws</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -228,57 +228,57 @@ then all chains are merged into one <code>mcmc</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1. Empirical mean and standard deviation for each variable,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    plus standard error of the mean:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         Mean     SD Naive SE Time-series SE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_1   -11.91 0.7046  0.01576        0.03453</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_2   -12.01 0.6856  0.01533        0.03485</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_3   -12.26 0.7675  0.01716        0.04024</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_4   -12.37 0.7858  0.01757        0.04861</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_5   -12.38 0.7347  0.01643        0.04044</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_6   -12.43 0.8026  0.01795        0.04287</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_7   -12.37 0.7844  0.01754        0.04267</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_8   -12.22 0.7027  0.01571        0.03731</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_9   -12.13 0.7497  0.01676        0.04022</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_10  -11.93 0.7058  0.01578        0.03303</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_11  -11.55 0.5800  0.01297        0.03151</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_12  -11.64 0.6171  0.01380        0.02815</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_13  -11.69 0.6102  0.01364        0.02610</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_14  -11.74 0.6365  0.01423        0.02849</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_15  -11.72 0.6186  0.01383        0.02630</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_16  -11.53 0.5664  0.01266        0.03276</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_17  -11.65 0.5981  0.01337        0.02906</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_18  -11.70 0.6370  0.01424        0.03108</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_19  -11.78 0.6973  0.01559        0.03195</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_20  -11.71 0.6432  0.01438        0.02814</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_21  -11.61 0.5991  0.01340        0.02883</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_22  -11.66 0.5994  0.01340        0.02934</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_23  -11.70 0.6123  0.01369        0.02840</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_24  -11.91 0.6914  0.01546        0.03498</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_25  -11.99 0.7399  0.01654        0.04069</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          Mean     SD Naive SE Time-series SE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_1   -10.851 0.7021  0.01570        0.02922</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_2   -10.859 0.6861  0.01534        0.03454</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_3   -10.777 0.6160  0.01377        0.02839</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_4   -10.706 0.6365  0.01423        0.02865</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_5   -10.494 0.5663  0.01266        0.02517</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_6   -10.416 0.5466  0.01222        0.02383</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_7   -10.307 0.5266  0.01177        0.02264</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_8   -10.208 0.5340  0.01194        0.02586</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_9   -10.336 0.6197  0.01386        0.02812</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_10  -10.279 0.5979  0.01337        0.03367</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_11  -10.078 0.5458  0.01220        0.02697</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_12   -9.776 0.4748  0.01062        0.02585</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_13   -9.833 0.5194  0.01161        0.02148</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_14   -9.975 0.5673  0.01269        0.02745</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_15  -10.053 0.6480  0.01449        0.03691</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_16   -9.952 0.6105  0.01365        0.03076</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_17   -9.719 0.5091  0.01138        0.02112</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_18   -9.854 0.6238  0.01395        0.03101</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_19   -9.777 0.6224  0.01392        0.02840</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_20   -9.529 0.5363  0.01199        0.02191</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_21   -9.391 0.4780  0.01069        0.02178</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_22   -9.721 0.5695  0.01274        0.02571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_23   -9.859 0.5469  0.01223        0.02351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_24   -9.987 0.5514  0.01233        0.02331</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_25  -10.209 0.6062  0.01356        0.03178</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 125 rows ]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2. Quantiles for each variable:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         2.5%    25%    50%    75%   97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_1   -13.17 -12.41 -11.94 -11.44 -10.478</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_2   -13.23 -12.50 -12.06 -11.54 -10.592</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_3   -13.80 -12.75 -12.26 -11.74 -10.752</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_4   -13.90 -12.88 -12.36 -11.85 -10.859</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_5   -13.81 -12.87 -12.36 -11.89 -10.915</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_6   -14.15 -12.92 -12.40 -11.91 -10.940</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_7   -14.07 -12.85 -12.35 -11.87 -10.876</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_8   -13.58 -12.67 -12.23 -11.77 -10.787</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_9   -13.69 -12.57 -12.11 -11.67 -10.707</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_10  -13.34 -12.35 -11.92 -11.53 -10.477</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_11  -12.56 -11.95 -11.58 -11.20 -10.251</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_12  -12.79 -12.05 -11.69 -11.28 -10.341</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_13  -12.86 -12.10 -11.71 -11.30 -10.457</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_14  -12.92 -12.14 -11.76 -11.34 -10.412</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_15  -12.93 -12.13 -11.75 -11.32 -10.447</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_16  -12.51 -11.93 -11.58 -11.18 -10.287</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_17  -12.79 -12.05 -11.66 -11.27 -10.410</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_18  -12.94 -12.10 -11.70 -11.33 -10.384</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_19  -13.15 -12.23 -11.77 -11.33 -10.351</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_20  -12.93 -12.14 -11.72 -11.31 -10.359</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          2.5%     25%     50%     75%   97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_1   -12.219 -11.323 -10.842 -10.374  -9.496</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_2   -12.232 -11.332 -10.828 -10.413  -9.502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_3   -11.970 -11.197 -10.779 -10.367  -9.610</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_4   -11.937 -11.096 -10.701 -10.284  -9.464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_5   -11.523 -10.886 -10.506 -10.135  -9.303</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_6   -11.451 -10.768 -10.410 -10.062  -9.320</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_7   -11.295 -10.659 -10.317  -9.967  -9.233</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_8   -11.194 -10.588 -10.236  -9.886  -9.071</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_9   -11.573 -10.708 -10.320  -9.965  -9.142</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_10  -11.531 -10.645 -10.256  -9.878  -9.150</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_11  -11.140 -10.429 -10.083  -9.724  -8.991</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_12  -10.629 -10.095  -9.809  -9.481  -8.762</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_13  -10.812 -10.171  -9.846  -9.521  -8.718</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_14  -11.109 -10.333  -9.993  -9.609  -8.852</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_15  -11.416 -10.462 -10.028  -9.637  -8.832</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_16  -11.262 -10.338  -9.948  -9.566  -8.745</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_17  -10.615 -10.057  -9.761  -9.402  -8.637</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_18  -11.225 -10.222  -9.858  -9.451  -8.600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_19  -11.081 -10.145  -9.772  -9.375  -8.588</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_20  -10.508  -9.882  -9.563  -9.211  -8.411</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 130 rows ]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu">vola</span><span class="op">(</span><span class="va">draws</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -291,57 +291,57 @@ then all chains are merged into one <code>mcmc</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1. Empirical mean and standard deviation for each variable,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    plus standard error of the mean:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           Mean        SD  Naive SE Time-series SE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_1   0.002759 0.0010409 2.328e-05      5.186e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_2   0.002623 0.0009697 2.168e-05      4.806e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_3   0.002346 0.0009249 2.068e-05      4.623e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_4   0.002229 0.0008999 2.012e-05      5.456e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_5   0.002198 0.0008434 1.886e-05      5.453e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_6   0.002157 0.0008701 1.946e-05      4.642e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_7   0.002218 0.0009013 2.015e-05      5.478e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_8   0.002364 0.0008850 1.979e-05      5.982e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_9   0.002491 0.0009665 2.161e-05      4.495e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_10  0.002740 0.0010380 2.321e-05      4.683e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_11  0.003248 0.0010439 2.334e-05      5.535e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_12  0.003113 0.0010631 2.377e-05      4.800e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_13  0.003031 0.0009834 2.199e-05      4.237e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_14  0.002980 0.0010430 2.332e-05      4.620e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_15  0.002994 0.0009740 2.178e-05      4.065e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_16  0.003265 0.0009907 2.215e-05      5.769e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_17  0.003090 0.0009648 2.157e-05      4.743e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_18  0.003036 0.0010313 2.306e-05      4.923e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_19  0.002947 0.0010928 2.444e-05      4.504e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_20  0.003029 0.0010473 2.342e-05      4.380e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_21  0.003149 0.0010165 2.273e-05      4.695e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_22  0.003079 0.0009799 2.191e-05      4.668e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_23  0.003022 0.0010346 2.314e-05      4.733e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_24  0.002758 0.0010243 2.290e-05      4.746e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_25  0.002657 0.0009914 2.217e-05      4.627e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           Mean       SD  Naive SE Time-series SE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_1   0.004681 0.001684 3.765e-05      6.433e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_2   0.004655 0.001691 3.781e-05      8.028e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_3   0.004792 0.001532 3.427e-05      8.342e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_4   0.004979 0.001632 3.650e-05      6.727e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_5   0.005482 0.001640 3.666e-05      7.057e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_6   0.005683 0.001614 3.609e-05      6.474e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_7   0.005987 0.001654 3.699e-05      6.982e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_8   0.006301 0.001838 4.110e-05      7.950e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_9   0.005972 0.001887 4.219e-05      7.131e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_10  0.006122 0.001809 4.045e-05      8.614e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_11  0.006725 0.001883 4.211e-05      8.752e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_12  0.007762 0.001986 4.441e-05      9.836e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_13  0.007583 0.002112 4.723e-05      8.529e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_14  0.007106 0.002099 4.693e-05      9.948e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_15  0.006910 0.002285 5.108e-05      1.146e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_16  0.007230 0.002271 5.078e-05      9.222e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_17  0.008020 0.002243 5.015e-05      9.364e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_18  0.007606 0.002401 5.369e-05      1.050e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_19  0.007898 0.002458 5.496e-05      1.008e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_20  0.008849 0.002548 5.698e-05      1.074e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_21  0.009407 0.002366 5.291e-05      1.094e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_22  0.008070 0.002441 5.458e-05      1.102e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_23  0.007509 0.002146 4.799e-05      9.018e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_24  0.007048 0.002013 4.501e-05      8.252e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_25  0.006351 0.001939 4.336e-05      9.540e-05</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 125 rows ]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2. Quantiles for each variable:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            2.5%      25%      50%      75%    97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_1   0.0013809 0.002019 0.002551 0.003282 0.005305</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_2   0.0013387 0.001932 0.002409 0.003116 0.005011</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_3   0.0010058 0.001704 0.002173 0.002816 0.004626</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_4   0.0009607 0.001599 0.002071 0.002671 0.004386</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_5   0.0010006 0.001607 0.002071 0.002619 0.004264</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_6   0.0008474 0.001567 0.002027 0.002596 0.004211</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_7   0.0008796 0.001618 0.002083 0.002640 0.004348</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_8   0.0011265 0.001770 0.002210 0.002787 0.004546</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_9   0.0010623 0.001861 0.002346 0.002916 0.004731</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_10  0.0012707 0.002080 0.002575 0.003142 0.005309</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_11  0.0018717 0.002539 0.003055 0.003690 0.005943</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_12  0.0016738 0.002413 0.002901 0.003562 0.005681</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_13  0.0016114 0.002361 0.002866 0.003509 0.005362</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_14  0.0015622 0.002313 0.002792 0.003452 0.005485</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_15  0.0015608 0.002321 0.002816 0.003487 0.005389</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_16  0.0019161 0.002565 0.003065 0.003737 0.005838</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_17  0.0016681 0.002422 0.002939 0.003570 0.005490</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_18  0.0015498 0.002354 0.002881 0.003461 0.005560</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_19  0.0013960 0.002208 0.002776 0.003470 0.005652</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_20  0.0015599 0.002306 0.002851 0.003508 0.005631</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           2.5%      25%      50%      75%    97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_1   0.002221 0.003477 0.004423 0.005588 0.008669</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_2   0.002207 0.003462 0.004454 0.005480 0.008642</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_3   0.002516 0.003704 0.004564 0.005608 0.008190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_4   0.002558 0.003895 0.004746 0.005847 0.008809</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_5   0.003146 0.004326 0.005231 0.006299 0.009547</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_6   0.003262 0.004589 0.005489 0.006533 0.009468</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_7   0.003527 0.004847 0.005750 0.006850 0.009889</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_8   0.003709 0.005022 0.005989 0.007134 0.010720</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_9   0.003069 0.004729 0.005743 0.006858 0.010348</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_10  0.003134 0.004880 0.005929 0.007161 0.010304</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_11  0.003811 0.005436 0.006465 0.007737 0.011159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_12  0.004921 0.006424 0.007413 0.008733 0.012513</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_13  0.004490 0.006186 0.007276 0.008562 0.012792</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_14  0.003870 0.005704 0.006762 0.008194 0.011959</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_15  0.003319 0.005349 0.006646 0.008080 0.012083</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_16  0.003585 0.005689 0.006915 0.008370 0.012623</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_17  0.004955 0.006550 0.007594 0.009087 0.013322</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_18  0.003651 0.006029 0.007234 0.008865 0.013570</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_19  0.003925 0.006266 0.007552 0.009211 0.013652</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_20  0.005227 0.007147 0.008382 0.009999 0.014912</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 130 rows ]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">sampled_parameters</span><span class="op">(</span><span class="va">draws</span><span class="op">)</span></span></span>
@@ -370,39 +370,39 @@ then all chains are merged into one <code>mcmc</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> End = 23000 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Thinning interval = 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 beta_0        beta_1        beta_2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [1,] -1.834175e-04  1.919065e-01  3.537760e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [2,]  8.346799e-05 -5.780474e-02 -1.871582e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [3,]  3.946086e-06  7.613912e-03  2.154923e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [4,]  4.199888e-05  1.126499e-02 -3.539692e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [5,]  2.620620e-04  1.366091e-01  1.874739e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [6,]  5.323612e-04  5.747054e-02  3.218873e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [7,]  5.765312e-04  1.347622e-01  1.875007e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [8,]  5.179180e-04  6.556952e-02  8.271941e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [9,]  6.195452e-04 -7.267979e-03 -9.851478e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [10,]  5.130271e-04  1.944362e-01  7.612757e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [11,] -6.762959e-05  2.430460e-01  8.602107e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [12,] -9.176114e-05  1.064139e-01 -8.660839e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [13,] -2.038913e-05 -1.067040e-02  6.722786e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [14,]  1.642984e-04 -5.955608e-02  1.365147e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [15,]  2.767337e-04 -1.108548e-01  2.583301e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [16,]  9.400213e-05  1.224767e-02  1.822903e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [17,]  3.503369e-04 -5.903337e-02  1.703783e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [18,]  1.445744e-04  1.001594e-02  9.167140e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [19,]  1.893302e-05  1.231914e-01  8.441229e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [20,]  1.154971e-04  2.650804e-02 -4.991165e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [21,]  6.168802e-05  1.064268e-01  4.815879e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [22,]  1.516808e-04  3.017920e-02 -7.899940e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [23,] -1.851429e-04  9.617226e-02 -7.718960e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [24,]  3.603448e-04 -1.324026e-01  1.366352e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [25,]  5.861571e-04  9.854565e-02  3.406616e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [26,]  9.948996e-06  6.612524e-02 -7.706607e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [27,] -2.431813e-05  1.354963e-01  8.170537e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [28,]  3.832356e-04  1.955025e-01  1.458943e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [29,]  3.284449e-04 -6.168199e-02  1.236304e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [30,]  3.278951e-04 -1.127620e-01 -3.986785e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [31,] -1.566436e-06 -2.134772e-02  1.301189e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [32,]  1.579203e-04  3.702340e-02 -3.998951e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    [33,] -1.643711e-04  4.978034e-02 -9.186108e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [1,] -8.585998e-04 -8.094750e-02 -6.551757e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [2,] -7.717683e-04 -1.248536e-01 -3.112359e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [3,] -9.976433e-04 -9.701240e-02 -4.600815e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [4,] -1.295632e-03 -6.284049e-02  7.351528e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [5,] -2.371334e-04 -1.144797e-02  1.396075e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [6,]  1.372684e-04 -7.903572e-02  6.243000e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [7,] -8.200006e-04  2.587243e-02  8.316710e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [8,] -4.051198e-04 -1.027404e-01 -7.679311e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [9,] -5.856523e-04 -1.894521e-01 -8.799733e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [10,] -8.365460e-05 -1.303224e-02  1.821420e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [11,] -5.225723e-04  7.620574e-02  9.412476e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [12,] -3.463516e-04 -8.219093e-02  4.627592e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [13,]  4.417109e-04 -5.366690e-02 -1.690931e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [14,] -7.787960e-04  2.408987e-02 -1.038341e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [15,] -3.968364e-04 -2.323001e-01  1.162366e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [16,]  2.844209e-04 -6.899616e-02  2.709406e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [17,] -3.332899e-04 -8.835869e-02  4.687165e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [18,] -6.217043e-04  2.348610e-02  7.842285e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [19,] -3.195898e-04 -1.314877e-01  2.500453e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [20,]  3.932277e-04  7.492543e-02 -2.273731e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [21,]  3.505620e-04 -1.794866e-02 -1.806379e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [22,]  1.102100e-04  1.164253e-01 -2.508056e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [23,] -3.179465e-04 -7.579651e-02 -1.099553e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [24,]  4.133388e-06 -9.654133e-02 -3.805130e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [25,] -3.054593e-04 -5.669092e-02 -1.153967e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [26,] -1.268943e-03  4.365102e-02 -4.745854e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [27,] -1.087195e-03 -8.392087e-02 -6.978389e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [28,] -5.171225e-04 -9.190345e-02  4.600776e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [29,] -1.127023e-03 -8.319932e-02  5.169016e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [30,] -1.120905e-03 -1.805355e-02  7.011475e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [31,] -6.047736e-04  1.474651e-02  2.377479e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [32,] -1.517487e-03 -1.064388e-02 -4.558984e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    [33,] -2.789827e-04 -9.260273e-02 -7.429035e-02</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 19967 rows ]</span>
 <span class="r-in"><span><span class="co">## ... tau draws from all chains merged/concatenated together</span></span></span>
 <span class="r-in"><span><span class="fu">svtau</span><span class="op">(</span><span class="va">draws</span><span class="op">)</span></span></span>
@@ -410,31 +410,31 @@ then all chains are merged into one <code>mcmc</code> object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Start = 3001 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> End = 23000 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Thinning interval = 1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               tau_1      tau_2     tau_3     tau_4      tau_5      tau_6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_7     tau_8      tau_9     tau_10    tau_11     tau_12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_13     tau_14     tau_15     tau_16    tau_17     tau_18</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_19      tau_20     tau_21    tau_22     tau_23     tau_24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_25     tau_26    tau_27     tau_28     tau_29     tau_30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_31    tau_32     tau_33     tau_34    tau_35    tau_36</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_37    tau_38     tau_39     tau_40    tau_41     tau_42</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_43     tau_44    tau_45     tau_46     tau_47    tau_48</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_49     tau_50     tau_51     tau_52     tau_53      tau_54</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_55     tau_56     tau_57     tau_58    tau_59     tau_60</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_61    tau_62     tau_63     tau_64     tau_65    tau_66</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_67     tau_68     tau_69     tau_70     tau_71    tau_72</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_73     tau_74     tau_75     tau_76     tau_77     tau_78</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_79    tau_80    tau_81     tau_82    tau_83     tau_84</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_85     tau_86    tau_87     tau_88    tau_89     tau_90</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_91    tau_92     tau_93     tau_94     tau_95    tau_96</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_97    tau_98     tau_99   tau_100   tau_101   tau_102</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_103    tau_104    tau_105   tau_106   tau_107    tau_108</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_109   tau_110     tau_111   tau_112    tau_113    tau_114</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            tau_115    tau_116    tau_117    tau_118   tau_119    tau_120</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_121   tau_122   tau_123    tau_124   tau_125    tau_126</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_127    tau_128    tau_129   tau_130    tau_131    tau_132</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_133   tau_134    tau_135    tau_136    tau_137   tau_138</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_139    tau_140    tau_141    tau_142    tau_143   tau_144</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            tau_145    tau_146    tau_147    tau_148</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               tau_1      tau_2      tau_3      tau_4      tau_5      tau_6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               tau_7      tau_8      tau_9      tau_10     tau_11     tau_12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_13    tau_14     tau_15    tau_16    tau_17     tau_18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_19     tau_20     tau_21    tau_22     tau_23    tau_24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_25     tau_26     tau_27     tau_28     tau_29    tau_30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_31     tau_32     tau_33    tau_34     tau_35     tau_36</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_37     tau_38    tau_39     tau_40     tau_41    tau_42</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_43     tau_44     tau_45     tau_46     tau_47    tau_48</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               tau_49     tau_50     tau_51     tau_52    tau_53     tau_54</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_55     tau_56     tau_57    tau_58    tau_59     tau_60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_61     tau_62    tau_63      tau_64    tau_65    tau_66</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_67     tau_68    tau_69     tau_70     tau_71    tau_72</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_73     tau_74    tau_75     tau_76     tau_77     tau_78</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_79    tau_80     tau_81    tau_82     tau_83     tau_84</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_85     tau_86    tau_87    tau_88     tau_89     tau_90</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_91     tau_92     tau_93     tau_94    tau_95     tau_96</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              tau_97     tau_98     tau_99    tau_100    tau_101    tau_102</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_103   tau_104    tau_105    tau_106    tau_107    tau_108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_109    tau_110    tau_111    tau_112    tau_113     tau_114</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_115    tau_116    tau_117    tau_118   tau_119    tau_120</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_121    tau_122    tau_123    tau_124   tau_125    tau_126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_127    tau_128    tau_129   tau_130    tau_131   tau_132</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            tau_133    tau_134    tau_135    tau_136    tau_137    tau_138</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_139    tau_140    tau_141    tau_142    tau_143    tau_144</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             tau_145    tau_146    tau_147    tau_148</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [ reached getOption("max.print") -- omitted 20000 rows ]</span>
 <span class="r-in"><span><span class="co">## Create a new svdraws object from the first and third chain</span></span></span>
 <span class="r-in"><span><span class="va">second_chain_excluded</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></span>
