@@ -49,16 +49,25 @@
 #' log-volatility. The default value is \code{0}, corresponding to the basic
 #' SV model with symmetric ``log-returns''.
 #' @return The output is a list object of class \code{svsim} containing
-#' \item{y}{a vector of length \code{len} containing the simulated data,
+#' \describe{
+#' \item{y}{vector of length \code{len} containing the simulated data,
 #' usually interpreted as ``log-returns''.}
-#' \item{vol}{a vector of length
-#' \code{len} containing the simulated instantaneous volatilities
-#' \code{exp(h_t/2)}.}
+#' \item{vol}{vector of length
+#' \code{len} containing the simulated instantaneous volatilities.
+#' These are \eqn{e^{h_t/2}}{exp(h_t/2)} if \code{nu == Inf}, and they are
+#' \eqn{e^{h_t/2} \sqrt{\tau_t}}{exp(h_t/2) * sqrt(tau_t)} for finite \code{nu}.}
 #' \item{vol0}{The initial volatility \code{exp(h_0/2)},
 #' drawn from the stationary distribution of the latent AR(1) process.}
 #' \item{para}{a named list with five elements \code{mu}, \code{phi},
 #' \code{sigma}, \code{nu}, and \code{rho}, containing
 #' the corresponding arguments.}
+#' \item{latent}{vector of the latent state space \eqn{h_t} for \eqn{t > 0}.}
+#' \item{latent0}{initial element of the latent state space \eqn{h_0}.}
+#' \item{tau}{vector of length \code{len} containing the simulated auxiliary
+#' variables for the Student-t residuals when \code{nu} is finite. More precisely,
+#' \eqn{\tau_t\sim\text{Gamma}^{-1}(\text{shape}=\nu/2, \text{rate}=\nu/2-1)}{%
+#' tau_t ~ InverseGamma(shape = nu / 2, rate = nu / 2 - 1)}.}
+#' }
 #' @note The function generates the ``log-returns'' by
 #' \code{y <- exp(-h/2)*rt(h, df=nu)}. That means that in the case of \code{nu < Inf}
 #' the (conditional) volatility is \code{sqrt(nu/(nu-2))*exp(h/2)}, and that corrected value
