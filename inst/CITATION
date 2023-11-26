@@ -13,7 +13,7 @@ sylvia <- person(given = "Sylvia",
                  email = "sylvia.fruehwirth-schnatter@wu.ac.at")
 darjus <- person(given = "Darjus",
                  family = "Hosszejni",
-                 email = "darjus.hosszejni@wu.ac.at")
+                 email = "darjus.hosszejni@icloud.com")
 
 bibentry(bibtype = "article",
   header       = "To cite stochvol in publications use:",
