@@ -38,7 +38,7 @@ logret.default <- function (dat, demean = FALSE, standardize = FALSE, ...) {
 #' in case the default choice is unsatisfactory.
 #' @param mu one of \code{sv_normal} or \code{sv_constant}
 #' @param phi one of \code{sv_beta}, \code{sv_normal}, or \code{sv_constant}. If \code{sv_beta}, then the specified beta distribution is the prior for \code{(phi+1)/2}
-#' @param sigma2 one of \code{sv_gamma}, code{sv_inverse_gamma}, or \code{sv_constant}
+#' @param sigma2 one of \code{sv_gamma}, \code{sv_inverse_gamma}, or \code{sv_constant}
 #' @param nu one of \code{sv_infinity}, \code{sv_exponential}, or \code{sv_constant}. If \code{sv_exponential}, then the specified exponential distribution is the prior for \code{nu-2}
 #' @param rho one of \code{sv_beta} or \code{sv_constant}. If \code{sv_beta}, then the specified beta distribution is the prior for \code{(rho+1)/2}
 #' @param latent0_variance either the character string \code{"stationary"} or an \code{sv_constant} object.

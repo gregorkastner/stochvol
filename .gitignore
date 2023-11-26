@@ -48,6 +48,7 @@ vignettes/article2.pdf
 # vim and vim plugin related
 .undodir
 .ycm_extra_conf.py
+compile_flags.txt
 Session.vim
 
 # other

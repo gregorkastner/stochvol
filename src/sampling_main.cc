@@ -110,7 +110,7 @@ List svsample_fast_cpp(
     r.set_size(T);
     r.fill(r_elem);
   } else if (r.n_elem != T) {
-    ::Rf_error("Bad initialization for the vector of mixture indicators. Should have length %d, received length %d, first element %f", T, r.n_elem, r[0]);
+    ::Rf_error("Bad initialization for the vector of mixture indicators. Should have length %d, received length %d, first element %u", T, r.n_elem, r[0]);
   }
   r -= 1u;
   R_assert(arma::all(r <= 9u), "Initial values of the mixture indicators need to be between 1 and 10 inclusive.");
