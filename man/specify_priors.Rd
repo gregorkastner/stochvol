@@ -19,7 +19,7 @@ specify_priors(
 
 \item{phi}{one of \code{sv_beta}, \code{sv_normal}, or \code{sv_constant}. If \code{sv_beta}, then the specified beta distribution is the prior for \code{(phi+1)/2}}
 
-\item{sigma2}{one of \code{sv_gamma}, code{sv_inverse_gamma}, or \code{sv_constant}}
+\item{sigma2}{one of \code{sv_gamma}, \code{sv_inverse_gamma}, or \code{sv_constant}}
 
 \item{nu}{one of \code{sv_infinity}, \code{sv_exponential}, or \code{sv_constant}. If \code{sv_exponential}, then the specified exponential distribution is the prior for \code{nu-2}}
 

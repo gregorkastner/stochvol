@@ -269,7 +269,7 @@ or \code{"iteration"}, controls the output. Ignored if \code{quiet} is \code{TRU
 applications, the default values probably work best. Interested users are
 referred to the literature provided in the References section. If
 \code{expert} is provided, it may contain the following named elements:
-\itemize{
+\describe{
 \item{interweave}{ Logical value. If \code{TRUE} (the default),
 then ancillarity-sufficiency interweaving strategy (ASIS) is applied
 to improve on the sampling efficiency for the parameters.
