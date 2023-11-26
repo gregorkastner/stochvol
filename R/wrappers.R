@@ -980,12 +980,13 @@ svsample_roll <- function (y, designmatrix = NA,
   # Define accessors for the windows
   choose_indices <- function (i) {
     n <- length(y)
-    train_begin <- if (refit_window == "expanding") {
-      1
+    if (refit_window == "expanding") {
+      train_begin <- 1
+      train_end <- train_begin + n_start - 2 + arorder + (i-1) * refit_every
     } else {
-      1 + (i-1) * refit_every
+      train_begin <- 1 + (i-1) * refit_every
+      train_end <- train_begin + n_start - 2 + arorder
     }
-    train_end <- train_begin + n_start - 2 + arorder
     list(train = seq(train_begin, train_end),
          test = seq(train_end+1, train_end+n_ahead))
   }
