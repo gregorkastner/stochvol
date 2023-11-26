@@ -479,7 +479,7 @@ Rcpp::List geweke_test() {
 
     for (unsigned int m = 0; m < draws; m++) {
       if (m > 0 and (m + 1) % 10000 == 0) {
-        ::Rprintf("Done with %d%\r", (100 * (m + 1)) / draws);
+        ::Rprintf("Done with %d%%\r", (100 * (m + 1)) / draws);
       }
       // updates
       y = simulate_data(r, h);
@@ -597,7 +597,7 @@ Rcpp::List geweke_test() {
 
     for (int m = -burnin; m < draws; m++) {
       if ((m + burnin + 1) % 10000 == 0) {
-        ::Rprintf("Done with %d%\r", (100 * (m + burnin + 1)) / (burnin + draws));
+        ::Rprintf("Done with %d%%\r", (100 * (m + burnin + 1)) / (burnin + draws));
       }
 
       // updates
