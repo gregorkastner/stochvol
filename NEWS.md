@@ -1,7 +1,13 @@
+# stochvol 3.2.3
+
+- Minor changes and fixes in the documentation
+- Bugfix in the indexing of svsample_roll() for expanding
+  window estimation. Thanks to Weixian Nie.
+
 # stochvol 3.2.2
 
 - Bugfix in the validation of the inverted gamma prior
-  for sigma^2.
+  for sigma^2. Thanks to A. Slavik.
 
 # stochvol 3.2.1
 
