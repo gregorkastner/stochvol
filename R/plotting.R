@@ -548,13 +548,8 @@ mydensplot <- function(x, show.obs = TRUE, bwf, main = "", ylim, cutat=c(-Inf, I
     }
   }
   if(isTRUE(showxlab)) {
-    if (is.R()) {
-      mtext(paste("N =", coda::niter(x[[1]]), "  Bandwidth =",
-                  formatC(dens$bw)), side=1, line=2.7, cex=.7)
-    } else {
-      mtext(paste("N =", coda::niter(x[[1]]), "  Bandwidth =",
-                  formatC(bw)), side=1, line=2.7, cex=.7)
-    }
+    mtext(paste("N =", coda::niter(x[[1]]), "  Bandwidth =",
+                formatC(dens$bw)), side=1, line=2.7, cex=.7)
   }
   invisible(x)
 }
