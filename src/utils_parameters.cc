@@ -215,7 +215,9 @@ double acceptance_rate_beta(
     const ExpertSpec_FastSV& expert) {
   const double phi_prop_const = 1-phi_prop,  // some temps used for acceptance probability
                phi_const = 1-phi,
-               proposal_intercept_sd = 1 / std::sqrt(expert.proposal_intercept_varinv);
+               proposal_intercept_sd = 1 / std::sqrt(expert.proposal_intercept_varinv),
+               proposal_phi_sd = 1 / std::sqrt(expert.proposal_phi_varinv);
+                
 
   double ar_prob = 0;
   if (prior_spec.latent0.variance == PriorSpec::Latent0::STATIONARY) {
@@ -229,8 +231,8 @@ double acceptance_rate_beta(
     logdnorm(mu*phi_const, prior_spec.mu.normal.mean*phi_const, prior_spec.mu.normal.sd*phi_const) +
     logdbeta((phi_prop+1)/2, prior_spec.phi.beta.alpha, prior_spec.phi.beta.beta) -
     logdbeta((phi+1)/2, prior_spec.phi.beta.alpha, prior_spec.phi.beta.beta) +
-    logdnorm(phi, 0, sigma * proposal_intercept_sd) -
-    logdnorm(phi_prop, 0, sigma_prop * proposal_intercept_sd) +
+    logdnorm(phi, 0, sigma * proposal_phi_sd) -
+    logdnorm(phi_prop, 0, sigma_prop * proposal_phi_sd) +
     logdnorm(mu*phi_const, 0, sigma * proposal_intercept_sd) -
     logdnorm(gamma_prop, 0, sigma_prop * proposal_intercept_sd);
   
