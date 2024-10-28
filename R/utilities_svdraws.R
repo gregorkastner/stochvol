@@ -342,7 +342,7 @@ flatten <- function (x) {
 #' a lot of output); the \code{summary} method displays the summary statistics
 #' currently stored in the object; the \code{plot} method gives a graphical
 #' overview of the posterior distribution by calling \code{\link{volplot}},
-#' \code{\link{traceplot}} and \code{\link{densplot}} and displaying the
+#' \code{\link[coda]{traceplot}} and \code{\link[coda]{densplot}} and displaying the
 #' results on a single page.
 #' @note \code{updatesummary} does not actually overwrite the object's current
 #' summary, but in fact creates a new object with an updated summary. Thus,

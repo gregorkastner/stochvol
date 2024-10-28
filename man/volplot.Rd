@@ -100,8 +100,8 @@ volplot(draws, forecast = 10)
 
 Other plotting: 
 \code{\link{paradensplot}()},
-\code{\link{paratraceplot.svdraws}()},
 \code{\link{paratraceplot}()},
+\code{\link{paratraceplot.svdraws}()},
 \code{\link{plot.svdraws}()},
 \code{\link{plot.svpredict}()}
 }

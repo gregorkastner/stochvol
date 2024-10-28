@@ -158,8 +158,8 @@ To display the output, use \code{print}, \code{summary} and \code{plot}. The
 a lot of output); the \code{summary} method displays the summary statistics
 currently stored in the object; the \code{plot} method
 \code{\link{plot.svdraws}} gives a graphical overview of the posterior
-distribution by calling \code{\link{volplot}}, \code{\link{traceplot}} and
-\code{\link{densplot}} and displaying the results on a single page.
+distribution by calling \code{\link{volplot}}, \code{\link[coda]{traceplot}} and
+\code{\link[coda]{densplot}} and displaying the results on a single page.
 }
 \description{
 \code{svlm} is a wrapper around \code{\link{svsample}} with a formula interface.

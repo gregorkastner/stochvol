@@ -64,8 +64,8 @@ the \code{\link{plot.svdraws}} method.
 }
 \seealso{
 Other plotting: 
-\code{\link{paratraceplot.svdraws}()},
 \code{\link{paratraceplot}()},
+\code{\link{paratraceplot.svdraws}()},
 \code{\link{plot.svdraws}()},
 \code{\link{plot.svpredict}()},
 \code{\link{volplot}()}

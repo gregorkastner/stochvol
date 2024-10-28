@@ -50,15 +50,15 @@ plot(draws, forecast = pred)
 \seealso{
 Other plotting: 
 \code{\link{paradensplot}()},
-\code{\link{paratraceplot.svdraws}()},
 \code{\link{paratraceplot}()},
+\code{\link{paratraceplot.svdraws}()},
 \code{\link{plot.svdraws}()},
 \code{\link{volplot}()}
 
 Other plotting: 
 \code{\link{paradensplot}()},
-\code{\link{paratraceplot.svdraws}()},
 \code{\link{paratraceplot}()},
+\code{\link{paratraceplot.svdraws}()},
 \code{\link{plot.svdraws}()},
 \code{\link{volplot}()}
 }

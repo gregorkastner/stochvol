@@ -186,8 +186,8 @@
 #' a lot of output); the \code{summary} method displays the summary statistics
 #' currently stored in the object; the \code{plot} method
 #' \code{\link{plot.svdraws}} gives a graphical overview of the posterior
-#' distribution by calling \code{\link{volplot}}, \code{\link{traceplot}} and
-#' \code{\link{densplot}} and displaying the results on a single page.
+#' distribution by calling \code{\link{volplot}}, \code{\link[coda]{traceplot}} and
+#' \code{\link[coda]{densplot}} and displaying the results on a single page.
 #' @note If \code{y} contains zeros, you might want to consider de-meaning your
 #' returns or use \code{designmatrix = "ar0"}.
 #'
@@ -1353,8 +1353,8 @@ svtlsample_roll <- function (y, designmatrix = NA,
 #' a lot of output); the \code{summary} method displays the summary statistics
 #' currently stored in the object; the \code{plot} method
 #' \code{\link{plot.svdraws}} gives a graphical overview of the posterior
-#' distribution by calling \code{\link{volplot}}, \code{\link{traceplot}} and
-#' \code{\link{densplot}} and displaying the results on a single page.
+#' distribution by calling \code{\link{volplot}}, \code{\link[coda]{traceplot}} and
+#' \code{\link[coda]{densplot}} and displaying the results on a single page.
 #' @seealso \code{\link{svsample}}, \code{\link{svsim}}, \code{\link{specify_priors}}
 #' @references Kastner, G. and Frühwirth-Schnatter, S. (2014).
 #' Ancillarity-sufficiency interweaving strategy (ASIS) for boosting MCMC

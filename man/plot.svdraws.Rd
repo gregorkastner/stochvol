@@ -115,8 +115,8 @@ plot(draws, forecast = 20, showobs = FALSE,
 
 Other plotting: 
 \code{\link{paradensplot}()},
-\code{\link{paratraceplot.svdraws}()},
 \code{\link{paratraceplot}()},
+\code{\link{paratraceplot.svdraws}()},
 \code{\link{plot.svpredict}()},
 \code{\link{volplot}()}
 }

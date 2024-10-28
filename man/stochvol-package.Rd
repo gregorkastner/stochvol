@@ -77,6 +77,14 @@ Boosting MCMC Efficiency. \emph{Journal of Computational and Graphical
 Statistics}, \bold{20}(3), 531--570,
 \doi{10.1198/jcgs.2011.203main}.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://gregorkastner.github.io/stochvol/}
+  \item Report bugs at \url{https://github.com/gregorkastner/stochvol/issues}
+}
+
+}
 \author{
 Gregor Kastner \email{gregor.kastner@wu.ac.at}, Darjus Hosszejni \email{darjus.hosszejni@wu.ac.at}
 }

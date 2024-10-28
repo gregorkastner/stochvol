@@ -67,7 +67,6 @@ NULL
 #'
 #' @name stochvol-package
 #' @aliases stochvol-package stochvol
-#' @docType package
 #' @useDynLib stochvol, .registration = TRUE
 #' @importFrom utils tail head flush.console
 #' @importFrom graphics plot par hist mtext lines title matplot points abline layout plot.default axis boxplot
@@ -96,5 +95,5 @@ NULL
 #' \doi{10.1198/jcgs.2011.203main}.
 #' @keywords package models ts
 #' @example inst/examples/stochvol-package.R
-NULL
+"_PACKAGE"
 
