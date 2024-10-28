@@ -1,3 +1,15 @@
+# stochvol 3.2.5
+
+- Bugfix in the fast sampler. In the centered parameterization,
+  the proposal distribution for parameters phi and mu did not
+  have the documented variance. Thanks to Luis Gruber.
+- Bugfix 'print.svdraws' for the case when re-sampling was
+  done. Underflow may have occurred.
+
+# stochvol 3.2.4
+
+- Remove 'is.R' from the code on CRAN member request
+
 # stochvol 3.2.3
 
 - Minor changes and fixes in the documentation
