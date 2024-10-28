@@ -433,9 +433,9 @@ summary.svdraws <- function (object, showpara = TRUE, showlatent = FALSE, ...) {
   }
   if (isTRUE(object$resampled)) {
     ret$resampled <- list(para = list(max_entropy = log(length(object$correction_weight_para[[1]])),
-                                      entropy = min(sapply(object$correction_weight_para, function (w) -sum(w * log(w))))),
+                                      entropy = min(sapply(object$correction_weight_para, function (w) -sum(w * log(w), na.rm = TRUE)))),
                           latent = list(max_entropy = log(length(object$correction_weight_latent[[1]])),
-                                        entropy = min(sapply(object$correction_weight_latent, function (w) -sum(w * log(w))))),
+                                        entropy = min(sapply(object$correction_weight_latent, function (w) -sum(w * log(w), na.rm = TRUE)))),
                           same_resampling = object$thinning$para == object$thinning$latent)
   }
   ret
