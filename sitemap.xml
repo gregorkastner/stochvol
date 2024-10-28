@@ -1,93 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/expert_defaults.html</loc>
-  </url>
-  <url>
-    <loc>/reference/exrates.html</loc>
-  </url>
-  <url>
-    <loc>/reference/extractors.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/logret.html</loc>
-  </url>
-  <url>
-    <loc>/reference/paradensplot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/paratraceplot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/paratraceplot.svdraws.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.svdraws.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.svpredict.html</loc>
-  </url>
-  <url>
-    <loc>/reference/predict.svdraws.html</loc>
-  </url>
-  <url>
-    <loc>/reference/specify_priors.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stochvol-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sv_prior.html</loc>
-  </url>
-  <url>
-    <loc>/reference/svlm.html</loc>
-  </url>
-  <url>
-    <loc>/reference/svsample.html</loc>
-  </url>
-  <url>
-    <loc>/reference/svsample_cpp.html</loc>
-  </url>
-  <url>
-    <loc>/reference/svsample_roll.html</loc>
-  </url>
-  <url>
-    <loc>/reference/svsim.html</loc>
-  </url>
-  <url>
-    <loc>/reference/update_fast_sv.html</loc>
-  </url>
-  <url>
-    <loc>/reference/update_general_sv.html</loc>
-  </url>
-  <url>
-    <loc>/reference/update_regressors.html</loc>
-  </url>
-  <url>
-    <loc>/reference/update_t_error.html</loc>
-  </url>
-  <url>
-    <loc>/reference/updatesummary.html</loc>
-  </url>
-  <url>
-    <loc>/reference/validate_and_process_expert.html</loc>
-  </url>
-  <url>
-    <loc>/reference/volplot.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/expert_defaults.html</loc></url>
+<url><loc>/reference/exrates.html</loc></url>
+<url><loc>/reference/extractors.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/logret.html</loc></url>
+<url><loc>/reference/paradensplot.html</loc></url>
+<url><loc>/reference/paratraceplot.html</loc></url>
+<url><loc>/reference/paratraceplot.svdraws.html</loc></url>
+<url><loc>/reference/plot.svdraws.html</loc></url>
+<url><loc>/reference/plot.svpredict.html</loc></url>
+<url><loc>/reference/predict.svdraws.html</loc></url>
+<url><loc>/reference/specify_priors.html</loc></url>
+<url><loc>/reference/stochvol-package.html</loc></url>
+<url><loc>/reference/sv_prior.html</loc></url>
+<url><loc>/reference/svlm.html</loc></url>
+<url><loc>/reference/svsample.html</loc></url>
+<url><loc>/reference/svsample_cpp.html</loc></url>
+<url><loc>/reference/svsample_roll.html</loc></url>
+<url><loc>/reference/svsim.html</loc></url>
+<url><loc>/reference/update_fast_sv.html</loc></url>
+<url><loc>/reference/update_general_sv.html</loc></url>
+<url><loc>/reference/update_regressors.html</loc></url>
+<url><loc>/reference/update_t_error.html</loc></url>
+<url><loc>/reference/updatesummary.html</loc></url>
+<url><loc>/reference/validate_and_process_expert.html</loc></url>
+<url><loc>/reference/volplot.html</loc></url>
 </urlset>
+
