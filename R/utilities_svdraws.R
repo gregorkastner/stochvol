@@ -383,7 +383,11 @@ updatesummary <- function(x, quantiles = c(.05, .5, .95), esspara = TRUE, esslat
 
   res <- list()
 
-  res$para <- summaryfunction(x$para[, sampled_para, drop=FALSE], ess = esspara)
+  res$para <- if (length(sampled_para) > 0) {
+    summaryfunction(x$para[, sampled_para, drop=FALSE], ess = esspara)
+  } else {
+    coda::mcmc.list(replicate(length(x$para), list(coda::mcmc(matrix(NA, nrow=coda::niter(x$para), ncol = 0, dimnames = list(NULL, NULL)), start = start(x$para)))))
+  }
   if ("mu" %in% sampled_para) {
     toadd <- matrixsummary(exp(join_mcmclist(x$para[, "mu", drop=FALSE])/2))
     if (esspara) {
