@@ -1,5 +1,3 @@
-context("Prior specification")
-
 test_that("enabled priors are accepted", {
   expect_s3_class(specify_priors(), "sv_priorspec")
   expect_s3_class(specify_priors(mu = sv_normal(0, 5)), "sv_priorspec")

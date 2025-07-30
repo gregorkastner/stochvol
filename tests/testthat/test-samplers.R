@@ -1,5 +1,3 @@
-context("Samplers are correct")
-
 test_that("vanilla SV passes Geweke test", {
   set.seed(60)
   result <- .Call(`_stochvol_geweke_fast_cpp`, PACKAGE = "stochvol")

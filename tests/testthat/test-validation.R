@@ -1,5 +1,3 @@
-context("Validation")
-
 test_that("assert_numeric passes good input", {
   expect_true(assert_numeric(4L, "x"))
   expect_true(assert_numeric(c(4, -1), "x"))

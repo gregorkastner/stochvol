@@ -1,5 +1,3 @@
-context("Formula interface")
-
 test_that("formula interface and prediction work", {
   # simulate data
   set.seed(56)

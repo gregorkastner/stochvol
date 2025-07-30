@@ -1,3 +1,9 @@
+# stochvol 3.2.6
+
+- Bugfix in the post-processing step of the sampler for the
+  rare case that all parameters are assumed to be constant.
+  Thanks to Luis Gruber.
+
 # stochvol 3.2.5
 
 - Bugfix in the fast sampler. In the centered parameterization,
