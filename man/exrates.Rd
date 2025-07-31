@@ -5,7 +5,7 @@
 \alias{exrates}
 \title{Euro exchange rate data}
 \source{
-ECB Statistical Data Warehouse (\url{https://sdw.ecb.europa.eu})
+ECB Statistical Data Warehouse
 }
 \description{
 The data set contains the daily bilateral prices of one Euro in 23
