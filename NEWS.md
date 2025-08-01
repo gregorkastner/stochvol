@@ -1,3 +1,10 @@
+# stochvol 3.2.7
+
+- Fix bug introduced in 3.2.6 that caused the sampler to crash
+  sometimes when all parameters were assumed to be constant.
+  CRAN's UBSan check revealed that the sampler did not handle
+  the case correctly.
+
 # stochvol 3.2.6
 
 - Bugfix in the post-processing step of the sampler for the

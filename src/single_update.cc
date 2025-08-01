@@ -290,7 +290,7 @@ void update_general_sv(
           par);
       mu = theta.mu, phi = theta.phi, sigma = theta.sigma, rho = theta.rho;
       const bool accepted = theta.mu_accepted or theta.phi_accepted or theta.sigma_accepted or theta.rho_accepted;  // was anything accepted?
-      if (expert.adapt) {
+      if (expert.adapt && arma::any(update_indicator)) {
         adaptation.register_sample(
             accepted,
             general_sv::theta_transform_inv(mu, phi, sigma, rho, prior_spec).elem(arma::find(update_indicator)));  // current sample
