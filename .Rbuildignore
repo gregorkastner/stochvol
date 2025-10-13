@@ -22,6 +22,7 @@ debug.Rprofile
 
 .lintr
 compile_flags.txt
+stochvol.code-workspace
 
 ^_pkgdown\.yml$
 ^docs$

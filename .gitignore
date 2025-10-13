@@ -51,6 +51,8 @@ vignettes/article2.pdf
 compile_flags.txt
 Session.vim
 
+stochvol.code-workspace
+
 # other
 todelete*
 

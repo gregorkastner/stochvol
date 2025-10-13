@@ -1,3 +1,7 @@
+# stochvol 3.2.8
+
+- Adopt changes necessary for RcppArmadillo 15
+
 # stochvol 3.2.7
 
 - Fix bug introduced in 3.2.6 that caused the sampler to crash
