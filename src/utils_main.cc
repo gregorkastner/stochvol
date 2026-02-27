@@ -220,7 +220,7 @@ PriorSpec list_to_priorspec(
     if (priorlatent0 == "stationary") {
       priorspec.latent0.variance = PriorSpec::Latent0::STATIONARY;
     } else {
-      ::Rf_error("The prior specification for the variance of latent0 should be either the string \"stationary\" or an sv_constant object; got string \"%s\". See function specify_priors", priorlatent0.c_str());
+      Rcpp::stop("The prior specification for the variance of latent0 should be either the string \"stationary\" or an sv_constant object; got string \"%s\". See function specify_priors", priorlatent0.c_str());
     }
   } else if (::Rf_isVectorList(priorlatent0_sexp)) {
     const List priorlatent0 = priorlatent0_sexp;
@@ -230,10 +230,10 @@ PriorSpec list_to_priorspec(
     } else {
       const CharacterVector classes_rcpp = priorlatent0.attr("class");
       const std::string classes = as<std::string>(classes_rcpp.at(0));
-      ::Rf_error("The prior specification for the variance of latent0 should be either the string \"stationary\" or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
+      Rcpp::stop("The prior specification for the variance of latent0 should be either the string \"stationary\" or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
     }
   } else {
-    ::Rf_error("The prior specification for the variance of latent0 should be either the string \"stationary\" or an sv_constant object; got type number %d. See function specify_priors", TYPEOF(priorlatent0_sexp));
+    Rcpp::stop("The prior specification for the variance of latent0 should be either the string \"stationary\" or an sv_constant object; got type number %d. See function specify_priors", TYPEOF(priorlatent0_sexp));
   }
   // mu
   if (priormu.inherits("sv_normal")) {
@@ -246,7 +246,7 @@ PriorSpec list_to_priorspec(
   } else {
     const CharacterVector classes_rcpp = priormu.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
-    ::Rf_error("The prior specification of mu should be either an sv_normal object or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
+    Rcpp::stop("The prior specification of mu should be either an sv_normal object or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
   }
   // phi
   if (priorphi.inherits("sv_beta")) {
@@ -263,7 +263,7 @@ PriorSpec list_to_priorspec(
   } else {
     const CharacterVector classes_rcpp = priorphi.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
-    ::Rf_error("The prior specification of phi should be either an sv_beta object or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
+    Rcpp::stop("The prior specification of phi should be either an sv_beta object or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
   }
   // sigma2
   if (priorsigma2.inherits("sv_gamma")) {
@@ -280,7 +280,7 @@ PriorSpec list_to_priorspec(
   } else {
     const CharacterVector classes_rcpp = priorsigma2.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
-    ::Rf_error("The prior specification of sigma2 should be an object of one of sv_gamma, sv_inverse_gamma, or sv_constant classes; got list with class %s. See function specify_priors", classes.c_str());
+    Rcpp::stop("The prior specification of sigma2 should be an object of one of sv_gamma, sv_inverse_gamma, or sv_constant classes; got list with class %s. See function specify_priors", classes.c_str());
   }
   // nu
   if (priornu.inherits("sv_exponential")) {
@@ -294,7 +294,7 @@ PriorSpec list_to_priorspec(
   } else {
     const CharacterVector classes_rcpp = priornu.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
-    ::Rf_error("The prior specification of nu should be an object of one of sv_exponential, sv_infinity, or sv_constant classes; got list with class %s. See function specify_priors", classes.c_str());
+    Rcpp::stop("The prior specification of nu should be an object of one of sv_exponential, sv_infinity, or sv_constant classes; got list with class %s. See function specify_priors", classes.c_str());
   }
   // rho
   if (priorrho.inherits("sv_beta")) {
@@ -307,7 +307,7 @@ PriorSpec list_to_priorspec(
   } else {
     const CharacterVector classes_rcpp = priorrho.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
-    ::Rf_error("The prior specification of rho should be either an sv_beta object or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
+    Rcpp::stop("The prior specification of rho should be either an sv_beta object or an sv_constant object; got list with class %s. See function specify_priors", classes.c_str());
   }
   // beta
   if (priorbeta.inherits("sv_multinormal")) {
@@ -316,16 +316,16 @@ PriorSpec list_to_priorspec(
       priorspec.beta.multivariate_normal.precision = as<arma::mat>(priorbeta["precision"]);
     } catch (...) {
       //Rcout << "Received prior specification for beta:" << std::endl << priorbeta << std::endl;
-      ::Rf_error("Unable to convert priorspec$priorbeta to a mean vector and a precision matrix");
+      Rcpp::stop("Unable to convert priorspec$priorbeta to a mean vector and a precision matrix");
     }
     if (!priorspec.beta.multivariate_normal.precision.is_sympd()) {
       //Rcout << "Received precision matrix as the prior specification for beta:" << std::endl << priorspec.beta.multivariate_normal.precision << std::endl;
-      ::Rf_error("The precision matrix of the prior specification for beta is not symmetric and/or positive definite.");
+      Rcpp::stop("The precision matrix of the prior specification for beta is not symmetric and/or positive definite.");
     }
   } else {
     const CharacterVector classes_rcpp = priorbeta.attr("class");
     const std::string classes = as<std::string>(classes_rcpp.at(0));
-    ::Rf_error("The prior specification of beta should be an sv_multinormal object; got list with class %s. See function specify_priors", classes.c_str());
+    Rcpp::stop("The prior specification of beta should be an sv_multinormal object; got list with class %s. See function specify_priors", classes.c_str());
   }
 
   return priorspec;
@@ -349,7 +349,7 @@ ExpertSpec_FastSV list_to_fast_sv(
   } else if (baseline_parameterization_str == "noncentered") {
     baseline_parameterization = Parameterization::NONCENTERED;
   } else {
-    ::Rf_error("Unknown value of baseline_parameterization in expert$fast_sv == \"%s\"; should be either \"centered\" or \"noncentered\"", baseline_parameterization_str.c_str());
+    Rcpp::stop("Unknown value of baseline_parameterization in expert$fast_sv == \"%s\"; should be either \"centered\" or \"noncentered\"", baseline_parameterization_str.c_str());
   }
 
   ExpertSpec_FastSV::ProposalPhi proposal_phi;
@@ -358,7 +358,7 @@ ExpertSpec_FastSV list_to_fast_sv(
   } else if (proposal_phi_str == "repeated acceptance-rejection") {
     proposal_phi = ExpertSpec_FastSV::ProposalPhi::REPEATED_ACCEPT_REJECT_NORMAL;
   } else {
-    ::Rf_error("Unknown value of proposal_phi in expert$fast_sv == \"%s\"; should be either \"immediate acceptance-rejection\" or \"repeated acceptance-rejection\"", proposal_phi_str.c_str());
+    Rcpp::stop("Unknown value of proposal_phi in expert$fast_sv == \"%s\"; should be either \"immediate acceptance-rejection\" or \"repeated acceptance-rejection\"", proposal_phi_str.c_str());
   }
 
   ExpertSpec_FastSV::ProposalSigma2 proposal_sigma2;
@@ -367,7 +367,7 @@ ExpertSpec_FastSV list_to_fast_sv(
   } else if (proposal_sigma2_str == "log random walk") {
     proposal_sigma2 = ExpertSpec_FastSV::ProposalSigma2::LOG_RANDOM_WALK;
   } else {
-    ::Rf_error("Unknown value of proposal_sigma2 in expert$fast_sv == \"%s\"; should be either \"independence\" or \"log random walk\"", proposal_sigma2_str.c_str());
+    Rcpp::stop("Unknown value of proposal_sigma2 in expert$fast_sv == \"%s\"; should be either \"independence\" or \"log random walk\"", proposal_sigma2_str.c_str());
   }
 
   ExpertSpec_FastSV::Update update;
@@ -404,7 +404,7 @@ ExpertSpec_GeneralSV list_to_general_sv(
   } else if (starting_parameterization_str == "noncentered") {
     starting_parameterization = Parameterization::NONCENTERED;
   } else {
-    ::Rf_error("Unknown parameterization setting in expert$general_sv$starting_parameterization == \"%s\"; should be \"centered\" or \"noncentered\"", starting_parameterization_str.c_str());
+    Rcpp::stop("Unknown parameterization setting in expert$general_sv$starting_parameterization == \"%s\"; should be \"centered\" or \"noncentered\"", starting_parameterization_str.c_str());
   }
   const Parameterization other_parameterization = starting_parameterization == Parameterization::CENTERED ? Parameterization::NONCENTERED : Parameterization::CENTERED;
 

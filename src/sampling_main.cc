@@ -72,7 +72,7 @@ List svsample_fast_cpp(
              is_heavy_tail = prior_spec.nu.distribution != PriorSpec::Nu::INFINITE;
 
   if (prior_spec.mu.distribution == PriorSpec::Mu::CONSTANT && expert.mh_blocking_steps == 1) { // not implemented (would be easy, though)
-    ::Rf_error("Single block update leaving mu constant is not yet implemented");
+    Rcpp::stop("Single block update leaving mu constant is not yet implemented");
   }
 
   // shortcuts / precomputations
@@ -102,7 +102,7 @@ List svsample_fast_cpp(
     tau.set_size(T);
     tau.fill(tau_elem);
   } else if (tau.n_elem != T) {
-    ::Rf_error("Bad initialization for the vector tau. Should have length %d, received length %d, first element %f", T, tau.n_elem, tau[0]);
+    Rcpp::stop("Bad initialization for the vector tau. Should have length %d, received length %d, first element %f", T, tau.n_elem, tau[0]);
   }
   arma::uvec r = expert_in["init_indicators"];  // mixture indicators
   if (r.n_elem == 1) {
@@ -110,7 +110,7 @@ List svsample_fast_cpp(
     r.set_size(T);
     r.fill(r_elem);
   } else if (r.n_elem != T) {
-    ::Rf_error("Bad initialization for the vector of mixture indicators. Should have length %d, received length %d, first element %u", T, r.n_elem, r[0]);
+    Rcpp::stop("Bad initialization for the vector of mixture indicators. Should have length %d, received length %d, first element %u", T, r.n_elem, r[0]);
   }
   r -= 1u;
   R_assert(arma::all(r <= 9u), "Initial values of the mixture indicators need to be between 1 and 10 inclusive.");
@@ -302,7 +302,7 @@ List svsample_general_cpp(
     tau.set_size(T);
     tau.fill(tau_elem);
   } else if (tau.n_elem != T) {
-    ::Rf_error("Bad initialization for the vector tau. Should have length %d, received length %d, first element %f", T, tau.n_elem, tau[0]);
+    Rcpp::stop("Bad initialization for the vector tau. Should have length %d, received length %d, first element %f", T, tau.n_elem, tau[0]);
   }
 
   // keep some arrays cached

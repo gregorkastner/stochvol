@@ -61,7 +61,7 @@ std::vector<Parameterization> expert_to_strategy(
         return {Parameterization::NONCENTERED};
       }
     default:
-      ::Rf_error("expert_to_strategy: Mistake in the switch-case");
+      Rcpp::stop("expert_to_strategy: Mistake in the switch-case");
   }
 }
 
