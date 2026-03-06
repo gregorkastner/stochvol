@@ -1,3 +1,8 @@
+# stochvol 3.2.9
+
+- Replace all calls to ::Rf_error with Rcpp::stop to facilitate proper memory management during error handling. Thanks to @Enchufa2 for pointing this out.
+- Fix all URLs that fail the CRAN check
+
 # stochvol 3.2.8
 
 - Adopt changes necessary for RcppArmadillo 15

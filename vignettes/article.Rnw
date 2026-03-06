@@ -130,7 +130,7 @@ It utilizes Markov chain Monte Carlo (MCMC) samplers to conduct inference by obt
   Telephone: +43/1/31336-5593\\
   Fax: +43/1/31336-90-5593\\
   E-mail: \email{gregor.kastner@wu.ac.at}\\
-  URL: \url{http://statmath.wu.ac.at/~kastner/}
+  URL: \url{https://statmath.wu.ac.at/~kastner/}
 }
 %% It is also possible to add a telephone and fax number
 %% before the e-mail in the following format:
@@ -444,7 +444,7 @@ plot(myresid, ret)
 
 \section[Using stochvol within other samplers]{Using \pkg{stochvol} within other samplers}
 \label{other}
-We demonstrate how the \pkg{stochvol} package can be used to incorporate stochastic volatility into any given MCMC sampler. This is particularly easy when the sampler itself is coded in \proglang{R} or \proglang{C}/\proglang{C++} and applies, e.g., to many of the specialized procedures listed in the CRAN task view about Bayesian inference, available at \url{http://cran.r-project.org/web/views/Bayesian.html}. For the sake of simplicity, we explain the procedure using a ``hand-coded'' Gibbs-sampler for the Bayesian normal linear model with $n$ observations and $k=p-1$ predictors, given through
+We demonstrate how the \pkg{stochvol} package can be used to incorporate stochastic volatility into any given MCMC sampler. This is particularly easy when the sampler itself is coded in \proglang{R} or \proglang{C}/\proglang{C++} and applies, e.g., to many of the specialized procedures listed in the CRAN task view about Bayesian inference, available at \url{https://cran.r-project.org/view=Bayesian}. For the sake of simplicity, we explain the procedure using a ``hand-coded'' Gibbs-sampler for the Bayesian normal linear model with $n$ observations and $k=p-1$ predictors, given through
 \begin{eqnarray}
  \label{reg}
 \yb|\betab,\Sigmab \sim \Normal{\Xb\betab, \Sigmab}.

@@ -161,7 +161,7 @@ financial time series%
   Universit\"atsstraße 65-67\\
   9020 Klagenfurt, Austria\\
   E-mail: \email{Gregor.Kastner@aau.at}\\
-  URL: \url{https://www.aau.at/team/gregor-kastner/}
+  URL: \url{https://www.aau.at/team/kastner-gregor/}
 }
 
 \begin{document}
