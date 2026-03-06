@@ -149,7 +149,7 @@ std::pair<bool, double> sample_sigma(
         }
         break;
         default:
-        ::Rf_error("Constant prior for sigma not implemented in fast sv.");
+        Rcpp::stop("Constant prior for sigma not implemented in fast sv.");
       }
     }
   }
@@ -434,7 +434,7 @@ std::pair<bool, double> sample_phi(
     }
     break;
     default:
-      ::Rf_error("sample_phi: Mistake in the switch-case");
+      Rcpp::stop("sample_phi: Mistake in the switch-case");
   }
 
   // MH step, acceptance prob ar_prob
@@ -662,7 +662,7 @@ double theta_log_likelihood(
       result = theta_log_likelihood_nc(data, mu, phi, sigma, rho, ht0, ht, exp_h_half, prior_spec);
       break;
     default:
-      ::Rf_error("theta_log_likelihood: Mistake in the switch-case");
+      Rcpp::stop("theta_log_likelihood: Mistake in the switch-case");
   }
   return result;
 }
@@ -682,7 +682,7 @@ double theta_log_prior(
       mu_density = logdnorm2(mu, prior_spec.mu.normal.mean, prior_spec.mu.normal.sd);
       break;
     default:
-      ::Rf_error("theta_log_prior: Mistake in the switch-case");
+      Rcpp::stop("theta_log_prior: Mistake in the switch-case");
   }
   double phi_density;
   switch (prior_spec.phi.distribution) {
@@ -696,7 +696,7 @@ double theta_log_prior(
       phi_density = logdnorm2(phi, prior_spec.phi.normal.mean, prior_spec.phi.normal.sd);
       break;
     default:
-      ::Rf_error("theta_log_prior: Mistake in the switch-case");
+      Rcpp::stop("theta_log_prior: Mistake in the switch-case");
   }
   double sigma_density;
   switch (prior_spec.sigma2.distribution) {
@@ -710,7 +710,7 @@ double theta_log_prior(
       sigma_density = std::log(sigma) + logdinvgamma(std::pow(sigma, 2), prior_spec.sigma2.inverse_gamma.shape, prior_spec.sigma2.inverse_gamma.scale);
       break;
     default:
-      ::Rf_error("theta_log_prior: Mistake in the switch-case");
+      Rcpp::stop("theta_log_prior: Mistake in the switch-case");
   }
   double rho_density;
   switch (prior_spec.rho.distribution) {
@@ -721,7 +721,7 @@ double theta_log_prior(
       rho_density = logdbeta(.5 * (rho + 1.), prior_spec.rho.beta.alpha, prior_spec.rho.beta.beta);
       break;
     default:
-      ::Rf_error("theta_log_prior: Mistake in the switch-case");
+      Rcpp::stop("theta_log_prior: Mistake in the switch-case");
   }
   return mu_density + phi_density + sigma_density + rho_density;
 }

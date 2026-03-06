@@ -96,7 +96,7 @@ LatentVector draw_latent(
       }
       break;
     default:
-      ::Rf_error("draw_latent: This part of the code should never be reached.");
+      Rcpp::stop("draw_latent: This part of the code should never be reached.");
   } 
 
   // Cholesky decomposition

@@ -62,7 +62,7 @@ SampledTheta regression(
     case 3:
       return centered::draw_theta_3block(mu, phi, sigma, h0, h, prior_spec, expert);
     default:
-      ::Rf_error("Parameter fast_sv$mh_blocking_steps should an integer between 1 and 3.");
+      Rcpp::stop("Parameter fast_sv$mh_blocking_steps should an integer between 1 and 3.");
   }
 }
 
@@ -88,7 +88,7 @@ SampledTheta regression(
     case 3:
       return noncentered::draw_theta_3block(log_data2, mu, phi, sigma, h0, h, r, prior_spec, expert);
     default:
-      ::Rf_error("Parameter fast_sv$mh_blocking_steps should an integer between 1 and 3.");
+      Rcpp::stop("Parameter fast_sv$mh_blocking_steps should an integer between 1 and 3.");
   }
 }
 
@@ -115,7 +115,7 @@ SampledTheta draw_theta(
     case Parameterization::NONCENTERED:
       return noncentered::regression(log_data2, mu, phi, sigma, ht0, ht, r, prior_spec, expert);
     default:
-      ::Rf_error("draw_theta: Mistake in the switch-case");
+      Rcpp::stop("draw_theta: Mistake in the switch-case");
   }
 }
 

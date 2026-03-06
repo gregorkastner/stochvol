@@ -40,7 +40,7 @@ inline
 void R_assert(const bool assert_statement, const char* message) {
 #ifndef NDEBUG
   if (!assert_statement) {
-    Rf_error(message);
+    Rcpp::stop(message);
   }
 #endif
   return;
@@ -58,7 +58,7 @@ double determine_Bh0inv(
     case PriorSpec::Latent0::CONSTANT:
       return 1. / prior_spec.latent0.constant.value;
     default:
-      ::Rf_error("determine_Bh0inv: This part of the code should never be reached.");
+      Rcpp::stop("determine_Bh0inv: This part of the code should never be reached.");
   }
 }
 
@@ -73,7 +73,7 @@ int determine_thintime(
   } else if (keeptime == "last") {
     return T;
   } else {
-    Rf_error("Unknown value for 'keeptime'; got \"%s\"", keeptime.c_str());
+    Rcpp::stop("Unknown value for 'keeptime'; got \"%s\"", keeptime.c_str());
   }
 }
 

@@ -456,7 +456,7 @@ namespace stochvol {
         case Parameterization::NONCENTERED:
           return noncentered;
         default:
-          ::Rf_error("Adaptation operator[]: Mistake in the switch-case");
+          Rcpp::stop("Adaptation operator[]: Mistake in the switch-case");
       }
     }
 
@@ -468,7 +468,7 @@ namespace stochvol {
         case Parameterization::NONCENTERED:
           return noncentered;
         default:
-          ::Rf_error("Adaptation operator[]: Mistake in the switch-case");
+          Rcpp::stop("Adaptation operator[]: Mistake in the switch-case");
       }
     }
 
