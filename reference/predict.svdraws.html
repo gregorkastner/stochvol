@@ -47,7 +47,7 @@ Bayesian regression. In the last case, new regressors need to be provided for pr
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Prediction of Future Returns and Log-Volatilities</h1>
-    <small class="dont-index">Source: <a href="https://github.com/gregorkastner/stochvol/blob/v3.2.9/R/utilities_svdraws.R" class="external-link"><code>R/utilities_svdraws.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/gregorkastner/stochvol/blob/master/R/utilities_svdraws.R" class="external-link"><code>R/utilities_svdraws.R</code></a></small>
     <div class="hidden name"><code>predict.svdraws.Rd</code></div>
     </div>
 
@@ -137,31 +137,31 @@ print, plot, or summarize the predictions.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1. Empirical mean and standard deviation for each variable,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    plus standard error of the mean:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          Mean     SD Naive SE Time-series SE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_101 -10.124 0.9254  0.01309        0.02604</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_102 -10.047 0.9758  0.01380        0.02529</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_103  -9.981 1.0254  0.01450        0.02395</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_104  -9.914 1.0589  0.01498        0.02313</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_105  -9.847 1.0994  0.01555        0.02406</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_106  -9.818 1.1295  0.01597        0.02297</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_107  -9.783 1.1481  0.01624        0.02239</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_108  -9.750 1.1717  0.01657        0.02280</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_109  -9.717 1.1904  0.01684        0.02316</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_110  -9.689 1.1969  0.01693        0.02278</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         Mean     SD Naive SE Time-series SE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_101 -8.966 0.7750  0.01096        0.01990</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_102 -9.001 0.8283  0.01171        0.01949</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_103 -9.025 0.8860  0.01253        0.01944</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_104 -9.057 0.9379  0.01326        0.01949</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_105 -9.078 0.9742  0.01378        0.02018</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_106 -9.102 1.0063  0.01423        0.02052</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_107 -9.118 1.0400  0.01471        0.02053</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_108 -9.147 1.0529  0.01489        0.02000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_109 -9.161 1.0822  0.01531        0.01941</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_110 -9.182 1.1164  0.01579        0.01991</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2. Quantiles for each variable:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         2.5%    25%     50%    75%  97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_101 -12.05 -10.69 -10.089 -9.508 -8.401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_102 -12.09 -10.64 -10.020 -9.414 -8.201</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_103 -12.16 -10.60  -9.935 -9.322 -8.053</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_104 -12.13 -10.55  -9.870 -9.244 -7.864</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_105 -12.13 -10.51  -9.804 -9.138 -7.760</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_106 -12.21 -10.51  -9.795 -9.084 -7.693</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_107 -12.27 -10.47  -9.757 -9.044 -7.630</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_108 -12.27 -10.45  -9.704 -8.997 -7.526</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_109 -12.28 -10.42  -9.676 -8.950 -7.494</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> h_110 -12.28 -10.40  -9.633 -8.918 -7.421</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         2.5%    25%    50%    75%  97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_101 -10.44 -9.477 -8.988 -8.489 -7.327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_102 -10.61 -9.537 -9.031 -8.473 -7.273</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_103 -10.76 -9.602 -9.042 -8.459 -7.225</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_104 -10.90 -9.664 -9.063 -8.465 -7.159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_105 -10.95 -9.722 -9.090 -8.452 -7.110</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_106 -11.04 -9.765 -9.104 -8.471 -7.113</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_107 -11.16 -9.799 -9.109 -8.441 -7.066</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_108 -11.21 -9.810 -9.162 -8.458 -7.060</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_109 -11.26 -9.855 -9.149 -8.479 -6.998</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> h_110 -11.46 -9.888 -9.176 -8.484 -6.906</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="extractors.html">predy</a></span><span class="op">(</span><span class="va">fore</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -173,31 +173,31 @@ print, plot, or summarize the predictions.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1. Empirical mean and standard deviation for each variable,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    plus standard error of the mean:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Mean       SD  Naive SE Time-series SE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_101 -1.425e-04 0.007948 0.0001124      0.0001124</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_102  1.151e-04 0.008314 0.0001176      0.0001176</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_103  1.926e-05 0.008825 0.0001248      0.0001248</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_104  8.042e-05 0.009142 0.0001293      0.0001322</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_105  1.744e-04 0.009851 0.0001393      0.0001245</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_106  2.467e-05 0.010146 0.0001435      0.0001435</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_107  5.217e-05 0.010255 0.0001450      0.0001391</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_108  1.304e-04 0.011356 0.0001606      0.0001606</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_109  1.684e-04 0.010668 0.0001509      0.0001509</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_110  1.804e-04 0.010678 0.0001510      0.0001510</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             Mean      SD  Naive SE Time-series SE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_101  1.262e-04 0.01352 0.0001911      0.0001870</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_102 -4.044e-05 0.01334 0.0001886      0.0001886</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_103  3.357e-04 0.01353 0.0001914      0.0001856</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_104 -3.952e-04 0.01371 0.0001939      0.0002010</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_105 -8.750e-05 0.01326 0.0001875      0.0001875</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_106 -1.044e-04 0.01405 0.0001987      0.0001987</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_107 -1.541e-05 0.01466 0.0002074      0.0002074</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_108 -4.421e-05 0.01367 0.0001934      0.0002054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_109  8.454e-05 0.01391 0.0001967      0.0001925</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_110  5.415e-04 0.01367 0.0001933      0.0001933</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2. Quantiles for each variable:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           2.5%       25%        50%      75%   97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_101 -0.01635 -0.004373 -1.471e-04 0.004002 0.01635</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_102 -0.01622 -0.004212  1.170e-04 0.004459 0.01715</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_103 -0.01754 -0.004470  1.565e-04 0.004518 0.01726</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_104 -0.01847 -0.004219  1.311e-04 0.004739 0.01777</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_105 -0.01994 -0.004403  1.440e-04 0.004801 0.02003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_106 -0.02136 -0.004683  2.710e-04 0.004913 0.02050</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_107 -0.02146 -0.004708  7.350e-06 0.004800 0.02135</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_108 -0.02025 -0.004741 -6.262e-05 0.004779 0.02264</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_109 -0.02039 -0.004958  9.039e-05 0.005024 0.02258</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> y_110 -0.02047 -0.004923  5.886e-05 0.005107 0.02353</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_101 -0.02614 -0.007383  2.431e-05 0.007286 0.02682</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_102 -0.02607 -0.007060 -2.605e-04 0.006945 0.02708</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_103 -0.02706 -0.006897  2.841e-04 0.007621 0.02859</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_104 -0.02823 -0.006952 -1.944e-04 0.006481 0.02602</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_105 -0.02803 -0.006671  1.260e-04 0.006563 0.02606</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_106 -0.02799 -0.007093 -8.165e-05 0.006883 0.02796</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_107 -0.02816 -0.006705 -1.030e-04 0.006767 0.02958</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_108 -0.02761 -0.006605 -7.793e-05 0.006377 0.02832</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_109 -0.02828 -0.006144 -1.128e-05 0.006500 0.02831</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> y_110 -0.02656 -0.006005  3.094e-04 0.006892 0.02943</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">draws</span>, forecast <span class="op">=</span> <span class="va">fore</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="predict.svdraws-1.png" alt="" width="700" height="433"></span>
