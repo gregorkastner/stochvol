@@ -155,7 +155,7 @@ List svsample_fast_cpp(
 
   for (int i = -burnin + 1; i < draws + 1; i++) {  // BEGIN main MCMC loop
     if (i % 20 == 0) {
-      ::R_CheckUserInterrupt();
+      Rcpp::checkUserInterrupt();
     }
 
     const bool parasave_round = (i - 1) % thinpara == thinpara - 1,  // is this a parameter saving round?
@@ -340,7 +340,7 @@ List svsample_general_cpp(
 
   for (int i = -burnin+1; i < draws+1; i++) {
     if (i % 20 == 0) {
-      ::R_CheckUserInterrupt();
+      Rcpp::checkUserInterrupt();
     }
 
     const bool parasave_round = (i - 1) % thinpara == thinpara - 1,  // is this a parameter saving round?
